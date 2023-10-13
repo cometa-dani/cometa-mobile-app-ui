@@ -32,7 +32,7 @@ export default function EditScreenInfo({ path }: { path: string }) {
           Change any of the text, save the file, and your app will automatically update.
         </Text>
       </View>
-
+      {/* 
       <View style={styles.helpContainer}>
         <ExternalLink
           style={styles.helpLink}
@@ -41,7 +41,7 @@ export default function EditScreenInfo({ path }: { path: string }) {
             Tap here if your app doesn't automatically update after making changes
           </Text>
         </ExternalLink>
-      </View>
+      </View> */}
     </View>
   );
 }

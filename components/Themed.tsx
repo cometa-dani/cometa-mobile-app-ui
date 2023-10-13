@@ -7,6 +7,7 @@ import { Text as DefaultText, useColorScheme, View as DefaultView } from 'react-
 
 import Colors from '../constants/Colors';
 
+
 type ThemeProps = {
   lightColor?: string;
   darkColor?: string;
