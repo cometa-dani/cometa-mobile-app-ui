@@ -1,12 +1,11 @@
-import { StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { Text } from '../../components/Themed';
-import { ScrollView } from 'react-native-gesture-handler';
 
 
-export default function DiscoverScreen(): JSX.Element {
+export default function UserProfileScreen(): JSX.Element {
   return (
     <ScrollView contentContainerStyle={styles.scrollView}>
-      <Text style={styles.title}>Discover Screen</Text>
+      <Text style={styles.title}>User Profile Screen</Text>
     </ScrollView>
   );
 }

@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import { Text } from '../../components/Themed';
+import { Text, View } from '../../components/Themed';
 import { useCometaStore } from '../../store/cometaStore';
 
 
-export default function TabOneScreen() {
+export default function HomeScreen(): JSX.Element {
   const { data } = useCometaStore(state => state.events);
   const fetchEvents = useCometaStore(state => state.fetchEvents);
 
@@ -18,16 +18,21 @@ export default function TabOneScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollView}>
-      <Text style={styles.title}>Cometa Dani App</Text>
+      <View style={styles.container}>
+        <Text style={styles.title}>Cometa Dani App</Text>
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
+  container: {
     alignItems: 'center',
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'center'
+  },
+  scrollView: {
+    flex: 1,
   },
   title: {
     fontSize: 20,
