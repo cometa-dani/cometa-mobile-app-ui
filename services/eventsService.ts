@@ -4,7 +4,7 @@ import { RestApiService } from './restApiService';
 
 class EventsService extends RestApiService {
 
-  getEvents(page = 1, limit = 5) {
+  getEvents(page = 1, limit = 4) {
     const params = { params: { page, limit } };
     return this.http.get<EventsListRes>('/events', params);
   }

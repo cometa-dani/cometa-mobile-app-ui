@@ -14,36 +14,34 @@ export type EventSlice = {
 }
 
 
-export const createEventSlice:
-  StateCreator<EventSlice> = (set) => ({
+export const createEventSlice: StateCreator<EventSlice> = (set) => ({
 
-    events: {
-      data: {} as EventsListRes,
-      isLoading: false,
-      error: ''
-    },
+  events: {
+    data: {} as EventsListRes,
+    isLoading: false,
+    error: ''
+  },
 
-    fetchEvents: async () => {
-      set((prev) => ({
+  fetchEvents: async () => {
+    set((prev) => ({
+      events: {
+        ...prev.events,
+        isLoading: true,
+      }
+    }));
+
+    try {
+      const { data } = await eventsService.getEvents();
+      set({
         events: {
-          ...prev.events,
-          isLoading: true,
+          data,
+          isLoading: false,
+          error: ''
         }
-      }));
-
-      try {
-        const { data } = await eventsService.getEvents();
-        set({
-          events: {
-            data,
-            isLoading: false,
-            error: ''
-          }
-        });
-      }
-      catch (error) {
-        console.log(error);
-      }
-      //
-    },
-  });
+      });
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
+});
