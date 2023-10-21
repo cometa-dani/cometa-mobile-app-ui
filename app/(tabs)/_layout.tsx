@@ -5,6 +5,7 @@ import Colors from '../../constants/colors';
 
 
 /**
+ * 
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
  */
 function TabBarIcon(props: {
@@ -21,15 +22,16 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        headerStatusBarHeight: 100,
         headerShown: false,
         tabBarInactiveTintColor: Colors[colorScheme ?? 'light'].text,
         tabBarShowLabel: false,
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint
       }}>
       <Tabs.Screen
-        name="home"
+        name="index"
         options={{
-          headerShown: false,
+          // headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
