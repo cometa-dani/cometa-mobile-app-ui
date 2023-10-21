@@ -19,7 +19,7 @@ export default function HomeScreen(): JSX.Element {
   return (
     <ScrollView contentContainerStyle={styles.scrollView}>
       <View style={styles.container}>
-        <Text style={styles.title}>Cometa Dani App</Text>
+        <Text style={styles.title}>Cometa App</Text>
       </View>
     </ScrollView>
   );
