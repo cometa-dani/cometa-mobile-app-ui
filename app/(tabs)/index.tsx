@@ -18,7 +18,7 @@ export default function HomeScreen(): JSX.Element {
 
   flingGesture
     .direction(Directions.LEFT)
-    .onStart(() => router.push('/modal'));
+    .onStart(() => router.push('/bucketList'));
 
   useEffect(() => {
     fetchEvents().then(); // fetches latest events from backend
@@ -79,8 +79,13 @@ export default function HomeScreen(): JSX.Element {
 
                 {/* organizer icon */}
                 <View lightColor='transparent' darkColor='transparent' style={styles.organizerContainer}>
-                  <Image style={styles.img} source={require('@assets/images/asian-cup.jpeg')} />
-                  <Text lightColor='#fff' darkColor='#eee' style={styles.organizer}>Asian Cup</Text>
+                  <Image style={styles.img} source={{ uri: item.organization.mediaUrl }} />
+                  <Text
+                    lightColor='#fff'
+                    darkColor='#eee'
+                    style={styles.organizer}>
+                    {item.organization.name}
+                  </Text>
                 </View>
               </View>
             </GestureDetector>

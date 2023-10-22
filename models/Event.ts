@@ -16,11 +16,41 @@ export interface Event {
   description: string;
   mediaUrl: string;
   mediaType: string;
-  locationId: number;
   category: string;
   likes: object[];
   matches: object[];
+
+  locationId: number;
+  location: Location;
+  organizationId: number;
+  organization: Organization;
 }
+
+export interface Location {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  organizationId: number;
+  name: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+  mediaUrls: string[];
+}
+
+export interface Organization {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  mediaUrl: string;
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  accessToken: string;
+  description: string;
+}
+
 
 export interface CreateEventRes {
   id: number;
@@ -32,5 +62,6 @@ export interface CreateEventRes {
   mediaUrl: string;
   mediaType: string;
   locationId: number;
+  organizationId: number;
   category: string;
 }

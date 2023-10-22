@@ -52,10 +52,10 @@ function RootLayoutNav(): JSX.Element {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
-          name="modal"
+          name="bucketList"
           options={{
             presentation: 'modal',
-            animationDuration: 200
+            // animationDuration: 200
           }} />
       </Stack>
     </ThemeProvider>
