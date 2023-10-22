@@ -5,7 +5,7 @@ import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 
 
-export default function ModalScreen() {
+export default function ModalScreen(): JSX.Element {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Modal</Text>

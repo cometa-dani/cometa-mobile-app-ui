@@ -20,6 +20,7 @@ export default function HomeScreen(): JSX.Element {
   return (
     <View style={styles.container}>
       <FlatList
+        pagingEnabled={true}
         onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
         data={data.events}
         contentContainerStyle={styles.flatListContent}
@@ -35,33 +36,38 @@ export default function HomeScreen(): JSX.Element {
               source={{ uri: item.mediaUrl }}
               style={{ width: '100%', height: '100%' }}
             />
-            <Text style={styles.title}>{item.name}</Text>
+            <Text lightColor='#fff' darkColor='#eee' style={styles.title}>{item.name}</Text>
+            <View style={styles.positionedButtons}>
+              <Pressable>
+                {({ pressed }) => (
+                  <FontAwesome name='heart' size={46} style={{ color: pressed ? red100 : tabIconDefault }} />
+                )}
+              </Pressable>
+              <Pressable>
+                {() => (
+                  <FontAwesome name='commenting' size={46} style={{ color: tabIconDefault }} />
+                )}
+              </Pressable>
+              <Pressable>
+                {() => (
+                  <FontAwesome name='send' size={46} style={{ color: tabIconDefault }} />
+                )}
+              </Pressable>
+              <Pressable>
+                {() => (
+                  <FontAwesome name='chevron-down' size={46} style={{ color: tabIconDefault }} />
+                )}
+              </Pressable>
+            </View>
+
+
+            <View lightColor='transparent' darkColor='transparent' style={styles.organizerContainer}>
+              <Image style={styles.img} source={require('@assets/images/asian-cup.jpeg')} />
+              <Text lightColor='#fff' darkColor='#eee' style={styles.organizer}>Asian Cup</Text>
+            </View>
           </View>
         )}
       />
-
-      <View style={styles.positionedButtons}>
-        <Pressable>
-          {({ pressed }) => (
-            <FontAwesome name='heart' size={46} style={{ color: pressed ? red100 : tabIconDefault }} />
-          )}
-        </Pressable>
-        <Pressable>
-          {() => (
-            <FontAwesome name='commenting' size={46} style={{ color: tabIconDefault }} />
-          )}
-        </Pressable>
-        <Pressable>
-          {() => (
-            <FontAwesome name='send' size={46} style={{ color: tabIconDefault }} />
-          )}
-        </Pressable>
-        <Pressable>
-          {() => (
-            <FontAwesome name='chevron-down' size={46} style={{ color: tabIconDefault }} />
-          )}
-        </Pressable>
-      </View>
     </View>
   );
 }
@@ -74,15 +80,33 @@ const styles = StyleSheet.create({
   flatListContent: {
     flexGrow: 1,
   },
+  img: {
+    borderRadius: 50,
+    height: 60,
+    overflow: 'hidden',
+    width: 60,
+  },
+  organizer: {
+    fontSize: 20,
+  },
+  organizerContainer: {
+    alignItems: 'center',
+    bottom: 30,
+    flexDirection: 'row',
+    gap: 12,
+    left: 20,
+    position: 'absolute'
+  },
   positionedButtons: {
     backgroundColor: 'transparent',
-    bottom: 44,
+    bottom: 30,
     gap: 20,
     position: 'absolute',
-    right: 24
+    right: 20
   },
+
   title: {
-    color: '#fff',
+    // title color should be come from backend
     fontSize: 30,
     position: 'absolute',
     textAlign: 'center',

@@ -1,7 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
-import { useColorScheme, Pressable } from 'react-native';
-import Colors from '../../constants/colors';
+import { Pressable } from 'react-native';
+import { useColors } from '@components/Themed';
 
 
 /**
@@ -17,16 +17,16 @@ function TabBarIcon(props: {
 
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { text, tabIconSelected } = useColors();
 
   return (
     <Tabs
       screenOptions={{
         tabBarStyle: { height: 58 },
         headerShown: false,
-        tabBarInactiveTintColor: Colors[colorScheme ?? 'light'].text,
+        tabBarInactiveTintColor: text,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tabIconSelected
+        tabBarActiveTintColor: tabIconSelected
       }}>
       <Tabs.Screen
         name="index"
@@ -40,7 +40,7 @@ export default function TabLayout() {
                   <FontAwesome
                     name="info-circle"
                     size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
+                    color={text}
                     style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                   />
                 )}
