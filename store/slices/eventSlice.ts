@@ -4,6 +4,9 @@ import { EventsListRes } from '../../models/Event';
 import eventsService from '../../services/eventsService';
 
 
+const ITEMS_LIMIT = 4;
+
+
 export type EventSlice = {
   events: {
     data: EventsListRes,
@@ -19,12 +22,17 @@ export type EventSlice = {
 export const createEventSlice: StateCreator<EventSlice> = (set) => ({
 
   events: {
-    data: {} as EventsListRes,
+    data: {
+      currentPage: 1,
+      events: [],
+      eventsPerPage: ITEMS_LIMIT,
+      totalEvents: 1
+    },
     isLoading: false,
     error: ''
   },
 
-  fetchEventsOnce: async (limit = 4) => {
+  fetchEventsOnce: async (limit = ITEMS_LIMIT) => {
     set((prev) => ({
       events: {
         ...prev.events,
@@ -47,7 +55,7 @@ export const createEventSlice: StateCreator<EventSlice> = (set) => ({
     }
   },
 
-  fetchMoreEvents: async (nextPage: number, limit = 4) => {
+  fetchMoreEvents: async (nextPage: number, limit = ITEMS_LIMIT) => {
     set((prev) => ({
       events: {
         ...prev.events,

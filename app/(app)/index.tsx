@@ -105,11 +105,10 @@ export default function HomeScreen(): JSX.Element {
     .direction(Directions.LEFT)
     .onStart(() => router.push('/bucketList'));
 
-
   // Function to handle fetching more events when reaching the end
   const handleEndReached = (): void => {
     // Check if there are more events to fetch
-    const fetchEvents = data;
+    const fetchEvents = data || [];
     if (fetchEvents.events.length < fetchEvents.totalEvents) {
       const nextPage = page + 1;
       setPage(nextPage);
