@@ -6,5 +6,6 @@ export const selectSlices = (state: EventSlice) => ({
 });
 
 export const selectActions = (state: EventSlice) => ({
-  fetchEvents: state.fetchEvents
+  fetchEvents: state.fetchEvents,
+  fetchMoreEvents: state.fetchMoreEvents
 });

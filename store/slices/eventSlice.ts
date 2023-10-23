@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { StateCreator } from 'zustand';
 import { EventsListRes } from '../../models/Event';
 import eventsService from '../../services/eventsService';
@@ -10,7 +11,8 @@ export type EventSlice = {
     error: string
   }
 
-  fetchEvents: () => Promise<void>
+  fetchEvents: (page: number, limit?: number) => Promise<void>
+  fetchMoreEvents: (page: number, limit?: number) => Promise<void>
 }
 
 
@@ -22,7 +24,7 @@ export const createEventSlice: StateCreator<EventSlice> = (set) => ({
     error: ''
   },
 
-  fetchEvents: async () => {
+  fetchEvents: async (page = 1, limit = 4) => {
     set((prev) => ({
       events: {
         ...prev.events,
@@ -31,7 +33,7 @@ export const createEventSlice: StateCreator<EventSlice> = (set) => ({
     }));
 
     try {
-      const { data } = await eventsService.getEvents();
+      const { data } = await eventsService.getEvents(page, limit);
       set({
         events: {
           data,
@@ -39,6 +41,32 @@ export const createEventSlice: StateCreator<EventSlice> = (set) => ({
           error: ''
         }
       });
+    }
+    catch (error) {
+      console.log(error);
+    }
+  },
+
+  fetchMoreEvents: async (page: number, limit = 4) => {
+    set((prev) => ({
+      events: {
+        ...prev.events,
+        isLoading: true,
+      }
+    }));
+
+    try {
+      const { data: dataRes } = await eventsService.getEvents(page, limit);
+      set((prev) => ({
+        events: {
+          isLoading: false,
+          error: '',
+          data: {
+            ...dataRes,
+            events: prev.events.data.events.concat(dataRes.events)
+          },
+        }
+      }));
     }
     catch (error) {
       console.log(error);
