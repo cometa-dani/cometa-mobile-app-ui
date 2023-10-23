@@ -92,15 +92,17 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   input: {
+    backgroundColor: '#fff',
     borderRadius: 50,
-    borderWidth: 1,
+    elevation: 3,
     paddingHorizontal: 28,
     paddingVertical: 14,
     shadowColor: '#171717',
-    // shadowOffset: { width: -2, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
   },
+
   logo: {
     aspectRatio: 1,
     height: 100,
