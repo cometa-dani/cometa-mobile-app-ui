@@ -12,14 +12,14 @@ import { router } from 'expo-router';
 // Define the props for the memoized list item
 interface ListItemProps {
   item: Event,
-  slideRight: FlingGesture,
+  swipeLeft: FlingGesture,
   layoutHeight: DimensionValue,
   red100: string,
   tabIconDefault: string,
 }
 
-const EventItem: FC<ListItemProps> = ({ item, slideRight, layoutHeight, red100, tabIconDefault }) => (
-  <GestureDetector gesture={slideRight}>
+const EventItem: FC<ListItemProps> = ({ item, swipeLeft, layoutHeight, red100, tabIconDefault }) => (
+  <GestureDetector gesture={swipeLeft}>
     <View style={{
       alignItems: 'center',
       height: layoutHeight,
@@ -46,7 +46,7 @@ const EventItem: FC<ListItemProps> = ({ item, slideRight, layoutHeight, red100, 
             <FontAwesome name='commenting' size={46} style={{ color: tabIconDefault }} />
           )}
         </Pressable>
-        <Pressable>
+        <Pressable onPress={() => router.push('/(onboarding)/register')}>
           {() => (
             <FontAwesome name='send' size={46} style={{ color: tabIconDefault }} />
           )}
@@ -99,9 +99,9 @@ export default function HomeScreen(): JSX.Element {
   const [page, setPage] = useState(1);
 
   // Gesture for left swipe action
-  const slideRight = Gesture.Fling();
+  const swipeLeft = Gesture.Fling();
 
-  slideRight
+  swipeLeft
     .direction(Directions.LEFT)
     .onStart(() => router.push('/bucketList'));
 
@@ -128,6 +128,7 @@ export default function HomeScreen(): JSX.Element {
       {/* Latest events list */}
       <FlatList
         pagingEnabled={true}
+        // initialNumToRender={0}
         onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
         data={data.events}
         contentContainerStyle={styles.flatListContent}
@@ -138,7 +139,7 @@ export default function HomeScreen(): JSX.Element {
             item={item}
             layoutHeight={layoutHeight}
             red100={red100}
-            slideRight={slideRight}
+            swipeLeft={swipeLeft}
             tabIconDefault={tabIconDefault}
           />
         )}

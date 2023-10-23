@@ -4,11 +4,11 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Link } from 'expo-router';
 
 
-export default function LoginScreen(): JSX.Element {
+export default function StartScreen(): JSX.Element {
   return (
     <ScrollView contentContainerStyle={styles.scrollView}>
-      <Link href={'/(onboarding)/start'}>
-        <Text style={styles.title}>Login Screen</Text>
+      <Link href={'/(app)/'} >
+        <Text style={styles.title}>Start Screen</Text>
       </Link>
     </ScrollView>
   );

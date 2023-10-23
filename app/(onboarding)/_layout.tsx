@@ -1,31 +1,23 @@
-// import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Tabs } from 'expo-router';
-import { useColors } from '@components/Themed';
-// import { Pressable } from 'react-native';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
 
-export default function TabLayout() {
-  const { text, tabIconSelected } = useColors();
-
+export default function Layout() {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarStyle: { height: 0, display: 'none' },
-        headerShown: false,
-        tabBarInactiveTintColor: text,
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: tabIconSelected
-      }}>
-      <Tabs.Screen
-        redirect={true}
-        name="index"
-      />
-      <Tabs.Screen
-        name="register"
-      />
-      <Tabs.Screen
-        name="login"
-      />
-    </Tabs>
+    <>
+      <StatusBar style={'auto'} />
+
+      <Stack
+        initialRouteName='start'
+        screenOptions={{
+          headerShown: false,
+          animation: 'slide_from_left',
+          presentation: 'fullScreenModal'
+        }}>
+        <Stack.Screen name="start" />
+        <Stack.Screen name="register" />
+        <Stack.Screen name="login" />
+      </Stack>
+    </>
   );
 }

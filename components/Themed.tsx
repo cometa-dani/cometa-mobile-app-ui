@@ -68,6 +68,7 @@ export const useColors = (colorScheme?: 'light' | 'dark') => {
 
 
 /**
+ * 
  * Custom Text component that applies the appropriate color based on the theme.
  * @param {TextProps} props - The props for the Text component, including theme options.
  * @returns {JSX.Element} - A Text component with the theme-specific color applied.
@@ -80,6 +81,7 @@ export function Text(props: TextProps) {
 }
 
 /**
+ * 
  * Custom View component that applies the appropriate background color based on the theme.
  * @param {ViewProps} props - The props for the View component, including theme options.
  * @returns {JSX.Element} - A View component with the theme-specific background color applied.
