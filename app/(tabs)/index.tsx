@@ -11,15 +11,14 @@ import { router } from 'expo-router';
 
 // Define the props for the memoized list item
 interface ListItemProps {
-  item: Event, // Replace YourItemType with the actual type of your item
-  index: number,
+  item: Event,
   slideRight: FlingGesture,
   layoutHeight: DimensionValue,
   red100: string,
   tabIconDefault: string,
 }
 
-const EventItem: FC<ListItemProps> = ({ item, index, slideRight, layoutHeight, red100, tabIconDefault }) => (
+const EventItem: FC<ListItemProps> = ({ item, slideRight, layoutHeight, red100, tabIconDefault }) => (
   <GestureDetector gesture={slideRight}>
     <View style={{
       alignItems: 'center',
@@ -33,7 +32,7 @@ const EventItem: FC<ListItemProps> = ({ item, index, slideRight, layoutHeight, r
         style={{ width: '100%', height: '100%' }}
       />
       {/* Event title */}
-      <Text lightColor='#fff' darkColor='#eee' style={styles.title}>{item.name} {index + 1}</Text>
+      <Text lightColor='#fff' darkColor='#eee' style={styles.title}>{item.name}</Text>
 
       {/* Positioned buttons */}
       <View lightColor='transparent' darkColor='transparent' style={styles.positionedButtons}>
@@ -60,7 +59,7 @@ const EventItem: FC<ListItemProps> = ({ item, index, slideRight, layoutHeight, r
       </View>
       {/* Positioned buttons /*}
 
-              {/* Organizer icon */}
+      {/* Organizer icon */}
       <View lightColor='transparent' darkColor='transparent' style={styles.organizerContainer}>
         <Image style={styles.img} source={{ uri: item.organization.mediaUrl }} />
         <Text
@@ -79,7 +78,6 @@ function arePropsEqual(prevProps: ListItemProps, nextProps: ListItemProps): bool
   // Return true if the props are equal, return false if they are not
   return (
     prevProps.item === nextProps.item &&
-    prevProps.index === nextProps.index &&
     prevProps.layoutHeight === nextProps.layoutHeight &&
     prevProps.red100 === nextProps.red100 &&
     prevProps.tabIconDefault === nextProps.tabIconDefault
@@ -135,10 +133,9 @@ export default function HomeScreen(): JSX.Element {
         contentContainerStyle={styles.flatListContent}
         onEndReached={handleEndReached}
         onEndReachedThreshold={1}
-        renderItem={({ item, index }) => (
+        renderItem={({ item }) => (
           <MemoizedEventItem
             item={item}
-            index={index}
             layoutHeight={layoutHeight}
             red100={red100}
             slideRight={slideRight}
