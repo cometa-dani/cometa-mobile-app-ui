@@ -5,6 +5,7 @@ const red_100 = '#ff2d55';
 
 export default {
   light: {
+    primary100: primary_100,
     red100: red_100,
     text: '#030303',
     background: '#fff',
@@ -13,6 +14,7 @@ export default {
     tabIconSelected: '#888',
   },
   dark: {
+    primary100: primary_100,
     red100: red_100,
     text: '#fff',
     background: '#030303',

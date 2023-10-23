@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-color-literals */
-import { Image, StyleSheet, TextInput } from 'react-native';
-import { Text, View } from '../../components/Themed';
+import { Image, Pressable, StyleSheet, TextInput } from 'react-native';
+import { Text, View, useColors } from '../../components/Themed';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'expo-router';
@@ -12,13 +12,20 @@ export const loginSchemma = Yup.object({
 });
 
 export default function RegisterScreen(): JSX.Element {
+
+  const { primary100 } = useColors();
+
   return (
     <View style={styles.container}>
-      <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-      <Link href={'/(onboarding)/login'}>
-        <Text style={styles.title}>Sign Up</Text>
-      </Link>
+
+      <View>
+        <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
+
+        <Link href={'/(onboarding)/login'}>
+          <Text style={styles.title}>Sign Up</Text>
+        </Link>
+      </View>
 
       <Formik
         initialValues={{ email: '', password: '' }}
@@ -27,21 +34,27 @@ export default function RegisterScreen(): JSX.Element {
           (values) => console.log(values)
         }>
         {({ handleChange, handleBlur, values }) => (
-          <View>
+          <View style={styles.form}>
             <TextInput
+              keyboardType="email-address"
               style={styles.input}
               onChangeText={handleChange('email')}
               onBlur={handleBlur('email')}
               value={values.email}
-              placeholder='email'
+              placeholder='Email'
             />
             <TextInput
               style={styles.input}
               onChangeText={handleChange('password')}
               onBlur={handleBlur('password')}
               value={values.password}
-              placeholder='password'
+              placeholder='Password'
+              secureTextEntry={true}
             />
+
+            <Pressable style={[{ backgroundColor: primary100 }, styles.button]}>
+              <Text style={styles.buttonText}>Sign Up</Text>
+            </Pressable>
           </View>
         )}
       </Formik>
@@ -50,23 +63,49 @@ export default function RegisterScreen(): JSX.Element {
 }
 
 const styles = StyleSheet.create({
+  button: {
+    borderRadius: 50,
+    paddingVertical: 16,
+  },
+
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '800',
+    paddingHorizontal: 28,
+    textAlign: 'center',
+    textTransform: 'uppercase'
+  },
+
   container: {
     alignItems: 'center',
     flex: 1,
+    flexGrow: 1,
+    gap: 40,
     justifyContent: 'center',
-    padding: 20,
+    padding: 30
+  },
+  form: {
+    flexDirection: 'column',
+    gap: 20,
+    justifyContent: 'center',
+    width: '100%'
   },
   input: {
-    padding: 8,
+    borderRadius: 50,
+    borderWidth: 1,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
     shadowColor: '#171717',
-    shadowOffset: { width: -2, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
+    // shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 1
   },
   logo: {
     aspectRatio: 1,
-    height: 100
+    height: 100,
   },
+
   title: {
     fontSize: 28,
     fontWeight: 'bold',
