@@ -11,8 +11,8 @@ export type EventSlice = {
     error: string
   }
 
-  fetchEvents: (page: number, limit?: number) => Promise<void>
-  fetchMoreEvents: (page: number, limit?: number) => Promise<void>
+  fetchEventsOnce: (limit?: number) => Promise<void>
+  fetchMoreEvents: (nextPage: number, limit?: number) => Promise<void>
 }
 
 
@@ -24,7 +24,7 @@ export const createEventSlice: StateCreator<EventSlice> = (set) => ({
     error: ''
   },
 
-  fetchEvents: async (page = 1, limit = 4) => {
+  fetchEventsOnce: async (limit = 4) => {
     set((prev) => ({
       events: {
         ...prev.events,
@@ -33,7 +33,7 @@ export const createEventSlice: StateCreator<EventSlice> = (set) => ({
     }));
 
     try {
-      const { data } = await eventsService.getEvents(page, limit);
+      const { data } = await eventsService.getEvents(1, limit);
       set({
         events: {
           data,
@@ -47,7 +47,7 @@ export const createEventSlice: StateCreator<EventSlice> = (set) => ({
     }
   },
 
-  fetchMoreEvents: async (page: number, limit = 4) => {
+  fetchMoreEvents: async (nextPage: number, limit = 4) => {
     set((prev) => ({
       events: {
         ...prev.events,
@@ -56,7 +56,7 @@ export const createEventSlice: StateCreator<EventSlice> = (set) => ({
     }));
 
     try {
-      const { data: dataRes } = await eventsService.getEvents(page, limit);
+      const { data: dataRes } = await eventsService.getEvents(nextPage, limit);
       set((prev) => ({
         events: {
           isLoading: false,
