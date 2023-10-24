@@ -153,18 +153,22 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'relative',
   },
+
   flatListContent: {
     flexGrow: 1,
   },
+
   img: {
     borderRadius: 50,
     height: 60,
     overflow: 'hidden',
     width: 60,
   },
+
   organizer: {
     fontSize: 20,
   },
+
   organizerContainer: {
     alignItems: 'center',
     bottom: 30,
@@ -173,6 +177,7 @@ const styles = StyleSheet.create({
     left: 20,
     position: 'absolute'
   },
+
   positionedButtons: {
     bottom: 30,
     gap: 20,

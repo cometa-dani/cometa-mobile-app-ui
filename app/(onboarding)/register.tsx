@@ -6,11 +6,16 @@ import * as Yup from 'yup';
 import { Link } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 
-
-// auth services
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+// // auth services
+import {
+  FacebookAuthProvider,
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  // signInWithPopup
+} from 'firebase/auth';
 import { auth } from 'firebase/firebase';
 import usersService from 'services/usersService';
+import { useEffect } from 'react';
 
 
 type UserForm = {
@@ -18,10 +23,44 @@ type UserForm = {
   password: string
 }
 
-export const loginSchemma = Yup.object<UserForm>({
+export const loginSchemma = Yup.object({
   email: Yup.string().email().required(),
   password: Yup.string().min(8).required(),
 });
+
+
+const handleRegisterWithProvider = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
+  try {
+    // const { user, providerId } = await signInWithPopup(auth, provider); // opens pop-up
+    // swiper.slideNext(); //swipes to loading view
+
+    // const accessToken = await user.getIdToken();
+
+    // console.log(user, accessToken, providerId);
+
+    // const userExists: boolean = await larnUService.userExists(user.uid, accessToken);
+    // storageService.save('accessToken', accessToken);
+    // storageService.save('userID', user.uid);
+
+    // if (!userExists) {
+    //   // await larnUService.createUser({
+    //   //   email: user.email || '',
+    //   //   first_name: user.displayName || '',
+    //   //   uid: user.uid,
+    //   //   device_token: user.uid
+    //   // });
+    // }
+    // else {
+    //   // 1. notify to the backend that the user has logged-in from register-form (web-app)
+    //   // await eventsService.sent(providerId);
+    // }
+
+    // navigate('/'); // access granted to the App
+  }
+  catch (error) {
+    console.log((error as Error).message);
+  }
+};
 
 
 export default function RegisterScreen(): JSX.Element {
@@ -32,7 +71,13 @@ export default function RegisterScreen(): JSX.Element {
       try {
         actions.resetForm();
         const { user } = await createUserWithEmailAndPassword(auth, values.email, values.password);
-        const newUser = await usersService.createUser(user);
+        const payload = {
+          username: user.displayName || '',
+          avatar: user.photoURL || '',
+          email: user.email || '',
+          uid: user.uid,
+        };
+        const newUser = await usersService.createUser(payload);
         console.log('new user created!', newUser);
         actions.setSubmitting(false);
       }
@@ -40,6 +85,28 @@ export default function RegisterScreen(): JSX.Element {
         console.log(error);
       }
     };
+
+
+  const handleGoogleAuthentication = async () => {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ display: 'popup', prompt: 'select_account' });
+
+    handleRegisterWithProvider(provider);
+  };
+
+
+  const handleFacebookAuthentication = async () => {
+    const provider = new FacebookAuthProvider();
+    provider.addScope('public_profile');
+    provider.addScope('email');
+    provider.setCustomParameters({ display: 'popup', prompt: 'select_account' });
+
+    handleRegisterWithProvider(provider);
+  };
+
+  // useEffect(() => {
+  //   console.log('initial values');
+  // });
 
   return (
     <View style={styles.container}>
@@ -65,15 +132,15 @@ export default function RegisterScreen(): JSX.Element {
             <TextInput
               keyboardType="email-address"
               style={styles.input}
-              onChangeText={() => handleChange('email')}
-              onBlur={() => handleBlur('email')}
+              onChangeText={handleChange('email')}
+              onBlur={handleBlur('email')}
               value={values.email}
               placeholder='Email'
             />
             <TextInput
               style={styles.input}
-              onChangeText={() => handleChange('password')}
-              onBlur={() => handleBlur('password')}
+              onChangeText={handleChange('password')}
+              onBlur={handleBlur('password')}
               value={values.password}
               placeholder='Password'
               secureTextEntry={true}
@@ -95,7 +162,7 @@ export default function RegisterScreen(): JSX.Element {
 
       <View style={styles.authProviders}>
         <Pressable
-          onPress={() => 1}
+          onPress={() => handleGoogleAuthentication()}
           style={[{
             backgroundColor: background,
             flex: 1,
@@ -108,7 +175,7 @@ export default function RegisterScreen(): JSX.Element {
           <Text style={[styles.buttonText, { color: text, fontSize: 17 }]}>Google</Text>
         </Pressable>
         <Pressable
-          onPress={() => 2}
+          onPress={() => handleFacebookAuthentication()}
           style={[{
             backgroundColor: background,
             flex: 1,
