@@ -3,8 +3,11 @@ import { Image, Pressable, StyleSheet, TextInput } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
+import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
+import * as ImagePicker from 'expo-image-picker';
+
 
 // // auth services
 import {
@@ -15,16 +18,19 @@ import {
 } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import usersService from '../../services/usersService';
+import { useState } from 'react';
 
 
 type UserForm = {
+  name: string,
   email: string,
   password: string
 }
 
 export const loginSchemma = Yup.object<UserForm>({
+  name: Yup.string().required(),
   email: Yup.string().email().required(),
-  password: Yup.string().min(8).required(),
+  password: Yup.string().min(6).required(),
 });
 
 
@@ -49,20 +55,23 @@ const handleCreateUserWithProvider = async (provider: GoogleAuthProvider | Faceb
 export default function RegisterScreen(): JSX.Element {
   const { primary100, background, text } = useColors();
 
+
   const handleCreateUserWithEmailAndPassword =
     async (values: UserForm, actions: FormikHelpers<UserForm>) => {
       try {
         actions.resetForm();
-        const { user } = await createUserWithEmailAndPassword(auth, values.email, values.password);
-        const payload = {
-          username: user.displayName || '',
-          avatar: user.photoURL || '',
-          email: user.email || '',
-          uid: user.uid,
-        };
-        const newUser = await usersService.createUser(payload);
-        console.log('new user created!', newUser);
-        actions.setSubmitting(false);
+        // const { user } = await createUserWithEmailAndPassword(auth, values.email, values.password);
+        // const payload = {
+        //   username: user.displayName || '',
+        //   avatar: user.photoURL || '',
+        //   email: user.email || '',
+        //   uid: user.uid,
+        // };
+        // const newUser = await usersService.createUser(payload);
+        // console.log('new user created!', newUser);
+        // actions.setSubmitting(false);
+
+        router.push('/(onboarding)/uploadImage');
       }
       catch (error) {
         console.log(error);
@@ -70,6 +79,7 @@ export default function RegisterScreen(): JSX.Element {
     };
 
 
+  // eslint-disable-next-line no-unused-vars
   const handleGoogleAuthentication = async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ display: 'popup', prompt: 'select_account' });
@@ -78,6 +88,7 @@ export default function RegisterScreen(): JSX.Element {
   };
 
 
+  // eslint-disable-next-line no-unused-vars
   const handleFacebookAuthentication = async () => {
     const provider = new FacebookAuthProvider();
     provider.addScope('public_profile');
@@ -89,7 +100,7 @@ export default function RegisterScreen(): JSX.Element {
 
 
   return (
-    <View style={styles.container}>
+    <WrapperOnBoarding>
 
       {/* logo */}
       <View>
@@ -103,12 +114,20 @@ export default function RegisterScreen(): JSX.Element {
 
       {/* create user with email and password */}
       <Formik
-        initialValues={{ email: '', password: '' }}
+        initialValues={{ name: '', email: '', password: '' }}
         validationSchema={loginSchemma}
         onSubmit={handleCreateUserWithEmailAndPassword}>
 
         {({ handleSubmit, handleChange, handleBlur, values }) => (
           <View style={styles.form}>
+            <TextInput
+              keyboardType="ascii-capable"
+              style={styles.input}
+              onChangeText={handleChange('name')}
+              onBlur={handleBlur('name')}
+              value={values.name}
+              placeholder='Name'
+            />
             <TextInput
               keyboardType="email-address"
               style={styles.input}
@@ -133,8 +152,9 @@ export default function RegisterScreen(): JSX.Element {
               },
               styles.button
               ]}>
-              <Text style={styles.buttonText}>Sign Up</Text>
+              <Text style={styles.buttonText}>Next</Text>
             </Pressable>
+
           </View>
         )}
       </Formik>
@@ -142,7 +162,6 @@ export default function RegisterScreen(): JSX.Element {
 
       <View style={styles.authProviders}>
         <Pressable
-          onPress={() => handleGoogleAuthentication()}
           style={[{
             backgroundColor: background,
             flex: 1,
@@ -155,7 +174,6 @@ export default function RegisterScreen(): JSX.Element {
           <Text style={[styles.buttonText, { color: text, fontSize: 17 }]}>Google</Text>
         </Pressable>
         <Pressable
-          onPress={() => handleFacebookAuthentication()}
           style={[{
             backgroundColor: background,
             flex: 1,
@@ -169,7 +187,7 @@ export default function RegisterScreen(): JSX.Element {
         </Pressable>
       </View>
 
-    </View>
+    </WrapperOnBoarding>
   );
 }
 
@@ -199,18 +217,9 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase'
   },
 
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    flexGrow: 1,
-    gap: 40,
-    justifyContent: 'center',
-    padding: 26
-  },
-
   form: {
     flexDirection: 'column',
-    gap: 32,
+    gap: 26,
     justifyContent: 'center',
     width: '100%'
   },

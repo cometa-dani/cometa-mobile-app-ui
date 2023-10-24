@@ -3,7 +3,7 @@ import { Event } from '../../models/Event';
 import { StyleSheet, Image, DimensionValue, Pressable } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { useCometaStore } from '../../store/cometaStore';
-import { selectActions } from 'store/selectors';
+import { selectActions } from '../../store/selectors';
 import { GestureDetector, Gesture, FlatList, Directions, FlingGesture } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';

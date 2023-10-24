@@ -1,7 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
 import { Pressable } from 'react-native';
-import { useColors } from '@components/Themed';
+import { useColors } from '../../components/Themed';
 import { StatusBar } from 'expo-status-bar';
 
 
