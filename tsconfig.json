@@ -5,17 +5,17 @@
 
     "baseUrl": ".",
     "paths": {
-      "@firebase/auth": [
-        "./node_modules/@firebase/auth/dist/index.rn.d.ts"
-        // "./node_modules/@firebase/auth/dist/auth.d.ts"
-      ],
-      // "@api/*": ["src/api/*"],
-      "@assets/*": ["assets/*"],
-      "@components/*": ["components/*"],
-      "@scenes/*": ["scenes/*"],
-      "@theme/*": ["theme/*"],
-      "@utils/*": ["utils/*"]
+      // "@firebase/auth": [
+      //   "./node_modules/@firebase/auth/dist/index.rn.d.ts"
+      //   // "./node_modules/@firebase/auth/dist/auth.d.ts"
+      // ]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "./node_modules/@firebase/auth/dist/index.rn.d.ts"
+  ]
 }

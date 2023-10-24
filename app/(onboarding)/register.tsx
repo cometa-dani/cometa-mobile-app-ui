@@ -11,11 +11,10 @@ import {
   FacebookAuthProvider,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
-  // signInWithPopup
+  signInWithPopup
 } from 'firebase/auth';
-import { auth } from 'firebase/firebase';
-import usersService from 'services/usersService';
-import { useEffect } from 'react';
+import { auth } from '../../firebase/firebase';
+import usersService from '../../services/usersService';
 
 
 type UserForm = {
@@ -23,39 +22,23 @@ type UserForm = {
   password: string
 }
 
-export const loginSchemma = Yup.object({
+export const loginSchemma = Yup.object<UserForm>({
   email: Yup.string().email().required(),
   password: Yup.string().min(8).required(),
 });
 
 
-const handleRegisterWithProvider = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
+const handleCreateUserWithProvider = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
   try {
-    // const { user, providerId } = await signInWithPopup(auth, provider); // opens pop-up
-    // swiper.slideNext(); //swipes to loading view
-
-    // const accessToken = await user.getIdToken();
-
-    // console.log(user, accessToken, providerId);
-
-    // const userExists: boolean = await larnUService.userExists(user.uid, accessToken);
-    // storageService.save('accessToken', accessToken);
-    // storageService.save('userID', user.uid);
-
-    // if (!userExists) {
-    //   // await larnUService.createUser({
-    //   //   email: user.email || '',
-    //   //   first_name: user.displayName || '',
-    //   //   uid: user.uid,
-    //   //   device_token: user.uid
-    //   // });
-    // }
-    // else {
-    //   // 1. notify to the backend that the user has logged-in from register-form (web-app)
-    //   // await eventsService.sent(providerId);
-    // }
-
-    // navigate('/'); // access granted to the App
+    const { user } = await signInWithPopup(auth, provider);
+    const payload = {
+      username: user.displayName || '',
+      avatar: user.photoURL || '',
+      email: user.email || '',
+      uid: user.uid,
+    };
+    const newUser = await usersService.createUser(payload);
+    console.log('new user created!', newUser);
   }
   catch (error) {
     console.log((error as Error).message);
@@ -91,7 +74,7 @@ export default function RegisterScreen(): JSX.Element {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ display: 'popup', prompt: 'select_account' });
 
-    handleRegisterWithProvider(provider);
+    handleCreateUserWithProvider(provider);
   };
 
 
@@ -101,12 +84,9 @@ export default function RegisterScreen(): JSX.Element {
     provider.addScope('email');
     provider.setCustomParameters({ display: 'popup', prompt: 'select_account' });
 
-    handleRegisterWithProvider(provider);
+    handleCreateUserWithProvider(provider);
   };
 
-  // useEffect(() => {
-  //   console.log('initial values');
-  // });
 
   return (
     <View style={styles.container}>
