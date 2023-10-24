@@ -51,12 +51,16 @@ function RootLayoutNav(): JSX.Element {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(app)" options={{ headerShown: false }} />
+
+        {/* TODO: set a condition that when user is not authenticated shows onboarding */}
         <Stack.Screen
           name="(onboarding)"
           options={{
             headerShown: false,
             animation: 'slide_from_left',
           }} />
+        {/* otherwise shows the (app) */}
+
         <Stack.Screen name="bucketList" options={{ presentation: 'modal', headerTitle: 'BucketList' }} />
       </Stack>
     </ThemeProvider>

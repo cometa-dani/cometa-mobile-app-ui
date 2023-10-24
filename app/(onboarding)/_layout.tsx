@@ -12,7 +12,6 @@ export default function Layout() {
         screenOptions={{
           headerShown: false,
           animation: 'slide_from_left',
-          presentation: 'card'
         }}>
         <Stack.Screen name="start" />
         <Stack.Screen name="register" />

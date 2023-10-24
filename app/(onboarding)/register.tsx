@@ -4,14 +4,14 @@ import { Text, View, useColors } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'expo-router';
+import { FontAwesome } from '@expo/vector-icons';
+
 
 // auth services
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { firebaseApp } from 'firebase/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from 'firebase/firebase';
 import usersService from 'services/usersService';
 
-
-const auth = getAuth(firebaseApp);
 
 type UserForm = {
   email: string,
@@ -25,7 +25,7 @@ export const loginSchemma = Yup.object<UserForm>({
 
 
 export default function RegisterScreen(): JSX.Element {
-  const { primary100 } = useColors();
+  const { primary100, background, text } = useColors();
 
   const handleCreateUserWithEmailAndPassword =
     async (values: UserForm, actions: FormikHelpers<UserForm>) => {
@@ -43,6 +43,8 @@ export default function RegisterScreen(): JSX.Element {
 
   return (
     <View style={styles.container}>
+
+      {/* logo */}
       <View>
         <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
@@ -50,7 +52,9 @@ export default function RegisterScreen(): JSX.Element {
           <Text style={styles.title}>Sign Up</Text>
         </Link>
       </View>
+      {/* logo */}
 
+      {/* create user with email and password */}
       <Formik
         initialValues={{ email: '', password: '' }}
         validationSchema={loginSchemma}
@@ -87,11 +91,48 @@ export default function RegisterScreen(): JSX.Element {
           </View>
         )}
       </Formik>
+      {/* create user with email and password */}
+
+      <View style={styles.authProviders}>
+        <Pressable
+          onPress={() => 1}
+          style={[{
+            backgroundColor: background,
+            flex: 1,
+            flexDirection: 'row',
+            gap: 8
+          },
+          styles.button
+          ]}>
+          <FontAwesome name='google' size={24} style={{ color: text }} />
+          <Text style={[styles.buttonText, { color: text, fontSize: 17 }]}>Google</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => 2}
+          style={[{
+            backgroundColor: background,
+            flex: 1,
+            flexDirection: 'row',
+            gap: 8
+          },
+          styles.button
+          ]}>
+          <FontAwesome name='facebook' size={24} style={{ color: text }} />
+          <Text style={[styles.buttonText, { color: text, fontSize: 17 }]}>Facebook</Text>
+        </Pressable>
+      </View>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+
+  authProviders: {
+    flexDirection: 'row',
+    gap: 20,
+  },
+
   button: {
     borderRadius: 50,
     elevation: 3,
@@ -117,7 +158,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     gap: 40,
     justifyContent: 'center',
-    padding: 30
+    padding: 26
   },
 
   form: {
