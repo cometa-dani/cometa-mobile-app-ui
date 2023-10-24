@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { StateCreator } from 'zustand';
 import { EventsListRes } from '../../models/Event';
-import eventsService from '../../services/eventsService';
+import eventsService from '../../services/eventService';
 
 
 const ITEMS_LIMIT = 4;
