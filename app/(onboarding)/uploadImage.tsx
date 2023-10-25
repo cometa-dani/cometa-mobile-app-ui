@@ -9,16 +9,22 @@ import * as ImagePicker from 'expo-image-picker';
 
 // services
 import usersService from '../../services/usersService';
+import { useCometaStore } from '../../store/cometaStore';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase/firebase';
+import { UserRes } from '../../models/User';
 
 
 export default function UploadImageScreen(): JSX.Element {
   const { primary100, background, text } = useColors();
   const [imageUri, setImageUri] = useState<string>('');
   const imgFileRef = useRef<ImagePicker.ImagePickerAsset>();
+  const onboarding = useCometaStore(state => state.onboarding);
 
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
+
+  const handlePickImage = async () => {
     try {
+      // No permissions request is necessary for launching the image library
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
@@ -35,11 +41,27 @@ export default function UploadImageScreen(): JSX.Element {
     }
   };
 
-  const handleImageUpload = async () => {
+
+  const handleUserRegistration = async () => {
     if (imgFileRef?.current) {
-      await usersService.uploadUserImage(1, imgFileRef?.current);
+      const userPayload = onboarding?.user as UserRes;
+      try {
+        const { user: newUser } = await createUserWithEmailAndPassword(auth, userPayload.email, userPayload.password);
+        const payload = {
+          username: userPayload?.username,
+          email: userPayload.email || '',
+          uid: newUser.uid,
+        };
+
+        const { data: databaseUser } = await usersService.createUser(payload); // save return user in cometaStore
+        await usersService.uploadUserImage(databaseUser.id, imgFileRef?.current);
+      }
+      catch (error) {
+        console.log(error);
+      }
     }
   };
+
 
   return (
     <WrapperOnBoarding>
@@ -56,11 +78,15 @@ export default function UploadImageScreen(): JSX.Element {
 
       {/* create user with email and password */}
       <View style={{ alignItems: 'center' }}>
-        <Image style={styles.avatar} source={{ uri: imageUri }} />
+        {imageUri ? (
+          <Image style={styles.avatar} source={{ uri: imageUri }} />
+        ) : (
+          <View style={styles.avatar} />
+        )}
 
         <View style={styles.form}>
           <Pressable
-            onPress={() => pickImage()}
+            onPress={() => handlePickImage()}
             style={[{
               backgroundColor: background,
               flexDirection: 'row',
@@ -74,7 +100,7 @@ export default function UploadImageScreen(): JSX.Element {
           </Pressable>
 
           <Pressable
-            onPress={() => handleImageUpload()}
+            onPress={() => handleUserRegistration()}
             style={[{
               backgroundColor: primary100
             },

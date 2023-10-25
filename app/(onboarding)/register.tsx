@@ -1,20 +1,11 @@
 /* eslint-disable react-native/no-color-literals */
-import { useState } from 'react';
 import { Image, Pressable, StyleSheet, TextInput } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Link, router } from 'expo-router';
 import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
-// import { FontAwesome } from '@expo/vector-icons';
-
-import {
-  FacebookAuthProvider,
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-} from 'firebase/auth';
-import { auth } from '../../firebase/firebase';
-import usersService from '../../services/usersService';
+import { useCometaStore } from '../../store/cometaStore';
 
 
 type UserForm = {
@@ -30,57 +21,26 @@ export const loginSchemma = Yup.object<UserForm>({
 });
 
 
-// eslint-disable-next-line no-unused-vars
-const handleCreateUserWithProvider = async (provider: GoogleAuthProvider | FacebookAuthProvider) => { };
-
-
-// eslint-disable-next-line no-unused-vars
-const handleGoogleAuthentication = async () => {
-  const provider = new GoogleAuthProvider();
-  provider.setCustomParameters({ display: 'popup', prompt: 'select_account' });
-
-  handleCreateUserWithProvider(provider);
-};
-
-
-// eslint-disable-next-line no-unused-vars
-const handleFacebookAuthentication = async () => {
-  const provider = new FacebookAuthProvider();
-  provider.addScope('public_profile');
-  provider.addScope('email');
-  provider.setCustomParameters({ display: 'popup', prompt: 'select_account' });
-
-  handleCreateUserWithProvider(provider);
-};
-
-
 export default function RegisterScreen(): JSX.Element {
   const { primary100 } = useColors();
-  const [isLoading, setIsLoading] = useState(false);
+  const setOnboarding = useCometaStore(state => state.setOnboarding);
 
-
-  const handleCreateUserWithEmailAndPassword =
+  const handleNextSlide =
     async (values: UserForm, actions: FormikHelpers<UserForm>) => {
       try {
-        setIsLoading(true);
+        setOnboarding({
+          email: values.email,
+          password: values.password,
+          username: values.name
+        });
         actions.resetForm();
-        const { user } = await createUserWithEmailAndPassword(auth, values.email, values.password);
-        const payload = {
-          username: values.name,
-          email: user.email || '',
-          uid: user.uid,
-        };
-        await usersService.createUser(payload); // save return user in cometaStore
         actions.setSubmitting(false);
-
         router.push('/(onboarding)/uploadImage');
-        setIsLoading(false);
       }
       catch (error) {
         console.log(error);
       }
     };
-
 
   return (
     <WrapperOnBoarding>
@@ -99,7 +59,7 @@ export default function RegisterScreen(): JSX.Element {
       <Formik
         initialValues={{ name: '', email: '', password: '' }}
         validationSchema={loginSchemma}
-        onSubmit={handleCreateUserWithEmailAndPassword}>
+        onSubmit={handleNextSlide}>
 
         {({ handleSubmit, handleChange, handleBlur, values }) => (
           <View style={styles.form}>
@@ -135,10 +95,7 @@ export default function RegisterScreen(): JSX.Element {
               },
               styles.button
               ]}>
-              {/* {isLoading && (
-                <FontAwesome name='spinner' size={24} style={{ color: '#fff' }} />
-              )} */}
-              <Text style={styles.buttonText}>{isLoading ? 'Loading...' : 'Next'}</Text>
+              <Text style={styles.buttonText}>Next</Text>
             </Pressable>
 
           </View>

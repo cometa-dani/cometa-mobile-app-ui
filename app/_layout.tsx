@@ -42,8 +42,6 @@ export default function RootLayout() {
     return null;
   }
 
-
-
   return <RootLayoutNav />;
 }
 
@@ -54,7 +52,8 @@ function RootLayoutNav(): JSX.Element {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log(user);
+        // console.log(user);
+        // router.push('/(app)/');
       }
       else {
         router.push('/(onboarding)/register');
