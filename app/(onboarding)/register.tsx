@@ -4,9 +4,7 @@ import { Text, View, useColors } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Link, router } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons';
 import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
-import * as ImagePicker from 'expo-image-picker';
 
 
 // // auth services
@@ -19,6 +17,7 @@ import {
 import { auth } from '../../firebase/firebase';
 import usersService from '../../services/usersService';
 import { useState } from 'react';
+import { FontAwesome } from '@expo/vector-icons';
 
 
 type UserForm = {
@@ -53,23 +52,24 @@ const handleCreateUserWithProvider = async (provider: GoogleAuthProvider | Faceb
 
 
 export default function RegisterScreen(): JSX.Element {
-  const { primary100, background, text } = useColors();
+  const { primary100 } = useColors();
+  const [isLoading, setIsLoading] = useState(false);
 
 
   const handleCreateUserWithEmailAndPassword =
     async (values: UserForm, actions: FormikHelpers<UserForm>) => {
       try {
+        setIsLoading(true);
         actions.resetForm();
-        // const { user } = await createUserWithEmailAndPassword(auth, values.email, values.password);
-        // const payload = {
-        //   username: user.displayName || '',
-        //   avatar: user.photoURL || '',
-        //   email: user.email || '',
-        //   uid: user.uid,
-        // };
-        // const newUser = await usersService.createUser(payload);
-        // console.log('new user created!', newUser);
-        // actions.setSubmitting(false);
+        const { user } = await createUserWithEmailAndPassword(auth, values.email, values.password);
+        const payload = {
+          username: values.name,
+          email: user.email || '',
+          uid: user.uid,
+        };
+        await usersService.createUser(payload);
+        setIsLoading(false);
+        actions.setSubmitting(false);
 
         router.push('/(onboarding)/uploadImage');
       }
@@ -152,7 +152,10 @@ export default function RegisterScreen(): JSX.Element {
               },
               styles.button
               ]}>
-              <Text style={styles.buttonText}>Next</Text>
+              {!isLoading && (
+                <FontAwesome name='spinner' size={24} style={{ color: '#fff' }} />
+              )}
+              <Text style={styles.buttonText}>{isLoading ? 'Loading' : 'Next'}</Text>
             </Pressable>
 
           </View>
@@ -160,7 +163,7 @@ export default function RegisterScreen(): JSX.Element {
       </Formik>
       {/* create user with email and password */}
 
-      <View style={styles.authProviders}>
+      {/* <View style={styles.authProviders}>
         <Pressable
           style={[{
             backgroundColor: background,
@@ -185,7 +188,7 @@ export default function RegisterScreen(): JSX.Element {
           <FontAwesome name='facebook' size={24} style={{ color: text }} />
           <Text style={[styles.buttonText, { color: text, fontSize: 17 }]}>Facebook</Text>
         </Pressable>
-      </View>
+      </View> */}
 
     </WrapperOnBoarding>
   );
@@ -193,14 +196,17 @@ export default function RegisterScreen(): JSX.Element {
 
 const styles = StyleSheet.create({
 
-  authProviders: {
-    flexDirection: 'row',
-    gap: 20,
-  },
+  // authProviders: {
+  //   flexDirection: 'row',
+  //   gap: 20,
+  // },
 
   button: {
     borderRadius: 50,
     elevation: 3,
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'center',
     paddingHorizontal: 28,
     paddingVertical: 14,
     shadowColor: '#171717',

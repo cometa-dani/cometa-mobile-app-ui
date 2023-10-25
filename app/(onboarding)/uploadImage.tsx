@@ -1,37 +1,43 @@
 /* eslint-disable react-native/no-color-literals */
 import { Image, Pressable, StyleSheet } from 'react-native';
-import { Text, View, useColors } from '../../components/Themed';
 import { Link } from 'expo-router';
+import { Text, View, useColors } from '../../components/Themed';
+import { useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 import * as ImagePicker from 'expo-image-picker';
 
-
-// // auth services
-import {
-} from 'firebase/auth';
+// services
 import usersService from '../../services/usersService';
-import { useState } from 'react';
 
 
 export default function UploadImageScreen(): JSX.Element {
   const { primary100, background, text } = useColors();
-  const [image, setImage] = useState<string>();
-
+  const [imageUri, setImageUri] = useState<string>('');
+  const imgFileRef = useRef<ImagePicker.ImagePickerAsset>();
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+    try {
+      // No permissions request is necessary for launching the image library
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      if (!result.canceled) {
+        imgFileRef.current = result.assets[0];
+        setImageUri(result.assets[0].uri);
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
 
-    console.log(result);
-
-    if (!result['canceled']) {
-      setImage(result.assets[0].uri);
+  const handleImageUpload = async () => {
+    if (imgFileRef?.current) {
+      usersService.uploadUserImage(1, imgFileRef?.current);
     }
   };
 
@@ -50,7 +56,7 @@ export default function UploadImageScreen(): JSX.Element {
 
       {/* create user with email and password */}
       <View style={{ alignItems: 'center' }}>
-        <Image style={styles.avatar} source={{ uri: image }} />
+        <Image style={styles.avatar} source={{ uri: imageUri }} />
 
         <View style={styles.form}>
           <Pressable
@@ -68,7 +74,7 @@ export default function UploadImageScreen(): JSX.Element {
           </Pressable>
 
           <Pressable
-            onPress={() => 2}
+            onPress={() => handleImageUpload()}
             style={[{
               backgroundColor: primary100
             },
