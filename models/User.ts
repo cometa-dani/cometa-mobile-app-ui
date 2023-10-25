@@ -1,9 +1,14 @@
 export interface UserRes {
   id: number;
-  avatar: string | null;
-  photos: string[];
+  uid: string;
+  avatar: string;
+  photos: Photo[];
   username: string;
   email: string;
   phone: string;
-  uid: string;
+}
+
+export interface Photo {
+  url: string,
+  uuid: string
 }

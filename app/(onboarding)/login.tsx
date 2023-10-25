@@ -9,6 +9,7 @@ import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding
 // // auth services
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
+import { useState } from 'react';
 
 
 type UserForm = {
@@ -24,13 +25,17 @@ export const loginSchemma = Yup.object<UserForm>({
 
 export default function LoginScreen(): JSX.Element {
   const { primary100 } = useColors();
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const handleCreateUserWithEmailAndPassword =
     async (values: UserForm, actions: FormikHelpers<UserForm>) => {
       try {
+        setIsLoading(true);
         actions.resetForm();
         await signInWithEmailAndPassword(auth, values.email, values.password);
         actions.setSubmitting(false);
+        setIsLoading(false);
       }
       catch (error) {
         console.log(error);
@@ -82,7 +87,7 @@ export default function LoginScreen(): JSX.Element {
               },
               styles.button
               ]}>
-              <Text style={styles.buttonText}>Log In</Text>
+              <Text style={styles.buttonText}>{isLoading ? 'Loading...' : 'Log In'}</Text>
             </Pressable>
           </View>
         )}

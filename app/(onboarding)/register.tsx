@@ -6,7 +6,7 @@ import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Link, router } from 'expo-router';
 import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
-import { FontAwesome } from '@expo/vector-icons';
+// import { FontAwesome } from '@expo/vector-icons';
 
 import {
   FacebookAuthProvider,
@@ -71,10 +71,10 @@ export default function RegisterScreen(): JSX.Element {
           uid: user.uid,
         };
         await usersService.createUser(payload); // save return user in cometaStore
-        setIsLoading(false);
         actions.setSubmitting(false);
 
         router.push('/(onboarding)/uploadImage');
+        setIsLoading(false);
       }
       catch (error) {
         console.log(error);
@@ -135,10 +135,10 @@ export default function RegisterScreen(): JSX.Element {
               },
               styles.button
               ]}>
-              {!isLoading && (
+              {/* {isLoading && (
                 <FontAwesome name='spinner' size={24} style={{ color: '#fff' }} />
-              )}
-              <Text style={styles.buttonText}>{isLoading ? 'Loading' : 'Next'}</Text>
+              )} */}
+              <Text style={styles.buttonText}>{isLoading ? 'Loading...' : 'Next'}</Text>
             </Pressable>
 
           </View>

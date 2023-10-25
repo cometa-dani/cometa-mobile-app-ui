@@ -37,7 +37,7 @@ export default function UploadImageScreen(): JSX.Element {
 
   const handleImageUpload = async () => {
     if (imgFileRef?.current) {
-      usersService.uploadUserImage(1, imgFileRef?.current);
+      await usersService.uploadUserImage(1, imgFileRef?.current);
     }
   };
 
