@@ -1,23 +1,20 @@
 /* eslint-disable react-native/no-color-literals */
+import { useState } from 'react';
 import { Image, Pressable, StyleSheet, TextInput } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Link, router } from 'expo-router';
 import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
+import { FontAwesome } from '@expo/vector-icons';
 
-
-// // auth services
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
-  // signInWithPopup
 } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import usersService from '../../services/usersService';
-import { useState } from 'react';
-import { FontAwesome } from '@expo/vector-icons';
 
 
 type UserForm = {
@@ -27,7 +24,7 @@ type UserForm = {
 }
 
 export const loginSchemma = Yup.object<UserForm>({
-  name: Yup.string().required(),
+  name: Yup.string().min(2).required(),
   email: Yup.string().email().required(),
   password: Yup.string().min(6).required(),
 });
@@ -35,6 +32,26 @@ export const loginSchemma = Yup.object<UserForm>({
 
 // eslint-disable-next-line no-unused-vars
 const handleCreateUserWithProvider = async (provider: GoogleAuthProvider | FacebookAuthProvider) => { };
+
+
+// eslint-disable-next-line no-unused-vars
+const handleGoogleAuthentication = async () => {
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ display: 'popup', prompt: 'select_account' });
+
+  handleCreateUserWithProvider(provider);
+};
+
+
+// eslint-disable-next-line no-unused-vars
+const handleFacebookAuthentication = async () => {
+  const provider = new FacebookAuthProvider();
+  provider.addScope('public_profile');
+  provider.addScope('email');
+  provider.setCustomParameters({ display: 'popup', prompt: 'select_account' });
+
+  handleCreateUserWithProvider(provider);
+};
 
 
 export default function RegisterScreen(): JSX.Element {
@@ -50,10 +67,10 @@ export default function RegisterScreen(): JSX.Element {
         const { user } = await createUserWithEmailAndPassword(auth, values.email, values.password);
         const payload = {
           username: values.name,
-          email: user.email,
+          email: user.email || '',
           uid: user.uid,
         };
-        await usersService.createUser(payload);
+        await usersService.createUser(payload); // save return user in cometaStore
         setIsLoading(false);
         actions.setSubmitting(false);
 
@@ -63,26 +80,6 @@ export default function RegisterScreen(): JSX.Element {
         console.log(error);
       }
     };
-
-
-  // eslint-disable-next-line no-unused-vars
-  const handleGoogleAuthentication = async () => {
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ display: 'popup', prompt: 'select_account' });
-
-    handleCreateUserWithProvider(provider);
-  };
-
-
-  // eslint-disable-next-line no-unused-vars
-  const handleFacebookAuthentication = async () => {
-    const provider = new FacebookAuthProvider();
-    provider.addScope('public_profile');
-    provider.addScope('email');
-    provider.setCustomParameters({ display: 'popup', prompt: 'select_account' });
-
-    handleCreateUserWithProvider(provider);
-  };
 
 
   return (

@@ -4,7 +4,6 @@ import { Text, View, useColors } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'expo-router';
-// import { FontAwesome } from '@expo/vector-icons';
 import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 
 // // auth services
@@ -37,7 +36,6 @@ export default function LoginScreen(): JSX.Element {
         console.log(error);
       }
     };
-
 
   return (
     <WrapperOnBoarding>

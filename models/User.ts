@@ -5,6 +5,5 @@ export interface UserRes {
   username: string;
   email: string;
   phone: string;
-  password: string;
   uid: string;
 }

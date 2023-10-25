@@ -1,4 +1,4 @@
-import { UserRes } from 'models/User';
+import { UserRes } from '../models/User';
 import { RestApiService } from './restApiService';
 import * as ImagePicker from 'expo-image-picker';
 
