@@ -4,18 +4,12 @@ import { Text, View, useColors } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons';
+// import { FontAwesome } from '@expo/vector-icons';
 import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 
 // // auth services
-import {
-  FacebookAuthProvider,
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-  signInWithPopup
-} from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
-import usersService from '../../services/usersService';
 
 
 type UserForm = {
@@ -29,66 +23,20 @@ export const loginSchemma = Yup.object<UserForm>({
 });
 
 
-const handleCreateUserWithProvider = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
-  try {
-    const { user } = await signInWithPopup(auth, provider);
-    const payload = {
-      username: user.displayName || '',
-      avatar: user.photoURL || '',
-      email: user.email || '',
-      uid: user.uid,
-    };
-    const newUser = await usersService.createUser(payload);
-    console.log('new user created!', newUser);
-  }
-  catch (error) {
-    console.log((error as Error).message);
-  }
-};
-
-
 export default function LoginScreen(): JSX.Element {
-  const { primary100, background, text } = useColors();
+  const { primary100 } = useColors();
 
   const handleCreateUserWithEmailAndPassword =
     async (values: UserForm, actions: FormikHelpers<UserForm>) => {
       try {
         actions.resetForm();
-        const { user } = await createUserWithEmailAndPassword(auth, values.email, values.password);
-        const payload = {
-          username: user.displayName || '',
-          avatar: user.photoURL || '',
-          email: user.email || '',
-          uid: user.uid,
-        };
-        const newUser = await usersService.createUser(payload);
-        console.log('new user created!', newUser);
+        await signInWithEmailAndPassword(auth, values.email, values.password);
         actions.setSubmitting(false);
       }
       catch (error) {
         console.log(error);
       }
     };
-
-
-  // eslint-disable-next-line no-unused-vars
-  const handleGoogleAuthentication = async () => {
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ display: 'popup', prompt: 'select_account' });
-
-    handleCreateUserWithProvider(provider);
-  };
-
-
-  // eslint-disable-next-line no-unused-vars
-  const handleFacebookAuthentication = async () => {
-    const provider = new FacebookAuthProvider();
-    provider.addScope('public_profile');
-    provider.addScope('email');
-    provider.setCustomParameters({ display: 'popup', prompt: 'select_account' });
-
-    handleCreateUserWithProvider(provider);
-  };
 
 
   return (
@@ -143,7 +91,7 @@ export default function LoginScreen(): JSX.Element {
       </Formik>
       {/* create user with email and password */}
 
-      <View style={styles.authProviders}>
+      {/* <View style={styles.authProviders}>
         <Pressable
           style={[{
             backgroundColor: background,
@@ -168,7 +116,7 @@ export default function LoginScreen(): JSX.Element {
           <FontAwesome name='facebook' size={24} style={{ color: text }} />
           <Text style={[styles.buttonText, { color: text, fontSize: 17 }]}>Facebook</Text>
         </Pressable>
-      </View>
+      </View> */}
 
     </WrapperOnBoarding>
   );
@@ -176,10 +124,10 @@ export default function LoginScreen(): JSX.Element {
 
 const styles = StyleSheet.create({
 
-  authProviders: {
-    flexDirection: 'row',
-    gap: 20,
-  },
+  // authProviders: {
+  //   flexDirection: 'row',
+  //   gap: 20,
+  // },
 
   button: {
     borderRadius: 50,

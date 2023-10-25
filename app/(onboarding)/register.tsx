@@ -12,7 +12,7 @@ import {
   FacebookAuthProvider,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
-  signInWithPopup
+  // signInWithPopup
 } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import usersService from '../../services/usersService';
@@ -33,22 +33,8 @@ export const loginSchemma = Yup.object<UserForm>({
 });
 
 
-const handleCreateUserWithProvider = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
-  try {
-    const { user } = await signInWithPopup(auth, provider);
-    const payload = {
-      username: user.displayName || '',
-      avatar: user.photoURL || '',
-      email: user.email || '',
-      uid: user.uid,
-    };
-    const newUser = await usersService.createUser(payload);
-    console.log('new user created!', newUser);
-  }
-  catch (error) {
-    console.log((error as Error).message);
-  }
-};
+// eslint-disable-next-line no-unused-vars
+const handleCreateUserWithProvider = async (provider: GoogleAuthProvider | FacebookAuthProvider) => { };
 
 
 export default function RegisterScreen(): JSX.Element {
@@ -64,7 +50,7 @@ export default function RegisterScreen(): JSX.Element {
         const { user } = await createUserWithEmailAndPassword(auth, values.email, values.password);
         const payload = {
           username: values.name,
-          email: user.email || '',
+          email: user.email,
           uid: user.uid,
         };
         await usersService.createUser(payload);
