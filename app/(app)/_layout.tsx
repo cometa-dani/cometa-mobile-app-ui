@@ -17,7 +17,7 @@ function TabBarIcon(props: {
 }
 
 
-export default function TabLayout() {
+export default function AppLayout() {
   const { text, tabIconSelected } = useColors();
 
   return (

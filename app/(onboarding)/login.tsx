@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-color-literals */
 import { Image, Pressable, StyleSheet, TextInput } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';

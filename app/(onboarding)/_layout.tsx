@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 
-export default function Layout() {
+export default function OnboardingLayout() {
   return (
     <>
       <StatusBar style={'auto'} />
@@ -12,7 +12,7 @@ export default function Layout() {
           headerShown: false,
           animation: 'slide_from_right',
         }}>
-        <Stack.Screen name="index" />
+        {/* <Stack.Screen name="index" /> */}
         <Stack.Screen name="register" />
         <Stack.Screen name="login" />
         <Stack.Screen name="uploadImage" />
