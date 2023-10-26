@@ -1,12 +1,23 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, Button } from 'react-native';
 import { Text } from '../../components/Themed';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../firebase/firebase';
 
 
 export default function UserProfileScreen(): JSX.Element {
+
+  const handleLogout = (): void => {
+    signOut(auth);
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.scrollView}>
       <Text style={styles.title}>User Profile Screen</Text>
-    </ScrollView>
+      <Button
+        title='Log Out'
+        onPress={() => handleLogout()}
+      />
+    </ScrollView >
   );
 }
 

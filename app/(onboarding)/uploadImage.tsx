@@ -46,8 +46,10 @@ export default function UploadImageScreen(): JSX.Element {
     const onboardingUser = onboarding?.user as UserRes;
     try {
       if (imgFileRef?.current?.uri) {
+        // put this step on the register form
         const payload = { username: onboardingUser.username, email: onboardingUser.email };
         const { data: newCreatedUser } = await usersService.createUser(payload); // first checks if user exists
+
         try {
           const [{ user: userCrendentials }] = await Promise.all([
             createUserWithEmailAndPassword(auth, onboardingUser.email, onboardingUser.password),
