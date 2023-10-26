@@ -43,22 +43,25 @@ export default function UploadImageScreen(): JSX.Element {
 
 
   const handleUserRegistration = async () => {
-    if (imgFileRef?.current) {
-      const userPayload = onboarding?.user as UserRes;
-      try {
-        const { user: newUser } = await createUserWithEmailAndPassword(auth, userPayload.email, userPayload.password);
+    const onboardingUser = onboarding?.user as UserRes;
+    try {
+      const { user: userCredentials } = await createUserWithEmailAndPassword(auth, onboardingUser.email, onboardingUser.password);
+      if (imgFileRef?.current && userCredentials) {
         const payload = {
-          username: userPayload?.username,
-          email: userPayload.email || '',
-          uid: newUser.uid,
+          username: onboardingUser?.username,
+          email: onboardingUser.email || '',
+          uid: userCredentials.uid,
         };
-
-        const { data: databaseUser } = await usersService.createUser(payload); // save return user in cometaStore
-        await usersService.uploadUserImage(databaseUser.id, imgFileRef?.current);
+        // TODO: try to make this two function calls one.
+        const { data: newCreatedUser } = await usersService.createUser(payload); // save return user in cometaStore
+        await usersService.uploadUserImage(newCreatedUser.id, imgFileRef?.current);
+        // await usersService.deleteUser(newCreatedUser.id);
       }
-      catch (error) {
-        console.log(error);
-      }
+      // TODO: handle the case where user already exists
+    }
+    catch (error) {
+      console.log(error);
+      // unsubscribe && unsubscribe();
     }
   };
 
