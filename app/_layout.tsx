@@ -54,9 +54,7 @@ function RootLayoutNav(): JSX.Element {
       <Stack>
         <Stack.Screen name='index' options={screenOptions} />
 
-        <Stack.Screen
-          name="(onboarding)"
-          options={screenOptions} />
+        <Stack.Screen name="(onboarding)" options={screenOptions} />
 
         <Stack.Screen name="(app)" options={screenOptions} />
 
