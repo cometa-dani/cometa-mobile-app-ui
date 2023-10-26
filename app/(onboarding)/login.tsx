@@ -2,7 +2,7 @@ import { Image, Pressable, StyleSheet, TextInput } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 
 // // auth services
@@ -18,7 +18,7 @@ type UserForm = {
 
 export const loginSchemma = Yup.object<UserForm>({
   email: Yup.string().email().required(),
-  password: Yup.string().min(8).required(),
+  password: Yup.string().required(),
 });
 
 
@@ -31,10 +31,13 @@ export default function LoginScreen(): JSX.Element {
     async (values: UserForm, actions: FormikHelpers<UserForm>) => {
       try {
         setIsLoading(true);
+        console.log(values);
         actions.resetForm();
         await signInWithEmailAndPassword(auth, values.email, values.password);
         actions.setSubmitting(false);
         setIsLoading(false);
+
+        router.push('/(app)/');
       }
       catch (error) {
         console.log(error);

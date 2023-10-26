@@ -1,22 +1,48 @@
 import { ImageBackground, StyleSheet, View, Text, Image } from 'react-native';
 import { router } from 'expo-router';
 import { LightButton } from '../components/buttons/LightButton';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase/firebase';
 
 
 export default function WelcomeScreen(): JSX.Element {
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // router.push('/(app)/');
-      }
-      else {
-        // router.push('/(onboarding)/register');
-      }
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const handleSlideNextScreen = (): void => {
+    router.push(isAuthenticated ? '/(app)/' : '/(onboarding)/login');
+  };
+
+  const handleAuthStateChanged = async () => {
+    return new Promise<boolean>((resolve) => {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setIsAuthenticated(true);
+          console.log(`${user.email} isAuthenticated`);
+          resolve(true);
+        }
+        else {
+          setIsAuthenticated(false);
+          resolve(false);
+        }
+      });
     });
+  };
+
+  useEffect(() => {
+    Promise.all([
+      handleAuthStateChanged(),
+      new Promise<void>((resolve) => setTimeout(() => resolve(), 2_000))
+    ])
+      .then((res) => {
+        const [isAuthenticated] = res;
+        if (isAuthenticated) {
+          router.push('/(app)/');
+        }
+      });
+
   }, []);
+
 
   return (
     <ImageBackground style={styles.imageBackground} source={require('../assets/images/welcome-image.jpeg')}>
@@ -27,7 +53,10 @@ export default function WelcomeScreen(): JSX.Element {
         <Text style={styles.h2}>Start exploring events near you and join like-minded people</Text>
       </View>
 
-      <LightButton onPress={() => router.push('/(onboarding)/login')} text='get started' />
+      <LightButton
+        onPress={() => handleSlideNextScreen()}
+        text='get started'
+      />
     </ImageBackground>
   );
 }
@@ -60,7 +89,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     backgroundColor: '#fff',
     borderRadius: 12,
-    height: 80
+    height: 76
   },
 
   textContainer: {
