@@ -14,7 +14,7 @@ export { ErrorBoundary } from 'expo-router';
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(app)/',
+  initialRouteName: '(onboarding)/index',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -49,31 +49,28 @@ export default function RootLayout() {
 function RootLayoutNav(): JSX.Element {
   const colorScheme = useColorScheme();
 
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // console.log(user);
-        router.push('/(app)/');
-      }
-      else {
-        router.push('/(onboarding)/register');
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       router.push('/(app)/');
+  //     }
+  //     else {
+  //       router.push('/(onboarding)/register');
+  //     }
+  //   });
+  // }, []);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="(app)" options={{ headerShown: false }} />
-
-        {/* TODO: set a condition that when user is not authenticated shows onboarding */}
         <Stack.Screen
           name="(onboarding)"
           options={{
             headerShown: false,
             animation: 'slide_from_left',
           }} />
-        {/* otherwise shows the (app) */}
+
+        <Stack.Screen name="(app)" options={{ headerShown: false }} />
 
         <Stack.Screen name="bucketList" options={{ presentation: 'modal', headerTitle: 'BucketList' }} />
       </Stack>
