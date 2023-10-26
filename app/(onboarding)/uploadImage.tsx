@@ -45,28 +45,26 @@ export default function UploadImageScreen(): JSX.Element {
   const handleUserRegistration = async () => {
     const onboardingUser = onboarding?.user as UserRes;
     try {
-      const { user: userCredentials } = await createUserWithEmailAndPassword(auth, onboardingUser.email, onboardingUser.password);
-
-      if (imgFileRef?.current?.uri && userCredentials) {
-        const payload = {
-          username: onboardingUser?.username,
-          email: userCredentials.email || '',
-          uid: userCredentials?.uid,
-        };
-        // TODO: try to make this two function calls one.
+      if (imgFileRef?.current?.uri) {
+        const payload = { username: onboardingUser.username, email: onboardingUser.email };
+        const { data: newCreatedUser } = await usersService.createUser(payload); // first checks if user exists
         try {
-          const { data: newCreatedUser } = await usersService.createUser(payload); // save return user in cometaStore
-          await usersService.uploadUserImage(newCreatedUser.id, imgFileRef?.current, payload.uid);
+          const [{ user: userCrendentials }] = await Promise.all([
+            createUserWithEmailAndPassword(auth, onboardingUser.email, onboardingUser.password),
+            usersService.uploadUserImage(newCreatedUser.id, imgFileRef?.current, newCreatedUser.username),
+          ]);
+          await usersService.updateUser(newCreatedUser.id, { uid: userCrendentials.uid });
         }
         catch (error) {
           console.log(error);
         }
       }
-      // await usersService.deleteUser(newCreatedUser.id);
+      else {
+        throw new Error('image not provided');
+      }
     }
     catch (error) {
-      // TODO: handle the case where user already exists
-      console.log(error);
+      console.log(error); // triggers when user already exists
     }
   };
 

@@ -28,7 +28,7 @@ export default function LoginScreen(): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
 
 
-  const handleCreateUserWithEmailAndPassword =
+  const handleLogin =
     async (values: UserForm, actions: FormikHelpers<UserForm>) => {
       try {
         setIsLoading(true);
@@ -59,7 +59,7 @@ export default function LoginScreen(): JSX.Element {
       <Formik
         initialValues={{ email: '', password: '' }}
         validationSchema={loginSchemma}
-        onSubmit={handleCreateUserWithEmailAndPassword}>
+        onSubmit={handleLogin}>
 
         {({ handleSubmit, handleChange, handleBlur, values }) => (
           <View style={styles.form}>

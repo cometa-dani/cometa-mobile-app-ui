@@ -7,8 +7,12 @@ import FormData from 'form-data';
 class UserService extends RestApiService {
 
   public createUser(payload: Partial<UserRes>) {
-    const { email, uid, username } = payload;
-    return this.http.post<UserRes>('/users', { email, uid, username });
+    const { email, username } = payload;
+    return this.http.post<UserRes>('/users', { email, username });
+  }
+
+  public updateUser(userID: number, payload: Partial<UserRes>) {
+    return this.http.patch<UserRes>(`/users/${userID}`, payload);
   }
 
   public deleteUser(userID: number) {
