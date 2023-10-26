@@ -49,7 +49,7 @@ export default function RegisterScreen(): JSX.Element {
       <View>
         <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Link href={'/(onboarding)/login'}>
+        <Link href={'/(app)/'}>
           <Text style={styles.title}>Sign Up</Text>
         </Link>
       </View>

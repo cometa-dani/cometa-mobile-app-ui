@@ -1,11 +1,10 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { SplashScreen, Stack, router } from 'expo-router';
-import { onAuthStateChanged } from 'firebase/auth';
+import { SplashScreen, Stack, } from 'expo-router';
 import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
-import { auth } from '../firebase/firebase';
+import { useColorScheme, } from 'react-native';
+import { ScreenProps } from 'react-native-screens';
 
 
 // Catch any errors thrown by the Layout component.
@@ -14,7 +13,7 @@ export { ErrorBoundary } from 'expo-router';
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(onboarding)/index',
+  initialRouteName: '(app)/index',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -48,29 +47,18 @@ export default function RootLayout() {
 
 function RootLayoutNav(): JSX.Element {
   const colorScheme = useColorScheme();
-
-  // useEffect(() => {
-  //   onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       router.push('/(app)/');
-  //     }
-  //     else {
-  //       router.push('/(onboarding)/register');
-  //     }
-  //   });
-  // }, []);
+  const screenOptions = { headerShown: false, animation: 'slide_from_right' } as ScreenProps;
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
+        <Stack.Screen name='index' options={screenOptions} />
+
         <Stack.Screen
           name="(onboarding)"
-          options={{
-            headerShown: false,
-            animation: 'slide_from_left',
-          }} />
+          options={screenOptions} />
 
-        <Stack.Screen name="(app)" options={{ headerShown: false }} />
+        <Stack.Screen name="(app)" options={screenOptions} />
 
         <Stack.Screen name="bucketList" options={{ presentation: 'modal', headerTitle: 'BucketList' }} />
       </Stack>

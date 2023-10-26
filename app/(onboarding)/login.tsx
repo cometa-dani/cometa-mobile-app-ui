@@ -49,7 +49,7 @@ export default function LoginScreen(): JSX.Element {
       <View>
         <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Link href={'/(onboarding)/start'}>
+        <Link href={'/(onboarding)/register'}>
           <Text style={styles.title}>Log In</Text>
         </Link>
       </View>
