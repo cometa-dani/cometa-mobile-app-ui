@@ -15,14 +15,14 @@ class UserService extends RestApiService {
     return this.http.delete(`/users/${userID}`);
   }
 
-  public uploadUserImage(userID: number, imgFile: ImagePicker.ImagePickerAsset) {
+  public uploadUserImage(userID: number, imgFile: ImagePicker.ImagePickerAsset, fileName: string) {
     const formData = new FormData();
     const fileExtension = imgFile.uri.split('.').at(-1);
     const headers = { 'Content-Type': 'multipart/form-data', };
     const payload = {
       uri: imgFile.uri,
       type: `${imgFile.type}/${fileExtension}`,
-      name: 'imag1j12j1',
+      name: fileName,
     };
     formData.append('file', payload);
 

@@ -41,7 +41,7 @@ export default function UploadImageScreen(): JSX.Element {
     }
   };
 
-
+  // TODO: verify that username & phone & email are unique and do not exist already
   const handleUserRegistration = async () => {
     const onboardingUser = onboarding?.user as UserRes;
     try {
@@ -56,7 +56,7 @@ export default function UploadImageScreen(): JSX.Element {
         // TODO: try to make this two function calls one.
         try {
           const { data: newCreatedUser } = await usersService.createUser(payload); // save return user in cometaStore
-          await usersService.uploadUserImage(newCreatedUser.id, imgFileRef?.current);
+          await usersService.uploadUserImage(newCreatedUser.id, imgFileRef?.current, payload.uid);
         }
         catch (error) {
           console.log(error);

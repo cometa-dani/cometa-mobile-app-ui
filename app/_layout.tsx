@@ -53,7 +53,7 @@ function RootLayoutNav(): JSX.Element {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         // console.log(user);
-        // router.push('/(app)/');
+        router.push('/(app)/');
       }
       else {
         router.push('/(onboarding)/register');
