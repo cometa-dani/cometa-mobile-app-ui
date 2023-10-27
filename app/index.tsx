@@ -24,10 +24,12 @@ export default function WelcomeScreen(): JSX.Element {
       unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
           setIsAuthenticated(true);
-          console.log(`${user.email} isAuthenticated`);
+          console.log(`${user.email} is authenticated`);
           resolve(true);
-        } else {
+        }
+        else {
           setIsAuthenticated(false);
+          console.log('user is logged out');
           resolve(false);
         }
       });
@@ -44,6 +46,7 @@ export default function WelcomeScreen(): JSX.Element {
       .then((res) => {
         const [isAuthenticated] = res;
         if (isAuthenticated) {
+          unsubscribe && unsubscribe();
           router.push('/(app)/'); // automatically Navigate to the app if the user is authenticated.
         }
       });

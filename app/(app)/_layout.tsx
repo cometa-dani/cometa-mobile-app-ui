@@ -27,16 +27,13 @@ export default function AppLayout() {
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
 
   useEffect(() => {
+    // listens for log out event
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         router.push('/');
         setIsAuthenticated(false);
       }
-      else {
-        setIsAuthenticated(true);
-      }
     });
-
     return () => unsubscribe();
   }, []);
 
@@ -62,7 +59,7 @@ export default function AppLayout() {
             // headerShown: false,
             tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
             headerRight: () => (
-              <Link href="/modal" asChild>
+              <Link href="/bucketList" asChild>
                 <Pressable>
                   {({ pressed }) => (
                     <FontAwesome
