@@ -19,7 +19,7 @@ export default function WelcomeScreen(): JSX.Element {
   };
 
   // Function to handle authentication state changes.
-  const handleAuthStateChanged = async () => {
+  const handleAuthStateChanged = async (): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
       unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -40,12 +40,13 @@ export default function WelcomeScreen(): JSX.Element {
     Promise.all([
       handleAuthStateChanged(), // Check if the user is authenticated.
       new Promise<void>((resolve) => setTimeout(() => resolve(), 2_400)) // Simulate a delay.
-    ]).then((res) => {
-      const [isAuthenticated] = res;
-      if (isAuthenticated) {
-        router.push('/(app)/'); // Navigate to the app if the user is authenticated.
-      }
-    });
+    ])
+      .then((res) => {
+        const [isAuthenticated] = res;
+        if (isAuthenticated) {
+          router.push('/(app)/'); // automatically Navigate to the app if the user is authenticated.
+        }
+      });
 
     return () => unsubscribe && unsubscribe();
   }, []); // The empty dependency array ensures this code runs only once, like componentDidMount.

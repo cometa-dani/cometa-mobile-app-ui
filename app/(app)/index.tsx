@@ -46,7 +46,7 @@ const EventItem: FC<ListItemProps> = ({ item, swipeLeft, layoutHeight, red100, t
             <FontAwesome name='commenting' size={46} style={{ color: tabIconDefault }} />
           )}
         </Pressable>
-        <Pressable onPress={() => router.push('/(onboarding)/register')}>
+        <Pressable>
           {() => (
             <FontAwesome name='send' size={46} style={{ color: tabIconDefault }} />
           )}
@@ -127,7 +127,6 @@ export default function HomeScreen(): JSX.Element {
       {/* Latest events list */}
       <FlatList
         pagingEnabled={true}
-        // initialNumToRender={0}
         onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
         data={data.events}
         contentContainerStyle={styles.flatListContent}

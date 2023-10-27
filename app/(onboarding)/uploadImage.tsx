@@ -20,6 +20,7 @@ export default function UploadImageScreen(): JSX.Element {
   const [imageUri, setImageUri] = useState<string>('');
   const imgFileRef = useRef<ImagePicker.ImagePickerAsset>();
   const onboarding = useCometaStore(state => state.onboarding);
+  const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
 
 
   const handlePickImage = async () => {
@@ -49,13 +50,15 @@ export default function UploadImageScreen(): JSX.Element {
         // put this step on the register form
         const payload = { username: onboardingUser.username, email: onboardingUser.email };
         const { data: newCreatedUser } = await usersService.createUser(payload); // first checks if user exists
-
         try {
-          const [{ user: userCrendentials }] = await Promise.all([
-            createUserWithEmailAndPassword(auth, onboardingUser.email, onboardingUser.password),
-            usersService.uploadUserImage(newCreatedUser.id, imgFileRef?.current, newCreatedUser.username),
-          ]);
+          const [{ user: userCrendentials }] = (
+            await Promise.all([
+              createUserWithEmailAndPassword(auth, onboardingUser.email, onboardingUser.password),
+              usersService.uploadUserImage(newCreatedUser.id, imgFileRef?.current, newCreatedUser.username),
+            ])
+          );
           await usersService.updateUser(newCreatedUser.id, { uid: userCrendentials.uid });
+          setIsAuthenticated(true);
         }
         catch (error) {
           console.log(error);
