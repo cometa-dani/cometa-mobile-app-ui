@@ -1,13 +1,15 @@
 import { ImageBackground, StyleSheet, View, Text, Image } from 'react-native';
 import { router } from 'expo-router';
 import { LightButton } from '../components/buttons/LightButton';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Unsubscribe, onAuthStateChanged } from 'firebase/auth'; // Import Firebase authentication functions.
 import { auth } from '../firebase/firebase'; // Import Firebase authentication instance.
+import { useCometaStore } from '../store/cometaStore';
 
 
 export default function WelcomeScreen(): JSX.Element {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const isAuthenticated = useCometaStore(state => state.isAuthenticated);
+  const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   let unsubscribe!: Unsubscribe;
 
   // Function to handle navigation when "Get Started" button is pressed.

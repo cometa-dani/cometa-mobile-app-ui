@@ -1,8 +1,12 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
+import { Link, Tabs, router } from 'expo-router';
 import { Pressable } from 'react-native';
 import { useColors } from '../../components/Themed';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../firebase/firebase';
+import { useCometaStore } from '../../store/cometaStore';
 
 
 /**
@@ -19,7 +23,27 @@ function TabBarIcon(props: {
 
 export default function AppLayout() {
   const { text, tabIconSelected } = useColors();
+  const isAuthenticated = useCometaStore(state => state.isAuthenticated);
+  const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push('/');
+        setIsAuthenticated(false);
+      }
+      else {
+        setIsAuthenticated(true);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+
+  if (!isAuthenticated) {
+    return null;
+  }
   return (
     <>
       <StatusBar style={'light'} />

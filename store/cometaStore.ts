@@ -1,9 +1,15 @@
 import { create } from 'zustand';
 import { createEventSlice, EventSlice } from './slices/eventSlice';
 import { createOnboardingSlice, OnboardingSlice } from './slices/onBoarding';
+import { createUserSlice, UserSlice } from './slices/userSlice';
 
 
-export const useCometaStore = create<EventSlice & OnboardingSlice>((...args) => ({
-  ...createEventSlice(...args),
-  ...createOnboardingSlice(...args)
-}));
+type StoreSlices = EventSlice & OnboardingSlice & UserSlice;
+
+export const useCometaStore = create<StoreSlices>(
+  (...args) => ({
+    ...createEventSlice(...args),
+    ...createOnboardingSlice(...args),
+    ...createUserSlice(...args)
+  })
+);
