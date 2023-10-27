@@ -31,7 +31,6 @@ export default function LoginScreen(): JSX.Element {
     async (values: UserForm, actions: FormikHelpers<UserForm>) => {
       try {
         setIsLoading(true);
-        console.log(values);
         actions.resetForm();
         await signInWithEmailAndPassword(auth, values.email, values.password);
         actions.setSubmitting(false);

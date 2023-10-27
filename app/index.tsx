@@ -2,26 +2,29 @@ import { ImageBackground, StyleSheet, View, Text, Image } from 'react-native';
 import { router } from 'expo-router';
 import { LightButton } from '../components/buttons/LightButton';
 import { useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase/firebase';
+import { Unsubscribe, onAuthStateChanged } from 'firebase/auth'; // Import Firebase authentication functions.
+import { auth } from '../firebase/firebase'; // Import Firebase authentication instance.
 
 
 export default function WelcomeScreen(): JSX.Element {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  let unsubscribe!: Unsubscribe;
 
+  // Function to handle navigation when "Get Started" button is pressed.
   const handleSlideNextScreen = (): void => {
+    unsubscribe && unsubscribe();
     router.push(isAuthenticated ? '/(app)/' : '/(onboarding)/login');
   };
 
+  // Function to handle authentication state changes.
   const handleAuthStateChanged = async () => {
     return new Promise<boolean>((resolve) => {
-      onAuthStateChanged(auth, (user) => {
+      unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
           setIsAuthenticated(true);
           console.log(`${user.email} isAuthenticated`);
           resolve(true);
-        }
-        else {
+        } else {
           setIsAuthenticated(false);
           resolve(false);
         }
@@ -29,19 +32,21 @@ export default function WelcomeScreen(): JSX.Element {
     });
   };
 
+  // useEffect hook to perform actions when the component is mounted.
   useEffect(() => {
+    // Use Promise.all to wait for multiple asynchronous operations.
     Promise.all([
-      handleAuthStateChanged(),
-      new Promise<void>((resolve) => setTimeout(() => resolve(), 2_000))
-    ])
-      .then((res) => {
-        const [isAuthenticated] = res;
-        if (isAuthenticated) {
-          router.push('/(app)/');
-        }
-      });
+      handleAuthStateChanged(), // Check if the user is authenticated.
+      new Promise<void>((resolve) => setTimeout(() => resolve(), 2_000)) // Simulate a delay.
+    ]).then((res) => {
+      const [isAuthenticated] = res;
+      if (isAuthenticated) {
+        router.push('/(app)/'); // Navigate to the app if the user is authenticated.
+      }
+    });
 
-  }, []);
+    return () => unsubscribe && unsubscribe();
+  }, []); // The empty dependency array ensures this code runs only once, like componentDidMount.
 
 
   return (
@@ -61,8 +66,8 @@ export default function WelcomeScreen(): JSX.Element {
   );
 }
 
+// Styles for the WelcomeScreen component.
 const styles = StyleSheet.create({
-
   h1: {
     color: '#fff',
     fontSize: 34,
@@ -97,5 +102,5 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 18,
     width: '100%'
-  },
+  }
 });
