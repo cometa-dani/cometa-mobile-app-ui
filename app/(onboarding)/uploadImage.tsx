@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-color-literals */
 import { Image, Pressable, StyleSheet } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { Text, View, useColors } from '../../components/Themed';
 import { useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
@@ -59,6 +59,7 @@ export default function UploadImageScreen(): JSX.Element {
           );
           await usersService.updateUser(newCreatedUser.id, { uid: userCrendentials.uid });
           setIsAuthenticated(true);
+          router.push('/(app)/');
         }
         catch (error) {
           console.log(error);

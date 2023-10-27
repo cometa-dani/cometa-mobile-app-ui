@@ -23,7 +23,7 @@ export const loginSchemma = Yup.object<UserForm>({
 
 
 export default function LoginScreen(): JSX.Element {
-  const { primary100 } = useColors();
+  const { primary100, background } = useColors();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin =
@@ -94,43 +94,35 @@ export default function LoginScreen(): JSX.Element {
       </Formik>
       {/* create user with email and password */}
 
-      {/* <View style={styles.authProviders}>
-        <Pressable
-          style={[{
-            backgroundColor: background,
-            flex: 1,
-            flexDirection: 'row',
-            gap: 8
-          },
-          styles.button
-          ]}>
-          <FontAwesome name='google' size={24} style={{ color: text }} />
-          <Text style={[styles.buttonText, { color: text, fontSize: 17 }]}>Google</Text>
-        </Pressable>
-        <Pressable
-          style={[{
-            backgroundColor: background,
-            flex: 1,
-            flexDirection: 'row',
-            gap: 8
-          },
-          styles.button
-          ]}>
-          <FontAwesome name='facebook' size={24} style={{ color: text }} />
-          <Text style={[styles.buttonText, { color: text, fontSize: 17 }]}>Facebook</Text>
-        </Pressable>
-      </View> */}
+      <Pressable
+        onPress={() => router.push('/(onboarding)/register')}
+        style={[{
+          position: 'absolute',
+          bottom: 30,
+          backgroundColor: background,
+          width: '100%',
+          gap: 8
+        },
+        styles.button
+        ]}>
+        <Text
+          style={[
+            styles.buttonText,
+            {
+              color: '#6c6c6c',
+              fontWeight: '500',
+              fontSize: 18,
+              textTransform: 'none'
+            }]}>
+          Don&apos;t have an account? Sign Up
+        </Text>
+      </Pressable>
 
     </WrapperOnBoarding>
   );
 }
 
 const styles = StyleSheet.create({
-
-  // authProviders: {
-  //   flexDirection: 'row',
-  //   gap: 20,
-  // },
 
   button: {
     borderRadius: 50,

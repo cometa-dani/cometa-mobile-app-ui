@@ -1,6 +1,6 @@
 import { ImageBackground, StyleSheet, View, Text, Image } from 'react-native';
 import { router } from 'expo-router';
-import { LightButton } from '../components/buttons/LightButton';
+import { LightButton } from '../components/buttons/buttons';
 import { useEffect } from 'react';
 import { Unsubscribe, onAuthStateChanged } from 'firebase/auth'; // Import Firebase authentication functions.
 import { auth } from '../firebase/firebase'; // Import Firebase authentication instance.
@@ -63,7 +63,7 @@ export default function WelcomeScreen(): JSX.Element {
 
       <LightButton
         onPress={() => handleSlideNextScreen()}
-        text='get started'
+        text='Get Started'
       />
     </ImageBackground>
   );
