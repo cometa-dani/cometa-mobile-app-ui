@@ -9,6 +9,7 @@ import { useCometaStore } from '../store/cometaStore';
 
 export default function WelcomeScreen(): JSX.Element {
   const isAuthenticated = useCometaStore(state => state.isAuthenticated);
+  const setAccessToken = useCometaStore(state => state.setAccessToken);
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   let unsubscribe!: Unsubscribe;
 
@@ -21,9 +22,10 @@ export default function WelcomeScreen(): JSX.Element {
   // Function to handle authentication state changes.
   const handleAuthStateChanged = async (): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
-      unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe = onAuthStateChanged(auth, async (user) => {
         if (user) {
           setIsAuthenticated(true);
+          setAccessToken(await user.getIdToken());
           console.log(`${user.email} is authenticated`);
           resolve(true);
         }

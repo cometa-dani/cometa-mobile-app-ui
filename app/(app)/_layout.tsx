@@ -27,7 +27,7 @@ export default function AppLayout() {
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
 
   useEffect(() => {
-    // listens for log out event
+    // listens for log-out event
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         router.push('/');
