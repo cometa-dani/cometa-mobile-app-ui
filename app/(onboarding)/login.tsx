@@ -26,7 +26,6 @@ export default function LoginScreen(): JSX.Element {
   const { primary100 } = useColors();
   const [isLoading, setIsLoading] = useState(false);
 
-
   const handleLogin =
     async (values: UserForm, actions: FormikHelpers<UserForm>) => {
       try {

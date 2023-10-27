@@ -37,7 +37,7 @@ export default function WelcomeScreen(): JSX.Element {
     // Use Promise.all to wait for multiple asynchronous operations.
     Promise.all([
       handleAuthStateChanged(), // Check if the user is authenticated.
-      new Promise<void>((resolve) => setTimeout(() => resolve(), 2_000)) // Simulate a delay.
+      new Promise<void>((resolve) => setTimeout(() => resolve(), 2_400)) // Simulate a delay.
     ]).then((res) => {
       const [isAuthenticated] = res;
       if (isAuthenticated) {
