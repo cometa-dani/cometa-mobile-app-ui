@@ -1,12 +1,11 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { Event } from '../../models/Event';
 import { StyleSheet, Image, DimensionValue, Pressable } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
-import { useCometaStore } from '../../store/cometaStore';
-// import { selectActions } from '../../store/selectors';
 import { GestureDetector, Gesture, FlatList, Directions, FlingGesture } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useInfiniteQueryEvents } from '../../queryclient/queryEvents';
 
 
 // Define the props for the memoized list item
@@ -91,12 +90,11 @@ export default function HomeScreen(): JSX.Element {
   // Get access to colors and store data
   const { red100, tabIconDefault } = useColors();
 
-  const { data } = useCometaStore(state => state.events);
-  // const { fetchEventsOnce, fetchMoreEvents } = useCometaStore(selectActions);
+  // events & function to handle fetching more events when reaching the end
+  const { data, fetchNextPage } = useInfiniteQueryEvents();
 
   // State variables to manage page and item heights
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
-  const [page, setPage] = useState(1);
 
   // Gesture for left swipe action
   const swipeLeft = Gesture.Fling();
@@ -105,22 +103,6 @@ export default function HomeScreen(): JSX.Element {
     .direction(Directions.LEFT)
     .onStart(() => router.push('/bucketList'));
 
-  // Function to handle fetching more events when reaching the end
-  const handleEndReached = (): void => {
-    // Check if there are more events to fetch
-    const fetchEvents = data || [];
-    if (fetchEvents.events.length < fetchEvents.totalEvents) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      // fetchMoreEvents(nextPage).then();
-    }
-  };
-
-  // Initial data fetch when the component mounts
-  useEffect(() => {
-    // fetchEventsOnce().then();
-  }, []);
-
 
   return (
     <View style={styles.container}>
@@ -128,9 +110,9 @@ export default function HomeScreen(): JSX.Element {
       <FlatList
         pagingEnabled={true}
         onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
-        data={data.events}
+        data={data?.pages.flatMap(page => page.events)}
         contentContainerStyle={styles.flatListContent}
-        onEndReached={handleEndReached}
+        onEndReached={() => fetchNextPage()}
         onEndReachedThreshold={1}
         renderItem={({ item }) => (
           <MemoizedEventItem
