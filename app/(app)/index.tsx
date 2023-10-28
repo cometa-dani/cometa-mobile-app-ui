@@ -5,7 +5,7 @@ import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, FlatList, Directions, FlingGesture } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useInfiniteEventsQuery } from '../../queries/eventQuery';
+import { useInfiniteEventsQuery, useLikeEventMutation } from '../../queries/eventQuery';
 
 
 // Define the props for the memoized list item
@@ -15,9 +15,10 @@ interface ListItemProps {
   layoutHeight: DimensionValue,
   red100: string,
   tabIconDefault: string,
+  onLikeMutation: () => void
 }
 
-const EventItem: FC<ListItemProps> = ({ item, swipeLeft, layoutHeight, red100, tabIconDefault }) => (
+const EventItem: FC<ListItemProps> = ({ item, swipeLeft, layoutHeight, red100, tabIconDefault, onLikeMutation }) => (
   <GestureDetector gesture={swipeLeft}>
     <View style={{
       alignItems: 'center',
@@ -35,9 +36,9 @@ const EventItem: FC<ListItemProps> = ({ item, swipeLeft, layoutHeight, red100, t
 
       {/* Positioned buttons */}
       <View lightColor='transparent' darkColor='transparent' style={styles.positionedButtons}>
-        <Pressable>
+        <Pressable onPress={() => onLikeMutation()}>
           {({ pressed }) => (
-            <FontAwesome name='heart' size={46} style={{ color: pressed ? red100 : tabIconDefault }} />
+            <FontAwesome name='heart' size={46} style={{ color: pressed ? red100 : item.isLiked ? red100 : tabIconDefault }} />
           )}
         </Pressable>
         <Pressable>
@@ -94,6 +95,8 @@ export default function HomeScreen(): JSX.Element {
   const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteEventsQuery();
   const handleInfititeFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
+  const likeMutation = useLikeEventMutation();
+
   // State variables to manage page and item heights
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
 
@@ -116,6 +119,7 @@ export default function HomeScreen(): JSX.Element {
         onEndReachedThreshold={1}
         renderItem={({ item }) => (
           <MemoizedEventItem
+            onLikeMutation={() => likeMutation.mutate(item.id)}
             item={item}
             layoutHeight={layoutHeight}
             red100={red100}

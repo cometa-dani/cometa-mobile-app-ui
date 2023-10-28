@@ -20,10 +20,17 @@ export interface Event {
   likes: object[];
   matches: object[];
 
+  isLiked: boolean;
   locationId: number;
   location: Location;
   organizationId: number;
   organization: Organization;
+}
+
+export interface LikeEvent {
+  id: number,
+  eventId: number,
+  userId: number
 }
 
 export interface Location {

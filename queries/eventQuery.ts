@@ -1,12 +1,13 @@
 /* eslint-disable no-unused-vars */
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { InfiniteData, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCometaStore } from '../store/cometaStore';
 import eventService from '../services/eventService';
-import { EventsListRes } from '../models/Event';
+import { EventsListRes, LikeEvent } from '../models/Event';
 
 
 export const useInfiniteEventsQuery = () => {
   const accessToken = useCometaStore(state => state.accessToken);
+
   return (
     useInfiniteQuery({
       queryKey: ['events'],
@@ -21,7 +22,7 @@ export const useInfiniteEventsQuery = () => {
         }
       },
       // refetchInterval: 1_000 * 60 * 10,
-      getNextPageParam: (lastPage, Allpages, lastPageParam) => {
+      getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
         if (lastPage.events.length == 0) {
           return null; // makes hasNextPage evalutes to false
@@ -29,4 +30,46 @@ export const useInfiniteEventsQuery = () => {
         return lastPage.currentPage + 1;
       },
     }));
+};
+
+
+export const useLikeEventMutation = () => {
+  const accessToken = useCometaStore(state => state.accessToken);
+  const queryClient = useQueryClient();
+
+  return (
+    useMutation({
+      mutationFn: async (eventID: number): Promise<LikeEvent | null> => {
+        const res = await eventService.createOrDeleteLikeByEventID(eventID, accessToken);
+        if (res.status === 201) {
+          return res.data?.eventLikedOrDisliked;
+        }
+        else if (res.status === 204) {
+          return null;
+        }
+        else {
+          throw new Error('failed to request data');
+        }
+      },
+      onMutate: (eventID) => {
+        queryClient.setQueryData<InfiniteData<EventsListRes, number>>(['events'], (data) => ({
+          pages: data?.pages.map(
+            (page) => (
+              {
+                ...page,
+                events: page.events.map(event => (
+                  {
+                    ...event,
+                    isLiked: event.isLiked ? event.isLiked : eventID === event.id
+                  }
+                ))
+              }
+            )) || [],
+          pageParams: data?.pageParams || []
+        }));
+      },
+      retry: 3,
+      retryDelay: 3_000
+    })
+  );
 };
