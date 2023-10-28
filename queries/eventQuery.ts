@@ -20,11 +20,11 @@ export const useInfiniteEventsQuery = () => {
           throw new Error('failed to request data');
         }
       },
-      refetchInterval: 1_000 * 60 * 10,
+      // refetchInterval: 1_000 * 60 * 10,
       getNextPageParam: (lastPage, Allpages, lastPageParam) => {
         // stops incrementing next page because there no more events left
         if (lastPage.events.length == 0) {
-          return null;
+          return null; // makes hasNextPage evalutes to false
         }
         return lastPage.currentPage + 1;
       },
