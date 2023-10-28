@@ -3,7 +3,7 @@ import { Event } from '../../models/Event';
 import { StyleSheet, Image, DimensionValue, Pressable } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { useCometaStore } from '../../store/cometaStore';
-import { selectActions } from '../../store/selectors';
+// import { selectActions } from '../../store/selectors';
 import { GestureDetector, Gesture, FlatList, Directions, FlingGesture } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -92,7 +92,7 @@ export default function HomeScreen(): JSX.Element {
   const { red100, tabIconDefault } = useColors();
 
   const { data } = useCometaStore(state => state.events);
-  const { fetchEventsOnce, fetchMoreEvents } = useCometaStore(selectActions);
+  // const { fetchEventsOnce, fetchMoreEvents } = useCometaStore(selectActions);
 
   // State variables to manage page and item heights
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
@@ -112,13 +112,13 @@ export default function HomeScreen(): JSX.Element {
     if (fetchEvents.events.length < fetchEvents.totalEvents) {
       const nextPage = page + 1;
       setPage(nextPage);
-      fetchMoreEvents(nextPage).then();
+      // fetchMoreEvents(nextPage).then();
     }
   };
 
   // Initial data fetch when the component mounts
   useEffect(() => {
-    fetchEventsOnce().then();
+    // fetchEventsOnce().then();
   }, []);
 
 

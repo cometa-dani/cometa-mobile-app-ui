@@ -1,10 +1,17 @@
+// components
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
 import { SplashScreen, Stack, } from 'expo-router';
+import { ScreenProps } from 'react-native-screens';
+
+// hooks
+import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
 import { useColorScheme, } from 'react-native';
-import { ScreenProps } from 'react-native-screens';
+
+// query client for server state
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '../queryclient/queryClient';
 
 
 // Catch any errors thrown by the Layout component.
@@ -51,15 +58,17 @@ function RootLayoutNav(): JSX.Element {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name='index' options={screenOptions} />
+      <QueryClientProvider client={queryClient}>
+        <Stack>
+          <Stack.Screen name='index' options={screenOptions} />
 
-        <Stack.Screen name="(onboarding)" options={screenOptions} />
+          <Stack.Screen name="(onboarding)" options={screenOptions} />
 
-        <Stack.Screen name="(app)" options={screenOptions} />
+          <Stack.Screen name="(app)" options={screenOptions} />
 
-        <Stack.Screen name="bucketList" options={{ presentation: 'modal', headerTitle: 'BucketList' }} />
-      </Stack>
+          <Stack.Screen name="bucketList" options={{ presentation: 'modal', headerTitle: 'BucketList' }} />
+        </Stack>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }
