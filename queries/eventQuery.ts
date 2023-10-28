@@ -3,6 +3,7 @@ import { InfiniteData, useInfiniteQuery, useMutation, useQueryClient } from '@ta
 import { useCometaStore } from '../store/cometaStore';
 import eventService from '../services/eventService';
 import { EventsListRes, LikeEvent } from '../models/Event';
+import { LikedEventsListRes } from '../models/LikedEvents';
 
 
 export const useInfiniteEventsQuery = () => {
@@ -14,7 +15,7 @@ export const useInfiniteEventsQuery = () => {
       initialPageParam: 1,
       queryFn: async ({ pageParam }): Promise<EventsListRes> => {
         const res = await eventService.getAll(pageParam, 4, accessToken);
-        if (res.status == 200) {
+        if (res.status === 200) {
           return res.data;
         }
         else {
@@ -32,6 +33,36 @@ export const useInfiniteEventsQuery = () => {
       retry: 3,
       retryDelay: 3_000
     }));
+};
+
+
+export const useInfiniteLikedEvents = () => {
+  const accessToken = useCometaStore(state => state.accessToken);
+
+  return (
+    useInfiniteQuery({
+      queryKey: ['liked-events'],
+      initialPageParam: 1,
+      queryFn: async (): Promise<LikedEventsListRes> => {
+        const res = await eventService.getLikedEvents(accessToken);
+        if (res.status === 200) {
+          return res.data;
+        }
+        else {
+          throw new Error('failed to request data');
+        }
+      },
+      getNextPageParam: (lastPage) => {
+        // stops incrementing next page because there no more events left
+        if (lastPage.events.length == 0) {
+          return null; // makes hasNextPage evalutes to false
+        }
+        return lastPage.currentPage + 1;
+      },
+      retry: 3,
+      retryDelay: 3_000
+    })
+  );
 };
 
 

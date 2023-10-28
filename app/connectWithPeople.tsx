@@ -3,15 +3,12 @@ import { StyleSheet } from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
-import { Link } from 'expo-router';
 
 
-export default function BuckectListScreen(): JSX.Element {
+export default function ConnectWithPeopleScreen(): JSX.Element {
   return (
     <View style={styles.container}>
-      <Link href={'/connectWithPeople'}>
-        <Text style={styles.title}>Bucket List</Text>
-      </Link>
+      <Text style={styles.title}>Connect with like-minded People</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <EditScreenInfo path="app/modal.tsx" />
 

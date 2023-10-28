@@ -1,4 +1,5 @@
 import { EventsListRes, LikeEvent } from '../models/Event';
+import { LikedEventsListRes } from '../models/LikedEvents';
 import { RestApiService } from './restService';
 
 
@@ -18,6 +19,10 @@ class EventService extends RestApiService {
         .post<{ eventLikedOrDisliked: LikeEvent }>
         (`/events/${eventID}/like`, null, this.configAuthHeader(accessToken))
     );
+  }
+
+  public getLikedEvents(accessToken: string) {
+    return this.http.get<LikedEventsListRes>('events/liked', this.configAuthHeader(accessToken));
   }
 }
 
