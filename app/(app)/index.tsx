@@ -37,8 +37,8 @@ const EventItem: FC<ListItemProps> = ({ item, swipeLeft, layoutHeight, red100, t
       {/* Positioned buttons */}
       <View lightColor='transparent' darkColor='transparent' style={styles.positionedButtons}>
         <Pressable onPress={() => onLikeMutation()}>
-          {({ pressed }) => (
-            <FontAwesome name='heart' size={46} style={{ color: pressed ? red100 : item.isLiked ? red100 : tabIconDefault }} />
+          {({ hovered, pressed }) => (
+            <FontAwesome name='heart' size={46} style={{ color: (hovered && pressed) ? red100 : item.isLiked ? red100 : tabIconDefault }} />
           )}
         </Pressable>
         <Pressable>

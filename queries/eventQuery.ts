@@ -29,6 +29,8 @@ export const useInfiniteEventsQuery = () => {
         }
         return lastPage.currentPage + 1;
       },
+      retry: 3,
+      retryDelay: 3_000
     }));
 };
 
@@ -60,7 +62,13 @@ export const useLikeEventMutation = () => {
                 events: page.events.map(event => (
                   {
                     ...event,
-                    isLiked: event.isLiked ? event.isLiked : eventID === event.id
+                    isLiked: (
+                      event.isLiked && (eventID === event.id) ? false
+                        :
+                        !event.isLiked && (eventID === event.id) ? true
+                          :
+                          event.isLiked
+                    )
                   }
                 ))
               }
