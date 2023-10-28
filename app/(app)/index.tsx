@@ -1,77 +1,92 @@
 import React, { FC, useState } from 'react';
-import { Event } from '../../models/Event';
+import { Event, LikeEvent } from '../../models/Event';
 import { StyleSheet, Image, DimensionValue, Pressable } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
-import { GestureDetector, Gesture, FlatList, Directions, FlingGesture } from 'react-native-gesture-handler';
+import { GestureDetector, Gesture, FlatList, Directions } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useInfiniteEventsQuery, useLikeOrDislikeEventMutation } from '../../queries/eventQuery';
+import { UseMutationResult } from '@tanstack/react-query';
 
 
 // Define the props for the memoized list item
 interface ListItemProps {
   item: Event,
-  swipeLeft: FlingGesture,
   layoutHeight: DimensionValue,
   red100: string,
   tabIconDefault: string,
-  onLikeMutation: () => void
+  likeOrDislikeMutation: UseMutationResult<LikeEvent | null, Error, number, void>
 }
 
-const EventItem: FC<ListItemProps> = ({ item, swipeLeft, layoutHeight, red100, tabIconDefault, onLikeMutation }) => (
-  <GestureDetector gesture={swipeLeft}>
-    <View style={{
-      alignItems: 'center',
-      height: layoutHeight,
-      justifyContent: 'center',
-      width: '100%',
-    }}>
-      {/* Background image */}
-      <Image
-        source={{ uri: item.mediaUrl }}
-        style={{ width: '100%', height: '100%' }}
-      />
-      {/* Event title */}
-      <Text lightColor='#fff' darkColor='#eee' style={styles.title}>{item.name}</Text>
+const EventItem: FC<ListItemProps> = ({ item, likeOrDislikeMutation, layoutHeight, red100, tabIconDefault }) => {
 
-      {/* Positioned buttons */}
-      <View lightColor='transparent' darkColor='transparent' style={styles.positionedButtons}>
-        <Pressable onPress={() => onLikeMutation()}>
-          {({ hovered, pressed }) => (
-            <FontAwesome name='heart' size={46} style={{ color: (hovered && pressed) ? red100 : item.isLiked ? red100 : tabIconDefault }} />
-          )}
-        </Pressable>
-        <Pressable>
-          {() => (
-            <FontAwesome name='commenting' size={46} style={{ color: tabIconDefault }} />
-          )}
-        </Pressable>
-        <Pressable>
-          {() => (
-            <FontAwesome name='send' size={46} style={{ color: tabIconDefault }} />
-          )}
-        </Pressable>
-        <Pressable>
-          {() => (
-            <FontAwesome name='chevron-down' size={46} style={{ color: tabIconDefault }} />
-          )}
-        </Pressable>
-      </View>
-      {/* Positioned buttons /*}
+  const swipeLeft = Gesture.Fling();
+  swipeLeft
+    .direction(Directions.LEFT)
+    .onStart(() => router.push('/bucketList'));
+
+  const doubleTap = Gesture.Tap();
+  doubleTap
+    .numberOfTaps(2)
+    .onEnd(() => likeOrDislikeMutation.mutate(item.id));
+
+  return (
+    <GestureDetector gesture={swipeLeft}>
+      <View style={{
+        alignItems: 'center',
+        height: layoutHeight,
+        justifyContent: 'center',
+        width: '100%',
+      }}>
+        {/* Background image */}
+        <GestureDetector gesture={doubleTap}>
+          <Image
+            source={{ uri: item.mediaUrl }}
+            style={{ width: '100%', height: '100%' }}
+          />
+        </GestureDetector>
+        {/* Event title */}
+        <Text lightColor='#fff' darkColor='#eee' style={styles.title}>{item.name}</Text>
+
+        {/* Positioned buttons */}
+        <View lightColor='transparent' darkColor='transparent' style={styles.positionedButtons}>
+          <Pressable onPress={() => likeOrDislikeMutation.mutate(item.id)}>
+            {({ hovered, pressed }) => (
+              <FontAwesome name='heart' size={46} style={{ color: (hovered && pressed) ? red100 : item.isLiked ? red100 : tabIconDefault }} />
+            )}
+          </Pressable>
+          <Pressable>
+            {() => (
+              <FontAwesome name='commenting' size={46} style={{ color: tabIconDefault }} />
+            )}
+          </Pressable>
+          <Pressable>
+            {() => (
+              <FontAwesome name='send' size={46} style={{ color: tabIconDefault }} />
+            )}
+          </Pressable>
+          <Pressable>
+            {() => (
+              <FontAwesome name='chevron-down' size={46} style={{ color: tabIconDefault }} />
+            )}
+          </Pressable>
+        </View>
+        {/* Positioned buttons /*}
 
       {/* Organizer icon */}
-      <View lightColor='transparent' darkColor='transparent' style={styles.organizerContainer}>
-        <Image style={styles.img} source={{ uri: item.organization.mediaUrl }} />
-        <Text
-          lightColor='#fff'
-          darkColor='#eee'
-          style={styles.organizer}>
-          {item.organization.name}
-        </Text>
+        <View lightColor='transparent' darkColor='transparent' style={styles.organizerContainer}>
+          <Image style={styles.img} source={{ uri: item.organization.mediaUrl }} />
+          <Text
+            lightColor='#fff'
+            darkColor='#eee'
+            style={styles.organizer}>
+            {item.organization.name}
+          </Text>
+        </View>
       </View>
-    </View>
-  </GestureDetector>
-);
+    </GestureDetector>
+  );
+};
 
 function arePropsEqual(prevProps: ListItemProps, nextProps: ListItemProps): boolean {
   // Implement your custom comparison logic here
@@ -80,7 +95,8 @@ function arePropsEqual(prevProps: ListItemProps, nextProps: ListItemProps): bool
     prevProps.item === nextProps.item &&
     prevProps.layoutHeight === nextProps.layoutHeight &&
     prevProps.red100 === nextProps.red100 &&
-    prevProps.tabIconDefault === nextProps.tabIconDefault
+    prevProps.tabIconDefault === nextProps.tabIconDefault &&
+    prevProps.likeOrDislikeMutation === nextProps.likeOrDislikeMutation
   );
 }
 
@@ -95,17 +111,11 @@ export default function HomeScreen(): JSX.Element {
   const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteEventsQuery();
   const handleInfititeFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
+  // perform mutations
   const likeOrDislikeMutation = useLikeOrDislikeEventMutation();
 
   // State variables to manage page and item heights
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
-
-  // Gesture for left swipe action
-  const swipeLeft = Gesture.Fling();
-
-  swipeLeft
-    .direction(Directions.LEFT)
-    .onStart(() => router.push('/bucketList'));
 
   return (
     <View style={styles.container}>
@@ -119,11 +129,11 @@ export default function HomeScreen(): JSX.Element {
         onEndReachedThreshold={1}
         renderItem={({ item }) => (
           <MemoizedEventItem
-            onLikeMutation={() => likeOrDislikeMutation.mutate(item.id)}
+            likeOrDislikeMutation={likeOrDislikeMutation}
+            key={item.id}
             item={item}
             layoutHeight={layoutHeight}
             red100={red100}
-            swipeLeft={swipeLeft}
             tabIconDefault={tabIconDefault}
           />
         )}

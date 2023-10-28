@@ -1,9 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet } from 'react-native';
 import { Text, View } from '../components/Themed';
+import { useLocalSearchParams } from 'expo-router';
 
 
 export default function ConnectWithPeopleScreen(): JSX.Element {
+  const local = useLocalSearchParams();
+
+  console.log('Local:', local);
+
   return (
     <>
       <StatusBar style={'auto'} />

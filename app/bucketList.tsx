@@ -1,14 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
 import { Text, View } from '../components/Themed';
 import { FlatList } from 'react-native-gesture-handler';
 import { useInfiniteLikedEvents } from '../queries/eventQuery';
 import { Image } from 'react-native-animatable';
+import { router } from 'expo-router';
 
 
 export default function BuckectListScreen(): JSX.Element {
-
   const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteLikedEvents();
 
   return (
@@ -16,7 +16,6 @@ export default function BuckectListScreen(): JSX.Element {
       <StatusBar style={'auto'} />
 
       <View style={styles.container}>
-
         <FlatList
           pagingEnabled={false}
           data={data?.pages.flatMap(page => page.events)}
@@ -24,18 +23,19 @@ export default function BuckectListScreen(): JSX.Element {
           onEndReached={() => !isFetching && hasNextPage && fetchNextPage()}
           onEndReachedThreshold={0.2}
           renderItem={({ item }) => (
-            <View style={styles.eventContainer}>
-              <Image style={styles.img} source={{ uri: item.mediaUrl }} />
+            <Pressable key={item.id} onPress={() => router.push(`/${item.id}`)}>
+              <View style={styles.eventContainer}>
+                <Image style={styles.img} source={{ uri: item.mediaUrl }} />
 
-              <View style={styles.textContainer}>
-                <Text style={styles.title}>{item.name}</Text>
+                <View style={styles.textContainer}>
+                  <Text style={styles.title}>{item.name}</Text>
 
-                <Text style={styles.date}>{new Date(item.date).toDateString()}</Text>
+                  <Text style={styles.date}>{new Date(item.date).toDateString()}</Text>
+                </View>
               </View>
-            </View>
+            </Pressable>
           )}
         />
-
       </View>
     </>
   );
