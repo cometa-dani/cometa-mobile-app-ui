@@ -1,39 +1,82 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet } from 'react-native';
 
-import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
-import { Link } from 'expo-router';
+import { FlatList } from 'react-native-gesture-handler';
+import { useInfiniteLikedEvents } from '../queries/eventQuery';
+import { Image } from 'react-native-animatable';
 
 
 export default function BuckectListScreen(): JSX.Element {
-  return (
-    <View style={styles.container}>
-      <Link href={'/connectWithPeople'}>
-        <Text style={styles.title}>Bucket List</Text>
-      </Link>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/modal.tsx" />
 
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
+  const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteLikedEvents();
+
+  return (
+    <>
       <StatusBar style={'auto'} />
-    </View>
+
+      <View style={styles.container}>
+
+        <FlatList
+          pagingEnabled={false}
+          data={data?.pages.flatMap(page => page.events)}
+          contentContainerStyle={styles.flatListContent}
+          onEndReached={() => !isFetching && hasNextPage && fetchNextPage()}
+          onEndReachedThreshold={0.2}
+          renderItem={({ item }) => (
+            <View style={styles.eventContainer}>
+              <Image style={styles.img} source={{ uri: item.mediaUrl }} />
+
+              <View style={styles.textContainer}>
+                <Text style={styles.title}>{item.name}</Text>
+
+                <Text style={styles.date}>{new Date(item.date).toDateString()}</Text>
+              </View>
+            </View>
+          )}
+        />
+
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
     flex: 1,
-    justifyContent: 'center',
   },
-  separator: {
-    height: 1,
-    marginVertical: 30,
-    width: '80%',
+
+  date: {
+    color: 'gray',
+    textAlign: 'center'
   },
+
+  eventContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16
+  },
+
+  flatListContent: {
+    gap: 40,
+    paddingHorizontal: 24,
+    paddingVertical: 34,
+  },
+
+  img: {
+    borderRadius: 26,
+    flex: 0.5,
+    height: 128
+  },
+
+  textContainer: {
+    flex: 0.5,
+    justifyContent: 'space-around'
+  },
+
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
+    fontSize: 18,
+    textAlign: 'center',
+  }
 });

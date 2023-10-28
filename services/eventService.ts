@@ -21,8 +21,12 @@ class EventService extends RestApiService {
     );
   }
 
-  public getLikedEvents(accessToken: string) {
-    return this.http.get<LikedEventsListRes>('events/liked', this.configAuthHeader(accessToken));
+  public getLikedEvents(page: number, limit: number, accessToken: string) {
+    const params = { page, limit };
+    const AuthHeaders = this.configAuthHeader(accessToken).headers;
+    const config = { params, headers: AuthHeaders };
+
+    return this.http.get<LikedEventsListRes>('events/liked', config);
   }
 }
 
