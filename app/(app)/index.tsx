@@ -103,7 +103,6 @@ export default function HomeScreen(): JSX.Element {
     .direction(Directions.LEFT)
     .onStart(() => router.push('/bucketList'));
 
-
   return (
     <View style={styles.container}>
       {/* Latest events list */}
