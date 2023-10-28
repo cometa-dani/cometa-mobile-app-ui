@@ -41,7 +41,7 @@ export const createEventSlice: StateCreator<EventSlice> = (set) => ({
     }));
 
     try {
-      const { data } = await eventsService.getEvents(1, limit, '');
+      const { data } = await eventsService.getAll(1, limit, '');
       set({
         events: {
           data,
@@ -64,7 +64,7 @@ export const createEventSlice: StateCreator<EventSlice> = (set) => ({
     }));
 
     try {
-      const { data: dataRes } = await eventsService.getEvents(nextPage, limit, '');
+      const { data: dataRes } = await eventsService.getAll(nextPage, limit, '');
       set((prev) => ({
         events: {
           isLoading: false,

@@ -5,7 +5,7 @@ import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, FlatList, Directions, FlingGesture } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useInfiniteQueryEvents } from '../../queryclient/queryEvents';
+import { useInfiniteEventsQuery } from '../../queries/eventQuery';
 
 
 // Define the props for the memoized list item
@@ -91,7 +91,8 @@ export default function HomeScreen(): JSX.Element {
   const { red100, tabIconDefault } = useColors();
 
   // events & function to handle fetching more events when reaching the end
-  const { data, fetchNextPage } = useInfiniteQueryEvents();
+  const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteEventsQuery();
+  const handleInfititeFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
   // State variables to manage page and item heights
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
@@ -111,7 +112,7 @@ export default function HomeScreen(): JSX.Element {
         onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
         data={data?.pages.flatMap(page => page.events)}
         contentContainerStyle={styles.flatListContent}
-        onEndReached={() => fetchNextPage()}
+        onEndReached={handleInfititeFetch}
         onEndReachedThreshold={1}
         renderItem={({ item }) => (
           <MemoizedEventItem

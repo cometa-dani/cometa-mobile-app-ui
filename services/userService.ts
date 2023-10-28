@@ -1,25 +1,25 @@
 import { UserRes } from '../models/User';
-import { RestApiService } from './restApiService';
+import { RestApiService } from './restService';
 import * as ImagePicker from 'expo-image-picker';
 import FormData from 'form-data';
 
 
 class UserService extends RestApiService {
 
-  public createUser(payload: Partial<UserRes>) {
+  public create(payload: Partial<UserRes>) {
     const { email, username } = payload;
     return this.http.post<UserRes>('/users', { email, username });
   }
 
-  public updateUser(userID: number, payload: Partial<UserRes>) {
+  public updateById(userID: number, payload: Partial<UserRes>) {
     return this.http.patch<UserRes>(`/users/${userID}`, payload);
   }
 
-  public deleteUser(userID: number) {
+  public delete(userID: number) {
     return this.http.delete(`/users/${userID}`);
   }
 
-  public uploadUserImage(userID: number, imgFile: ImagePicker.ImagePickerAsset, fileName: string) {
+  public uploadImageById(userID: number, imgFile: ImagePicker.ImagePickerAsset, fileName: string) {
     const formData = new FormData();
     const fileExtension = imgFile.uri.split('.').at(-1);
     const headers = { 'Content-Type': 'multipart/form-data', };

@@ -8,7 +8,7 @@ import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding
 import * as ImagePicker from 'expo-image-picker';
 
 // services
-import usersService from '../../services/usersService';
+import usersService from '../../services/userService';
 import { useCometaStore } from '../../store/cometaStore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
@@ -49,15 +49,15 @@ export default function UploadImageScreen(): JSX.Element {
       if (imgFileRef?.current?.uri) {
         // put this step on the register form
         const payload = { username: onboardingUser.username, email: onboardingUser.email };
-        const { data: newCreatedUser } = await usersService.createUser(payload); // first checks if user exists
+        const { data: newCreatedUser } = await usersService.create(payload); // first checks if user exists
         try {
           const [{ user: userCrendentials }] = (
             await Promise.all([
               createUserWithEmailAndPassword(auth, onboardingUser.email, onboardingUser.password),
-              usersService.uploadUserImage(newCreatedUser.id, imgFileRef?.current, newCreatedUser.username),
+              usersService.uploadImageById(newCreatedUser.id, imgFileRef?.current, newCreatedUser.username),
             ])
           );
-          await usersService.updateUser(newCreatedUser.id, { uid: userCrendentials.uid });
+          await usersService.updateById(newCreatedUser.id, { uid: userCrendentials.uid });
           setIsAuthenticated(true);
           router.push('/(app)/');
         }

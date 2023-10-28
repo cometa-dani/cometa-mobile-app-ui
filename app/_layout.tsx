@@ -11,7 +11,7 @@ import { useColorScheme, } from 'react-native';
 
 // query client for server state
 import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '../queryclient/queryClient';
+import { queryClient } from '../queries/client';
 
 
 // Catch any errors thrown by the Layout component.
