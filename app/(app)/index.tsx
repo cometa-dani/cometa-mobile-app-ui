@@ -5,7 +5,7 @@ import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, FlatList, Directions, FlingGesture } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useInfiniteEventsQuery, useLikeEventMutation } from '../../queries/eventQuery';
+import { useInfiniteEventsQuery, useLikeOrDislikeEventMutation } from '../../queries/eventQuery';
 
 
 // Define the props for the memoized list item
@@ -95,7 +95,7 @@ export default function HomeScreen(): JSX.Element {
   const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteEventsQuery();
   const handleInfititeFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
-  const likeMutation = useLikeEventMutation();
+  const likeOrDislikeMutation = useLikeOrDislikeEventMutation();
 
   // State variables to manage page and item heights
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
@@ -119,7 +119,7 @@ export default function HomeScreen(): JSX.Element {
         onEndReachedThreshold={1}
         renderItem={({ item }) => (
           <MemoizedEventItem
-            onLikeMutation={() => likeMutation.mutate(item.id)}
+            onLikeMutation={() => likeOrDislikeMutation.mutate(item.id)}
             item={item}
             layoutHeight={layoutHeight}
             red100={red100}

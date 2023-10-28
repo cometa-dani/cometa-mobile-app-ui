@@ -35,7 +35,7 @@ export const useInfiniteEventsQuery = () => {
 };
 
 
-export const useLikeEventMutation = () => {
+export const useLikeOrDislikeEventMutation = () => {
   const accessToken = useCometaStore(state => state.accessToken);
   const queryClient = useQueryClient();
 
