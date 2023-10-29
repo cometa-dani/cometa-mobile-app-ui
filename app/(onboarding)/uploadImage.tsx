@@ -21,6 +21,7 @@ export default function UploadImageScreen(): JSX.Element {
   const imgFileRef = useRef<ImagePicker.ImagePickerAsset>();
   const onboarding = useCometaStore(state => state.onboarding);
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
+  const setAccessToken = useCometaStore(state => state.setAccessToken);
 
 
   const handlePickImage = async () => {
@@ -59,6 +60,7 @@ export default function UploadImageScreen(): JSX.Element {
           );
           await usersService.updateById(newCreatedUser.id, { uid: userCrendentials.uid });
           setIsAuthenticated(true);
+          setAccessToken(await userCrendentials.getIdToken());
           router.push('/(app)/');
         }
         catch (error) {

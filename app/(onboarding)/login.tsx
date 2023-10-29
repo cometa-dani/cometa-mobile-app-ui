@@ -2,13 +2,14 @@ import { Image, Pressable, StyleSheet, TextInput } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 
 // // auth services
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useState } from 'react';
+import { useCometaStore } from '../../store/cometaStore';
 
 
 type UserForm = {
@@ -25,16 +26,19 @@ export const loginSchemma = Yup.object<UserForm>({
 export default function LoginScreen(): JSX.Element {
   const { primary100, background } = useColors();
   const [isLoading, setIsLoading] = useState(false);
+  const setAccessToken = useCometaStore(state => state.setAccessToken);
+  const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
 
   const handleLogin =
     async (values: UserForm, actions: FormikHelpers<UserForm>) => {
       try {
         setIsLoading(true);
         actions.resetForm();
-        await signInWithEmailAndPassword(auth, values.email, values.password);
+        const { user } = await signInWithEmailAndPassword(auth, values.email, values.password);
         actions.setSubmitting(false);
+        setIsAuthenticated(true);
+        setAccessToken(await user.getIdToken());
         setIsLoading(false);
-
         router.push('/(app)/');
       }
       catch (error) {
@@ -49,9 +53,7 @@ export default function LoginScreen(): JSX.Element {
       <View>
         <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Link href={'/(onboarding)/register'}>
-          <Text style={styles.title}>Log In</Text>
-        </Link>
+        <Text style={styles.title}>Log In</Text>
       </View>
       {/* logo */}
 

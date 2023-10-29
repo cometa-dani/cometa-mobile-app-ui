@@ -3,7 +3,7 @@ import { Image, Pressable, StyleSheet, TextInput } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 import { useCometaStore } from '../../store/cometaStore';
 
@@ -49,9 +49,7 @@ export default function RegisterScreen(): JSX.Element {
       <View>
         <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Link href={'/(app)/'}>
-          <Text style={styles.title}>Sign Up</Text>
-        </Link>
+        <Text style={styles.title}>Sign Up</Text>
       </View>
       {/* logo */}
 
