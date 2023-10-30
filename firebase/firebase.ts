@@ -10,6 +10,7 @@ import {
 } from '../constants/vars';
 import { initializeApp } from 'firebase/app';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -29,6 +30,11 @@ const firebaseApp = initializeApp(firebaseConfig);
 export const auth = initializeAuth(firebaseApp, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });
+
+// Required for side-effects
+import 'firebase/firestore';
+
+export const db = getFirestore();
 
 // facebook uri
 // https://cometa-e5dd5.firebaseapp.com/__/auth/handler
