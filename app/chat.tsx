@@ -25,7 +25,7 @@ export default function ChatScreen(): JSX.Element {
     ]);
   }, []);
 
-  const onSend = useCallback((messages = []) => {
+  const onSend = useCallback((messages: IMessage[] = []) => {
     setMessages(previousMessages =>
       GiftedChat.append(previousMessages, messages),
     );
@@ -51,7 +51,7 @@ export default function ChatScreen(): JSX.Element {
       <View style={styles.container}>
         <GiftedChat
           messages={messages}
-          onSend={messages => onSend(messages as never)}
+          onSend={messages => onSend(messages)}
           user={{
             _id: 1,
           }}
