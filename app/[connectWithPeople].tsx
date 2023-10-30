@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet } from 'react-native';
 import { Text, View } from '../components/Themed';
-import { useLocalSearchParams } from 'expo-router';
+import { Link, useLocalSearchParams } from 'expo-router';
 
 
 export default function ConnectWithPeopleScreen(): JSX.Element {
@@ -14,7 +14,9 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
       <StatusBar style={'auto'} />
 
       <View style={styles.container}>
-        <Text style={styles.title}>Connect with like-minded People</Text>
+        <Link href={'/chat'}>
+          <Text style={styles.title}>Connect with like-minded People</Text>
+        </Link>
 
       </View>
     </>

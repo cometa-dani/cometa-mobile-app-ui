@@ -69,6 +69,7 @@ function RootLayoutNav(): JSX.Element {
           <Stack.Screen name="bucketList" options={{ presentation: 'modal', headerTitle: 'BucketList' }} />
 
           <Stack.Screen name="[connectWithPeople]" options={{ presentation: 'modal', headerTitle: 'Connect with People' }} />
+
         </Stack>
       </QueryClientProvider>
     </ThemeProvider>
