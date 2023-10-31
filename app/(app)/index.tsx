@@ -5,7 +5,7 @@ import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, FlatList, Directions } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useInfiniteEventsQuery, useLikeOrDislikeEventMutation } from '../../queries/eventQuery';
+import { useInfiniteEventsQuery, useLikeOrDislikeEventMutation } from '../../queries/events/hooks';
 import { UseMutationResult } from '@tanstack/react-query';
 
 
