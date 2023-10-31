@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   bubblesContainer: {
     flexDirection: 'row',
     flex: 0,
-    gap: -10,
+    gap: -13,
     justifyContent: 'flex-start',
   },
 
@@ -75,13 +75,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 16
+    gap: 12
   },
 
   flatListContent: {
     gap: 40,
-    paddingHorizontal: 24,
-    paddingVertical: 34,
+    paddingHorizontal: 18,
+    paddingVertical: 26,
   },
 
   img: {

@@ -1,8 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { Text, View } from '../components/Themed';
-import { Link, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useEventByIdQuery, useInfiteUsersWhoLikedSameEventQuery } from '../queries/events/hooks';
+import { Image } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 
 
 export default function ConnectWithPeopleScreen(): JSX.Element {
@@ -10,33 +12,79 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const { data: eventData } = useEventByIdQuery(+urlParam);
   const { data: usersWhoLikedSameEventData } = useInfiteUsersWhoLikedSameEventQuery(+urlParam);
 
-  console.log('Local:', eventData, usersWhoLikedSameEventData);
-
   return (
-    <>
+    <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style={'auto'} />
 
       <View style={styles.container}>
+        <View style={styles.imgContainer}>
+          <Image style={styles.imgHeader} source={{ uri: eventData?.mediaUrl }} />
+        </View>
 
+        <View style={styles.tabs}>
+          <Text style={styles.tab}>Friends</Text>
+          <Text style={styles.tab}>New People</Text>
+        </View>
 
-        <Link href={'/chat'}>
-          <Text style={styles.title}>Connect with like-minded People</Text>
-        </Link>
-
+        <FlatList
+          contentContainerStyle={{ gap: 28, flex: 1, paddingHorizontal: 18, paddingVertical: 6 }}
+          data={usersWhoLikedSameEventData?.pages.flatMap(users => users.usersWhoLikedSameEvent)}
+          renderItem={({ item }) => (
+            <View key={item.id} style={styles.user}>
+              <Image style={styles.userAvatar} source={{ uri: item.avatar }} />
+              <Text>{item.username}</Text>
+            </View>
+          )}
+        />
       </View>
-    </>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
     flex: 1,
-    justifyContent: 'center',
+    gap: 14,
+    paddingVertical: 26
   },
 
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  imgContainer: {
+    paddingHorizontal: 18,
   },
+
+  imgHeader: {
+    borderRadius: 20,
+    height: 180,
+    width: 'auto',
+  },
+
+  tab: {
+    fontSize: 20
+  },
+
+  tabs: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 18
+  },
+
+  user: {
+    alignItems: 'center',
+    borderRadius: 40,
+    elevation: 3,
+    flexDirection: 'row',
+    gap: 18,
+    padding: 20,
+    shadowColor: '#171717',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1
+  },
+
+  userAvatar: {
+    aspectRatio: 1,
+    borderRadius: 50,
+    width: 30
+  }
+
 });
