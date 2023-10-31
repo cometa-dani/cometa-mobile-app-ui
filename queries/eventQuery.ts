@@ -44,7 +44,7 @@ export const useInfiniteLikedEvents = () => {
       queryKey: ['liked-events'],
       initialPageParam: 1,
       queryFn: async ({ pageParam }): Promise<LikedEventsListRes> => {
-        const res = await eventService.getLikedEvents(pageParam, 5, accessToken);
+        const res = await eventService.getAllLikedEvents(pageParam, 5, accessToken);
         if (res.status === 200) {
           return res.data;
         }

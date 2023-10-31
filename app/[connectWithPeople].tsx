@@ -5,15 +5,17 @@ import { Link, useLocalSearchParams } from 'expo-router';
 
 
 export default function ConnectWithPeopleScreen(): JSX.Element {
-  const local = useLocalSearchParams();
+  const urlParam = useLocalSearchParams()['connectWithPeople'];
 
-  console.log('Local:', local);
+  console.log('Local:', urlParam);
 
   return (
     <>
       <StatusBar style={'auto'} />
 
       <View style={styles.container}>
+
+
         <Link href={'/chat'}>
           <Text style={styles.title}>Connect with like-minded People</Text>
         </Link>

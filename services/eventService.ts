@@ -1,5 +1,6 @@
-import { EventsListRes, LikeEvent } from '../models/Event';
+import { Event, EventsListRes, LikeEvent } from '../models/Event';
 import { LikedEventsListRes } from '../models/LikedEvents';
+import { UsersWhoLikedSameEventHttpRes } from '../models/User';
 import { RestApiService } from './restService';
 
 
@@ -13,6 +14,7 @@ class EventService extends RestApiService {
     return this.http.get<EventsListRes>('/events', config);
   }
 
+
   public createOrDeleteLikeByEventID(eventID: number, accessToken: string) {
     return (
       this.http
@@ -21,12 +23,27 @@ class EventService extends RestApiService {
     );
   }
 
-  public getLikedEvents(page: number, limit: number, accessToken: string) {
+
+  public getAllLikedEvents(page: number, limit: number, accessToken: string) {
     const params = { page, limit };
     const AuthHeaders = this.configAuthHeader(accessToken).headers;
     const config = { params, headers: AuthHeaders };
 
     return this.http.get<LikedEventsListRes>('events/liked', config);
+  }
+
+
+  public getLikedEventByID(eventID: number, accessToken: string) {
+    return this.http.get<Event>(`events/liked/${eventID}`, this.configAuthHeader(accessToken));
+  }
+
+
+  public getUsersWhoLikedSameEvent(eventID: number, page: number, limit: number, accessToken: string) {
+    const params = { page, limit };
+    const AuthHeaders = this.configAuthHeader(accessToken).headers;
+    const config = { params, headers: AuthHeaders };
+
+    return this.http.get<UsersWhoLikedSameEventHttpRes>(`events/liked/${eventID}/users`, config);
   }
 }
 
