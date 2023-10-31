@@ -32,6 +32,12 @@ export default function BuckectListScreen(): JSX.Element {
 
                   <Text style={styles.date}>{new Date(item.date).toDateString()}</Text>
                 </View>
+
+                <View style={styles.bubblesContainer}>
+                  {item.likes.slice(0, 3).map(({ user }) => (
+                    <Image key={user.id} source={{ uri: user.avatar }} style={styles.bubble} />
+                  ))}
+                </View>
               </View>
             </Pressable>
           )}
@@ -42,6 +48,20 @@ export default function BuckectListScreen(): JSX.Element {
 }
 
 const styles = StyleSheet.create({
+
+  bubble: {
+    aspectRatio: 1,
+    borderRadius: 100,
+    height: 30,
+  },
+
+  bubblesContainer: {
+    flexDirection: 'row',
+    flex: 0,
+    gap: -10,
+    justifyContent: 'flex-start',
+  },
+
   container: {
     flex: 1,
   },
@@ -66,12 +86,12 @@ const styles = StyleSheet.create({
 
   img: {
     borderRadius: 26,
-    flex: 0.5,
-    height: 128
+    flex: 1,
+    height: 108
   },
 
   textContainer: {
-    flex: 0.5,
+    flex: 1,
     justifyContent: 'space-around'
   },
 
