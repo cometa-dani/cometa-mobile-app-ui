@@ -23,7 +23,6 @@ export const useInfiniteEventsQuery = () => {
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<EventsListRes> => {
         const res = await eventService.getAll(pageParam, 4, accessToken);
-        console.log('api called with cursor', pageParam);
         if (res.status === 200) {
           return res.data;
         }
@@ -33,7 +32,6 @@ export const useInfiniteEventsQuery = () => {
       },
       // refetchInterval: 1_000 * 60 * 10,
       getNextPageParam: (lastPage) => {
-        console.log(lastPage.cursor, lastPage.events.length);
         // stops incrementing next page because there no more events left
         if (lastPage.cursor == 0) {
           return null; // makes hasNextPage evalutes to false
