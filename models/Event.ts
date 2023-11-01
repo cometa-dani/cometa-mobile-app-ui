@@ -1,7 +1,7 @@
 export interface EventsListRes {
   events: Event[];
   totalEvents: number;
-  currentPage: number;
+  cursor: number;
   eventsPerPage: number;
 }
 

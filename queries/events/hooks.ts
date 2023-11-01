@@ -20,9 +20,10 @@ export const useInfiniteEventsQuery = () => {
   return (
     useInfiniteQuery({
       queryKey: ['events'],
-      initialPageParam: 1,
+      initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<EventsListRes> => {
         const res = await eventService.getAll(pageParam, 4, accessToken);
+        console.log('api called with cursor', pageParam);
         if (res.status === 200) {
           return res.data;
         }
@@ -32,14 +33,15 @@ export const useInfiniteEventsQuery = () => {
       },
       // refetchInterval: 1_000 * 60 * 10,
       getNextPageParam: (lastPage) => {
+        console.log(lastPage.cursor, lastPage.events.length);
         // stops incrementing next page because there no more events left
-        if (lastPage.events.length == 0) {
+        if (lastPage.cursor == 0) {
           return null; // makes hasNextPage evalutes to false
         }
-        return lastPage.currentPage + 1;
+        return lastPage.cursor;
       },
       retry: 3,
-      retryDelay: 3_000
+      retryDelay: 1_000 * 60 * 3
     }));
 };
 

@@ -6,8 +6,8 @@ import { RestApiService } from './restService';
 
 class EventService extends RestApiService {
 
-  public getAll(page: number, limit: number, accessToken: string) {
-    const params = { page, limit };
+  public getAll(cursor: number, limit: number, accessToken: string) {
+    const params = { cursor, limit };
     const AuthHeaders = this.configAuthHeader(accessToken).headers;
     const config = { params, headers: AuthHeaders };
 
