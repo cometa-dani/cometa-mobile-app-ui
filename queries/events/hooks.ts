@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
 import {
-  InfiniteData,
   useQuery,
   useInfiniteQuery,
   useMutation,
-  useQueryClient
+  useQueryClient,
+  InfiniteData
 }
   from '@tanstack/react-query';
 import { useCometaStore } from '../../store/cometaStore';
@@ -14,12 +14,20 @@ import { LikedEventsListRes } from '../../models/LikedEvents';
 import { UsersWhoLikedSameEventHttpRes } from '../../models/User';
 
 
+enum QueryKeys {
+  GET_EVENTS,
+  GET_LIKED_EVENTS,
+  GET_EVENT_BY_ID,
+  GET_USERS_LIKED_SAME_EVENT
+}
+
+
 export const useInfiniteEventsQuery = () => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return (
     useInfiniteQuery({
-      queryKey: ['events'],
+      queryKey: [QueryKeys.GET_EVENTS],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<EventsListRes> => {
         const res = await eventService.getAll(pageParam, 4, accessToken);
@@ -49,7 +57,7 @@ export const useInfiniteLikedEventsQuery = () => {
 
   return (
     useInfiniteQuery({
-      queryKey: ['liked-events'],
+      queryKey: [QueryKeys.GET_LIKED_EVENTS],
       initialPageParam: 1,
       queryFn: async ({ pageParam }): Promise<LikedEventsListRes> => {
         const res = await eventService.getAllLikedEvents(pageParam, 5, accessToken);
@@ -68,7 +76,7 @@ export const useInfiniteLikedEventsQuery = () => {
         return lastPage.currentPage + 1;
       },
       retry: 3,
-      retryDelay: 3_000
+      retryDelay: 1_000 * 60 * 3
     })
   );
 };
@@ -78,7 +86,7 @@ export const useEventByIdQuery = (eventID: number) => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return useQuery({
-    queryKey: ['event-by-id'],
+    queryKey: [QueryKeys.GET_EVENT_BY_ID],
     queryFn: async (e): Promise<Event> => {
       const res = await eventService.getLikedEventByID(eventID, accessToken);
       if (res.status === 200) {
@@ -99,7 +107,7 @@ export const useInfiteUsersWhoLikedSameEventQuery = (eventID: number) => {
 
   return (
     useInfiniteQuery({
-      queryKey: ['users-liked-same-event'],
+      queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT],
       initialPageParam: 1,
       queryFn: async ({ pageParam }): Promise<UsersWhoLikedSameEventHttpRes> => {
         const res = await eventService.getUsersWhoLikedSameEvent(eventID, pageParam, 5, accessToken);
@@ -118,10 +126,11 @@ export const useInfiteUsersWhoLikedSameEventQuery = (eventID: number) => {
         return lastPage.currentPage + 1;
       },
       retry: 3,
-      retryDelay: 3_000
+      retryDelay: 1_000 * 60 * 3
     })
   );
 };
+
 
 export const useLikeOrDislikeEventMutation = () => {
   const accessToken = useCometaStore(state => state.accessToken);
@@ -164,8 +173,16 @@ export const useLikeOrDislikeEventMutation = () => {
           pageParams: data?.pageParams || []
         }));
       },
+      onSuccess: async () => {
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_EVENTS] }),
+
+          // failing to update immediatly
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS] })
+        ]);
+      },
       retry: 3,
-      retryDelay: 3_000
+      retryDelay: 1_000 * 60 * 3
     })
   );
 };
