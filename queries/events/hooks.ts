@@ -9,9 +9,9 @@ import {
   from '@tanstack/react-query';
 import { useCometaStore } from '../../store/cometaStore';
 import eventService from '../../services/eventService';
-import { Event, GetLatestEvents, LikeEvent } from '../../models/Event';
-import { LikedEventsListRes } from '../../models/LikedEvents';
-import { UsersWhoLikedSameEventHTTPRes2, UsersWhoLikedSameEventHttpRes } from '../../models/User';
+import { GetLikedEventById, GetLatestEvents, LikeEvent } from '../../models/Event';
+import { GetAllLikedEvents } from '../../models/LikedEvents';
+import { GetUserWhoLikedEvent, UsersWhoLikedSameEventHttpRes } from '../../models/User';
 
 
 // Define query keys as enums for better organization
@@ -62,7 +62,7 @@ export const useInfiniteQueryGetLatestLikedEvents = () => {
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_LIKED_EVENTS],
       initialPageParam: 1,
-      queryFn: async ({ pageParam }): Promise<LikedEventsListRes> => {
+      queryFn: async ({ pageParam }): Promise<GetAllLikedEvents> => {
         const res = await eventService.getAllLikedEvents(pageParam, 5, accessToken);
         if (res.status === 200) {
           return res.data;
@@ -92,7 +92,7 @@ export const useQueryGetEventById = (eventID: number) => {
 
   return useQuery({
     queryKey: [QueryKeys.GET_EVENT_BY_ID],
-    queryFn: async (e): Promise<Event> => {
+    queryFn: async (e): Promise<GetLikedEventById> => {
       const res = await eventService.getLikedEventByID(eventID, accessToken);
       if (res.status === 200) {
         return res.data;
@@ -115,7 +115,7 @@ export const useInfiteQueryGetLatestUsersWhoLikedSameEvent = (eventID: number) =
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT],
       initialPageParam: 1,
-      queryFn: async ({ pageParam }): Promise<UsersWhoLikedSameEventHTTPRes2> => {
+      queryFn: async ({ pageParam }): Promise<GetUserWhoLikedEvent> => {
         const res = await eventService.getUsersWhoLikedSameEvent(eventID, pageParam, 5, accessToken);
         if (res.status === 200) {
           return res.data;

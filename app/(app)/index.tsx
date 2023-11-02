@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Event, LikeEvent } from '../../models/Event';
+import { GetLikedEventById, LikeEvent } from '../../models/Event';
 import { StyleSheet, Image, DimensionValue, Pressable } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, FlatList, Directions } from 'react-native-gesture-handler';
@@ -11,7 +11,7 @@ import { UseMutationResult } from '@tanstack/react-query';
 
 // Define the props for the memoized list item
 interface ListItemProps {
-  item: Event,
+  item: GetLikedEventById,
   layoutHeight: DimensionValue,
   red100: string,
   tabIconDefault: string,

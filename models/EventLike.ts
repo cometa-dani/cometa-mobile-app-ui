@@ -1,6 +1,7 @@
 import { UserRes } from './User';
 
-export interface Like {
+
+export interface EventLike {
   id: number;
   eventId: number;
   userId: number;

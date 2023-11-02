@@ -1,6 +1,6 @@
-import { Event, GetLatestEvents, LikeEvent } from '../models/Event';
-import { LikedEventsListRes } from '../models/LikedEvents';
-import { UsersWhoLikedSameEventHTTPRes2 } from '../models/User';
+import { GetLikedEventById, GetLatestEvents, LikeEvent } from '../models/Event';
+import { GetAllLikedEvents } from '../models/LikedEvents';
+import { GetUserWhoLikedEvent } from '../models/User';
 import { RestApiService } from './restService';
 
 
@@ -29,12 +29,12 @@ class EventService extends RestApiService {
     const AuthHeaders = this.configAuthHeader(accessToken).headers;
     const config = { params, headers: AuthHeaders };
 
-    return this.http.get<LikedEventsListRes>('events/liked', config);
+    return this.http.get<GetAllLikedEvents>('events/liked', config);
   }
 
 
   public getLikedEventByID(eventID: number, accessToken: string) {
-    return this.http.get<Event>(`events/liked/${eventID}`, this.configAuthHeader(accessToken));
+    return this.http.get<GetLikedEventById>(`events/liked/${eventID}`, this.configAuthHeader(accessToken));
   }
 
 
@@ -43,7 +43,7 @@ class EventService extends RestApiService {
     const AuthHeaders = this.configAuthHeader(accessToken).headers;
     const config = { params, headers: AuthHeaders };
 
-    return this.http.get<UsersWhoLikedSameEventHTTPRes2>(`events/liked/${eventID}/users`, config);
+    return this.http.get<GetUserWhoLikedEvent>(`events/liked/${eventID}/users`, config);
   }
 }
 
