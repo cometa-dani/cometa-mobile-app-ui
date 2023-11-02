@@ -4,5 +4,7 @@ export interface Friendship {
   updatedAt: string;
   senderId: number;
   receiverId: number;
-  status: string;
+  status: Status;
 }
+
+type Status = 'PENDING' | 'ACCEPTED' | 'BLOCKED'

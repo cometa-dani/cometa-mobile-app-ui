@@ -12,6 +12,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const { data: eventData } = useQueryGetEventById(+urlParam);
   const { data: usersWhoLikedSameEventData } = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
 
+  console.log(urlParam);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style={'auto'} />
@@ -29,12 +30,18 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
         <FlatList
           contentContainerStyle={{ gap: 28, flex: 1, paddingHorizontal: 18, paddingVertical: 6 }}
           data={usersWhoLikedSameEventData?.pages.flatMap(users => users.usersWhoLikedEvent)}
-          renderItem={({ item }) => (
-            <View key={item.id} style={styles.user}>
-              <Image style={styles.userAvatar} source={{ uri: item.user.avatar }} />
-              <Text>{item.user.username}</Text>
-            </View>
-          )}
+          renderItem={({ item }) => {
+            const hasIcommingFriendShip = item.user.incomingFriendships[0]?.status === 'PENDING';
+            const hasSentInvitation = item.user.outgoingFriendships[0]?.status === 'PENDING';
+            console.log(item.user);
+            // console.log(item.user.outgoingFriendships[0]?.status);
+            return (
+              <View key={item.id} style={styles.user}>
+                <Image style={styles.userAvatar} source={{ uri: item.user.avatar }} />
+                <Text>{item.user.username}</Text>
+              </View>
+            );
+          }}
         />
       </View>
     </SafeAreaView>
