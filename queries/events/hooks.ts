@@ -9,9 +9,10 @@ import {
   from '@tanstack/react-query';
 import { useCometaStore } from '../../store/cometaStore';
 import eventService from '../../services/eventService';
-import { GetLikedEventById, GetLatestEvents, CreateLikedEvent } from '../../models/Event';
+import { GetLatestEvents, CreateLikedEvent } from '../../models/Event';
 import { GetAllLikedEvents } from '../../models/LikedEvents';
-import { GetUserWhoLikedEvent, UsersWhoLikedSameEventHttpRes } from '../../models/User';
+import { GetUserWhoLikedEvent, GetUsersWhoLikedSameEvent } from '../../models/User';
+import { GetLikedEventByID } from '../../models/EventLike';
 
 
 // Define query keys as enums for better organization
@@ -43,7 +44,7 @@ export const useInfiniteQueryGetLatestEvents = () => {
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (lastPage.nextCursor == 0) {
+        if (!lastPage.nextCursor) {
           return null; // makes hasNextPage evalutes to false
         }
         return lastPage.nextCursor;
@@ -53,6 +54,8 @@ export const useInfiniteQueryGetLatestEvents = () => {
     }));
 };
 
+
+// TODO: change to cursor based pagination
 
 // Query to fetch liked events with infinite scrolling
 export const useInfiniteQueryGetLatestLikedEvents = () => {
@@ -92,7 +95,7 @@ export const useQueryGetEventById = (eventID: number) => {
 
   return useQuery({
     queryKey: [QueryKeys.GET_EVENT_BY_ID],
-    queryFn: async (e): Promise<GetLikedEventById> => {
+    queryFn: async (e): Promise<GetLikedEventByID> => {
       const res = await eventService.getLikedEventByID(eventID, accessToken);
       if (res.status === 200) {
         return res.data;
@@ -108,7 +111,7 @@ export const useQueryGetEventById = (eventID: number) => {
 
 
 // Query to fetch users who liked the same event with infinite scrolling
-export const useInfiteQueryGetLatestUsersWhoLikedSameEvent = (eventID: number) => {
+export const useInfiteQueryGetUsersWhoLikedEventByID = (eventID: number) => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return (
@@ -127,10 +130,10 @@ export const useInfiteQueryGetLatestUsersWhoLikedSameEvent = (eventID: number) =
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (lastPage.usersWhoLikedEvent.length == 0) {
+        if (!lastPage.nextCursor) {
           return null; // makes hasNextPage evalutes to false
         }
-        return lastPage.nextCursor + 1;
+        return lastPage.nextCursor;
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
@@ -160,7 +163,7 @@ export const useMutationLikeOrDislikeEvent = () => {
       },
       onMutate: (eventID) => {
         // Update the cache with the new liked state
-        queryClient.setQueryData<InfiniteData<GetLatestEvents, number>>(['events'], (data) => ({
+        queryClient.setQueryData<InfiniteData<GetLatestEvents, number>>([QueryKeys.GET_EVENTS], (data) => ({
           pages: data?.pages.map(
             (page) => (
               {
@@ -184,11 +187,11 @@ export const useMutationLikeOrDislikeEvent = () => {
       },
       // Invalidate queries after the mutation succeeds
       onSuccess: async () => {
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_EVENTS] }),
-          // failing to update immediatly
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS] })
-        ]);
+        // await Promise.all([
+        //   queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_EVENTS] }),
+        //   // failing to update immediatly
+        //   queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS] })
+        // ]);
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3

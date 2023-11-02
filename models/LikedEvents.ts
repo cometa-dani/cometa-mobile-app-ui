@@ -7,7 +7,7 @@ export interface GetAllLikedEvents {
   eventsPerPage: number;
 }
 
-export interface LikedEvent {
+interface LikedEvent {
   id: number;
   createdAt: string;
   updatedAt: string;
@@ -19,6 +19,6 @@ export interface LikedEvent {
   locationId: number;
   organizationId: number;
   category: string;
-  matches: object[];
+  // matches: object[];
   likes: EventLike[];
 }

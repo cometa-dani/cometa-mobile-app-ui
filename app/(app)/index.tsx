@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { GetLikedEventById, CreateLikedEvent } from '../../models/Event';
+import { GetLikedEvent, CreateLikedEvent } from '../../models/Event';
 import { StyleSheet, Image, DimensionValue, Pressable } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, FlatList, Directions } from 'react-native-gesture-handler';
@@ -11,7 +11,7 @@ import { UseMutationResult } from '@tanstack/react-query';
 
 // Define the props for the memoized list item
 interface ListItemProps {
-  item: GetLikedEventById,
+  item: GetLikedEvent,
   layoutHeight: DimensionValue,
   red100: string,
   tabIconDefault: string,
@@ -20,6 +20,7 @@ interface ListItemProps {
 
 const EventItem: FC<ListItemProps> = ({ item, likeOrDislikeMutation, layoutHeight, red100, tabIconDefault }) => {
 
+  // can be lifted to the parent component like before
   const swipeLeft = Gesture.Fling();
   swipeLeft
     .direction(Directions.LEFT)
@@ -88,19 +89,19 @@ const EventItem: FC<ListItemProps> = ({ item, likeOrDislikeMutation, layoutHeigh
   );
 };
 
-function arePropsEqual(prevProps: ListItemProps, nextProps: ListItemProps): boolean {
-  // Implement your custom comparison logic here
-  // Return true if the props are equal, return false if they are not
-  return (
-    prevProps.item === nextProps.item &&
-    prevProps.layoutHeight === nextProps.layoutHeight &&
-    prevProps.red100 === nextProps.red100 &&
-    prevProps.tabIconDefault === nextProps.tabIconDefault &&
-    prevProps.likeOrDislikeMutation === nextProps.likeOrDislikeMutation
-  );
-}
+// function arePropsEqual(prevProps: ListItemProps, nextProps: ListItemProps): boolean {
+//   // Implement your custom comparison logic here
+//   // Return true if the props are equal, return false if they are not
+//   return (
+//     // prevProps.red100 === nextProps.red100 &&
+//     // prevProps.tabIconDefault === nextProps.tabIconDefault &&
+//     prevProps.item.isLiked === nextProps.item.isLiked &&
+//     prevProps.layoutHeight === nextProps.layoutHeight &&
+//     prevProps.likeOrDislikeMutation === nextProps.likeOrDislikeMutation
+//   );
+// }
 
-const MemoizedEventItem = React.memo(EventItem, arePropsEqual);
+// const MemoizedEventItem = React.memo(EventItem, arePropsEqual);
 
 
 export default function HomeScreen(): JSX.Element {
@@ -122,13 +123,14 @@ export default function HomeScreen(): JSX.Element {
       {/* Latest events list */}
       <FlatList
         pagingEnabled={true}
+        // maxToRenderPerBatch={3}
         onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
         data={data?.pages.flatMap(page => page.events)}
         contentContainerStyle={styles.flatListContent}
         onEndReached={handleInfititeFetch}
         onEndReachedThreshold={1}
         renderItem={({ item }) => (
-          <MemoizedEventItem
+          <EventItem
             likeOrDislikeMutation={likeOrDislikeMutation}
             key={item.id}
             item={item}

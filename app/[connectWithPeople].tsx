@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { Text, View } from '../components/Themed';
 import { useLocalSearchParams } from 'expo-router';
-import { useQueryGetEventById, useInfiteQueryGetLatestUsersWhoLikedSameEvent } from '../queries/events/hooks';
+import { useQueryGetEventById, useInfiteQueryGetUsersWhoLikedEventByID } from '../queries/events/hooks';
 import { Image } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
@@ -10,7 +10,7 @@ import { FlatList } from 'react-native-gesture-handler';
 export default function ConnectWithPeopleScreen(): JSX.Element {
   const urlParam = useLocalSearchParams()['connectWithPeople'];
   const { data: eventData } = useQueryGetEventById(+urlParam);
-  const { data: usersWhoLikedSameEventData } = useInfiteQueryGetLatestUsersWhoLikedSameEvent(+urlParam);
+  const { data: usersWhoLikedSameEventData } = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
