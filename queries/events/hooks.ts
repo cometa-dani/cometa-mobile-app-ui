@@ -14,6 +14,7 @@ import { LikedEventsListRes } from '../../models/LikedEvents';
 import { UsersWhoLikedSameEventHttpRes } from '../../models/User';
 
 
+// Define query keys as enums for better organization
 enum QueryKeys {
   GET_EVENTS,
   GET_LIKED_EVENTS,
@@ -22,6 +23,7 @@ enum QueryKeys {
 }
 
 
+// Query to fetch a list of events with infinite scrolling
 export const useInfiniteEventsQuery = () => {
   const accessToken = useCometaStore(state => state.accessToken);
 
@@ -38,7 +40,7 @@ export const useInfiniteEventsQuery = () => {
           throw new Error('failed to request data');
         }
       },
-      // refetchInterval: 1_000 * 60 * 10,
+      // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
         if (lastPage.cursor == 0) {
@@ -52,6 +54,7 @@ export const useInfiniteEventsQuery = () => {
 };
 
 
+// Query to fetch liked events with infinite scrolling
 export const useInfiniteLikedEventsQuery = () => {
   const accessToken = useCometaStore(state => state.accessToken);
 
@@ -68,6 +71,7 @@ export const useInfiniteLikedEventsQuery = () => {
           throw new Error('failed to request data');
         }
       },
+      // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
         if (lastPage.events.length == 0) {
@@ -82,6 +86,7 @@ export const useInfiniteLikedEventsQuery = () => {
 };
 
 
+// Query to fetch a single event by its ID
 export const useEventByIdQuery = (eventID: number) => {
   const accessToken = useCometaStore(state => state.accessToken);
 
@@ -102,6 +107,7 @@ export const useEventByIdQuery = (eventID: number) => {
 };
 
 
+// Query to fetch users who liked the same event with infinite scrolling
 export const useInfiteUsersWhoLikedSameEventQuery = (eventID: number) => {
   const accessToken = useCometaStore(state => state.accessToken);
 
@@ -118,6 +124,7 @@ export const useInfiteUsersWhoLikedSameEventQuery = (eventID: number) => {
           throw new Error('failed to request data');
         }
       },
+      // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
         if (lastPage.usersWhoLikedSameEvent.length == 0) {
@@ -132,6 +139,7 @@ export const useInfiteUsersWhoLikedSameEventQuery = (eventID: number) => {
 };
 
 
+// Mutation to like or dislike an event
 export const useLikeOrDislikeEventMutation = () => {
   const accessToken = useCometaStore(state => state.accessToken);
   const queryClient = useQueryClient();
@@ -151,6 +159,7 @@ export const useLikeOrDislikeEventMutation = () => {
         }
       },
       onMutate: (eventID) => {
+        // Update the cache with the new liked state
         queryClient.setQueryData<InfiniteData<EventsListRes, number>>(['events'], (data) => ({
           pages: data?.pages.map(
             (page) => (
@@ -173,10 +182,10 @@ export const useLikeOrDislikeEventMutation = () => {
           pageParams: data?.pageParams || []
         }));
       },
+      // Invalidate queries after the mutation succeeds
       onSuccess: async () => {
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_EVENTS] }),
-
           // failing to update immediatly
           queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS] })
         ]);
