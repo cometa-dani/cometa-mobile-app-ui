@@ -28,11 +28,11 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
 
         <FlatList
           contentContainerStyle={{ gap: 28, flex: 1, paddingHorizontal: 18, paddingVertical: 6 }}
-          data={usersWhoLikedSameEventData?.pages.flatMap(users => users.usersWhoLikedSameEvent)}
+          data={usersWhoLikedSameEventData?.pages.flatMap(users => users.usersWhoLikedEvent)}
           renderItem={({ item }) => (
             <View key={item.id} style={styles.user}>
-              <Image style={styles.userAvatar} source={{ uri: item.avatar }} />
-              <Text>{item.username}</Text>
+              <Image style={styles.userAvatar} source={{ uri: item.user.avatar }} />
+              <Text>{item.user.username}</Text>
             </View>
           )}
         />
