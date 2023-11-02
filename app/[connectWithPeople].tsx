@@ -2,15 +2,15 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { Text, View } from '../components/Themed';
 import { useLocalSearchParams } from 'expo-router';
-import { useEventByIdQuery, useInfiteUsersWhoLikedSameEventQuery } from '../queries/events/hooks';
+import { useQueryGetEventById, useInfiteQueryGetUsersWhoLikedSameEvent } from '../queries/events/hooks';
 import { Image } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
 
 export default function ConnectWithPeopleScreen(): JSX.Element {
   const urlParam = useLocalSearchParams()['connectWithPeople'];
-  const { data: eventData } = useEventByIdQuery(+urlParam);
-  const { data: usersWhoLikedSameEventData } = useInfiteUsersWhoLikedSameEventQuery(+urlParam);
+  const { data: eventData } = useQueryGetEventById(+urlParam);
+  const { data: usersWhoLikedSameEventData } = useInfiteQueryGetUsersWhoLikedSameEvent(+urlParam);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

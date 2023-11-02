@@ -24,7 +24,7 @@ enum QueryKeys {
 
 
 // Query to fetch a list of events with infinite scrolling
-export const useInfiniteEventsQuery = () => {
+export const useInfiniteQueryGetEvents = () => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return (
@@ -55,7 +55,7 @@ export const useInfiniteEventsQuery = () => {
 
 
 // Query to fetch liked events with infinite scrolling
-export const useInfiniteLikedEventsQuery = () => {
+export const useInfiniteQueryGetLikedEvents = () => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return (
@@ -87,7 +87,7 @@ export const useInfiniteLikedEventsQuery = () => {
 
 
 // Query to fetch a single event by its ID
-export const useEventByIdQuery = (eventID: number) => {
+export const useQueryGetEventById = (eventID: number) => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return useQuery({
@@ -108,7 +108,7 @@ export const useEventByIdQuery = (eventID: number) => {
 
 
 // Query to fetch users who liked the same event with infinite scrolling
-export const useInfiteUsersWhoLikedSameEventQuery = (eventID: number) => {
+export const useInfiteQueryGetUsersWhoLikedSameEvent = (eventID: number) => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return (
@@ -140,7 +140,7 @@ export const useInfiteUsersWhoLikedSameEventQuery = (eventID: number) => {
 
 
 // Mutation to like or dislike an event
-export const useLikeOrDislikeEventMutation = () => {
+export const useMutationLikeOrDislikeEvent = () => {
   const accessToken = useCometaStore(state => state.accessToken);
   const queryClient = useQueryClient();
 

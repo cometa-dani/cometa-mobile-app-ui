@@ -3,13 +3,13 @@ import { Pressable, StyleSheet } from 'react-native';
 
 import { Text, View } from '../components/Themed';
 import { FlatList } from 'react-native-gesture-handler';
-import { useInfiniteLikedEventsQuery } from '../queries/events/hooks';
+import { useInfiniteQueryGetLikedEvents } from '../queries/events/hooks';
 import { Image } from 'react-native-animatable';
 import { router } from 'expo-router';
 
 
 export default function BuckectListScreen(): JSX.Element {
-  const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteLikedEventsQuery();
+  const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteQueryGetLikedEvents();
 
   return (
     <>
