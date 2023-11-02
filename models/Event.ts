@@ -2,7 +2,7 @@ import { Location } from './Localization';
 import { Organization } from './Organization';
 
 
-export interface CreateLikedEvent {
+export interface CreateEventLike {
   id: number,
   eventId: number,
   userId: number
@@ -22,7 +22,7 @@ export interface CreateEventRes {
   category: string;
 }
 
-export interface GetLatestEvents {
+export interface GetLatestEventsWithPagination {
   events: LikedEvent[];
   totalEvents: number;
   nextCursor: number;

@@ -9,9 +9,9 @@ import {
   from '@tanstack/react-query';
 import { useCometaStore } from '../../store/cometaStore';
 import eventService from '../../services/eventService';
-import { GetLatestEvents, CreateLikedEvent } from '../../models/Event';
-import { GetAllLikedEvents } from '../../models/LikedEvents';
-import { GetUserWhoLikedEvent, GetUsersWhoLikedSameEvent } from '../../models/User';
+import { GetLatestEventsWithPagination, CreateEventLike } from '../../models/Event';
+import { GetAllLikedEventsWithPagination } from '../../models/LikedEvents';
+import { GetUserWhoLikedEventWithPagination, GetUsersWhoLikedSameEvent } from '../../models/User';
 import { GetLikedEventByID } from '../../models/EventLike';
 
 
@@ -32,7 +32,7 @@ export const useInfiniteQueryGetLatestEvents = () => {
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_EVENTS],
       initialPageParam: -1,
-      queryFn: async ({ pageParam }): Promise<GetLatestEvents> => {
+      queryFn: async ({ pageParam }): Promise<GetLatestEventsWithPagination> => {
         const res = await eventService.getAll(pageParam, 4, accessToken);
         if (res.status === 200) {
           return res.data;
@@ -65,7 +65,7 @@ export const useInfiniteQueryGetLatestLikedEvents = () => {
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_LIKED_EVENTS],
       initialPageParam: 1,
-      queryFn: async ({ pageParam }): Promise<GetAllLikedEvents> => {
+      queryFn: async ({ pageParam }): Promise<GetAllLikedEventsWithPagination> => {
         const res = await eventService.getAllLikedEvents(pageParam, 5, accessToken);
         if (res.status === 200) {
           return res.data;
@@ -118,7 +118,7 @@ export const useInfiteQueryGetUsersWhoLikedEventByID = (eventID: number) => {
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT],
       initialPageParam: 1,
-      queryFn: async ({ pageParam }): Promise<GetUserWhoLikedEvent> => {
+      queryFn: async ({ pageParam }): Promise<GetUserWhoLikedEventWithPagination> => {
         const res = await eventService.getUsersWhoLikedSameEvent(eventID, pageParam, 5, accessToken);
         if (res.status === 200) {
           return res.data;
@@ -149,7 +149,7 @@ export const useMutationLikeOrDislikeEvent = () => {
 
   return (
     useMutation({
-      mutationFn: async (eventID: number): Promise<CreateLikedEvent | null> => {
+      mutationFn: async (eventID: number): Promise<CreateEventLike | null> => {
         const res = await eventService.createOrDeleteLikeByEventID(eventID, accessToken);
         if (res.status === 201) {
           return res.data?.eventLikedOrDisliked;
@@ -163,7 +163,7 @@ export const useMutationLikeOrDislikeEvent = () => {
       },
       onMutate: (eventID) => {
         // Update the cache with the new liked state
-        queryClient.setQueryData<InfiniteData<GetLatestEvents, number>>([QueryKeys.GET_EVENTS], (data) => ({
+        queryClient.setQueryData<InfiniteData<GetLatestEventsWithPagination, number>>([QueryKeys.GET_EVENTS], (data) => ({
           pages: data?.pages.map(
             (page) => (
               {

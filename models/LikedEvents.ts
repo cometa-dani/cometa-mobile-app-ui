@@ -1,6 +1,6 @@
 import { EventLike } from './EventLike';
 
-export interface GetAllLikedEvents {
+export interface GetAllLikedEventsWithPagination {
   events: LikedEvent[];
   totalEvents: number;
   currentPage: number;

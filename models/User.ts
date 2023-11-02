@@ -46,7 +46,7 @@ export interface Count {
   incomingNotification: number;
 }
 
-export interface GetUserWhoLikedEvent {
+export interface GetUserWhoLikedEventWithPagination {
   usersWhoLikedEvent: UsersWhoLikedEvent[];
   nextCursor: number;
   totalUsers: number;
