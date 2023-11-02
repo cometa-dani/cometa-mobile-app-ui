@@ -3,13 +3,14 @@ import { Pressable, StyleSheet } from 'react-native';
 
 import { Text, View } from '../components/Themed';
 import { FlatList } from 'react-native-gesture-handler';
-import { useInfiniteQueryGetLikedEvents } from '../queries/events/hooks';
+import { useInfiniteQueryGetLatestLikedEvents } from '../queries/events/hooks';
 import { Image } from 'react-native-animatable';
 import { router } from 'expo-router';
 
 
 export default function BuckectListScreen(): JSX.Element {
-  const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteQueryGetLikedEvents();
+  const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteQueryGetLatestLikedEvents();
+  const handlingInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
   return (
     <>
@@ -20,7 +21,7 @@ export default function BuckectListScreen(): JSX.Element {
           pagingEnabled={false}
           data={data?.pages.flatMap(page => page.events)}
           contentContainerStyle={styles.flatListContent}
-          onEndReached={() => !isFetching && hasNextPage && fetchNextPage()}
+          onEndReached={handlingInfiniteFetch}
           onEndReachedThreshold={0.2}
           renderItem={({ item }) => (
             <Pressable key={item.id} onPress={() => router.push(`/${item.id}`)}>

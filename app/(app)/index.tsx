@@ -5,7 +5,7 @@ import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, FlatList, Directions } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useInfiniteQueryGetEvents, useMutationLikeOrDislikeEvent } from '../../queries/events/hooks';
+import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/events/hooks';
 import { UseMutationResult } from '@tanstack/react-query';
 
 
@@ -108,7 +108,7 @@ export default function HomeScreen(): JSX.Element {
   const { red100, tabIconDefault } = useColors();
 
   // events & function to handle fetching more events when reaching the end
-  const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteQueryGetEvents();
+  const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteQueryGetLatestEvents();
   const handleInfititeFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
   // perform mutations
