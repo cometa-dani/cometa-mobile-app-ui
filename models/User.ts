@@ -1,7 +1,8 @@
 import { Friendship } from './Friendship';
 
 
-export interface UserRes {
+// used in zustand for global CLIENT STATE
+export interface UserClientState {
   id: number;
   uid: string;
   avatar: string;
@@ -9,7 +10,7 @@ export interface UserRes {
   username: string;
   email: string;
   phone: string;
-  // password: string;
+  password: string;
 }
 
 export interface Photo {
@@ -17,36 +18,7 @@ export interface Photo {
   uuid: string
 }
 
-export interface GetUsersWhoLikedSameEvent {
-  usersWhoLikedEvent: UsersWhoLikedSameEvent[];
-  nextCursor: number;
-  totalUsers: number;
-  usersPerPage: number;
-}
-
-export interface UsersWhoLikedSameEvent {
-  id: number;
-  avatar: string;
-  photos: Photo[];
-  username: string;
-  email: string;
-  phone: null;
-  uid: string;
-  incomingFriendships: object[];
-  outgoingFriendships: object[];
-  _count?: Count;
-}
-
-export interface Count {
-  likedEvents: number;
-  matches: number;
-  outgoingFriendships: number;
-  incomingFriendships: number;
-  outgoingNotification: number;
-  incomingNotification: number;
-}
-
-export interface GetUserWhoLikedEventWithPagination {
+export interface GetUsersWhoLikedEventWithPagination {
   usersWhoLikedEvent: UsersWhoLikedEvent[];
   nextCursor: number;
   totalUsers: number;
@@ -62,10 +34,11 @@ export interface UsersWhoLikedEvent {
   user: User;
 }
 
+// used for SERVER STATE
 export interface User {
   id: number;
   avatar: string;
-  photos: object[];
+  photos: Photo[];
   username: string;
   email: string;
   phone: null;

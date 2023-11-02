@@ -1,4 +1,4 @@
-import { UserRes } from '../models/User';
+import { UserClientState } from '../models/User';
 import { RestApiService } from './restService';
 import * as ImagePicker from 'expo-image-picker';
 import FormData from 'form-data';
@@ -6,13 +6,13 @@ import FormData from 'form-data';
 
 class UserService extends RestApiService {
 
-  public create(payload: Partial<UserRes>) {
+  public create(payload: Partial<UserClientState>) {
     const { email, username } = payload;
-    return this.http.post<UserRes>('/users', { email, username });
+    return this.http.post<UserClientState>('/users', { email, username });
   }
 
-  public updateById(userID: number, payload: Partial<UserRes>) {
-    return this.http.patch<UserRes>(`/users/${userID}`, payload);
+  public updateById(userID: number, payload: Partial<UserClientState>) {
+    return this.http.patch<UserClientState>(`/users/${userID}`, payload);
   }
 
   public delete(userID: number) {
@@ -30,7 +30,7 @@ class UserService extends RestApiService {
     };
     formData.append('file', payload);
 
-    return this.http.patch<UserRes>(`/users/${userID}/avatar`, formData, { headers });
+    return this.http.patch<UserClientState>(`/users/${userID}/avatar`, formData, { headers });
   }
 }
 

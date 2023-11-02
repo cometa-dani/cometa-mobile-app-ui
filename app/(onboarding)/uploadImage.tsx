@@ -12,7 +12,7 @@ import usersService from '../../services/userService';
 import { useCometaStore } from '../../store/cometaStore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
-import { UserRes } from '../../models/User';
+import { UserClientState } from '../../models/User';
 
 
 export default function UploadImageScreen(): JSX.Element {
@@ -45,7 +45,7 @@ export default function UploadImageScreen(): JSX.Element {
 
   // TODO: verify that username & phone & email are unique and do not exist already
   const handleUserRegistration = async () => {
-    const onboardingUser = onboarding?.user as UserRes;
+    const onboardingUser = onboarding?.user as UserClientState;
     try {
       if (imgFileRef?.current?.uri) {
         // put this step on the register form

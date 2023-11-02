@@ -11,7 +11,7 @@ import { useCometaStore } from '../../store/cometaStore';
 import eventService from '../../services/eventService';
 import { GetLatestEventsWithPagination, CreateEventLike } from '../../models/Event';
 import { GetAllLikedEventsWithPagination } from '../../models/LikedEvents';
-import { GetUserWhoLikedEventWithPagination, GetUsersWhoLikedSameEvent } from '../../models/User';
+import { GetUsersWhoLikedEventWithPagination } from '../../models/User';
 import { GetLikedEventByID } from '../../models/EventLike';
 
 
@@ -118,7 +118,7 @@ export const useInfiteQueryGetUsersWhoLikedEventByID = (eventID: number) => {
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT],
       initialPageParam: 1,
-      queryFn: async ({ pageParam }): Promise<GetUserWhoLikedEventWithPagination> => {
+      queryFn: async ({ pageParam }): Promise<GetUsersWhoLikedEventWithPagination> => {
         const res = await eventService.getUsersWhoLikedSameEvent(eventID, pageParam, 5, accessToken);
         if (res.status === 200) {
           return res.data;
@@ -163,27 +163,29 @@ export const useMutationLikeOrDislikeEvent = () => {
       },
       onMutate: (eventID) => {
         // Update the cache with the new liked state
-        queryClient.setQueryData<InfiniteData<GetLatestEventsWithPagination, number>>([QueryKeys.GET_EVENTS], (data) => ({
-          pages: data?.pages.map(
-            (page) => (
-              {
-                ...page,
-                events: page.events.map(event => (
-                  {
-                    ...event,
-                    isLiked: (
-                      event.isLiked && (eventID === event.id) ? false
-                        :
-                        !event.isLiked && (eventID === event.id) ? true
+        queryClient
+          .setQueryData<InfiniteData<GetLatestEventsWithPagination, number>>
+          ([QueryKeys.GET_EVENTS], (data) => ({
+            pages: data?.pages.map(
+              (page) => (
+                {
+                  ...page,
+                  events: page.events.map(event => (
+                    {
+                      ...event,
+                      isLiked: (
+                        event.isLiked && (eventID === event.id) ? false
                           :
-                          event.isLiked
-                    )
-                  }
-                ))
-              }
-            )) || [],
-          pageParams: data?.pageParams || []
-        }));
+                          !event.isLiked && (eventID === event.id) ? true
+                            :
+                            event.isLiked
+                      )
+                    }
+                  ))
+                }
+              )) || [],
+            pageParams: data?.pageParams || []
+          }));
       },
       // Invalidate queries after the mutation succeeds
       onSuccess: async () => {

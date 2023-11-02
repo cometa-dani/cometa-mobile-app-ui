@@ -1,12 +1,12 @@
 import { Location } from './Localization';
-import { UserRes } from './User';
+import { UserClientState } from './User';
 
 
 export interface EventLike {
   id: number;
   eventId: number;
   userId: number;
-  user: UserRes;
+  user: UserClientState;
 }
 
 export interface GetLikedEventByID {

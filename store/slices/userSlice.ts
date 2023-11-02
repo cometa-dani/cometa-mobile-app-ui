@@ -1,14 +1,14 @@
 /* eslint-disable no-unused-vars */
 import { StateCreator } from 'zustand';
-import { UserRes } from '../../models/User';
+import { UserClientState } from '../../models/User';
 
 
 export type UserSlice = {
-  user: Partial<UserRes>,
+  user: Partial<UserClientState>,
   isAuthenticated: boolean,
   accessToken: string,
 
-  setUser: (user: Partial<UserRes>) => void,
+  setUser: (user: Partial<UserClientState>) => void,
   setIsAuthenticated: (isAuth: boolean) => void,
   setAccessToken: (authToken: string) => void
 }
@@ -16,12 +16,12 @@ export type UserSlice = {
 
 export const createUserSlice: StateCreator<UserSlice> = (set) => ({
 
-  user: {} as UserRes,
+  user: {} as UserClientState,
 
   isAuthenticated: false,
   accessToken: '',
 
-  setUser: (user: Partial<UserRes>) => {
+  setUser: (user: Partial<UserClientState>) => {
     set({
       user
     });
