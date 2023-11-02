@@ -25,7 +25,7 @@
 //   organization: Organization;
 // }
 
-export interface LikeEvent {
+export interface CreateLikedEvent {
   id: number,
   eventId: number,
   userId: number

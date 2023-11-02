@@ -9,7 +9,7 @@ import {
   from '@tanstack/react-query';
 import { useCometaStore } from '../../store/cometaStore';
 import eventService from '../../services/eventService';
-import { GetLikedEventById, GetLatestEvents, LikeEvent } from '../../models/Event';
+import { GetLikedEventById, GetLatestEvents, CreateLikedEvent } from '../../models/Event';
 import { GetAllLikedEvents } from '../../models/LikedEvents';
 import { GetUserWhoLikedEvent, UsersWhoLikedSameEventHttpRes } from '../../models/User';
 
@@ -146,7 +146,7 @@ export const useMutationLikeOrDislikeEvent = () => {
 
   return (
     useMutation({
-      mutationFn: async (eventID: number): Promise<LikeEvent | null> => {
+      mutationFn: async (eventID: number): Promise<CreateLikedEvent | null> => {
         const res = await eventService.createOrDeleteLikeByEventID(eventID, accessToken);
         if (res.status === 201) {
           return res.data?.eventLikedOrDisliked;

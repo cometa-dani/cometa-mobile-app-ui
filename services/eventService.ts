@@ -1,4 +1,4 @@
-import { GetLikedEventById, GetLatestEvents, LikeEvent } from '../models/Event';
+import { GetLikedEventById, GetLatestEvents, CreateLikedEvent } from '../models/Event';
 import { GetAllLikedEvents } from '../models/LikedEvents';
 import { GetUserWhoLikedEvent } from '../models/User';
 import { RestApiService } from './restService';
@@ -18,7 +18,7 @@ class EventService extends RestApiService {
   public createOrDeleteLikeByEventID(eventID: number, accessToken: string) {
     return (
       this.http
-        .post<{ eventLikedOrDisliked: LikeEvent }>
+        .post<{ eventLikedOrDisliked: CreateLikedEvent }>
         (`/events/${eventID}/like`, null, this.configAuthHeader(accessToken))
     );
   }

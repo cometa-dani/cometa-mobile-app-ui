@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { GetLikedEventById, LikeEvent } from '../../models/Event';
+import { GetLikedEventById, CreateLikedEvent } from '../../models/Event';
 import { StyleSheet, Image, DimensionValue, Pressable } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, FlatList, Directions } from 'react-native-gesture-handler';
@@ -15,7 +15,7 @@ interface ListItemProps {
   layoutHeight: DimensionValue,
   red100: string,
   tabIconDefault: string,
-  likeOrDislikeMutation: UseMutationResult<LikeEvent | null, Error, number, void>
+  likeOrDislikeMutation: UseMutationResult<CreateLikedEvent | null, Error, number, void>
 }
 
 const EventItem: FC<ListItemProps> = ({ item, likeOrDislikeMutation, layoutHeight, red100, tabIconDefault }) => {
