@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { Pressable, PressableProps, Text, StyleSheet, TextStyle } from 'react-native';
 import { useColors } from '../Themed';
+import { buttonColors } from '../../constants/colors';
 
 
 interface Props extends PressableProps {
@@ -18,12 +19,29 @@ export const LightButton: FC<Props> = ({ text, textStyles = {}, ...props }) => {
   );
 };
 
+
+interface CoProps extends PressableProps {
+  text: string,
+  btnColor: 'black' | 'gray' | 'blue',
+}
+
+export const CoButton: FC<CoProps> = ({ text, btnColor, ...props }) => {
+  const { background, color } = buttonColors[btnColor];
+  return (
+    <Pressable {...props} style={[styles.button, { backgroundColor: background }]}>
+      <Text style={[styles.buttonText, { color }]}>{text}</Text>
+    </Pressable>
+  );
+};
+
+
 const styles = StyleSheet.create({
   button: {
     borderRadius: 50,
-    elevation: 3,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
+    elevation: 1,
+    minWidth: 130,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
     shadowColor: '#171717',
     shadowOffset: { width: 6, height: 6 },
     shadowOpacity: 0.1,
