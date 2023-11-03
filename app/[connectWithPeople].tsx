@@ -1,5 +1,4 @@
-import { useState } from 'react';
-// import { StatusBar } from 'expo-status-bar';
+import { FC, useState } from 'react';
 import { SafeAreaView, StyleSheet, Modal, Pressable, View as DefaultView } from 'react-native';
 import { Text, View } from '../components/Themed';
 import { useLocalSearchParams } from 'expo-router';
@@ -10,91 +9,101 @@ import { CoButton } from '../components/buttons/buttons';
 import { StatusBar } from 'expo-status-bar';
 
 
+interface Props {
+  imgUrl?: string
+}
+
+const ListHeader: FC<Props> = ({ imgUrl }) => (
+  <View style={styles.header}>
+    <Image style={styles.imgHeader} source={{ uri: imgUrl }} />
+
+    <View style={styles.tabs}>
+      <Text style={styles.tab}>Friends</Text>
+      <Text style={styles.tab}>New People</Text>
+    </View>
+  </View>
+);
+
 export default function ConnectWithPeopleScreen(): JSX.Element {
   const urlParam = useLocalSearchParams()['connectWithPeople'];
   const { data: eventData } = useQueryGetEventById(+urlParam);
-  const { data: usersWhoLikedSameEventData } = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
+  const { data: usersWhoLikedSameEventData, isSuccess } = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
   const [toggleModal, setToggleModal] = useState(false);
 
-  console.log(urlParam);
+  // console.log(urlParam);
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar backgroundColor="transparent" translucent={true} style={'auto'} />
 
       <View style={styles.screenContainer}>
-        <View style={styles.imgContainer}>
-          <Image style={styles.imgHeader} source={{ uri: eventData?.mediaUrl }} />
-        </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={toggleModal}
+        >
+          <DefaultView style={modalStyles.centeredView}>
 
-        <View style={styles.tabs}>
-          <Text style={styles.tab}>Friends</Text>
-          <Text style={styles.tab}>New People</Text>
-        </View>
+            <View style={modalStyles.modalView}>
+              <Text style={modalStyles.modalText}>Hello World!</Text>
+              <Pressable
+                style={[modalStyles.button, modalStyles.buttonClose]}
+                onPress={() => setToggleModal(false)}
+              >
+                <Text style={modalStyles.textStyle}>Hide Modal</Text>
+              </Pressable>
+            </View>
+          </DefaultView>
+        </Modal>
 
-        <FlatList
-          contentContainerStyle={{ gap: 28, flex: 1, paddingHorizontal: 18, paddingVertical: 6 }}
-          data={usersWhoLikedSameEventData?.pages.flatMap(users => users.usersWhoLikedEvent)}
-          renderItem={({ item }) => {
-            const hasIcommingFriendShip = item.user.incomingFriendships[0]?.status === 'PENDING';
-            const hasSentInvitation = item.user.outgoingFriendships[0]?.status === 'PENDING';
-            console.log(`hasIcommingFriendShip: ${hasIcommingFriendShip}`);
-            console.log(`hasSentInvitation: ${hasSentInvitation}`);
-            return (
-              <View key={item.id} style={styles.user}>
-                <View style={styles.avatarContainer}>
-                  <Image style={styles.userAvatar} source={{ uri: item.user.avatar }} />
+        {isSuccess && (
+          <FlatList
+            ListHeaderComponent={<ListHeader imgUrl={eventData?.mediaUrl} />}
+            contentContainerStyle={{ gap: 26, paddingHorizontal: 18, paddingVertical: 28 }}
+            data={usersWhoLikedSameEventData?.pages.flatMap(users => users.usersWhoLikedEvent)}
+            renderItem={({ item }) => {
+              const hasIcommingFriendShip: boolean = item.user.incomingFriendships[0]?.status === 'PENDING';
+              const hasSentInvitation: boolean = item.user.outgoingFriendships[0]?.status === 'PENDING';
+              // console.log(`hasIcommingFriendShip: ${hasIcommingFriendShip}`);
+              // console.log(`hasSentInvitation: ${hasSentInvitation}`);
 
-                  <View style={styles.textContainer}>
-                    <Text style={styles.userName}>{item.user.username}</Text>
-                    <Text>online</Text>
-                  </View>
-                </View>
+              return (
+                <View key={item.id} style={styles.user}>
+                  <View style={styles.avatarContainer}>
+                    <Image style={styles.userAvatar} source={{ uri: item.user.avatar }} />
 
-                <Modal
-                  animationType="slide"
-                  transparent={true}
-                  visible={toggleModal}
-                >
-                  <DefaultView style={modalStyles.centeredView}>
-                    <StatusBar backgroundColor="transparent" translucent={true} style={'auto'} />
-
-                    <View style={modalStyles.modalView}>
-                      <Text style={modalStyles.modalText}>Hello World!</Text>
-                      <Pressable
-                        style={[modalStyles.button, modalStyles.buttonClose]}
-                        onPress={() => setToggleModal(false)}
-                      >
-                        <Text style={modalStyles.textStyle}>Hide Modal</Text>
-                      </Pressable>
+                    <View style={styles.textContainer}>
+                      <Text style={styles.userName}>{item.user.username}</Text>
+                      <Text>online</Text>
                     </View>
-                  </DefaultView>
-                </Modal>
+                  </View>
 
-                {hasSentInvitation && (
-                  <CoButton
-                    onPress={() => console.log(hasSentInvitation, 'IS PENDING')}
-                    text="PENDING"
-                    btnColor='blue'
-                  />
-                )}
-                {hasIcommingFriendShip && (
-                  <CoButton
-                    onPress={() => setToggleModal(true)}
-                    text="MODAL"
-                    btnColor='black'
-                  />
-                )}
-                {!hasIcommingFriendShip && !hasIcommingFriendShip && (
-                  <CoButton
-                    onPress={() => console.log(hasIcommingFriendShip, 'SENT INVITATION')}
-                    text="JOIN"
-                    btnColor='black'
-                  />
-                )}
+                  {hasSentInvitation && (
+                    <CoButton
+                      onPress={() => console.log(hasSentInvitation, 'IS PENDING')}
+                      text="PENDING"
+                      btnColor='blue'
+                    />
+                  )}
+                  {hasIcommingFriendShip && (
+                    <CoButton
+                      onPress={() => setToggleModal(true)}
+                      text="MODAL"
+                      btnColor='black'
+                    />
+                  )}
+                  {!hasIcommingFriendShip && !hasSentInvitation && (
+                    <CoButton
+                      onPress={() => console.log(hasIcommingFriendShip, 'SENT INVITATION')}
+                      text="JOIN"
+                      btnColor='black'
+                    />
+                  )}
 
-              </View>
-            );
-          }}
-        />
+                </View>
+              );
+            }}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -115,7 +124,7 @@ const modalStyles = StyleSheet.create({
   // },
   centeredView: {
     alignItems: 'center',
-    // backgroundColor: 'rgba(0, 0, 0, 0.18)',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
     flex: 1,
     height: '100%',
     justifyContent: 'center',
@@ -134,7 +143,7 @@ const modalStyles = StyleSheet.create({
     elevation: 5,
     // margin: 20,
     padding: 35,
-    shadowColor: '#000',
+    shadowColor: '#171717',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -156,8 +165,8 @@ const styles = StyleSheet.create({
     gap: 14,
   },
 
-  imgContainer: {
-    paddingHorizontal: 18,
+  header: {
+    gap: 16
   },
 
   imgHeader: {
@@ -168,8 +177,6 @@ const styles = StyleSheet.create({
 
   screenContainer: {
     flex: 1,
-    gap: 14,
-    paddingVertical: 26
   },
 
   tab: {
@@ -179,7 +186,7 @@ const styles = StyleSheet.create({
   tabs: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 18
+    paddingHorizontal: 6
   },
 
   textContainer: {
@@ -207,6 +214,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width: 50
   },
+
   userName: {
     fontSize: 17,
     fontWeight: '700',
