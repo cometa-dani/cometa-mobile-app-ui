@@ -1,17 +1,17 @@
 import React, { FC, useState } from 'react';
-import { GetLikedEvent, CreateEventLike } from '../../models/Event';
+import { LikedEvent, CreateEventLike } from '../../models/Event';
 import { StyleSheet, Image, DimensionValue, Pressable } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, FlatList, Directions } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/events/hooks';
+import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
 import { UseMutationResult } from '@tanstack/react-query';
 
 
 // Define the props for the memoized list item
 interface ListItemProps {
-  item: GetLikedEvent,
+  item: LikedEvent,
   layoutHeight: DimensionValue,
   red100: string,
   tabIconDefault: string,

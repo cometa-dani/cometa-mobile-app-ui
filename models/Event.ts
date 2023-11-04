@@ -29,7 +29,7 @@ export interface GetLatestEventsWithPagination {
   eventsPerPage: number;
 }
 
-interface LikedEvent {
+export interface LikedEvent {
   id: number;
   createdAt: string;
   updatedAt: string;

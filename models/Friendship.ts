@@ -8,3 +8,10 @@ export interface Friendship {
 }
 
 type Status = 'PENDING' | 'ACCEPTED' | 'BLOCKED'
+
+export interface GetLatestFriendships {
+  friendships: Friendship[];
+  totalFriendships: number;
+  nextCursor: number;
+  friendshipsPerPage: number;
+}

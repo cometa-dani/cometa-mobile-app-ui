@@ -10,8 +10,7 @@ import { useEffect } from 'react';
 import { useColorScheme, } from 'react-native';
 
 // query client for server state
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '../queries/client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 
 // Catch any errors thrown by the Layout component.
@@ -58,7 +57,7 @@ function RootLayoutNav(): JSX.Element {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={new QueryClient()}>
         <Stack>
           <Stack.Screen name='index' options={screenOptions} />
 

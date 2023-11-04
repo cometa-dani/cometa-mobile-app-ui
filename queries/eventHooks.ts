@@ -7,12 +7,12 @@ import {
   InfiniteData
 }
   from '@tanstack/react-query';
-import { useCometaStore } from '../../store/cometaStore';
-import eventService from '../../services/eventService';
-import { GetLatestEventsWithPagination, CreateEventLike } from '../../models/Event';
-import { GetAllLikedEventsWithPagination } from '../../models/LikedEvents';
-import { GetUsersWhoLikedEventWithPagination } from '../../models/User';
-import { GetLikedEventByID } from '../../models/EventLike';
+import { useCometaStore } from '../store/cometaStore';
+import eventService from '../services/eventService';
+import { GetLatestEventsWithPagination, CreateEventLike } from '../models/Event';
+import { GetAllLikedEventsWithPagination } from '../models/LikedEvents';
+import { GetUsersWhoLikedEventWithPagination } from '../models/User';
+import { GetLikedEventByID } from '../models/EventLike';
 
 
 // Define query keys as enums for better organization

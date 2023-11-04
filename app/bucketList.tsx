@@ -3,7 +3,7 @@ import { Pressable, StyleSheet } from 'react-native';
 
 import { Text, View } from '../components/Themed';
 import { FlatList } from 'react-native-gesture-handler';
-import { useInfiniteQueryGetLatestLikedEvents } from '../queries/events/hooks';
+import { useInfiniteQueryGetLatestLikedEvents } from '../queries/eventHooks';
 import { Image } from 'react-native-animatable';
 import { router } from 'expo-router';
 
