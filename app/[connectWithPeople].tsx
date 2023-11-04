@@ -1,24 +1,37 @@
 import { FC, useState } from 'react';
-import { SafeAreaView, StyleSheet, Modal, Pressable, View as DefaultView } from 'react-native';
+import { SafeAreaView, StyleSheet, Modal, View as DefaultView, Pressable } from 'react-native';
 import { Text, View } from '../components/Themed';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQueryGetEventById, useInfiteQueryGetUsersWhoLikedEventByID } from '../queries/eventHooks';
 import { Image } from 'react-native';
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
+import { FlatList, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { CoButton } from '../components/buttons/buttons';
 import { StatusBar } from 'expo-status-bar';
 import { useInfiniteQueryGetNewestFriends } from '../queries/friendshipHooks';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
+import { useCometaStore } from '../store/cometaStore';
+import { useQueryGetUserInfo } from '../queries/userHooks';
+import { Formik } from 'formik';
+import { FontAwesome } from '@expo/vector-icons';
+import { UsersWhoLikedEvent } from '../models/User';
 
 
 export default function ConnectWithPeopleScreen(): JSX.Element {
+  const uid = useCometaStore(state => state.uid);
+  const { data: userProfile } = useQueryGetUserInfo(uid);
   const urlParam = useLocalSearchParams()['connectWithPeople'];
   const eventByIdRes = useQueryGetEventById(+urlParam);
   const usersWhoLikedSameEventRes = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();
   const [toggleModal, setToggleModal] = useState(false);
-  const [toggleTabs, setToggleTabs] = useState(true);
-  console.log(urlParam);
+  const [toggleTabs, setToggleTabs] = useState(false);
+  const [incommginFriendShip, setIncommginFriendShip] = useState({} as UsersWhoLikedEvent);
+
+  const handleIncommingFriendShip = (incommingUser: UsersWhoLikedEvent): void => {
+    setIncommginFriendShip(incommingUser);
+    setTimeout(() => setToggleModal(true), 100);
+  };
+
   const TabsHeader: FC = () => (
     <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 26 }]}>
       <Image style={styles.imgHeader} source={{ uri: eventByIdRes.data?.mediaUrl }} />
@@ -48,12 +61,38 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
           <DefaultView style={modalStyles.centeredView}>
 
             <View style={modalStyles.modalView}>
-              <Text style={modalStyles.modalText}>Hello World!</Text>
+
+              <View style={modalStyles.avatarMatchContainer}>
+                <Image style={modalStyles.avatarMatch} source={{ uri: userProfile?.avatar }} />
+                {incommginFriendShip?.user?.avatar && (
+                  <Image style={modalStyles.avatarMatch} source={{ uri: incommginFriendShip.user.avatar }} />
+                )}
+              </View>
+
+              <View>
+                <Text style={modalStyles.modalText}>It&apos;s as match!</Text>
+                <Text style={modalStyles.modalText}>You have a new friend</Text>
+              </View>
+
+              <Formik initialValues={{ message: '' }} onSubmit={(values) => console.log(values)}>
+                {({ handleBlur, handleChange, values }) => (
+                  <TextInput
+                    numberOfLines={1}
+                    style={modalStyles.input}
+                    onChangeText={handleChange('message')}
+                    onBlur={handleBlur('message')}
+                    value={values.message}
+                    placeholder={`Mesage ${incommginFriendShip.user.username} to join together ${eventByIdRes.data?.name.split(' ').slice(0, 4).join(' ')}`}
+                    secureTextEntry={true}
+                  />
+                )}
+              </Formik>
+
               <Pressable
-                style={[modalStyles.button, modalStyles.buttonClose]}
+                style={modalStyles.iconButton}
                 onPress={() => setToggleModal(false)}
               >
-                <Text style={modalStyles.textStyle}>Hide Modal</Text>
+                <FontAwesome style={modalStyles.icon} name='times-circle' />
               </Pressable>
             </View>
           </DefaultView>
@@ -127,7 +166,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                       )}
                       {hasIcommingFriendShip && (
                         <CoButton
-                          onPress={() => setToggleModal(true)}
+                          onPress={() => handleIncommingFriendShip(item)}
                           text="MODAL"
                           btnColor='black'
                         />
@@ -153,52 +192,71 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
 
 
 const modalStyles = StyleSheet.create({
-  button: {
-    borderRadius: 20,
-    elevation: 2,
-    padding: 10,
+  avatarMatch: {
+    aspectRatio: 1,
+    borderColor: '#eee',
+    borderRadius: 100,
+    borderWidth: 2,
+    height: 116
   },
-  buttonClose: {
-    backgroundColor: '#2196F3',
+  avatarMatchContainer: {
+    flexDirection: 'row',
+    gap: -30
   },
-  // buttonOpen: {
-  //   backgroundColor: '#F194FF',
-  // },
   centeredView: {
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
     flex: 1,
     height: '100%',
     justifyContent: 'center',
-    // marginTop: -42,
     padding: 20,
-    // zIndex: 1000
+  },
+
+  icon: {
+    fontSize: 34
+  },
+  iconButton: {
+    position: 'absolute',
+    right: 28,
+    top: 24
+  },
+  input: {
+    // textOverflow: 'show',
+    // textOverflow: '',
+
+    backgroundColor: '#fff',
+    borderRadius: 50,
+    elevation: 2,
+    marginTop: 12,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    shadowColor: '#171717',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    width: '100%',
   },
   modalText: {
-    marginBottom: 15,
+    fontSize: 18,
     textAlign: 'center',
   },
   modalView: {
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
     borderRadius: 20,
-    elevation: 5,
-    // margin: 20,
-    padding: 35,
+    elevation: 3,
+    gap: 16,
+    paddingHorizontal: 28,
+    paddingVertical: 24,
     shadowColor: '#171717',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowOpacity: 0.1,
+    shadowRadius: 0.4,
     width: '100%'
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
+  }
 });
 
 const styles = StyleSheet.create({

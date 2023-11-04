@@ -28,6 +28,7 @@ export default function LoginScreen(): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
   const setAccessToken = useCometaStore(state => state.setAccessToken);
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
+  const setUserUid = useCometaStore(state => state.setUid);
 
   const handleLogin =
     async (values: UserForm, actions: FormikHelpers<UserForm>) => {
@@ -36,8 +37,9 @@ export default function LoginScreen(): JSX.Element {
         actions.resetForm();
         const { user } = await signInWithEmailAndPassword(auth, values.email, values.password);
         actions.setSubmitting(false);
-        setIsAuthenticated(true);
         setAccessToken(await user.getIdToken());
+        setUserUid(user.uid);
+        setIsAuthenticated(true);
         setIsLoading(false);
         router.push('/(app)/');
       }

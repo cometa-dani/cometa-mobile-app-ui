@@ -5,12 +5,14 @@ import { useEffect } from 'react';
 import { Unsubscribe, onAuthStateChanged } from 'firebase/auth'; // Import Firebase authentication functions.
 import { auth } from '../firebase/firebase'; // Import Firebase authentication instance.
 import { useCometaStore } from '../store/cometaStore';
+// import userService from '../services/userService';
 
 
 export default function WelcomeScreen(): JSX.Element {
   const isAuthenticated = useCometaStore(state => state.isAuthenticated);
   const setAccessToken = useCometaStore(state => state.setAccessToken);
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
+  const setUserUid = useCometaStore(state => state.setUid);
   let unsubscribe!: Unsubscribe;
 
   // Function to handle navigation when "Get Started" button is pressed.
@@ -23,16 +25,22 @@ export default function WelcomeScreen(): JSX.Element {
   const handleAuthStateChanged = async (): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
       unsubscribe = onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          setIsAuthenticated(true);
-          setAccessToken(await user.getIdToken());
-          console.log(`${user.email} is authenticated`);
-          resolve(true);
+        try {
+          if (user) {
+            setAccessToken(await user.getIdToken());
+            setIsAuthenticated(true);
+            setUserUid(user.uid);
+            console.log(`${user.email} is authenticated`);
+            resolve(true);
+          }
+          else {
+            setIsAuthenticated(false);
+            console.log('user is logged out');
+            resolve(false);
+          }
         }
-        else {
-          setIsAuthenticated(false);
-          console.log('user is logged out');
-          resolve(false);
+        catch (error) {
+          console.log(error);
         }
       });
     });

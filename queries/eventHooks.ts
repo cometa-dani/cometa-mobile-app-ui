@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import {
   useQuery,
   useInfiniteQuery,
@@ -13,15 +12,7 @@ import { GetLatestEventsWithPagination, CreateEventLike } from '../models/Event'
 import { GetAllLikedEventsWithPagination } from '../models/LikedEvents';
 import { GetUsersWhoLikedEventWithPagination } from '../models/User';
 import { GetLikedEventByID } from '../models/EventLike';
-
-
-// Define query keys as enums for better organization
-enum QueryKeys {
-  GET_EVENTS,
-  GET_LIKED_EVENTS,
-  GET_EVENT_BY_ID,
-  GET_USERS_LIKED_SAME_EVENT
-}
+import { QueryKeys } from './queryKeys';
 
 
 // Query to fetch a list of events with infinite scrolling
@@ -95,7 +86,7 @@ export const useQueryGetEventById = (eventID: number) => {
 
   return useQuery({
     queryKey: [QueryKeys.GET_EVENT_BY_ID],
-    queryFn: async (e): Promise<GetLikedEventByID> => {
+    queryFn: async (): Promise<GetLikedEventByID> => {
       const res = await eventService.getLikedEventByID(eventID, accessToken);
       if (res.status === 200) {
         return res.data;

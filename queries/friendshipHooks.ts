@@ -1,13 +1,9 @@
-/* eslint-disable no-unused-vars */
 import { useInfiniteQuery } from '@tanstack/react-query';
 import friendshipService from '../services/friendshipService';
 import { GetLatestFriendships } from '../models/Friendship';
 import { useCometaStore } from '../store/cometaStore';
+import { QueryKeys } from './queryKeys';
 
-
-enum QueryKeys {
-  GET_NEWEST_FRIENDS = 'GET_NEWEST_FRIENDS'
-}
 
 export const useInfiniteQueryGetNewestFriends = () => {
   const accessToken = useCometaStore(state => state.accessToken);

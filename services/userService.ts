@@ -11,6 +11,10 @@ class UserService extends RestApiService {
     return this.http.post<UserClientState>('/users', { email, username });
   }
 
+  public getUserInfoByUid(uid: string) {
+    return this.http.get<UserClientState>(`/users/${uid}`);
+  }
+
   public updateById(userID: number, payload: Partial<UserClientState>) {
     return this.http.patch<UserClientState>(`/users/${userID}`, payload);
   }
