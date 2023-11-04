@@ -8,7 +8,12 @@ import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { CoButton } from '../components/buttons/buttons';
 import { StatusBar } from 'expo-status-bar';
 import { useInfiniteQueryGetNewestFriends } from '../queries/friendshipHooks';
+import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 
+
+// function App() {
+//   return ;
+// }
 
 export default function ConnectWithPeopleScreen(): JSX.Element {
   const urlParam = useLocalSearchParams()['connectWithPeople'];
@@ -63,80 +68,86 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
         {/* FRIENDS */}
         {toggleTabs && (
           newestFriendsRes.isSuccess && (
-            <FlatList
-              contentContainerStyle={styles.flatList}
-              data={newestFriendsRes.data?.pages.flatMap(page => page?.friendships) || []}
-              renderItem={({ item }) => {
-                return (
-                  <View key={item.id} style={styles.user}>
-                    <View style={styles.avatarContainer}>
-                      <Image style={styles.userAvatar} source={{ uri: item?.friend?.avatar }} />
+            <Animated.View entering={SlideInLeft} exiting={SlideOutRight}>
 
-                      <View style={styles.textContainer}>
-                        <Text style={styles.userName}>{item?.friend?.username}</Text>
-                        <Text>online</Text>
+              <FlatList
+                contentContainerStyle={styles.flatList}
+                data={newestFriendsRes.data?.pages.flatMap(page => page?.friendships) || []}
+                renderItem={({ item }) => {
+                  return (
+                    <View key={item.id} style={styles.user}>
+                      <View style={styles.avatarContainer}>
+                        <Image style={styles.userAvatar} source={{ uri: item?.friend?.avatar }} />
+
+                        <View style={styles.textContainer}>
+                          <Text style={styles.userName}>{item?.friend?.username}</Text>
+                          <Text>online</Text>
+                        </View>
                       </View>
-                    </View>
 
-                    <CoButton
-                      onPress={() => router.push('/chat')}
-                      text="CHAT"
-                      btnColor='gray'
-                    />
-                  </View>
-                );
-              }}
-            />
+                      <CoButton
+                        onPress={() => router.push('/chat')}
+                        text="CHAT"
+                        btnColor='gray'
+                      />
+                    </View>
+                  );
+                }}
+              />
+            </Animated.View>
           )
         )}
 
         {/* NEW PEOPLE */}
         {!toggleTabs && (
           usersWhoLikedSameEventRes.isSuccess && (
-            <FlatList
-              // ListHeaderComponent={}
-              contentContainerStyle={styles.flatList}
-              data={usersWhoLikedSameEventRes.data?.pages.flatMap(users => users.usersWhoLikedEvent)}
-              renderItem={({ item }) => {
-                const hasIcommingFriendShip: boolean = item.user?.incomingFriendships[0]?.status === 'PENDING';
-                const hasSentInvitation: boolean = item.user?.outgoingFriendships[0]?.status === 'PENDING';
+            <Animated.View entering={SlideInRight} exiting={SlideOutLeft}>
 
-                return (
-                  <View key={item.id} style={styles.user}>
-                    <View style={styles.avatarContainer}>
-                      <Image style={styles.userAvatar} source={{ uri: item.user.avatar }} />
+              <FlatList
+                // ListHeaderComponent={}
+                contentContainerStyle={styles.flatList}
+                data={usersWhoLikedSameEventRes.data?.pages.flatMap(users => users.usersWhoLikedEvent)}
+                renderItem={({ item }) => {
+                  const hasIcommingFriendShip: boolean = item.user?.incomingFriendships[0]?.status === 'PENDING';
+                  const hasSentInvitation: boolean = item.user?.outgoingFriendships[0]?.status === 'PENDING';
 
-                      <View style={styles.textContainer}>
-                        <Text style={styles.userName}>{item.user.username}</Text>
-                        <Text>online</Text>
+                  return (
+                    <View key={item.id} style={styles.user}>
+                      <View style={styles.avatarContainer}>
+                        <Image style={styles.userAvatar} source={{ uri: item.user.avatar }} />
+
+                        <View style={styles.textContainer}>
+                          <Text style={styles.userName}>{item.user.username}</Text>
+                          <Text>online</Text>
+                        </View>
                       </View>
-                    </View>
 
-                    {hasSentInvitation && (
-                      <CoButton
-                        onPress={() => console.log(hasSentInvitation, 'IS PENDING')}
-                        text="PENDING"
-                        btnColor='blue'
-                      />
-                    )}
-                    {hasIcommingFriendShip && (
-                      <CoButton
-                        onPress={() => setToggleModal(true)}
-                        text="MODAL"
-                        btnColor='black'
-                      />
-                    )}
-                    {!hasIcommingFriendShip && !hasSentInvitation && (
-                      <CoButton
-                        onPress={() => console.log(hasIcommingFriendShip, 'SENT INVITATION')}
-                        text="JOIN"
-                        btnColor='black'
-                      />
-                    )}
-                  </View>
-                );
-              }}
-            />
+                      {hasSentInvitation && (
+                        <CoButton
+                          onPress={() => console.log(hasSentInvitation, 'IS PENDING')}
+                          text="PENDING"
+                          btnColor='blue'
+                        />
+                      )}
+                      {hasIcommingFriendShip && (
+                        <CoButton
+                          onPress={() => setToggleModal(true)}
+                          text="MODAL"
+                          btnColor='black'
+                        />
+                      )}
+                      {!hasIcommingFriendShip && !hasSentInvitation && (
+                        <CoButton
+                          onPress={() => console.log(hasIcommingFriendShip, 'SENT INVITATION')}
+                          text="JOIN"
+                          btnColor='black'
+                        />
+                      )}
+                    </View>
+                  );
+                }}
+              />
+            </Animated.View>
           )
         )}
       </View>
