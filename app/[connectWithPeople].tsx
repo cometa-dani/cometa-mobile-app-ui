@@ -10,23 +10,17 @@ import { StatusBar } from 'expo-status-bar';
 import { useInfiniteQueryGetNewestFriends } from '../queries/friendshipHooks';
 
 
-interface Props {
-  imgUrl?: string
-}
-
 export default function ConnectWithPeopleScreen(): JSX.Element {
   const urlParam = useLocalSearchParams()['connectWithPeople'];
-  const eventRes = useQueryGetEventById(+urlParam);
-  const newestFriendsRes = useInfiniteQueryGetNewestFriends();
+  const eventByIdRes = useQueryGetEventById(+urlParam);
   const usersWhoLikedSameEventRes = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
-  // const {data} = useInfi
-  console.log(newestFriendsRes.data);
+  const newestFriendsRes = useInfiniteQueryGetNewestFriends();
   const [toggleModal, setToggleModal] = useState(false);
   const [toggleTabs, setToggleTabs] = useState(true);
 
-  const TabsHeader: FC<Props> = ({ imgUrl }) => (
+  const TabsHeader: FC = () => (
     <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 26 }]}>
-      <Image style={styles.imgHeader} source={{ uri: imgUrl }} />
+      <Image style={styles.imgHeader} source={{ uri: eventByIdRes.data?.mediaUrl }} />
 
       <View style={styles.tabs}>
         <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
@@ -39,7 +33,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
       </View>
     </View>
   );
-  // console.log(urlParam);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar backgroundColor="transparent" translucent={true} style={'auto'} />
@@ -64,16 +58,15 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
           </DefaultView>
         </Modal>
 
-        <TabsHeader imgUrl={eventRes.data?.mediaUrl} />
+        <TabsHeader />
 
         {/* FRIENDS */}
         {toggleTabs && (
           newestFriendsRes.isSuccess && (
             <FlatList
-              contentContainerStyle={{ gap: 26, paddingHorizontal: 18, paddingVertical: 28 }}
+              contentContainerStyle={styles.flatList}
               data={newestFriendsRes.data?.pages.flatMap(page => page?.friendships) || []}
               renderItem={({ item }) => {
-
                 return (
                   <View key={item.id} style={styles.user}>
                     <View style={styles.avatarContainer}>
@@ -102,13 +95,11 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
           usersWhoLikedSameEventRes.isSuccess && (
             <FlatList
               // ListHeaderComponent={}
-              contentContainerStyle={{ gap: 26, paddingHorizontal: 18, paddingVertical: 28 }}
+              contentContainerStyle={styles.flatList}
               data={usersWhoLikedSameEventRes.data?.pages.flatMap(users => users.usersWhoLikedEvent)}
               renderItem={({ item }) => {
                 const hasIcommingFriendShip: boolean = item.user?.incomingFriendships[0]?.status === 'PENDING';
                 const hasSentInvitation: boolean = item.user?.outgoingFriendships[0]?.status === 'PENDING';
-                // console.log(`hasIcommingFriendShip: ${hasIcommingFriendShip}`);
-                // console.log(`hasSentInvitation: ${hasSentInvitation}`);
 
                 return (
                   <View key={item.id} style={styles.user}>
@@ -142,7 +133,6 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                         btnColor='black'
                       />
                     )}
-
                   </View>
                 );
               }}
@@ -209,6 +199,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 14,
   },
+
+  flatList: { gap: 26, paddingHorizontal: 18, paddingVertical: 28 },
 
   header: {
     gap: 16
