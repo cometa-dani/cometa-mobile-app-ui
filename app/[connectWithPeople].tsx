@@ -4,7 +4,7 @@ import { Text, View } from '../components/Themed';
 import { useLocalSearchParams } from 'expo-router';
 import { useQueryGetEventById, useInfiteQueryGetUsersWhoLikedEventByID } from '../queries/events/hooks';
 import { Image } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { CoButton } from '../components/buttons/buttons';
 import { StatusBar } from 'expo-status-bar';
 
@@ -13,23 +13,27 @@ interface Props {
   imgUrl?: string
 }
 
-const ListHeader: FC<Props> = ({ imgUrl }) => (
-  <View style={styles.header}>
-    <Image style={styles.imgHeader} source={{ uri: imgUrl }} />
-
-    <View style={styles.tabs}>
-      <Text style={styles.tab}>Friends</Text>
-      <Text style={styles.tab}>New People</Text>
-    </View>
-  </View>
-);
 
 export default function ConnectWithPeopleScreen(): JSX.Element {
   const urlParam = useLocalSearchParams()['connectWithPeople'];
   const { data: eventData } = useQueryGetEventById(+urlParam);
   const { data: usersWhoLikedSameEventData, isSuccess } = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
-  const [toggleModal, setToggleModal] = useState(false);
+  // const {data} = useInfi
 
+  const [toggleModal, setToggleModal] = useState(false);
+  const [toggleTabs, setToggleTabs] = useState(false);
+
+  const TabsHeader: FC<Props> = ({ imgUrl }) => (
+    <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 26 }]}>
+      <Image style={styles.imgHeader} source={{ uri: imgUrl }} />
+
+      <View style={styles.tabs}>
+        <TouchableOpacity><Text style={styles.tab}>Friends</Text></TouchableOpacity>
+
+        <TouchableOpacity><Text style={[styles.tab, styles.tabActive]}>New People</Text></TouchableOpacity>
+      </View>
+    </View>
+  );
   // console.log(urlParam);
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -55,54 +59,112 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
           </DefaultView>
         </Modal>
 
-        {isSuccess && (
-          <FlatList
-            ListHeaderComponent={<ListHeader imgUrl={eventData?.mediaUrl} />}
-            contentContainerStyle={{ gap: 26, paddingHorizontal: 18, paddingVertical: 28 }}
-            data={usersWhoLikedSameEventData?.pages.flatMap(users => users.usersWhoLikedEvent)}
-            renderItem={({ item }) => {
-              const hasIcommingFriendShip: boolean = item.user.incomingFriendships[0]?.status === 'PENDING';
-              const hasSentInvitation: boolean = item.user.outgoingFriendships[0]?.status === 'PENDING';
-              // console.log(`hasIcommingFriendShip: ${hasIcommingFriendShip}`);
-              // console.log(`hasSentInvitation: ${hasSentInvitation}`);
+        <TabsHeader imgUrl={eventData?.mediaUrl} />
 
-              return (
-                <View key={item.id} style={styles.user}>
-                  <View style={styles.avatarContainer}>
-                    <Image style={styles.userAvatar} source={{ uri: item.user.avatar }} />
+        {/* FRIENDS */}
+        {toggleTabs && (
+          isSuccess && (
+            <FlatList
+              // ListHeaderComponent={}
+              contentContainerStyle={{ gap: 26, paddingHorizontal: 18, paddingVertical: 28 }}
+              data={usersWhoLikedSameEventData?.pages.flatMap(users => users.usersWhoLikedEvent)}
+              renderItem={({ item }) => {
+                const hasIcommingFriendShip: boolean = item.user.incomingFriendships[0]?.status === 'PENDING';
+                const hasSentInvitation: boolean = item.user.outgoingFriendships[0]?.status === 'PENDING';
+                // console.log(`hasIcommingFriendShip: ${hasIcommingFriendShip}`);
+                // console.log(`hasSentInvitation: ${hasSentInvitation}`);
 
-                    <View style={styles.textContainer}>
-                      <Text style={styles.userName}>{item.user.username}</Text>
-                      <Text>online</Text>
+                return (
+                  <View key={item.id} style={styles.user}>
+                    <View style={styles.avatarContainer}>
+                      <Image style={styles.userAvatar} source={{ uri: item.user.avatar }} />
+
+                      <View style={styles.textContainer}>
+                        <Text style={styles.userName}>{item.user.username}</Text>
+                        <Text>online</Text>
+                      </View>
                     </View>
+
+                    {hasSentInvitation && (
+                      <CoButton
+                        onPress={() => console.log(hasSentInvitation, 'IS PENDING')}
+                        text="PENDING"
+                        btnColor='blue'
+                      />
+                    )}
+                    {hasIcommingFriendShip && (
+                      <CoButton
+                        onPress={() => setToggleModal(true)}
+                        text="MODAL"
+                        btnColor='black'
+                      />
+                    )}
+                    {!hasIcommingFriendShip && !hasSentInvitation && (
+                      <CoButton
+                        onPress={() => console.log(hasIcommingFriendShip, 'SENT INVITATION')}
+                        text="JOIN"
+                        btnColor='black'
+                      />
+                    )}
+
                   </View>
+                );
+              }}
+            />
+          )
+        )}
 
-                  {hasSentInvitation && (
-                    <CoButton
-                      onPress={() => console.log(hasSentInvitation, 'IS PENDING')}
-                      text="PENDING"
-                      btnColor='blue'
-                    />
-                  )}
-                  {hasIcommingFriendShip && (
-                    <CoButton
-                      onPress={() => setToggleModal(true)}
-                      text="MODAL"
-                      btnColor='black'
-                    />
-                  )}
-                  {!hasIcommingFriendShip && !hasSentInvitation && (
-                    <CoButton
-                      onPress={() => console.log(hasIcommingFriendShip, 'SENT INVITATION')}
-                      text="JOIN"
-                      btnColor='black'
-                    />
-                  )}
+        {/* NEW PEOPLE */}
+        {!toggleTabs && (
+          isSuccess && (
+            <FlatList
+              // ListHeaderComponent={}
+              contentContainerStyle={{ gap: 26, paddingHorizontal: 18, paddingVertical: 28 }}
+              data={usersWhoLikedSameEventData?.pages.flatMap(users => users.usersWhoLikedEvent)}
+              renderItem={({ item }) => {
+                const hasIcommingFriendShip: boolean = item.user.incomingFriendships[0]?.status === 'PENDING';
+                const hasSentInvitation: boolean = item.user.outgoingFriendships[0]?.status === 'PENDING';
+                // console.log(`hasIcommingFriendShip: ${hasIcommingFriendShip}`);
+                // console.log(`hasSentInvitation: ${hasSentInvitation}`);
 
-                </View>
-              );
-            }}
-          />
+                return (
+                  <View key={item.id} style={styles.user}>
+                    <View style={styles.avatarContainer}>
+                      <Image style={styles.userAvatar} source={{ uri: item.user.avatar }} />
+
+                      <View style={styles.textContainer}>
+                        <Text style={styles.userName}>{item.user.username}</Text>
+                        <Text>online</Text>
+                      </View>
+                    </View>
+
+                    {hasSentInvitation && (
+                      <CoButton
+                        onPress={() => console.log(hasSentInvitation, 'IS PENDING')}
+                        text="PENDING"
+                        btnColor='blue'
+                      />
+                    )}
+                    {hasIcommingFriendShip && (
+                      <CoButton
+                        onPress={() => setToggleModal(true)}
+                        text="MODAL"
+                        btnColor='black'
+                      />
+                    )}
+                    {!hasIcommingFriendShip && !hasSentInvitation && (
+                      <CoButton
+                        onPress={() => console.log(hasIcommingFriendShip, 'SENT INVITATION')}
+                        text="JOIN"
+                        btnColor='black'
+                      />
+                    )}
+
+                  </View>
+                );
+              }}
+            />
+          )
         )}
       </View>
     </SafeAreaView>
@@ -180,7 +242,14 @@ const styles = StyleSheet.create({
   },
 
   tab: {
-    fontSize: 20
+    fontSize: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 2
+  },
+
+  tabActive: {
+    borderBottomWidth: 2,
+    borderColor: 'gray'
   },
 
   tabs: {
