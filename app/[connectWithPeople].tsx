@@ -11,10 +11,6 @@ import { useInfiniteQueryGetNewestFriends } from '../queries/friendshipHooks';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 
 
-// function App() {
-//   return ;
-// }
-
 export default function ConnectWithPeopleScreen(): JSX.Element {
   const urlParam = useLocalSearchParams()['connectWithPeople'];
   const eventByIdRes = useQueryGetEventById(+urlParam);
@@ -22,7 +18,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();
   const [toggleModal, setToggleModal] = useState(false);
   const [toggleTabs, setToggleTabs] = useState(true);
-
+  console.log(urlParam);
   const TabsHeader: FC = () => (
     <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 26 }]}>
       <Image style={styles.imgHeader} source={{ uri: eventByIdRes.data?.mediaUrl }} />

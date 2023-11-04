@@ -117,7 +117,7 @@ export const useInfiteQueryGetUsersWhoLikedEventByID = (eventID: number) => {
   return (
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT],
-      initialPageParam: 1,
+      initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetUsersWhoLikedEventWithPagination> => {
         const res = await eventService.getUsersWhoLikedSameEvent(eventID, pageParam, 5, accessToken);
         if (res.status === 200) {

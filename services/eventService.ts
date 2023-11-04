@@ -39,8 +39,8 @@ class EventService extends RestApiService {
   }
 
 
-  public getUsersWhoLikedSameEvent(eventID: number, page: number, limit: number, accessToken: string) {
-    const params = { page, limit };
+  public getUsersWhoLikedSameEvent(eventID: number, cursor: number, limit: number, accessToken: string) {
+    const params = { cursor, limit };
     const AuthHeaders = this.configAuthHeader(accessToken).headers;
     const config = { params, headers: AuthHeaders };
 
