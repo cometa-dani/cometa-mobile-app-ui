@@ -17,7 +17,7 @@ class FrienshipService extends RestApiService {
   }
 
   acceptFriendShipInvitation(friendShipId: number, accessToken: string) {
-    return this.http.patch<Friendship>(`friendships/${friendShipId}`, this.configAuthHeader(accessToken));
+    return this.http.patch<Friendship>(`/friendships/${friendShipId}`, this.configAuthHeader(accessToken));
   }
 }
 

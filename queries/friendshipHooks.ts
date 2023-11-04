@@ -1,15 +1,20 @@
+/* eslint-disable no-unused-vars */
 import { useInfiniteQuery } from '@tanstack/react-query';
 import friendshipService from '../services/friendshipService';
 import { GetLatestFriendships } from '../models/Friendship';
 import { useCometaStore } from '../store/cometaStore';
 
 
-export const useInfiniteQueryGetLatestFrienships = () => {
+enum QueryKeys {
+  GET_NEWEST_FRIENDS = 'GET_NEWEST_FRIENDS'
+}
+
+export const useInfiniteQueryGetNewestFriends = () => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return (
     useInfiniteQuery({
-      queryKey: [],
+      queryKey: [QueryKeys.GET_NEWEST_FRIENDS],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetLatestFriendships> => {
         const res = await friendshipService.getAllLatest(pageParam, 4, accessToken);

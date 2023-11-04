@@ -30,12 +30,12 @@ class EventService extends RestApiService {
     const AuthHeaders = this.configAuthHeader(accessToken).headers;
     const config = { params, headers: AuthHeaders };
 
-    return this.http.get<GetAllLikedEventsWithPagination>('events/liked', config);
+    return this.http.get<GetAllLikedEventsWithPagination>('/events/liked', config);
   }
 
 
   public getLikedEventByID(eventID: number, accessToken: string) {
-    return this.http.get<GetLikedEventByID>(`events/liked/${eventID}`, this.configAuthHeader(accessToken));
+    return this.http.get<GetLikedEventByID>(`/events/liked/${eventID}`, this.configAuthHeader(accessToken));
   }
 
 
@@ -44,7 +44,7 @@ class EventService extends RestApiService {
     const AuthHeaders = this.configAuthHeader(accessToken).headers;
     const config = { params, headers: AuthHeaders };
 
-    return this.http.get<GetUsersWhoLikedEventWithPagination>(`events/liked/${eventID}/users`, config);
+    return this.http.get<GetUsersWhoLikedEventWithPagination>(`/events/liked/${eventID}/users`, config);
   }
 }
 

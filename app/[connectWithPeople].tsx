@@ -1,36 +1,41 @@
 import { FC, useState } from 'react';
 import { SafeAreaView, StyleSheet, Modal, Pressable, View as DefaultView } from 'react-native';
 import { Text, View } from '../components/Themed';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useQueryGetEventById, useInfiteQueryGetUsersWhoLikedEventByID } from '../queries/eventHooks';
 import { Image } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { CoButton } from '../components/buttons/buttons';
 import { StatusBar } from 'expo-status-bar';
+import { useInfiniteQueryGetNewestFriends } from '../queries/friendshipHooks';
 
 
 interface Props {
   imgUrl?: string
 }
 
-
 export default function ConnectWithPeopleScreen(): JSX.Element {
   const urlParam = useLocalSearchParams()['connectWithPeople'];
-  const { data: eventData } = useQueryGetEventById(+urlParam);
-  const { data: usersWhoLikedSameEventData, isSuccess } = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
+  const eventRes = useQueryGetEventById(+urlParam);
+  const newestFriendsRes = useInfiniteQueryGetNewestFriends();
+  const usersWhoLikedSameEventRes = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
   // const {data} = useInfi
-
+  console.log(newestFriendsRes.data);
   const [toggleModal, setToggleModal] = useState(false);
-  const [toggleTabs, setToggleTabs] = useState(false);
+  const [toggleTabs, setToggleTabs] = useState(true);
 
   const TabsHeader: FC<Props> = ({ imgUrl }) => (
     <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 26 }]}>
       <Image style={styles.imgHeader} source={{ uri: imgUrl }} />
 
       <View style={styles.tabs}>
-        <TouchableOpacity><Text style={styles.tab}>Friends</Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
+          <Text style={[styles.tab, toggleTabs && styles.tabActive]}>Friends</Text>
+        </TouchableOpacity>
 
-        <TouchableOpacity><Text style={[styles.tab, styles.tabActive]}>New People</Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
+          <Text style={[styles.tab, !toggleTabs && styles.tabActive]}>New People</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -59,54 +64,32 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
           </DefaultView>
         </Modal>
 
-        <TabsHeader imgUrl={eventData?.mediaUrl} />
+        <TabsHeader imgUrl={eventRes.data?.mediaUrl} />
 
         {/* FRIENDS */}
         {toggleTabs && (
-          isSuccess && (
+          newestFriendsRes.isSuccess && (
             <FlatList
-              // ListHeaderComponent={}
               contentContainerStyle={{ gap: 26, paddingHorizontal: 18, paddingVertical: 28 }}
-              data={usersWhoLikedSameEventData?.pages.flatMap(users => users.usersWhoLikedEvent)}
+              data={newestFriendsRes.data?.pages.flatMap(page => page?.friendships) || []}
               renderItem={({ item }) => {
-                const hasIcommingFriendShip: boolean = item.user.incomingFriendships[0]?.status === 'PENDING';
-                const hasSentInvitation: boolean = item.user.outgoingFriendships[0]?.status === 'PENDING';
-                // console.log(`hasIcommingFriendShip: ${hasIcommingFriendShip}`);
-                // console.log(`hasSentInvitation: ${hasSentInvitation}`);
 
                 return (
                   <View key={item.id} style={styles.user}>
                     <View style={styles.avatarContainer}>
-                      <Image style={styles.userAvatar} source={{ uri: item.user.avatar }} />
+                      <Image style={styles.userAvatar} source={{ uri: item?.friend?.avatar }} />
 
                       <View style={styles.textContainer}>
-                        <Text style={styles.userName}>{item.user.username}</Text>
+                        <Text style={styles.userName}>{item?.friend?.username}</Text>
                         <Text>online</Text>
                       </View>
                     </View>
 
-                    {hasSentInvitation && (
-                      <CoButton
-                        onPress={() => console.log(hasSentInvitation, 'IS PENDING')}
-                        text="PENDING"
-                        btnColor='blue'
-                      />
-                    )}
-                    {hasIcommingFriendShip && (
-                      <CoButton
-                        onPress={() => setToggleModal(true)}
-                        text="MODAL"
-                        btnColor='black'
-                      />
-                    )}
-                    {!hasIcommingFriendShip && !hasSentInvitation && (
-                      <CoButton
-                        onPress={() => console.log(hasIcommingFriendShip, 'SENT INVITATION')}
-                        text="JOIN"
-                        btnColor='black'
-                      />
-                    )}
-
+                    <CoButton
+                      onPress={() => router.push('/chat')}
+                      text="CHAT"
+                      btnColor='gray'
+                    />
                   </View>
                 );
               }}
@@ -116,14 +99,14 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
 
         {/* NEW PEOPLE */}
         {!toggleTabs && (
-          isSuccess && (
+          usersWhoLikedSameEventRes.isSuccess && (
             <FlatList
               // ListHeaderComponent={}
               contentContainerStyle={{ gap: 26, paddingHorizontal: 18, paddingVertical: 28 }}
-              data={usersWhoLikedSameEventData?.pages.flatMap(users => users.usersWhoLikedEvent)}
+              data={usersWhoLikedSameEventRes.data?.pages.flatMap(users => users.usersWhoLikedEvent)}
               renderItem={({ item }) => {
-                const hasIcommingFriendShip: boolean = item.user.incomingFriendships[0]?.status === 'PENDING';
-                const hasSentInvitation: boolean = item.user.outgoingFriendships[0]?.status === 'PENDING';
+                const hasIcommingFriendShip: boolean = item.user?.incomingFriendships[0]?.status === 'PENDING';
+                const hasSentInvitation: boolean = item.user?.outgoingFriendships[0]?.status === 'PENDING';
                 // console.log(`hasIcommingFriendShip: ${hasIcommingFriendShip}`);
                 // console.log(`hasSentInvitation: ${hasSentInvitation}`);
 
