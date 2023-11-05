@@ -37,7 +37,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const eventByIdRes = useQueryGetEventById(+urlParam);
   const newPeopleRes = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();
-  console.log(urlParam);
+  // console.log(urlParam);
 
   // mutations
   const [incommginFriendShip, setIncommginFriendShip] = useState({} as UserRes);
@@ -70,7 +70,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
       console.log(values);
       actions.resetForm();
       actions.setSubmitting(false);
-      router.push('/chat');
+      router.push(`/chat/${incommginFriendShip.id}`);
     };
 
 
@@ -164,7 +164,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                       </View>
 
                       <CoButton
-                        onPress={() => router.push('/chat')}
+                        onPress={() => router.push(`/chat/${friend.id}`)}
                         text="CHAT"
                         btnColor='gray'
                       />
