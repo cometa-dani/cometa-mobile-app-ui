@@ -67,10 +67,10 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const handleMessageNewFriend =
     async (values: Message, actions: FormikHelpers<Message>): Promise<void> => {
       // start chat with new friend
-      console.log(values);
+      // console.log(values);
       actions.resetForm();
       actions.setSubmitting(false);
-      router.push(`/chat/${incommginFriendShip.uid}`);
+      router.push(`/chat/${incommginFriendShip.id}`);
     };
 
 
@@ -164,7 +164,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                       </View>
 
                       <CoButton
-                        onPress={() => router.push(`/chat/${friend.uid}`)}
+                        onPress={() => router.push(`/chat/${friend.id}`)}
                         text="CHAT"
                         btnColor='gray'
                       />

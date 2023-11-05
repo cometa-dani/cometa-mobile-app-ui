@@ -6,7 +6,9 @@ export interface Friendship {
   createdAt: string;
   updatedAt: string;
   senderId: number;
+  sender: UserRes;
   receiverId: number;
+  receiver: UserRes
   status: Status;
   friend: UserRes
 }

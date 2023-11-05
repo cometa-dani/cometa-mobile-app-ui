@@ -7,35 +7,44 @@ import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
-import { useCometaStore } from '../../store/cometaStore';
-import { useQueryGetUserInfo } from '../../queries/userHooks';
 import { Image } from 'react-native';
+import { useQueryGetFriendshipByReceiverAndSender } from '../../queries/friendshipHooks';
 
 
 export default function ChatScreen(): JSX.Element {
-  const friendID = useLocalSearchParams()['friend'];
-  const uid = useCometaStore(state => state.uid);
-  const { data: senderUser } = useQueryGetUserInfo(uid); // the current auth user
-  const { data: receiverUser } = useQueryGetUserInfo(friendID as string); // the current auth user
+  const friendID: number = +useLocalSearchParams()['friend']; //use id instead
+  const { data: friendshipData } = useQueryGetFriendshipByReceiverAndSender(friendID);
+  const messageReceiver = friendID === friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
+  const messageSender = friendID !== friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
+  // const uid = useCometaStore(state => state.uid);
+  // const { data: senderUser } = useQueryGetUserInfo(uid); // get cached user info
+
+  // TODO: get friendShip by senderId & receiverID, with this friendshipID
+  // keep a unique reference in firestore for the messages between these users
+
+  // const { data: receiverUser } = useQueryGetUserInfo(friendID as string); // the current auth user
   const { text } = useColors();
   const [messages, setMessages] = useState<IMessage[]>([]);
-  console.log(friendID);
+
 
   const onSend = async (messages: IMessage[] = []) => {
-    setMessages(previousMessages =>
-      GiftedChat.append(previousMessages, messages),
-    );
-    const senderMessage = messages[0];
     try {
-      const payloadMessage: IMessage = {
+      const senderMessage = messages[0];
+      const messagePayload: IMessage = {
         ...senderMessage,
         user: {
           ...senderMessage.user,
-          _id: uid,
+          _id: messageSender?.id as number,
         }
       };
-      const res = await addDoc(collection(db, 'chats'), payloadMessage);
+      const subCollection = collection(db, 'chats', `${friendshipData?.id}`);
+      const res = await addDoc(subCollection, messagePayload);
       console.log(res);
+
+      // this should be remove and just listen for the new message to arrive
+      setMessages(previousMessages =>
+        GiftedChat.append(previousMessages, messages),
+      );
     }
     catch (error) {
       console.log(error);
@@ -83,10 +92,10 @@ export default function ChatScreen(): JSX.Element {
           headerLeft: () => (
             <View style={styles.avatarReciever}>
               <FontAwesome name='arrow-down' size={24} onPress={() => router.back()} />
-              <Image style={styles.avatarImg} source={{ uri: receiverUser?.avatar }} />
+              <Image style={styles.avatarImg} source={{ uri: messageReceiver?.avatar }} />
 
               <View>
-                <Text style={styles.avatarName}>{receiverUser?.username}</Text>
+                <Text style={styles.avatarName}>{messageReceiver?.username}</Text>
                 <Text>online</Text>
               </View>
             </View>
@@ -113,9 +122,9 @@ export default function ChatScreen(): JSX.Element {
           onSend={(messages) => onSend(messages)}
           showUserAvatar={true}
           user={{
-            _id: senderUser?.id as number,
-            name: senderUser?.username,
-            avatar: senderUser?.avatar
+            _id: messageSender?.id as number,
+            name: messageSender?.username,
+            avatar: messageSender?.avatar
           }}
         />
       </View>
