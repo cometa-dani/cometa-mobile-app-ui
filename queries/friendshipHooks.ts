@@ -13,7 +13,7 @@ export const useInfiniteQueryGetNewestFriends = () => {
       queryKey: [QueryKeys.GET_NEWEST_FRIENDS],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetLatestFriendships> => {
-        const res = await friendshipService.getAllLatest(pageParam, 4, accessToken);
+        const res = await friendshipService.getAllLatest(pageParam, 5, accessToken);
         if (res.status == 200) {
           return res.data;
         }
@@ -42,10 +42,10 @@ export const useMutationSentFriendshipInvitation = () => {
 
   return (
     useMutation({
-      mutationFn: async (newFriendId: number) => {
+      mutationFn: async (receiverID: number) => {
         const res =
-          await friendshipService.sentFriendShipInvitation(newFriendId, accessToken);
-        if (res.status === 200) {
+          await friendshipService.sentFriendShipInvitation(receiverID, accessToken);
+        if (res.status === 201) {
           return res.data;
         }
         else {
@@ -54,7 +54,7 @@ export const useMutationSentFriendshipInvitation = () => {
       },
       onMutate: async () => { },
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT] });
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
@@ -69,9 +69,9 @@ export const useMutationAcceptFriendshipInvitation = () => {
 
   return (
     useMutation({
-      mutationFn: async (receiverId: number) => {
+      mutationFn: async (friendshipID: number) => {
         const res =
-          await friendshipService.acceptFriendShipInvitation(receiverId, accessToken);
+          await friendshipService.acceptFriendShipInvitation(friendshipID, accessToken);
         if (res.status === 200) {
           return res.data;
         }
