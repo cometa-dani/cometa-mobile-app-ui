@@ -46,22 +46,21 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
 
   /**
   * 
-  * @description accepts friendship invitation with status 'ACCEPTED'
+  * @description from a sender user, accepts friendship with status 'ACCEPTED'
   */
-  const handleUserIsSender = (incommingUser: UserRes): void => {
-    setIncommginFriendShip(incommingUser);
+  const handleUserIsSender = (sender: UserRes): void => {
+    setIncommginFriendShip(sender);
     setTimeout(() => setToggleModal(true), 100);
-    const friendshipID = incommingUser.outgoingFriendships[0].id;
-    mutationAcceptFriendship.mutate(friendshipID); // acceptFrienShip invitation
+    const friendshipID = sender.outgoingFriendships[0].id;
+    mutationAcceptFriendship.mutate(friendshipID);
   };
 
   /**
   * 
-  * @description sends a new friendship invitation with status 'PENDING'
+  * @description for a receiver user, sends a friendship invitation with status 'PENDING'
   */
-  const handleUserisNietherSenderNorReceiver = (outcommingUser: UserRes): void => {
-    // sent friendship invitation
-    mutationSentFriendship.mutate(outcommingUser.id);
+  const handleUserIsNietherSenderNorReceiver = (receiver: UserRes): void => {
+    mutationSentFriendship.mutate(receiver.id);
   };
 
 
@@ -186,9 +185,9 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                 contentContainerStyle={styles.flatList}
                 data={newPeopleRes.data?.pages.flatMap(page => page.usersWhoLikedEvent)}
                 renderItem={({ item: { user }, index }) => {
-                  const isReceiver: boolean = user?.incomingFriendships[0]?.status === 'PENDING'; // user is receiver
-                  const isSender: boolean = user?.outgoingFriendships[0]?.status === 'PENDING'; // user is sender
-                  // console.log(user);
+                  const isReceiver: boolean = user?.incomingFriendships[0]?.status === 'PENDING';
+                  const isSender: boolean = user?.outgoingFriendships[0]?.status === 'PENDING';
+
                   return (
                     <View key={index} style={styles.user}>
                       <View style={styles.avatarContainer}>
@@ -215,7 +214,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                       )}
                       {!isReceiver && !isSender && (
                         <CoButton
-                          onPress={() => handleUserisNietherSenderNorReceiver(user)}
+                          onPress={() => handleUserIsNietherSenderNorReceiver(user)}
                           text="JOIN"
                           btnColor='black'
                         />
