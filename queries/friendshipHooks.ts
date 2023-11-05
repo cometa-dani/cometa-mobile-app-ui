@@ -54,7 +54,7 @@ export const useMutationSentFriendshipInvitation = () => {
       },
       onMutate: async () => { },
       onSuccess: async () => {
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT] });
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT] });
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
@@ -81,6 +81,7 @@ export const useMutationAcceptFriendshipInvitation = () => {
       },
       onMutate: async () => { },
       onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] });
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT] });
       },
       retry: 3,
