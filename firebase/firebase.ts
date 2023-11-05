@@ -16,12 +16,12 @@ import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey,
-  appId,
   authDomain,
-  measurementId,
-  messagingSenderId,
   projectId,
-  storageBucket
+  storageBucket,
+  messagingSenderId,
+  appId,
+  measurementId,
 };
 
 // Initialize Firebase
@@ -31,10 +31,7 @@ export const auth = initializeAuth(firebaseApp, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });
 
-// Required for side-effects
-import 'firebase/firestore';
-
-export const db = getFirestore();
+export const db = getFirestore(firebaseApp);
 
 // facebook uri
 // https://cometa-e5dd5.firebaseapp.com/__/auth/handler

@@ -70,7 +70,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
       console.log(values);
       actions.resetForm();
       actions.setSubmitting(false);
-      router.push(`/chat/${incommginFriendShip.id}`);
+      router.push(`/chat/${incommginFriendShip.uid}`);
     };
 
 
@@ -164,7 +164,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                       </View>
 
                       <CoButton
-                        onPress={() => router.push(`/chat/${friend.id}`)}
+                        onPress={() => router.push(`/chat/${friend.uid}`)}
                         text="CHAT"
                         btnColor='gray'
                       />
