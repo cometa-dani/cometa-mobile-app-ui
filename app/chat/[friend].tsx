@@ -12,22 +12,17 @@ import { useQueryGetFriendshipByReceiverAndSender } from '../../queries/friendsh
 
 
 export default function ChatScreen(): JSX.Element {
-  const friendID: number = +useLocalSearchParams()['friend']; //use id instead
+  const { text } = useColors();
+
+  // chat
+  const friendID: number = +useLocalSearchParams()['friend'];
   const { data: friendshipData } = useQueryGetFriendshipByReceiverAndSender(friendID);
   const messageReceiver = friendID === friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
   const messageSender = friendID !== friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
-  // const uid = useCometaStore(state => state.uid);
-  // const { data: senderUser } = useQueryGetUserInfo(uid); // get cached user info
-
-  // TODO: get friendShip by senderId & receiverID, with this friendshipID
-  // keep a unique reference in firestore for the messages between these users
-
-  // const { data: receiverUser } = useQueryGetUserInfo(friendID as string); // the current auth user
-  const { text } = useColors();
   const [messages, setMessages] = useState<IMessage[]>([]);
 
 
-  const onSend = async (messages: IMessage[] = []) => {
+  const onSend = useCallback(async (messages: IMessage[] = []) => {
     try {
       const senderMessage = messages[0];
       const messagePayload: IMessage = {
@@ -37,9 +32,8 @@ export default function ChatScreen(): JSX.Element {
           _id: messageSender?.id as number,
         }
       };
-      const subCollection = collection(db, 'chats', `${friendshipData?.id}`);
-      const res = await addDoc(subCollection, messagePayload);
-      console.log(res);
+      const subCollection = collection(db, 'chats', `${friendshipData?.id}`, 'messages');
+      await addDoc(subCollection, messagePayload);
 
       // this should be remove and just listen for the new message to arrive
       setMessages(previousMessages =>
@@ -49,7 +43,7 @@ export default function ChatScreen(): JSX.Element {
     catch (error) {
       console.log(error);
     }
-  };
+  }, []);
 
 
   useEffect(() => {
