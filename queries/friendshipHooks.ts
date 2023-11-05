@@ -69,9 +69,9 @@ export const useMutationAcceptFriendshipInvitation = () => {
 
   return (
     useMutation({
-      mutationFn: async (newFriendId: number) => {
+      mutationFn: async (receiverId: number) => {
         const res =
-          await friendshipService.acceptFriendShipInvitation(newFriendId, accessToken);
+          await friendshipService.acceptFriendShipInvitation(receiverId, accessToken);
         if (res.status === 200) {
           return res.data;
         }

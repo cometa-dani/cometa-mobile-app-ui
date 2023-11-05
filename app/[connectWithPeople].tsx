@@ -37,22 +37,29 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const eventByIdRes = useQueryGetEventById(+urlParam);
   const newPeopleRes = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();
+  console.log(urlParam);
 
   // mutations
   const [incommginFriendShip, setIncommginFriendShip] = useState({} as UserRes);
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
   const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
 
-
-  const handleIncommingFriendShip = (incommingUser: UserRes): void => {
+  /**
+  * 
+  * @description accepts friendship invitation with status 'ACCEPTED'
+  */
+  const handleUserIsSender = (incommingUser: UserRes): void => {
     setIncommginFriendShip(incommingUser);
     setTimeout(() => setToggleModal(true), 100);
-    // acceptFrienShip invitation
-    mutationAcceptFriendship.mutate(incommingUser.outgoingFriendships[0].id);
+    const friendshipID = incommingUser.outgoingFriendships[0].id;
+    mutationAcceptFriendship.mutate(friendshipID); // acceptFrienShip invitation
   };
 
-
-  const handleOutCommingFriendShip = (outcommingUser: UserRes): void => {
+  /**
+  * 
+  * @description sends a new friendship invitation with status 'PENDING'
+  */
+  const handleUserisNietherSenderNorReceiver = (outcommingUser: UserRes): void => {
     // sent friendship invitation
     mutationSentFriendship.mutate(outcommingUser.id);
   };
@@ -64,6 +71,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
       console.log(values);
       actions.resetForm();
       actions.setSubmitting(false);
+      router.push('/chat');
     };
 
 
@@ -178,9 +186,9 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                 contentContainerStyle={styles.flatList}
                 data={newPeopleRes.data?.pages.flatMap(page => page.usersWhoLikedEvent)}
                 renderItem={({ item: { user }, index }) => {
-                  const hasIcommingFriendShip: boolean = user?.incomingFriendships[0]?.status === 'PENDING';
-                  const hasSentInvitation: boolean = user?.outgoingFriendships[0]?.status === 'PENDING';
-
+                  const isReceiver: boolean = user?.incomingFriendships[0]?.status === 'PENDING'; // user is receiver
+                  const isSender: boolean = user?.outgoingFriendships[0]?.status === 'PENDING'; // user is sender
+                  // console.log(user);
                   return (
                     <View key={index} style={styles.user}>
                       <View style={styles.avatarContainer}>
@@ -192,22 +200,22 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                         </View>
                       </View>
 
-                      {hasSentInvitation && (
+                      {isReceiver && (
                         <CoButton
                           text="PENDING"
                           btnColor='blue'
                         />
                       )}
-                      {hasIcommingFriendShip && (
+                      {isSender && (
                         <CoButton
-                          onPress={() => handleIncommingFriendShip(user)}
-                          text="MODAL"
+                          onPress={() => handleUserIsSender(user)}
+                          text="JOIN_2"
                           btnColor='black'
                         />
                       )}
-                      {!hasIcommingFriendShip && !hasSentInvitation && (
+                      {!isReceiver && !isSender && (
                         <CoButton
-                          onPress={() => handleOutCommingFriendShip(user)}
+                          onPress={() => handleUserisNietherSenderNorReceiver(user)}
                           text="JOIN"
                           btnColor='black'
                         />
