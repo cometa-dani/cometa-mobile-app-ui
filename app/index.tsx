@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import { Unsubscribe, onAuthStateChanged } from 'firebase/auth'; // Import Firebase authentication functions.
 import { auth } from '../firebase/firebase'; // Import Firebase authentication instance.
 import { useCometaStore } from '../store/cometaStore';
-// import userService from '../services/userService';
 
 
 export default function WelcomeScreen(): JSX.Element {

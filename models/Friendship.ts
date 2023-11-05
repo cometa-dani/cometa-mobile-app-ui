@@ -1,4 +1,4 @@
-import { User } from './User';
+import { UserRes } from './User';
 
 
 export interface Friendship {
@@ -8,7 +8,7 @@ export interface Friendship {
   senderId: number;
   receiverId: number;
   status: Status;
-  friend: User
+  friend: UserRes
 }
 
 type Status = 'PENDING' | 'ACCEPTED' | 'BLOCKED'

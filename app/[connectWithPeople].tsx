@@ -7,30 +7,65 @@ import { Image } from 'react-native';
 import { FlatList, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { CoButton } from '../components/buttons/buttons';
 import { StatusBar } from 'expo-status-bar';
-import { useInfiniteQueryGetNewestFriends } from '../queries/friendshipHooks';
+import { useInfiniteQueryGetNewestFriends, useMutationAcceptFriendshipInvitation, useMutationSentFriendshipInvitation } from '../queries/friendshipHooks';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 import { useCometaStore } from '../store/cometaStore';
 import { useQueryGetUserInfo } from '../queries/userHooks';
-import { Formik } from 'formik';
 import { FontAwesome } from '@expo/vector-icons';
-import { UsersWhoLikedEvent } from '../models/User';
+import { UserRes } from '../models/User';
+import { Formik, FormikHelpers } from 'formik';
+import * as Yup from 'yup';
+
+
+type Message = { message: string };
+
+const messageSchemmaValidation = Yup.object<Message>({
+  message: Yup.string().required()
+});
 
 
 export default function ConnectWithPeopleScreen(): JSX.Element {
   const uid = useCometaStore(state => state.uid);
+
+  // toggling modal & tabs
+  const [toggleModal, setToggleModal] = useState(false);
+  const [toggleTabs, setToggleTabs] = useState(false);
+
+  // queries
   const { data: userProfile } = useQueryGetUserInfo(uid);
   const urlParam = useLocalSearchParams()['connectWithPeople'];
   const eventByIdRes = useQueryGetEventById(+urlParam);
-  const usersWhoLikedSameEventRes = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
+  const newPeopleRes = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();
-  const [toggleModal, setToggleModal] = useState(false);
-  const [toggleTabs, setToggleTabs] = useState(false);
-  const [incommginFriendShip, setIncommginFriendShip] = useState({} as UsersWhoLikedEvent);
 
-  const handleIncommingFriendShip = (incommingUser: UsersWhoLikedEvent): void => {
+  // mutations
+  const [incommginFriendShip, setIncommginFriendShip] = useState({} as UserRes);
+  const mutationSentFriendship = useMutationSentFriendshipInvitation();
+  const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
+
+
+  const handleIncommingFriendShip = (incommingUser: UserRes): void => {
     setIncommginFriendShip(incommingUser);
     setTimeout(() => setToggleModal(true), 100);
+    // acceptFrienShip invitation
+    mutationAcceptFriendship.mutate(incommingUser.outgoingFriendships[0].id);
   };
+
+
+  const handleOutCommingFriendShip = (outcommingUser: UserRes): void => {
+    // sent friendship invitation
+    mutationSentFriendship.mutate(outcommingUser.id);
+  };
+
+
+  const handleMessageNewFriend =
+    async (values: Message, actions: FormikHelpers<Message>): Promise<void> => {
+      // start chat with new friend
+      console.log(values);
+      actions.resetForm();
+      actions.setSubmitting(false);
+    };
+
 
   const TabsHeader: FC = () => (
     <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 26 }]}>
@@ -48,6 +83,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
     </View>
   );
 
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar backgroundColor="transparent" translucent={true} style={'auto'} />
@@ -59,13 +95,11 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
           visible={toggleModal}
         >
           <DefaultView style={modalStyles.centeredView}>
-
             <View style={modalStyles.modalView}>
-
               <View style={modalStyles.avatarMatchContainer}>
                 <Image style={modalStyles.avatarMatch} source={{ uri: userProfile?.avatar }} />
-                {incommginFriendShip?.user?.avatar && (
-                  <Image style={modalStyles.avatarMatch} source={{ uri: incommginFriendShip.user.avatar }} />
+                {incommginFriendShip?.avatar && (
+                  <Image style={modalStyles.avatarMatch} source={{ uri: incommginFriendShip.avatar }} />
                 )}
               </View>
 
@@ -74,7 +108,11 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                 <Text style={modalStyles.modalText}>You have a new friend</Text>
               </View>
 
-              <Formik initialValues={{ message: '' }} onSubmit={(values) => console.log(values)}>
+              <Formik
+                validationSchema={messageSchemmaValidation}
+                initialValues={{ message: '' }}
+                onSubmit={handleMessageNewFriend}
+              >
                 {({ handleBlur, handleChange, values }) => (
                   <TextInput
                     numberOfLines={1}
@@ -82,8 +120,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                     onChangeText={handleChange('message')}
                     onBlur={handleBlur('message')}
                     value={values.message}
-                    placeholder={`Mesage ${incommginFriendShip.user.username} to join together ${eventByIdRes.data?.name.split(' ').slice(0, 4).join(' ')}`}
-                    secureTextEntry={true}
+                    placeholder={`Mesage ${incommginFriendShip.username} to join together ${eventByIdRes.data?.name.split(' ').slice(0, 4).join(' ')}`}
                   />
                 )}
               </Formik>
@@ -104,18 +141,17 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
         {toggleTabs && (
           newestFriendsRes.isSuccess && (
             <Animated.View entering={SlideInLeft} exiting={SlideOutRight}>
-
               <FlatList
                 contentContainerStyle={styles.flatList}
                 data={newestFriendsRes.data?.pages.flatMap(page => page?.friendships) || []}
-                renderItem={({ item }) => {
+                renderItem={({ item: { friend }, index }) => {
                   return (
-                    <View key={item.id} style={styles.user}>
+                    <View key={index} style={styles.user}>
                       <View style={styles.avatarContainer}>
-                        <Image style={styles.userAvatar} source={{ uri: item?.friend?.avatar }} />
+                        <Image style={styles.userAvatar} source={{ uri: friend?.avatar }} />
 
                         <View style={styles.textContainer}>
-                          <Text style={styles.userName}>{item?.friend?.username}</Text>
+                          <Text style={styles.userName}>{friend?.username}</Text>
                           <Text>online</Text>
                         </View>
                       </View>
@@ -135,45 +171,43 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
 
         {/* NEW PEOPLE */}
         {!toggleTabs && (
-          usersWhoLikedSameEventRes.isSuccess && (
+          newPeopleRes.isSuccess && (
             <Animated.View entering={SlideInRight} exiting={SlideOutLeft}>
-
               <FlatList
                 // ListHeaderComponent={}
                 contentContainerStyle={styles.flatList}
-                data={usersWhoLikedSameEventRes.data?.pages.flatMap(users => users.usersWhoLikedEvent)}
-                renderItem={({ item }) => {
-                  const hasIcommingFriendShip: boolean = item.user?.incomingFriendships[0]?.status === 'PENDING';
-                  const hasSentInvitation: boolean = item.user?.outgoingFriendships[0]?.status === 'PENDING';
+                data={newPeopleRes.data?.pages.flatMap(page => page.usersWhoLikedEvent)}
+                renderItem={({ item: { user }, index }) => {
+                  const hasIcommingFriendShip: boolean = user?.incomingFriendships[0]?.status === 'PENDING';
+                  const hasSentInvitation: boolean = user?.outgoingFriendships[0]?.status === 'PENDING';
 
                   return (
-                    <View key={item.id} style={styles.user}>
+                    <View key={index} style={styles.user}>
                       <View style={styles.avatarContainer}>
-                        <Image style={styles.userAvatar} source={{ uri: item.user.avatar }} />
+                        <Image style={styles.userAvatar} source={{ uri: user.avatar }} />
 
                         <View style={styles.textContainer}>
-                          <Text style={styles.userName}>{item.user.username}</Text>
+                          <Text style={styles.userName}>{user.username}</Text>
                           <Text>online</Text>
                         </View>
                       </View>
 
                       {hasSentInvitation && (
                         <CoButton
-                          onPress={() => console.log(hasSentInvitation, 'IS PENDING')}
                           text="PENDING"
                           btnColor='blue'
                         />
                       )}
                       {hasIcommingFriendShip && (
                         <CoButton
-                          onPress={() => handleIncommingFriendShip(item)}
+                          onPress={() => handleIncommingFriendShip(user)}
                           text="MODAL"
                           btnColor='black'
                         />
                       )}
                       {!hasIcommingFriendShip && !hasSentInvitation && (
                         <CoButton
-                          onPress={() => console.log(hasIcommingFriendShip, 'SENT INVITATION')}
+                          onPress={() => handleOutCommingFriendShip(user)}
                           text="JOIN"
                           btnColor='black'
                         />
@@ -197,11 +231,11 @@ const modalStyles = StyleSheet.create({
     borderColor: '#eee',
     borderRadius: 100,
     borderWidth: 2,
-    height: 116
+    height: 110
   },
   avatarMatchContainer: {
     flexDirection: 'row',
-    gap: -30
+    gap: -28
   },
   centeredView: {
     alignItems: 'center',
@@ -221,9 +255,6 @@ const modalStyles = StyleSheet.create({
     top: 24
   },
   input: {
-    // textOverflow: 'show',
-    // textOverflow: '',
-
     backgroundColor: '#fff',
     borderRadius: 50,
     elevation: 2,

@@ -31,11 +31,11 @@ export interface UsersWhoLikedEvent {
   updatedAt: string;
   eventId: number;
   userId: number;
-  user: User;
+  user: UserRes;
 }
 
 // used for SERVER STATE
-export interface User {
+export interface UserRes {
   id: number;
   avatar: string;
   photos: Photo[];
