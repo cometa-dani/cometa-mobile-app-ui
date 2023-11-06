@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useCallback, useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Bubble, GiftedChat, IMessage } from 'react-native-gifted-chat';
@@ -5,10 +6,11 @@ import { StyleSheet } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, query, onSnapshot, orderBy, limit } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
 import { Image } from 'react-native';
 import { useQueryGetFriendshipByReceiverAndSender } from '../../queries/friendshipHooks';
+import { Unsubscribe } from 'firebase/auth';
 
 
 export default function ChatScreen(): JSX.Element {
@@ -32,44 +34,44 @@ export default function ChatScreen(): JSX.Element {
           _id: messageSender?.id as number,
         }
       };
-      const subCollection = collection(db, 'chats', `${friendshipData?.id}`, 'messages');
-      await addDoc(subCollection, messagePayload);
-
-      // this should be remove and just listen for the new message to arrive
-      setMessages(previousMessages =>
-        GiftedChat.append(previousMessages, messages),
-      );
+      if (friendshipData?.id) {
+        const subCollection = collection(db, 'chats', `${friendshipData?.id}`, 'messages');
+        await addDoc(subCollection, messagePayload);
+      }
+      else {
+        throw new Error('frienship id undefined');
+      }
     }
     catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [friendshipData?.id]);
 
 
   useEffect(() => {
-    // setMessages([
-    //   {
-    //     _id: 1,
-    //     text: 'Hello developer',
-    //     createdAt: new Date(),
-    //     user: {
-    //       _id: 2,
-    //       name: 'React Native',
-    //       avatar: 'https://firebasestorage.googleapis.com/v0/b/cometa-e5dd5.appspot.com/o/users%2FBf3p1f2qsiXqieKhb4iAm11p0Tv1%2Favatar?alt=media&token=86e6d2f3-c57d-4610-accd-ccff2f93dc3d&_gl=1*1a7uhta*_ga*MTY4ODg0MTA0OS4xNjk3NTg2MTQ3*_ga_CW55HF8NVT*MTY5ODY0ODg2OC42MS4xLjE2OTg2NTAzMjguNDAuMC4w'
-    //     },
-    //   },
-    //   {
-    //     _id: 2,
-    //     text: 'Hola Mundo',
-    //     createdAt: new Date(),
-    //     user: {
-    //       _id: 1,
-    //       name: 'Cesar',
-    //       avatar: 'https://firebasestorage.googleapis.com/v0/b/cometa-e5dd5.appspot.com/o/users%2F9ZODB2yQATTtXbgC7BJ5JppErV32%2Favatar?alt=media&token=13f14e47-3d4f-4786-b33c-8c3b68cc6352&_gl=1*yk4e7l*_ga*MTY4ODg0MTA0OS4xNjk3NTg2MTQ3*_ga_CW55HF8NVT*MTY5ODY0ODg2OC42MS4xLjE2OTg2NTAwMzYuMzYuMC4w'
-    //     },
-    //   },
-    // ]);
-  }, []);
+    let unsubscribe!: Unsubscribe;
+    if (friendshipData?.id) {
+      const queryCollRef = query(
+        collection(db, 'chats', `${friendshipData?.id}`, 'messages'),
+        orderBy('createdAt', 'desc'),
+        limit(10),
+      );
+
+      unsubscribe = onSnapshot(queryCollRef, (querySnapshot) => {
+        const myMessage: IMessage[] = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const createdAt = new Date(data['createdAt']['seconds'] * 1000);
+          const message = { ...data, createdAt } as IMessage;
+          myMessage.push({ ...message });
+        });
+
+        setMessages(myMessage);
+      });
+    }
+
+    return () => unsubscribe && unsubscribe();
+  }, [friendshipData?.id]);
 
 
   return (
@@ -101,6 +103,7 @@ export default function ChatScreen(): JSX.Element {
           renderBubble={(props) => (
             <Bubble
               {...props}
+              key={props.currentMessage?._id}
               textStyle={{
                 right: { color: text },
                 left: { color: text }
