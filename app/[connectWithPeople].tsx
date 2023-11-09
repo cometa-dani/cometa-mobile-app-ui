@@ -18,6 +18,7 @@ import * as Yup from 'yup';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { IMessage, } from 'react-native-gifted-chat';
+import { nodeEnv } from '../constants/vars';
 
 
 type Message = { message: string };
@@ -42,7 +43,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();
 
   // mutations
-  const [incommginFriendShip, setIncommginFriendShip] = useState({} as UserRes);
+  const [incommginFriendshipSender, setIncommginFriendshipSender] = useState({} as UserRes);
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
   const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
   const mutationCancelFriendship = useMutationCancelFriendshipInvitation();
@@ -53,7 +54,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   * @param {UserRes} sender the sender of the friendship invitation
   */
   const handleUserIsSender = (sender: UserRes): void => {
-    setIncommginFriendShip(sender);
+    setIncommginFriendshipSender(sender);
     setTimeout(() => setToggleModal(true), 100);
     const friendshipID = sender.outgoingFriendships[0].id;
     mutationAcceptFriendship.mutate(friendshipID);
@@ -82,7 +83,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
     async (values: Message, actions: FormikHelpers<Message>): Promise<void> => {
       // start chat with new friend
       const messagePayload: IMessage = {
-        _id: '12askallas',
+        _id: Math.round(Math.random() * 1000000),
         text: values.message,
         createdAt: new Date(),
         user: {
@@ -92,16 +93,18 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
         }
       };
       actions.resetForm();
+      setToggleModal(false);
+      actions.setSubmitting(false);
+
       const freindshipID = mutationAcceptFriendship.data?.id;
       if (freindshipID) {
         const subCollection = collection(db, 'chats', `${freindshipID}`, 'messages');
         await addDoc(subCollection, messagePayload);
+        router.push(`/chat/${incommginFriendshipSender.id}`);
       }
       else {
         throw new Error('frienship id undefined');
       }
-      actions.setSubmitting(false);
-      router.push(`/chat/${incommginFriendShip.id}`);
     };
 
 
@@ -136,13 +139,13 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
             <View style={modalStyles.modalView}>
               <View style={modalStyles.avatarMatchContainer}>
                 <Image style={modalStyles.avatarMatch} source={{ uri: userProfile?.avatar }} />
-                {incommginFriendShip?.avatar && (
-                  <Image style={modalStyles.avatarMatch} source={{ uri: incommginFriendShip.avatar }} />
+                {incommginFriendshipSender?.avatar && (
+                  <Image style={modalStyles.avatarMatch} source={{ uri: incommginFriendshipSender.avatar }} />
                 )}
               </View>
 
               <View>
-                <Text style={modalStyles.modalText}>It&apos;s as match!</Text>
+                <Text style={modalStyles.modalText}>It&apos;s a match!</Text>
                 <Text style={modalStyles.modalText}>You have a new friend</Text>
               </View>
 
@@ -151,15 +154,23 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                 initialValues={{ message: '' }}
                 onSubmit={handleMessageNewFriend}
               >
-                {({ handleBlur, handleChange, values }) => (
-                  <TextInput
-                    numberOfLines={1}
-                    style={modalStyles.input}
-                    onChangeText={handleChange('message')}
-                    onBlur={handleBlur('message')}
-                    value={values.message}
-                    placeholder={`Mesage ${incommginFriendShip.username} to join together ${eventByIdRes.data?.name.split(' ').slice(0, 4).join(' ')}`}
-                  />
+                {({ handleSubmit, handleBlur, handleChange, values }) => (
+                  <View style={modalStyles.inputContainer}>
+                    <TextInput
+                      numberOfLines={1}
+                      style={modalStyles.input}
+                      onChangeText={handleChange('message')}
+                      onBlur={handleBlur('message')}
+                      value={values.message}
+                      placeholder={`Mesage ${incommginFriendshipSender.username} to join together`}
+                    />
+                    <Pressable
+                      style={modalStyles.btnSubmit}
+                      onPress={() => handleSubmit()}
+                    >
+                      <FontAwesome style={{ fontSize: 26, color: '#fff' }} name='send' />
+                    </Pressable>
+                  </View>
                 )}
               </Formik>
 
@@ -240,7 +251,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                       {isSender && (
                         <CoButton
                           onPress={() => handleUserIsSender(user)}
-                          text="JOIN_2"
+                          text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
                           btnColor='black'
                         />
                       )}
@@ -265,6 +276,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
 
 
 const modalStyles = StyleSheet.create({
+
   avatarMatch: {
     aspectRatio: 1,
     borderColor: '#eee',
@@ -272,10 +284,25 @@ const modalStyles = StyleSheet.create({
     borderWidth: 2,
     height: 110
   },
+
+
   avatarMatchContainer: {
     flexDirection: 'row',
     gap: -28
   },
+
+  btnSubmit: {
+    backgroundColor: '#a22bfa',
+    borderRadius: 10,
+    elevation: 2,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    shadowColor: '#171717',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+  },
+
   centeredView: {
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
@@ -288,24 +315,34 @@ const modalStyles = StyleSheet.create({
   icon: {
     fontSize: 34
   },
+
   iconButton: {
     position: 'absolute',
     right: 28,
     top: 24
   },
+
   input: {
     backgroundColor: '#fff',
     borderRadius: 50,
     elevation: 2,
-    marginTop: 12,
-    paddingHorizontal: 28,
+    flex: 1,
+    paddingHorizontal: 20,
     paddingVertical: 14,
     shadowColor: '#171717',
     shadowOffset: { width: 6, height: 6 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
-    width: '100%',
   },
+
+  inputContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 16,
+    marginTop: 10
+  },
+
+
   modalText: {
     fontSize: 18,
     textAlign: 'center',
