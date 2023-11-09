@@ -18,7 +18,6 @@ export default function ChatScreen(): JSX.Element {
 
   // chat
   const friendID: number = +useLocalSearchParams()['friend'];
-  console.log(friendID);
   const { data: friendshipData } = useQueryGetFriendshipByReceiverAndSender(friendID);
   const messageReceiver = friendID === friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
   const messageSender = friendID !== friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;

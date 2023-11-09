@@ -15,6 +15,9 @@ import { FontAwesome } from '@expo/vector-icons';
 import { UserRes } from '../models/User';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../firebase/firebase';
+import { IMessage, } from 'react-native-gifted-chat';
 
 
 type Message = { message: string };
@@ -47,6 +50,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   /**
   * 
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
+  * @param {UserRes} sender the sender of the friendship invitation
   */
   const handleUserIsSender = (sender: UserRes): void => {
     setIncommginFriendShip(sender);
@@ -58,6 +62,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   /**
   * 
   * @description for a receiver user, sends a friendship invitation with status 'PENDING'
+  * @param {UserRes} receiver the receiver of the friendship invitation
   */
   const handleUserIsNietherSenderNorReceiver = (receiver: UserRes): void => {
     mutationSentFriendship.mutate(receiver.id);
@@ -66,6 +71,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   /**
   * 
   * @description cancels a friendship invitation with status 'PENDING'
+  * @param {UserRes} receiver the receiver of the friendship invitation
   */
   const handleCancelFriendshipInvitation = (receiver: UserRes): void => {
     mutationCancelFriendship.mutate(receiver.id);
@@ -75,7 +81,25 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const handleMessageNewFriend =
     async (values: Message, actions: FormikHelpers<Message>): Promise<void> => {
       // start chat with new friend
+      const messagePayload: IMessage = {
+        _id: '12askallas',
+        text: values.message,
+        createdAt: new Date(),
+        user: {
+          avatar: userProfile?.avatar,
+          name: userProfile?.username,
+          _id: userProfile?.id as number,
+        }
+      };
       actions.resetForm();
+      const freindshipID = mutationAcceptFriendship.data?.id;
+      if (freindshipID) {
+        const subCollection = collection(db, 'chats', `${freindshipID}`, 'messages');
+        await addDoc(subCollection, messagePayload);
+      }
+      else {
+        throw new Error('frienship id undefined');
+      }
       actions.setSubmitting(false);
       router.push(`/chat/${incommginFriendShip.id}`);
     };
