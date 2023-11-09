@@ -18,6 +18,7 @@ export default function ChatScreen(): JSX.Element {
 
   // chat
   const friendID: number = +useLocalSearchParams()['friend'];
+  console.log(friendID);
   const { data: friendshipData } = useQueryGetFriendshipByReceiverAndSender(friendID);
   const messageReceiver = friendID === friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
   const messageSender = friendID !== friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
@@ -57,6 +58,7 @@ export default function ChatScreen(): JSX.Element {
         limit(10),
       );
 
+      // TODO: just listen for the last message only
       unsubscribe = onSnapshot(queryCollRef, (querySnapshot) => {
         const myMessage: IMessage[] = [];
         querySnapshot.forEach((doc) => {

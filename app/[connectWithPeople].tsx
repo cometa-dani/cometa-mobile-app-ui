@@ -7,7 +7,7 @@ import { Image } from 'react-native';
 import { FlatList, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { CoButton } from '../components/buttons/buttons';
 import { StatusBar } from 'expo-status-bar';
-import { useInfiniteQueryGetNewestFriends, useMutationAcceptFriendshipInvitation, useMutationSentFriendshipInvitation } from '../queries/friendshipHooks';
+import { useInfiniteQueryGetNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../queries/friendshipHooks';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 import { useCometaStore } from '../store/cometaStore';
 import { useQueryGetUserInfo } from '../queries/userHooks';
@@ -37,12 +37,12 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const eventByIdRes = useQueryGetEventById(+urlParam);
   const newPeopleRes = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();
-  // console.log(urlParam);
 
   // mutations
   const [incommginFriendShip, setIncommginFriendShip] = useState({} as UserRes);
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
   const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
+  const mutationCancelFriendship = useMutationCancelFriendshipInvitation();
 
   /**
   * 
@@ -63,11 +63,18 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
     mutationSentFriendship.mutate(receiver.id);
   };
 
+  /**
+  * 
+  * @description cancels a friendship invitation with status 'PENDING'
+  */
+  const handleCancelFriendshipInvitation = (receiver: UserRes): void => {
+    mutationCancelFriendship.mutate(receiver.id);
+  };
+
 
   const handleMessageNewFriend =
     async (values: Message, actions: FormikHelpers<Message>): Promise<void> => {
       // start chat with new friend
-      // console.log(values);
       actions.resetForm();
       actions.setSubmitting(false);
       router.push(`/chat/${incommginFriendShip.id}`);
@@ -201,6 +208,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
 
                       {isReceiver && (
                         <CoButton
+                          onPress={() => handleCancelFriendshipInvitation(user)}
                           text="PENDING"
                           btnColor='blue'
                         />

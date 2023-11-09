@@ -85,6 +85,33 @@ export const useMutationSentFriendshipInvitation = () => {
 };
 
 
+export const useMutationCancelFriendshipInvitation = () => {
+  const accessToken = useCometaStore(state => state.accessToken);
+  const queryClient = useQueryClient();
+
+  return (
+    useMutation({
+      mutationFn: async (receiverID: number) => {
+        const res =
+          await friendshipService.cancelFriendShipInvitation(receiverID, accessToken);
+        if (res.status === 204) {
+          return res.data ?? null;
+        }
+        else {
+          throw new Error('failed fech');
+        }
+      },
+      onMutate: async () => { },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT] });
+      },
+      retry: 3,
+      retryDelay: 1_000 * 60 * 3
+    })
+  );
+};
+
+
 export const useMutationAcceptFriendshipInvitation = () => {
   const accessToken = useCometaStore(state => state.accessToken);
   const queryClient = useQueryClient();
@@ -103,8 +130,10 @@ export const useMutationAcceptFriendshipInvitation = () => {
       },
       onMutate: async () => { },
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] });
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT] });
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] }),
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT] })
+        ]);
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
