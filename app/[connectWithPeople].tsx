@@ -285,7 +285,6 @@ const modalStyles = StyleSheet.create({
     height: 110
   },
 
-
   avatarMatchContainer: {
     flexDirection: 'row',
     gap: -28

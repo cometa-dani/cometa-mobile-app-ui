@@ -1,6 +1,6 @@
 import { View } from '../Themed';
 import { FC } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, SafeAreaView } from 'react-native';
 
 
 interface Props {
@@ -9,9 +9,11 @@ interface Props {
 
 export const WrapperOnBoarding: FC<Props> = ({ children }) => {
   return (
-    <View style={styles.container}>
-      {children}
-    </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        {children}
+      </View>
+    </SafeAreaView>
   );
 };
 

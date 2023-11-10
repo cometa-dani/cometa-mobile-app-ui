@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, SafeAreaView } from 'react-native';
 
 import { Text, View } from '../components/Themed';
 import { FlatList } from 'react-native-gesture-handler';
@@ -13,7 +13,7 @@ export default function BuckectListScreen(): JSX.Element {
   const handlingInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style={'auto'} />
 
       <View style={styles.container}>
@@ -44,7 +44,7 @@ export default function BuckectListScreen(): JSX.Element {
           )}
         />
       </View>
-    </>
+    </SafeAreaView>
   );
 }
 

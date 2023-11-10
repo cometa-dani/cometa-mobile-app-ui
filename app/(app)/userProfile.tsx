@@ -1,7 +1,8 @@
-import { ScrollView, StyleSheet, Button } from 'react-native';
-import { Text } from '../../components/Themed';
+import { ScrollView, StyleSheet, Button, SafeAreaView } from 'react-native';
+import { Text, View } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
+import { StatusBar } from 'expo-status-bar';
 
 
 export default function UserProfileScreen(): JSX.Element {
@@ -11,22 +12,18 @@ export default function UserProfileScreen(): JSX.Element {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollView}>
-      <Text style={styles.title}>User Profile Screen</Text>
-      <Button
-        title='Log Out'
-        onPress={() => handleLogout()}
-      />
-    </ScrollView >
+    <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar style={'auto'} />
+      <ScrollView contentContainerStyle={{ flex: 1 }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={styles.title}>User Profile Screen</Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
   title: {
     fontSize: 20,
     fontWeight: 'bold',

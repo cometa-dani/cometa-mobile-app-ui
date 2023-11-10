@@ -1,12 +1,13 @@
 import React, { FC, useState } from 'react';
 import { LikedEvent, CreateEventLike } from '../../models/Event';
-import { StyleSheet, Image, DimensionValue, Pressable } from 'react-native';
+import { StyleSheet, Image, DimensionValue, Pressable, SafeAreaView } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, FlatList, Directions } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
 import { UseMutationResult } from '@tanstack/react-query';
+import { StatusBar } from 'expo-status-bar';
 
 
 // Define the props for the memoized list item
@@ -119,29 +120,34 @@ export default function HomeScreen(): JSX.Element {
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
 
   return (
-    <View style={styles.container}>
-      {/* Latest events list */}
-      <FlatList
-        pagingEnabled={true}
-        // maxToRenderPerBatch={3}
-        onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
-        data={data?.pages.flatMap(page => page.events)}
-        contentContainerStyle={styles.flatListContent}
-        onEndReached={handleInfititeFetch}
-        onEndReachedThreshold={1}
-        renderItem={({ item }) => (
-          <EventItem
-            likeOrDislikeMutation={likeOrDislikeMutation}
-            key={item.id}
-            item={item}
-            layoutHeight={layoutHeight}
-            red100={red100}
-            tabIconDefault={tabIconDefault}
-          />
-        )}
-      />
-      {/* Latest events list */}
-    </View>
+    <SafeAreaView style={{ flex: 1 }}>
+
+      <StatusBar style={'auto'} />
+
+      <View style={styles.container}>
+        {/* Latest events list */}
+        <FlatList
+          pagingEnabled={true}
+          // maxToRenderPerBatch={3}
+          onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
+          data={data?.pages.flatMap(page => page.events)}
+          contentContainerStyle={styles.flatListContent}
+          onEndReached={handleInfititeFetch}
+          onEndReachedThreshold={1}
+          renderItem={({ item }) => (
+            <EventItem
+              likeOrDislikeMutation={likeOrDislikeMutation}
+              key={item.id}
+              item={item}
+              layoutHeight={layoutHeight}
+              red100={red100}
+              tabIconDefault={tabIconDefault}
+            />
+          )}
+        />
+        {/* Latest events list */}
+      </View>
+    </SafeAreaView>
   );
 }
 

@@ -1,22 +1,23 @@
-import { StyleSheet } from 'react-native';
-import { Text } from '../../components/Themed';
+import { StyleSheet, SafeAreaView } from 'react-native';
+import { Text, View } from '../../components/Themed';
 import { ScrollView } from 'react-native-gesture-handler';
+import { StatusBar } from 'expo-status-bar';
 
 
 export default function DiscoverScreen(): JSX.Element {
   return (
-    <ScrollView contentContainerStyle={styles.scrollView}>
-      <Text style={styles.title}>Discover Screen</Text>
-    </ScrollView>
+    <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar style={'auto'} />
+      <ScrollView contentContainerStyle={{ flex: 1 }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={styles.title}>Discover</Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
   title: {
     fontSize: 20,
     fontWeight: 'bold',

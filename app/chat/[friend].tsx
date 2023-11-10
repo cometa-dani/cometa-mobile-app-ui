@@ -8,7 +8,7 @@ import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { collection, addDoc, query, onSnapshot, orderBy, limit } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
-import { Image } from 'react-native';
+import { Image, SafeAreaView } from 'react-native';
 import { useQueryGetFriendshipByReceiverAndSender } from '../../queries/friendshipHooks';
 import { Unsubscribe } from 'firebase/auth';
 
@@ -76,8 +76,10 @@ export default function ChatScreen(): JSX.Element {
 
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1 }}>
+
       <StatusBar style={'auto'} />
+
       <Stack.Screen
         options={{
           gestureDirection: 'vertical',
@@ -126,7 +128,7 @@ export default function ChatScreen(): JSX.Element {
           }}
         />
       </View>
-    </>
+    </SafeAreaView>
   );
 }
 
