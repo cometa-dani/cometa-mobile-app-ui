@@ -3,6 +3,7 @@ const white_50 = '#fff';
 const red_100 = '#ff2d55';
 const blue_100 = '#5ac8fa';
 const gray_100 = '#e5e5e5';
+const gray_500 = '#4f4f4f';
 
 
 export const buttonColors = {
@@ -39,6 +40,7 @@ export default {
     blue100: blue_100,
     gray100: gray_100,
     text: '#030303',
+    textContent: gray_500,
     background: '#fff',
     tint: primary_100,
     tabIconDefault: gray_100,
@@ -50,6 +52,7 @@ export default {
     red100: red_100,
     blue100: blue_100,
     gray100: gray_100,
+    textContent: gray_500,
     text: '#fff',
     background: '#030303',
     tint: white_50,
