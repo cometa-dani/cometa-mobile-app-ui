@@ -43,6 +43,7 @@ export default function UserProfileScreen(): JSX.Element {
     }
   }, [userProfile?.username, userProfile?.description]);
 
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style={'auto'} />
@@ -170,6 +171,32 @@ export default function UserProfileScreen(): JSX.Element {
           ) : (
             <View style={styles.cardWrapper}>
               <Text style={{ fontSize: 24, fontWeight: '700' }}>Photos</Text>
+
+              <View style={{ minHeight: 140, flexDirection: 'row', gap: 12 }}>
+                <View style={styles.uploadPhoto1}>
+                  <FontAwesome style={{ fontSize: 34 }} name='plus-square-o' />
+                </View>
+
+                <View style={{ flex: 1, gap: 12, }}>
+                  <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
+                    <View style={styles.uploadPhotoGrid}>
+                      <FontAwesome style={{ fontSize: 28 }} name='plus-square-o' />
+                    </View>
+                    <View style={styles.uploadPhotoGrid}>
+                      <FontAwesome style={{ fontSize: 28 }} name='plus-square-o' />
+                    </View>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
+                    <View style={styles.uploadPhotoGrid}>
+                      <FontAwesome style={{ fontSize: 28 }} name='plus-square-o' />
+                    </View>
+                    <View style={styles.uploadPhotoGrid}>
+                      <FontAwesome style={{ fontSize: 28 }} name='plus-square-o' />
+                    </View>
+                  </View>
+                </View>
+              </View>
             </View>
           )}
         </View>
@@ -233,5 +260,21 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold',
     textTransform: 'capitalize',
+  },
+
+  uploadPhoto1: {
+    alignItems: 'center',
+    backgroundColor: '#ead4fa',
+    borderRadius: 26,
+    flex: 1,
+    justifyContent: 'center'
+  },
+
+  uploadPhotoGrid: {
+    alignItems: 'center',
+    backgroundColor: '#ead4fa',
+    borderRadius: 26,
+    flex: 1,
+    justifyContent: 'center'
   },
 });
