@@ -26,9 +26,11 @@ export default function WelcomeScreen(): JSX.Element {
       unsubscribe = onAuthStateChanged(auth, async (user) => {
         try {
           if (user) {
-            setAccessToken(await user.getIdToken());
+            const accessToken = await user.getIdToken();
+            setAccessToken(accessToken);
             setIsAuthenticated(true);
             setUserUid(user.uid);
+            // console.log(user.uid);
             console.log(`${user.email} is authenticated`);
             resolve(true);
           }

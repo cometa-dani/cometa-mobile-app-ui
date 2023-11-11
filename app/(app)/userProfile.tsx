@@ -7,17 +7,17 @@ import { useCometaStore } from '../../store/cometaStore';
 import { useQueryGetUserProfileByUid } from '../../queries/userHooks';
 import { CoButton } from '../../components/buttons/buttons';
 import { CoCard } from '../../components/card/card';
+import { FlatList } from 'react-native-gesture-handler';
 
 
 export default function UserProfileScreen(): JSX.Element {
-  const { textContent } = useColors();
+  const { gray500 } = useColors();
   const uid = useCometaStore(state => state.uid); // this can be abstracted
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
-  const totalFriends = (
-    userProfile?._count.incomingFriendships || 0)
+  const totalFriends =
+    (userProfile?._count.incomingFriendships || 0)
     +
-    (userProfile?._count.outgoingFriendships || 0
-    );
+    (userProfile?._count.outgoingFriendships || 0);
 
   const handleLogout = (): void => {
     signOut(auth);
@@ -35,7 +35,7 @@ export default function UserProfileScreen(): JSX.Element {
               <Text style={styles.title}>
                 {userProfile?.username}
               </Text>
-              <Text style={{ color: textContent }}>
+              <Text style={{ color: gray500 }}>
                 {userProfile?.description || 'Join me'}
               </Text>
             </View>
@@ -47,13 +47,13 @@ export default function UserProfileScreen(): JSX.Element {
                 <Text style={styles.statsNumber}>
                   {userProfile?._count.likedEvents}
                 </Text>
-                <Text style={[styles.statsTitle, { color: textContent }]}>events</Text>
+                <Text style={[styles.statsTitle, { color: gray500 }]}>events</Text>
               </View>
               <View>
                 <Text style={styles.statsNumber}>
                   {totalFriends}
                 </Text>
-                <Text style={[styles.statsTitle, { color: textContent }]}>friends</Text>
+                <Text style={[styles.statsTitle, { color: gray500 }]}>friends</Text>
               </View>
             </View>
 
@@ -64,17 +64,23 @@ export default function UserProfileScreen(): JSX.Element {
 
           <CoCard>
             <View style={styles.bucketList}>
-              <Text>BucketList</Text>
+              <Text style={{ fontSize: 18, fontWeight: '700' }}>BucketList</Text>
 
-              <View style={styles.bucketListImages}>
-                {userProfile?.likedEvents.map((eventLike) => (
+              <FlatList
+                contentContainerStyle={{ gap: 10, justifyContent: 'center' }}
+                showsHorizontalScrollIndicator={false}
+                // pagingEnabled={true}
+                // alwaysBounceHorizontal={false}
+                horizontal={true}
+                data={userProfile?.likedEvents}
+                renderItem={({ item }) => (
                   <Image
                     style={styles.bucketListImage}
-                    key={eventLike.id}
-                    source={{ uri: eventLike.event.mediaUrl }}
+                    key={item.id}
+                    source={{ uri: item.event.mediaUrl }}
                   />
-                ))}
-              </View>
+                )}
+              />
             </View>
           </CoCard>
 
@@ -103,19 +109,15 @@ const styles = StyleSheet.create({
   },
 
   bucketList: {
+    // flex: 1,
     gap: 12
   },
 
   bucketListImage: {
     borderRadius: 12,
-    flex: 1,
-    height: 80
-  },
-
-
-  bucketListImages: {
-    flexDirection: 'row',
-    gap: 14
+    // flex: 1,
+    height: 88,
+    width: 140
   },
 
   container: {
