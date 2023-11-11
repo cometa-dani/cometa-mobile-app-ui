@@ -4,10 +4,10 @@ const red_100 = '#ff2d55';
 
 
 export const buttonColors = {
-  // primary: {
-  //   background: primary_100,
-  //   color: '#fff'
-  // },
+  primary: {
+    background: primary_100,
+    color: '#fff'
+  },
 
   blue: {
     background: '#5ac8fa',
@@ -22,6 +22,11 @@ export const buttonColors = {
   black: {
     background: '#030303',
     color: '#fff'
+  },
+
+  white: {
+    background: '#fff',
+    color: '#030303'
   }
 };
 

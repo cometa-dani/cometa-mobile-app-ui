@@ -13,7 +13,7 @@ export interface Friendship {
   friend: UserRes
 }
 
-type Status = 'PENDING' | 'ACCEPTED' | 'BLOCKED'
+export type Status = 'PENDING' | 'ACCEPTED' | 'BLOCKED'
 
 export interface GetLatestFriendships {
   friendships: Friendship[];

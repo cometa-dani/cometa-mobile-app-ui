@@ -1,4 +1,4 @@
-import { UserClientState } from '../models/User';
+import { GetUserProfile, UserClientState } from '../models/User';
 import { RestApiService } from './restService';
 import * as ImagePicker from 'expo-image-picker';
 import FormData from 'form-data';
@@ -11,8 +11,8 @@ class UserService extends RestApiService {
     return this.http.post<UserClientState>('/users', { email, username });
   }
 
-  public getUserInfoByUid(uid: string) {
-    return this.http.get<UserClientState>(`/users/${uid}`);
+  public getUserInfoByUid(uid: string, accessToken: string) {
+    return this.http.get<GetUserProfile>(`/users/${uid}`, this.configAuthHeader(accessToken));
   }
 
   public updateById(userID: number, payload: Partial<UserClientState>) {

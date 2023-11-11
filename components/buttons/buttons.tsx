@@ -22,7 +22,7 @@ export const LightButton: FC<Props> = ({ text, textStyles = {}, ...props }) => {
 
 interface CoProps extends PressableProps {
   text: string,
-  btnColor: 'black' | 'gray' | 'blue',
+  btnColor: 'black' | 'gray' | 'blue' | 'white',
 }
 
 export const CoButton: FC<CoProps> = ({ text, btnColor, ...props }) => {

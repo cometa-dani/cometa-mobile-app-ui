@@ -10,7 +10,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useInfiniteQueryGetNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../queries/friendshipHooks';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 import { useCometaStore } from '../store/cometaStore';
-import { useQueryGetUserInfo } from '../queries/userHooks';
+import { useQueryGetUserProfile } from '../queries/userHooks';
 import { FontAwesome } from '@expo/vector-icons';
 import { UserRes } from '../models/User';
 import { Formik, FormikHelpers } from 'formik';
@@ -36,7 +36,8 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const [toggleTabs, setToggleTabs] = useState(false);
 
   // queries
-  const { data: userProfile } = useQueryGetUserInfo(uid);
+
+  const { data: userProfile } = useQueryGetUserProfile(uid);
   const urlParam = useLocalSearchParams()['connectWithPeople'];
   const eventByIdRes = useQueryGetEventById(+urlParam);
   const newPeopleRes = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
