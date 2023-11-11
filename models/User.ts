@@ -52,6 +52,7 @@ export interface GetUserProfile {
   avatar: string;
   photos: Photo[];
   username: string;
+  description: string;
   email: string;
   phone: null;
   uid: string;

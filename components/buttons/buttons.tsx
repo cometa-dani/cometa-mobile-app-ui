@@ -38,7 +38,7 @@ export const CoButton: FC<CoProps> = ({ text, btnColor, ...props }) => {
 const styles = StyleSheet.create({
   button: {
     borderRadius: 50,
-    elevation: 1,
+    elevation: 2,
     minWidth: 130,
     paddingHorizontal: 24,
     paddingVertical: 12,

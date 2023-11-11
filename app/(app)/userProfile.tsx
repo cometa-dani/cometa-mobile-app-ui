@@ -5,6 +5,7 @@ import { auth } from '../../firebase/firebase';
 import { StatusBar } from 'expo-status-bar';
 import { useCometaStore } from '../../store/cometaStore';
 import { useQueryGetUserProfileByUid } from '../../queries/userHooks';
+import { CoButton } from '../../components/buttons/buttons';
 
 
 export default function UserProfileScreen(): JSX.Element {
@@ -21,9 +22,30 @@ export default function UserProfileScreen(): JSX.Element {
       <ScrollView contentContainerStyle={{ flex: 1 }}>
         <View style={styles.container}>
 
-          <View>
-            <Image style={styles.avatar} source={{ uri: userProfile?.avatar }} />
-            <Text style={styles.title}>{userProfile?.username}</Text>
+          <View style={styles.avatarContainer}>
+
+            <View style={styles.avatarFigure}>
+              <Image style={styles.avatar} source={{ uri: userProfile?.avatar }} />
+              <Text style={[styles.title, { fontSize: 32 }]}>{userProfile?.username}</Text>
+              <Text style={styles.title}>{userProfile?.description || 'Join me'}</Text>
+            </View>
+
+            <CoButton btnColor='white' text='Edit Profile' />
+
+            <View>
+              <View>
+                <Text>{userProfile?._count.likedEvents}</Text>
+                <Text>events</Text>
+              </View>
+              <View>
+                <Text></Text>
+                <Text></Text>
+              </View>
+            </View>
+
+            {false && (
+              <Button onPress={() => handleLogout()} title='log out' />
+            )}
           </View>
 
         </View>
@@ -37,7 +59,16 @@ const styles = StyleSheet.create({
   avatar: {
     aspectRatio: 1,
     borderRadius: 100,
-    height: 110
+    height: 110,
+    margin: 'auto',
+  },
+
+  avatarContainer: {
+    gap: 12
+  },
+
+  avatarFigure: {
+    alignItems: 'center',
   },
 
   container: {

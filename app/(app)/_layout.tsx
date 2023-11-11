@@ -22,7 +22,7 @@ function TabBarIcon(props: {
 
 
 export default function AppLayout() {
-  const { text, tabIconSelected } = useColors();
+  const { text, blue100 } = useColors();
   const isAuthenticated = useCometaStore(state => state.isAuthenticated);
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
 
@@ -46,12 +46,13 @@ export default function AppLayout() {
       <StatusBar style={'light'} />
 
       <Tabs
+        // safeAreaInsets={{ bottom: 0 }}
         screenOptions={{
           tabBarStyle: { height: 58 },
           headerShown: false,
           tabBarInactiveTintColor: text,
           tabBarShowLabel: false,
-          tabBarActiveTintColor: tabIconSelected
+          tabBarActiveTintColor: blue100
         }}>
         <Tabs.Screen
           name="index"
@@ -75,12 +76,14 @@ export default function AppLayout() {
           }}
         />
         <Tabs.Screen
+          listeners={{ tabPress: (e) => e.preventDefault() }}
           name="discover"
           options={{
             tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} />,
           }}
         />
         <Tabs.Screen
+          listeners={{ tabPress: (e) => e.preventDefault() }}
           name="notifications"
           options={{
             tabBarIcon: ({ color }) => <TabBarIcon name="envelope" color={color} />,
