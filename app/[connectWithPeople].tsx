@@ -10,7 +10,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useInfiniteQueryGetNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../queries/friendshipHooks';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 import { useCometaStore } from '../store/cometaStore';
-import { useQueryGetUserProfile } from '../queries/userHooks';
+import { useQueryGetUserProfileByUid } from '../queries/userHooks';
 import { FontAwesome } from '@expo/vector-icons';
 import { UserRes } from '../models/User';
 import { Formik, FormikHelpers } from 'formik';
@@ -36,8 +36,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const [toggleTabs, setToggleTabs] = useState(false);
 
   // queries
-
-  const { data: userProfile } = useQueryGetUserProfile(uid);
+  const { data: userProfile } = useQueryGetUserProfileByUid(uid);
   const urlParam = useLocalSearchParams()['connectWithPeople'];
   const eventByIdRes = useQueryGetEventById(+urlParam);
   const newPeopleRes = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
@@ -97,9 +96,9 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
       setToggleModal(false);
       actions.setSubmitting(false);
 
-      const freindshipID = mutationAcceptFriendship.data?.id;
-      if (freindshipID) {
-        const subCollection = collection(db, 'chats', `${freindshipID}`, 'messages');
+      const friendshipID = mutationAcceptFriendship.data?.id;
+      if (friendshipID) {
+        const subCollection = collection(db, 'chats', `${friendshipID}`, 'messages');
         await addDoc(subCollection, messagePayload);
         router.push(`/chat/${incommginFriendshipSender.id}`);
       }
@@ -347,6 +346,7 @@ const modalStyles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
   },
+
   modalView: {
     alignItems: 'center',
     backgroundColor: '#fff',

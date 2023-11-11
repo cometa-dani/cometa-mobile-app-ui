@@ -1,6 +1,6 @@
 import { GetLatestEventsWithPagination, CreateEventLike } from '../models/Event';
 import { GetLikedEventByID } from '../models/EventLike';
-import { GetAllLikedEventsWithPagination } from '../models/LikedEvents';
+import { GetAllLikedEventsWithPagination } from '../models/LikedEvent';
 import { GetUsersWhoLikedEventWithPagination } from '../models/User';
 import { RestApiService } from './restService';
 

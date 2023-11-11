@@ -4,12 +4,12 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { StatusBar } from 'expo-status-bar';
 import { useCometaStore } from '../../store/cometaStore';
-import { useQueryGetUserProfile } from '../../queries/userHooks';
+import { useQueryGetUserProfileByUid } from '../../queries/userHooks';
 
 
 export default function UserProfileScreen(): JSX.Element {
-  const uid = useCometaStore(state => state.uid);
-  const { data: userProfile } = useQueryGetUserProfile(uid);
+  const uid = useCometaStore(state => state.uid); // this can be abstracted
+  const { data: userProfile } = useQueryGetUserProfileByUid(uid);
 
   const handleLogout = (): void => {
     signOut(auth);

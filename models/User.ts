@@ -1,7 +1,7 @@
 import { Friendship, Status } from './Friendship';
 
 
-// used in zustand for global CLIENT STATE
+// used in zustand store for global CLIENT STATE
 export interface UserClientState {
   id: number;
   uid: string;
@@ -34,7 +34,7 @@ export interface UsersWhoLikedEvent {
   user: UserRes;
 }
 
-// used for SERVER STATE
+// used in react query for SERVER STATE
 export interface UserRes {
   id: number;
   avatar: string;
@@ -46,7 +46,6 @@ export interface UserRes {
   outgoingFriendships: Friendship[];
   incomingFriendships: Friendship[];
 }
-
 
 export interface GetUserProfile {
   id: number;

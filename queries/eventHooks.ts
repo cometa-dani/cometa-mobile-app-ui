@@ -9,7 +9,7 @@ import {
 import { useCometaStore } from '../store/cometaStore';
 import eventService from '../services/eventService';
 import { GetLatestEventsWithPagination, CreateEventLike } from '../models/Event';
-import { GetAllLikedEventsWithPagination } from '../models/LikedEvents';
+import { GetAllLikedEventsWithPagination } from '../models/LikedEvent';
 import { GetUsersWhoLikedEventWithPagination } from '../models/User';
 import { GetLikedEventByID } from '../models/EventLike';
 import { QueryKeys } from './queryKeys';

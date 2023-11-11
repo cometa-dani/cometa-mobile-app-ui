@@ -5,7 +5,7 @@ import { QueryKeys } from './queryKeys';
 import { useCometaStore } from '../store/cometaStore';
 
 
-export const useQueryGetUserProfile = (dynamicParam: string) => {
+export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return (
