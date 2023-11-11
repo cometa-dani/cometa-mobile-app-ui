@@ -11,7 +11,7 @@ import { FlatList } from 'react-native-gesture-handler';
 
 
 export default function UserProfileScreen(): JSX.Element {
-  const { gray500 } = useColors();
+  const { gray500, background } = useColors();
   const uid = useCometaStore(state => state.uid); // this can be abstracted
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
   const totalFriends =
@@ -26,7 +26,7 @@ export default function UserProfileScreen(): JSX.Element {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style={'auto'} />
-      <ScrollView contentContainerStyle={{ flex: 1 }}>
+      <ScrollView style={{ backgroundColor: background }}>
         <View style={styles.container}>
 
           <View style={styles.avatarContainer}>
@@ -63,11 +63,11 @@ export default function UserProfileScreen(): JSX.Element {
           </View>
 
           <CoCard>
-            <View style={styles.bucketList}>
+            <View style={styles.cardWrapper}>
               <Text style={{ fontSize: 18, fontWeight: '700' }}>BucketList</Text>
 
               <FlatList
-                contentContainerStyle={{ gap: 10, justifyContent: 'center' }}
+                contentContainerStyle={{ gap: 12, justifyContent: 'center' }}
                 showsHorizontalScrollIndicator={false}
                 // pagingEnabled={true}
                 // alwaysBounceHorizontal={false}
@@ -84,6 +84,21 @@ export default function UserProfileScreen(): JSX.Element {
             </View>
           </CoCard>
 
+          <CoCard>
+            <View style={styles.cardWrapper}>
+              <Text style={{ fontSize: 18, fontWeight: '700' }}>Photos</Text>
+
+              <View style={{ minHeight: 150 }}>
+                {userProfile?.photos.length === 0 ? (
+                  <Text>No photos available</Text>
+                ) : (
+                  userProfile?.photos.map((photo) => (
+                    <View key={photo.uuid}>{photo.uuid}</View>
+                  ))
+                )}
+              </View>
+            </View>
+          </CoCard>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -108,16 +123,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  bucketList: {
-    // flex: 1,
-    gap: 12
-  },
-
   bucketListImage: {
     borderRadius: 12,
     // flex: 1,
-    height: 88,
-    width: 140
+    height: 84,
+    width: 130
+  },
+
+  cardWrapper: {
+    // flex: 1,
+    gap: 12
   },
 
   container: {
