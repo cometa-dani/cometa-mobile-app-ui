@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Button, SafeAreaView, Image, TextInput } from 'react-native';
+import { View as DefaultView, ScrollView, StyleSheet, Button, SafeAreaView, Image, TextInput, Modal } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
@@ -10,6 +10,7 @@ import { CoCard } from '../../components/card/card';
 import { FlatList } from 'react-native-gesture-handler';
 import { useEffect, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 
 
 export default function UserProfileScreen(): JSX.Element {
@@ -18,17 +19,41 @@ export default function UserProfileScreen(): JSX.Element {
 
   // queries
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
-  const [username, setUsername] = useState(userProfile?.username || '');
-  const [description, setDescription] = useState(userProfile?.description || 'Join me');
   const totalFriends =
     (userProfile?._count.incomingFriendships || 0)
     +
     (userProfile?._count.outgoingFriendships || 0);
 
   // edit
+  const [username, setUsername] = useState(userProfile?.username || '');
+  const [description, setDescription] = useState(userProfile?.description || 'Join me');
   const [toggleEdit, setToggleEdit] = useState(false);
   const usernameRef = useRef<TextInput>(null);
   const descriptionRef = useRef<TextInput>(null);
+
+  // modal/img-picker
+  const [toggleModal, setToggleModal] = useState(false);
+  const [imageUri, setImageUri] = useState<string>('');
+  const imgFileRef = useRef<ImagePicker.ImagePickerAsset>();
+
+  const handlePickImage = async () => {
+    try {
+      // No permissions request is necessary for launching the image library
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      if (!result.canceled) {
+        imgFileRef.current = result.assets[0];
+        setImageUri(result.assets[0].uri);
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleLogout = (): void => {
     signOut(auth);
@@ -151,6 +176,18 @@ export default function UserProfileScreen(): JSX.Element {
             </CoCard>
           )}
 
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={toggleModal}
+          >
+            <DefaultView style={modalStyles.centeredView}>
+              <View style={modalStyles.modalView}>
+
+              </View>
+            </DefaultView>
+          </Modal>
+
           {!toggleEdit ? (
             <CoCard>
               <View style={styles.cardWrapper}>
@@ -174,25 +211,25 @@ export default function UserProfileScreen(): JSX.Element {
 
               <View style={{ minHeight: 140, flexDirection: 'row', gap: 12 }}>
                 <View style={styles.uploadPhoto1}>
-                  <FontAwesome style={{ fontSize: 34 }} name='plus-square-o' />
+                  <FontAwesome onPress={() => handlePickImage()} style={{ fontSize: 34, color: gray500 }} name='plus-square-o' />
                 </View>
 
                 <View style={{ flex: 1, gap: 12, }}>
                   <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
                     <View style={styles.uploadPhotoGrid}>
-                      <FontAwesome style={{ fontSize: 28 }} name='plus-square-o' />
+                      <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
                     </View>
                     <View style={styles.uploadPhotoGrid}>
-                      <FontAwesome style={{ fontSize: 28 }} name='plus-square-o' />
+                      <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
                     </View>
                   </View>
 
                   <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
                     <View style={styles.uploadPhotoGrid}>
-                      <FontAwesome style={{ fontSize: 28 }} name='plus-square-o' />
+                      <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
                     </View>
                     <View style={styles.uploadPhotoGrid}>
-                      <FontAwesome style={{ fontSize: 28 }} name='plus-square-o' />
+                      <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
                     </View>
                   </View>
                 </View>
@@ -204,6 +241,98 @@ export default function UserProfileScreen(): JSX.Element {
     </SafeAreaView>
   );
 }
+
+
+const modalStyles = StyleSheet.create({
+
+  // avatarMatch: {
+  //   aspectRatio: 1,
+  //   borderColor: '#eee',
+  //   borderRadius: 100,
+  //   borderWidth: 2,
+  //   height: 110
+  // },
+
+  // avatarMatchContainer: {
+  //   flexDirection: 'row',
+  //   gap: -28
+  // },
+
+  // btnSubmit: {
+  //   backgroundColor: '#a22bfa',
+  //   borderRadius: 10,
+  //   elevation: 2,
+  //   paddingHorizontal: 14,
+  //   paddingVertical: 14,
+  //   shadowColor: '#171717',
+  //   shadowOffset: { width: 6, height: 6 },
+  //   shadowOpacity: 0.1,
+  //   shadowRadius: 1,
+  // },
+
+  centeredView: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    flex: 1,
+    height: '100%',
+    justifyContent: 'center',
+    padding: 20,
+  },
+
+  // icon: {
+  //   fontSize: 34
+  // },
+
+  // iconButton: {
+  //   position: 'absolute',
+  //   right: 28,
+  //   top: 24
+  // },
+
+  // input: {
+  //   backgroundColor: '#fff',
+  //   borderRadius: 50,
+  //   elevation: 2,
+  //   flex: 1,
+  //   paddingHorizontal: 20,
+  //   paddingVertical: 14,
+  //   shadowColor: '#171717',
+  //   shadowOffset: { width: 6, height: 6 },
+  //   shadowOpacity: 0.1,
+  //   shadowRadius: 1,
+  // },
+
+  // inputContainer: {
+  //   alignItems: 'center',
+  //   flexDirection: 'row',
+  //   gap: 16,
+  //   marginTop: 10
+  // },
+
+
+  // modalText: {
+  //   fontSize: 18,
+  //   textAlign: 'center',
+  // },
+
+  modalView: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    elevation: 3,
+    gap: 16,
+    paddingHorizontal: 28,
+    paddingVertical: 24,
+    shadowColor: '#171717',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 0.4,
+    width: '100%'
+  }
+});
 
 
 const styles = StyleSheet.create({
