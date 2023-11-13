@@ -1,4 +1,4 @@
-import { View as DefaultView, ScrollView, StyleSheet, Button, SafeAreaView, Image, TextInput, Modal } from 'react-native';
+import { ScrollView, StyleSheet, Button, SafeAreaView, Image, TextInput, Pressable } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
@@ -32,12 +32,12 @@ export default function UserProfileScreen(): JSX.Element {
   const descriptionRef = useRef<TextInput>(null);
 
   // modal/img-picker
-  const [toggleModal, setToggleModal] = useState(false);
-  const [imageUri, setImageUri] = useState<string>('');
-  const imgFileRef = useRef<ImagePicker.ImagePickerAsset>();
+  const imagePiked = {} as ImagePicker.ImagePickerAsset;
+  const [imageUri, setImageUri] = useState<string[]>(['', '', '', '', '']);
+  const imgFileRef = useRef<ImagePicker.ImagePickerAsset[]>([imagePiked, imagePiked, imagePiked, imagePiked, imagePiked]);
 
 
-  const handlePickImage = async () => {
+  const handlePickImage = async (photo: number) => {
     try {
       // No permissions request is necessary for launching the image library
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -47,8 +47,15 @@ export default function UserProfileScreen(): JSX.Element {
         quality: 1,
       });
       if (!result.canceled) {
-        imgFileRef.current = result.assets[0];
-        setImageUri(result.assets[0].uri);
+        // imgFileRef.current.push(result.assets[0]);
+        imgFileRef.current[photo] = result.assets[0];
+
+        setImageUri(prev => {
+          if (imgFileRef.current[photo]?.uri) {
+            prev[photo] = imgFileRef.current[photo]?.uri;
+          }
+          return [...prev];
+        });
       }
     }
     catch (error) {
@@ -86,9 +93,7 @@ export default function UserProfileScreen(): JSX.Element {
                 <Text style={styles.title}>
                   {username}
                 </Text>
-
               ) : (
-
                 <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
                   <View style={{ width: 24 }} />
                   <TextInput
@@ -135,6 +140,7 @@ export default function UserProfileScreen(): JSX.Element {
               <CoButton onPress={() => setToggleEdit(true)} btnColor='white' text='Edit Profile' />
             )}
 
+            {/* STATS */}
             <View style={styles.stats}>
               <View>
                 <Text style={styles.statsNumber}>
@@ -149,12 +155,14 @@ export default function UserProfileScreen(): JSX.Element {
                 <Text style={{ color: gray500 }}>friends</Text>
               </View>
             </View>
+            {/* STATS */}
 
             {false && (
               <Button onPress={() => handleLogout()} title='log out' />
             )}
           </View>
 
+          {/* BUCKETLIST */}
           {!toggleEdit && (
             <CoCard>
               <View style={styles.cardWrapper}>
@@ -178,19 +186,9 @@ export default function UserProfileScreen(): JSX.Element {
               </View>
             </CoCard>
           )}
+          {/* BUCKETLIST */}
 
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={toggleModal}
-          >
-            <DefaultView style={modalStyles.centeredView}>
-              <View style={modalStyles.modalView}>
-
-              </View>
-            </DefaultView>
-          </Modal>
-
+          {/* PHOTOS */}
           {!toggleEdit ? (
             <CoCard>
               <View style={styles.cardWrapper}>
@@ -209,36 +207,71 @@ export default function UserProfileScreen(): JSX.Element {
             </CoCard>
 
           ) : (
+            // UPLOAD PHOTOS
             <View style={styles.cardWrapper}>
               <Text style={{ fontSize: 24, fontWeight: '700' }}>Photos</Text>
 
-              <View style={{ minHeight: 140, flexDirection: 'row', gap: 12 }}>
-                <View style={styles.uploadPhoto1}>
-                  <FontAwesome onPress={() => handlePickImage()} style={{ fontSize: 34, color: gray500 }} name='plus-square-o' />
-                </View>
+              <Pressable style={{ minHeight: 140, flexDirection: 'row', gap: 12 }}>
+
+                <Pressable onPress={() => handlePickImage(0)} style={{ flex: 1 }}>
+                  {imageUri[0].length ? (
+                    <Image style={[styles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: imageUri[0] }} />
+                  ) : (
+                    <View style={styles.uploadPhoto1}>
+                      <FontAwesome style={{ fontSize: 34, color: gray500 }} name='plus-square-o' />
+                    </View>
+                  )}
+                </Pressable>
 
                 <View style={{ flex: 1, gap: 12, }}>
                   <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
-                    <View style={styles.uploadPhotoGrid}>
-                      <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
-                    </View>
-                    <View style={styles.uploadPhotoGrid}>
-                      <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
-                    </View>
+                    <Pressable onPress={() => handlePickImage(1)} style={{ flex: 1 }}>
+                      {imageUri[1].length ? (
+                        <Image style={[styles.uploadPhotoGrid, { objectFit: 'contain' }]} source={{ uri: imageUri[1] }} />
+                      ) : (
+                        <View style={styles.uploadPhotoGrid}>
+                          <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
+                        </View>
+                      )}
+                    </Pressable>
+
+                    <Pressable onPress={() => handlePickImage(2)} style={{ flex: 1 }}>
+                      {imageUri[2].length ? (
+                        <Image style={[styles.uploadPhotoGrid, { objectFit: 'contain' }]} source={{ uri: imageUri[2] }} />
+                      ) : (
+                        <View style={styles.uploadPhotoGrid}>
+                          <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
+                        </View>
+                      )}
+                    </Pressable>
                   </View>
 
                   <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
-                    <View style={styles.uploadPhotoGrid}>
-                      <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
-                    </View>
-                    <View style={styles.uploadPhotoGrid}>
-                      <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
-                    </View>
+                    <Pressable onPress={() => handlePickImage(3)} style={{ flex: 1 }}>
+                      {imageUri[3].length ? (
+                        <Image style={[styles.uploadPhotoGrid, { objectFit: 'contain' }]} source={{ uri: imageUri[3] }} />
+                      ) : (
+                        <View style={styles.uploadPhotoGrid}>
+                          <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
+                        </View>
+                      )}
+                    </Pressable>
+                    <Pressable onPress={() => handlePickImage(4)} style={{ flex: 1 }}>
+                      {imageUri[4].length ? (
+                        <Image style={[styles.uploadPhotoGrid, { objectFit: 'contain' }]} source={{ uri: imageUri[4] }} />
+                      ) : (
+                        <View style={styles.uploadPhotoGrid}>
+                          <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
+                        </View>
+                      )}
+                    </Pressable>
                   </View>
                 </View>
-              </View>
+              </Pressable>
             </View>
+            // UPLOAD PHOTOS
           )}
+          {/* PHOTOS */}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -246,34 +279,34 @@ export default function UserProfileScreen(): JSX.Element {
 }
 
 
-const modalStyles = StyleSheet.create({
-  centeredView: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    flex: 1,
-    height: '100%',
-    justifyContent: 'center',
-    padding: 20,
-  },
+// const modalStyles = StyleSheet.create({
+//   centeredView: {
+//     alignItems: 'center',
+//     backgroundColor: 'rgba(0, 0, 0, 0.1)',
+//     flex: 1,
+//     height: '100%',
+//     justifyContent: 'center',
+//     padding: 20,
+//   },
 
-  modalView: {
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    elevation: 3,
-    gap: 16,
-    paddingHorizontal: 28,
-    paddingVertical: 24,
-    shadowColor: '#171717',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 0.4,
-    width: '100%'
-  }
-});
+//   modalView: {
+//     alignItems: 'center',
+//     backgroundColor: '#fff',
+//     borderRadius: 20,
+//     elevation: 3,
+//     gap: 16,
+//     paddingHorizontal: 28,
+//     paddingVertical: 24,
+//     shadowColor: '#171717',
+//     shadowOffset: {
+//       width: 0,
+//       height: 2,
+//     },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 0.4,
+//     width: '100%'
+//   }
+// });
 
 
 const styles = StyleSheet.create({
@@ -321,10 +354,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     textAlign: 'center'
   },
-
-  // statsTitle: {
-  //   // fontSize: 18
-  // },
 
   title: {
     fontSize: 30,
