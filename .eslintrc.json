@@ -9,6 +9,11 @@
     "plugin:react/recommended",
     "plugin:react-native/all"
   ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",

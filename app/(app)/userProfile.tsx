@@ -36,6 +36,7 @@ export default function UserProfileScreen(): JSX.Element {
   const [imageUri, setImageUri] = useState<string>('');
   const imgFileRef = useRef<ImagePicker.ImagePickerAsset>();
 
+
   const handlePickImage = async () => {
     try {
       // No permissions request is necessary for launching the image library
@@ -55,9 +56,11 @@ export default function UserProfileScreen(): JSX.Element {
     }
   };
 
+
   const handleLogout = (): void => {
     signOut(auth);
   };
+
 
   useEffect(() => {
     if (userProfile?.username) {
@@ -137,13 +140,13 @@ export default function UserProfileScreen(): JSX.Element {
                 <Text style={styles.statsNumber}>
                   {userProfile?._count.likedEvents}
                 </Text>
-                <Text style={[styles.statsTitle, { color: gray500 }]}>events</Text>
+                <Text style={{ color: gray500 }}>events</Text>
               </View>
               <View>
                 <Text style={styles.statsNumber}>
                   {totalFriends}
                 </Text>
-                <Text style={[styles.statsTitle, { color: gray500 }]}>friends</Text>
+                <Text style={{ color: gray500 }}>friends</Text>
               </View>
             </View>
 
@@ -244,32 +247,6 @@ export default function UserProfileScreen(): JSX.Element {
 
 
 const modalStyles = StyleSheet.create({
-
-  // avatarMatch: {
-  //   aspectRatio: 1,
-  //   borderColor: '#eee',
-  //   borderRadius: 100,
-  //   borderWidth: 2,
-  //   height: 110
-  // },
-
-  // avatarMatchContainer: {
-  //   flexDirection: 'row',
-  //   gap: -28
-  // },
-
-  // btnSubmit: {
-  //   backgroundColor: '#a22bfa',
-  //   borderRadius: 10,
-  //   elevation: 2,
-  //   paddingHorizontal: 14,
-  //   paddingVertical: 14,
-  //   shadowColor: '#171717',
-  //   shadowOffset: { width: 6, height: 6 },
-  //   shadowOpacity: 0.1,
-  //   shadowRadius: 1,
-  // },
-
   centeredView: {
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
@@ -278,42 +255,6 @@ const modalStyles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
-
-  // icon: {
-  //   fontSize: 34
-  // },
-
-  // iconButton: {
-  //   position: 'absolute',
-  //   right: 28,
-  //   top: 24
-  // },
-
-  // input: {
-  //   backgroundColor: '#fff',
-  //   borderRadius: 50,
-  //   elevation: 2,
-  //   flex: 1,
-  //   paddingHorizontal: 20,
-  //   paddingVertical: 14,
-  //   shadowColor: '#171717',
-  //   shadowOffset: { width: 6, height: 6 },
-  //   shadowOpacity: 0.1,
-  //   shadowRadius: 1,
-  // },
-
-  // inputContainer: {
-  //   alignItems: 'center',
-  //   flexDirection: 'row',
-  //   gap: 16,
-  //   marginTop: 10
-  // },
-
-
-  // modalText: {
-  //   fontSize: 18,
-  //   textAlign: 'center',
-  // },
 
   modalView: {
     alignItems: 'center',
@@ -381,9 +322,9 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
 
-  statsTitle: {
-    // fontSize: 18
-  },
+  // statsTitle: {
+  //   // fontSize: 18
+  // },
 
   title: {
     fontSize: 30,
