@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
 
   date: {
     color: 'gray',
+    fontSize: 14,
     textAlign: 'center'
   },
 
@@ -76,7 +77,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12
+    gap: 10
   },
 
   flatListContent: {
@@ -93,11 +94,13 @@ const styles = StyleSheet.create({
 
   textContainer: {
     flex: 1,
-    justifyContent: 'space-around'
+    flexDirection: 'column',
+    justifyContent: 'space-around',
   },
 
   title: {
-    fontSize: 18,
+    fontSize: 16,
+    fontWeight: '500',
     textAlign: 'center',
   }
 });

@@ -389,7 +389,8 @@ const styles = StyleSheet.create({
   },
 
   tab: {
-    fontSize: 20,
+    fontSize: 17.6,
+    fontWeight: '700',
     paddingHorizontal: 10,
     paddingVertical: 2
   },

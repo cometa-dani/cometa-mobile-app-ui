@@ -38,19 +38,19 @@ export const CoButton: FC<CoProps> = ({ text, btnColor, ...props }) => {
 const styles = StyleSheet.create({
   button: {
     borderRadius: 50,
-    elevation: 2,
+    elevation: 4,
     minWidth: 130,
     paddingHorizontal: 24,
     paddingVertical: 12,
     shadowColor: '#171717',
-    shadowOffset: { width: 6, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
   },
 
   buttonText: {
     color: '#6c6c6c',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
     textAlign: 'center',
     // textTransform: 'uppercase'

@@ -19,13 +19,13 @@ export const CoCard: FC<CoProps> = ({ children }) => {
 const styles = StyleSheet.create({
   cardWrapper: {
     borderRadius: 18,
-    elevation: 2,
+    elevation: 4,
     padding: 20,
     // paddingHorizontal: 24,
     // paddingVertical: 12,
     shadowColor: '#171717',
-    shadowOffset: { width: 6, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
   }
 });

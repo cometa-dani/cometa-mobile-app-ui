@@ -166,7 +166,7 @@ export default function UserProfileScreen(): JSX.Element {
           {!toggleEdit && (
             <CoCard>
               <View style={styles.cardWrapper}>
-                <Text style={{ fontSize: 18, fontWeight: '700' }}>BucketList</Text>
+                <Text style={{ fontSize: 17, fontWeight: '700' }}>BucketList</Text>
 
                 <FlatList
                   contentContainerStyle={{ gap: 12, justifyContent: 'center' }}
@@ -192,7 +192,7 @@ export default function UserProfileScreen(): JSX.Element {
           {!toggleEdit ? (
             <CoCard>
               <View style={styles.cardWrapper}>
-                <Text style={{ fontSize: 18, fontWeight: '700' }}>Photos</Text>
+                <Text style={{ fontSize: 17, fontWeight: '700' }}>Photos</Text>
 
                 <View style={{ minHeight: 140 }}>
                   {userProfile?.photos.length === 0 ? (
@@ -209,10 +209,9 @@ export default function UserProfileScreen(): JSX.Element {
           ) : (
             // UPLOAD PHOTOS
             <View style={styles.cardWrapper}>
-              <Text style={{ fontSize: 24, fontWeight: '700' }}>Photos</Text>
+              <Text style={{ fontSize: 22, fontWeight: '700' }}>Photos</Text>
 
-              <Pressable style={{ minHeight: 140, flexDirection: 'row', gap: 12 }}>
-
+              <View style={{ minHeight: 140, flexDirection: 'row', gap: 12 }}>
                 <Pressable onPress={() => handlePickImage(0)} style={{ flex: 1 }}>
                   {imageUri[0].length ? (
                     <Image style={[styles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: imageUri[0] }} />
@@ -223,11 +222,11 @@ export default function UserProfileScreen(): JSX.Element {
                   )}
                 </Pressable>
 
-                <View style={{ flex: 1, gap: 12, }}>
-                  <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
-                    <Pressable onPress={() => handlePickImage(1)} style={{ flex: 1 }}>
+                <View style={{ flex: 1, gap: 12, alignSelf: 'stretch' }}>
+                  <View style={{ flexDirection: 'row', gap: 12, flex: 1, height: '100%' }}>
+                    <Pressable onPress={() => handlePickImage(1)} style={{ flex: 1, height: '100%' }}>
                       {imageUri[1].length ? (
-                        <Image style={[styles.uploadPhotoGrid, { objectFit: 'contain' }]} source={{ uri: imageUri[1] }} />
+                        <Image style={[styles.uploadPhotoGrid, { objectFit: 'contain', height: '100%' }]} source={{ uri: imageUri[1] }} />
                       ) : (
                         <View style={styles.uploadPhotoGrid}>
                           <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
@@ -235,7 +234,7 @@ export default function UserProfileScreen(): JSX.Element {
                       )}
                     </Pressable>
 
-                    <Pressable onPress={() => handlePickImage(2)} style={{ flex: 1 }}>
+                    <Pressable onPress={() => handlePickImage(2)} style={{ flex: 1, height: '100%' }}>
                       {imageUri[2].length ? (
                         <Image style={[styles.uploadPhotoGrid, { objectFit: 'contain' }]} source={{ uri: imageUri[2] }} />
                       ) : (
@@ -246,7 +245,7 @@ export default function UserProfileScreen(): JSX.Element {
                     </Pressable>
                   </View>
 
-                  <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
+                  <View style={{ flexDirection: 'row', gap: 12, flex: 1 }}>
                     <Pressable onPress={() => handlePickImage(3)} style={{ flex: 1 }}>
                       {imageUri[3].length ? (
                         <Image style={[styles.uploadPhotoGrid, { objectFit: 'contain' }]} source={{ uri: imageUri[3] }} />
@@ -267,7 +266,7 @@ export default function UserProfileScreen(): JSX.Element {
                     </Pressable>
                   </View>
                 </View>
-              </Pressable>
+              </View>
             </View>
             // UPLOAD PHOTOS
           )}
@@ -277,36 +276,6 @@ export default function UserProfileScreen(): JSX.Element {
     </SafeAreaView>
   );
 }
-
-
-// const modalStyles = StyleSheet.create({
-//   centeredView: {
-//     alignItems: 'center',
-//     backgroundColor: 'rgba(0, 0, 0, 0.1)',
-//     flex: 1,
-//     height: '100%',
-//     justifyContent: 'center',
-//     padding: 20,
-//   },
-
-//   modalView: {
-//     alignItems: 'center',
-//     backgroundColor: '#fff',
-//     borderRadius: 20,
-//     elevation: 3,
-//     gap: 16,
-//     paddingHorizontal: 28,
-//     paddingVertical: 24,
-//     shadowColor: '#171717',
-//     shadowOffset: {
-//       width: 0,
-//       height: 2,
-//     },
-//     shadowOpacity: 0.1,
-//     shadowRadius: 0.4,
-//     width: '100%'
-//   }
-// });
 
 
 const styles = StyleSheet.create({
@@ -356,8 +325,8 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 30,
-    fontWeight: 'bold',
+    fontSize: 26,
+    fontWeight: '700',
     textTransform: 'capitalize',
   },
 
@@ -374,6 +343,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ead4fa',
     borderRadius: 26,
     flex: 1,
+    // height: '100%',
     justifyContent: 'center'
   },
 });

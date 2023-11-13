@@ -141,21 +141,21 @@ const styles = StyleSheet.create({
 
   button: {
     borderRadius: 50,
-    elevation: 3,
+    elevation: 4,
     flexDirection: 'row',
     gap: 10,
     justifyContent: 'center',
     paddingHorizontal: 28,
     paddingVertical: 14,
     shadowColor: '#171717',
-    shadowOffset: { width: 6, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
   },
 
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '800',
     textAlign: 'center',
     textTransform: 'uppercase'
@@ -171,13 +171,13 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: '#fff',
     borderRadius: 50,
-    elevation: 3,
+    elevation: 4,
     paddingHorizontal: 28,
     paddingVertical: 14,
     shadowColor: '#171717',
-    shadowOffset: { width: 6, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
   },
 
   logo: {
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
   }
 });

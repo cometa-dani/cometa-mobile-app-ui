@@ -185,7 +185,8 @@ const styles = StyleSheet.create({
   },
 
   organizer: {
-    fontSize: 20,
+    fontSize: 18,
+    fontWeight: '500'
   },
 
   organizerContainer: {
@@ -208,7 +209,9 @@ const styles = StyleSheet.create({
 
   title: {
     // Title color should come from the backend
-    fontSize: 30,
+    fontSize: 24,
+    fontWeight: '600',
+    paddingHorizontal: 20,
     position: 'absolute',
     textAlign: 'center',
     top: 40
