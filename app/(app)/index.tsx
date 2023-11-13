@@ -54,22 +54,38 @@ const EventItem: FC<ListItemProps> = ({ item, likeOrDislikeMutation, layoutHeigh
         <View lightColor='transparent' darkColor='transparent' style={styles.positionedButtons}>
           <Pressable onPress={() => likeOrDislikeMutation.mutate(item.id)}>
             {({ hovered, pressed }) => (
-              <FontAwesome name='heart' size={46} style={{ color: (hovered && pressed) ? red100 : item.isLiked ? red100 : tabIconDefault }} />
+              (item.isLiked) ? (
+                <FontAwesome name='heart' size={34} style={{ color: (hovered && pressed) ? tabIconDefault : red100 }} />
+              ) : (
+                <FontAwesome name='heart-o' size={34} style={{ color: (hovered && pressed) ? red100 : tabIconDefault }} />
+              )
             )}
           </Pressable>
           <Pressable>
             {() => (
-              <FontAwesome name='commenting' size={46} style={{ color: tabIconDefault }} />
+              <FontAwesome name='commenting-o' size={34} style={{ color: tabIconDefault }} />
             )}
           </Pressable>
           <Pressable>
             {() => (
-              <FontAwesome name='send' size={46} style={{ color: tabIconDefault }} />
+              <FontAwesome name='share-square-o' size={34} style={{ color: tabIconDefault }} />
             )}
           </Pressable>
           <Pressable>
             {() => (
-              <FontAwesome name='chevron-down' size={46} style={{ color: tabIconDefault }} />
+              <View
+                style={{
+                  borderRadius: 100,
+                  aspectRatio: 1,
+                  width: 34,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'transparent',
+                  borderWidth: 3.4,
+                  borderColor: tabIconDefault
+                }}>
+                <FontAwesome name='chevron-down' size={22} style={{ color: tabIconDefault }} />
+              </View>
             )}
           </Pressable>
         </View>
@@ -162,10 +178,10 @@ const styles = StyleSheet.create({
   },
 
   img: {
+    aspectRatio: 1,
     borderRadius: 50,
-    height: 60,
-    overflow: 'hidden',
-    width: 60,
+    height: 48,
+    overflow: 'hidden'
   },
 
   organizer: {
@@ -182,10 +198,12 @@ const styles = StyleSheet.create({
   },
 
   positionedButtons: {
+    alignItems: 'center',
     bottom: 30,
-    gap: 20,
+    gap: 24,
+    justifyContent: 'center',
     position: 'absolute',
-    right: 20
+    right: 20,
   },
 
   title: {
