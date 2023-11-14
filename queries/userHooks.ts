@@ -1,8 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import userService from '../services/userService';
 import { GetUserProfile } from '../models/User';
 import { QueryKeys } from './queryKeys';
 import { useCometaStore } from '../store/cometaStore';
+import { ImagePickerAsset } from 'expo-image-picker';
 
 
 export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
@@ -20,6 +21,34 @@ export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
         else {
           throw new Error('failed to fetched');
         }
+      },
+      retry: 3,
+      retryDelay: 1_000 * 60 * 3
+    })
+  );
+};
+
+
+type MultiplePhotosParams = { imgFiles: ImagePickerAsset[], userID: number };
+
+export const useMutationUploadUserPhotos = () => {
+  return (
+    useMutation({
+      mutationFn: async ({ imgFiles, userID }: MultiplePhotosParams) => {
+        const res = await userService.uploadManyImagesById(userID, imgFiles);
+        if (res.status === 200) {
+          return res.data;
+        }
+        else {
+          throw new Error('failed fech');
+        }
+      },
+      onMutate: async () => { },
+      onSuccess: async () => {
+        await Promise.all([
+          // queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] }),
+          // queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT] })
+        ]);
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3

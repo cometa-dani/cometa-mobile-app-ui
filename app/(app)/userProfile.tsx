@@ -4,13 +4,14 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { StatusBar } from 'expo-status-bar';
 import { useCometaStore } from '../../store/cometaStore';
-import { useQueryGetUserProfileByUid } from '../../queries/userHooks';
+import { useMutationUploadUserPhotos, useQueryGetUserProfileByUid } from '../../queries/userHooks';
 import { CoButton } from '../../components/buttons/buttons';
 import { CoCard } from '../../components/card/card';
 import { FlatList } from 'react-native-gesture-handler';
 import { useEffect, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import type { ImagePickerAsset } from 'expo-image-picker';
 
 
 export default function UserProfileScreen(): JSX.Element {
@@ -24,6 +25,9 @@ export default function UserProfileScreen(): JSX.Element {
     +
     (userProfile?._count.outgoingFriendships || 0);
 
+  // mutations
+  const mutateUserInfo = useMutationUploadUserPhotos();
+
   // edit
   const [username, setUsername] = useState(userProfile?.username || '');
   const [description, setDescription] = useState(userProfile?.description || 'Join me');
@@ -32,9 +36,16 @@ export default function UserProfileScreen(): JSX.Element {
   const descriptionRef = useRef<TextInput>(null);
 
   // modal/img-picker
-  const imagePiked = {} as ImagePicker.ImagePickerAsset;
+  const imagePiked = {} as ImagePickerAsset;
   const [imageUri, setImageUri] = useState<string[]>(['', '', '', '', '']);
-  const imgFileRef = useRef<ImagePicker.ImagePickerAsset[]>([imagePiked, imagePiked, imagePiked, imagePiked, imagePiked]);
+  const imgFileRef = useRef<ImagePickerAsset[]>([imagePiked, imagePiked, imagePiked, imagePiked, imagePiked]);
+
+
+  const handleSumitUserInfo = () => {
+    if (userProfile?.id) {
+      mutateUserInfo.mutate({ userID: userProfile?.id, imgFiles: imgFileRef.current });
+    }
+  };
 
 
   const handlePickImage = async (photo: number) => {
@@ -43,11 +54,11 @@ export default function UserProfileScreen(): JSX.Element {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
+        // allowsMultipleSelection: true,
         aspect: [4, 3],
         quality: 1,
       });
       if (!result.canceled) {
-        // imgFileRef.current.push(result.assets[0]);
         imgFileRef.current[photo] = result.assets[0];
 
         setImageUri(prev => {
