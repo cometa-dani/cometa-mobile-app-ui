@@ -13,7 +13,7 @@ import { useCometaStore } from '../../store/cometaStore';
  * 
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
  */
-function TabBarIcon(props: {
+export function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
 }) {
@@ -89,12 +89,14 @@ export default function AppLayout() {
             tabBarIcon: ({ color }) => <TabBarIcon name="envelope" color={color} />,
           }}
         />
-        <Tabs.Screen
+        {/* <Tabs.Screen
           name="userProfile"
           options={{
+            headerShown: true,
+            headerTitleAlign: 'center',
             tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
           }}
-        />
+        /> */}
       </Tabs>
     </>
   );

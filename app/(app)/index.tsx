@@ -143,6 +143,7 @@ export default function HomeScreen(): JSX.Element {
       <View style={styles.container}>
         {/* Latest events list */}
         <FlatList
+          showsVerticalScrollIndicator={false}
           pagingEnabled={true}
           // maxToRenderPerBatch={3}
           onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}

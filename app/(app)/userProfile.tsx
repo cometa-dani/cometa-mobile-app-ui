@@ -12,6 +12,8 @@ import { useEffect, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import type { ImagePickerAsset } from 'expo-image-picker';
+import { Tabs } from 'expo-router';
+import { TabBarIcon } from './_layout';
 
 
 export default function UserProfileScreen(): JSX.Element {
@@ -37,13 +39,13 @@ export default function UserProfileScreen(): JSX.Element {
 
   // modal/img-picker
   const imagePiked = {} as ImagePickerAsset;
-  const [imageUri, setImageUri] = useState<string[]>(['', '', '', '', '']);
-  const imgFileRef = useRef<ImagePickerAsset[]>([imagePiked, imagePiked, imagePiked, imagePiked, imagePiked]);
+  const [imgsUri, setImageUri] = useState<string[]>(['', '', '', '', '']);
+  const imgFilesRef = useRef<ImagePickerAsset[]>([imagePiked, imagePiked, imagePiked, imagePiked, imagePiked]);
 
 
-  const handleSumitUserInfo = () => {
-    if (userProfile?.id) {
-      mutateUserInfo.mutate({ userID: userProfile?.id, imgFiles: imgFileRef.current });
+  const handleSumitUserInfo = (): void => {
+    if (userProfile?.id && imgFilesRef.current.length) {
+      mutateUserInfo.mutate({ userID: userProfile?.id, imgFiles: imgFilesRef.current });
     }
   };
 
@@ -59,11 +61,11 @@ export default function UserProfileScreen(): JSX.Element {
         quality: 1,
       });
       if (!result.canceled) {
-        imgFileRef.current[photo] = result.assets[0];
+        imgFilesRef.current[photo] = result.assets[0];
 
         setImageUri(prev => {
-          if (imgFileRef.current[photo]?.uri) {
-            prev[photo] = imgFileRef.current[photo]?.uri;
+          if (imgFilesRef.current[photo]?.uri) {
+            prev[photo] = imgFilesRef.current[photo]?.uri;
           }
           return [...prev];
         });
@@ -93,7 +95,18 @@ export default function UserProfileScreen(): JSX.Element {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style={'auto'} />
-      <ScrollView style={{ backgroundColor: background }}>
+      <Tabs.Screen
+        options={{
+          headerShown: true,
+          headerTitle: '@cesar_rivera',
+          headerTitleAlign: 'center',
+          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+        }}
+      />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ backgroundColor: background }}
+      >
         <View style={styles.container}>
 
           <View style={styles.avatarContainer}>
@@ -225,8 +238,8 @@ export default function UserProfileScreen(): JSX.Element {
 
                 {/* col 1 */}
                 <Pressable onPress={() => handlePickImage(0)} style={{ flex: 1 }}>
-                  {imageUri[0].length ? (
-                    <Image style={[styles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: imageUri[0] }} />
+                  {imgsUri[0].length ? (
+                    <Image style={[styles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: imgsUri[0] }} />
                   ) : (
                     <View style={styles.uploadPhoto1}>
                       <FontAwesome style={{ fontSize: 34, color: gray500 }} name='plus-square-o' />
@@ -239,8 +252,8 @@ export default function UserProfileScreen(): JSX.Element {
 
                   <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
                     <Pressable onPress={() => handlePickImage(1)} style={{ flex: 1 }}>
-                      {imageUri[1].length ? (
-                        <Image style={styles.uploadPhotoGrid} source={{ uri: imageUri[1] }} />
+                      {imgsUri[1].length ? (
+                        <Image style={styles.uploadPhotoGrid} source={{ uri: imgsUri[1] }} />
                       ) : (
                         <View style={styles.uploadPhotoGrid}>
                           <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
@@ -249,8 +262,8 @@ export default function UserProfileScreen(): JSX.Element {
                     </Pressable>
 
                     <Pressable onPress={() => handlePickImage(2)} style={{ flex: 1 }}>
-                      {imageUri[2].length ? (
-                        <Image style={styles.uploadPhotoGrid} source={{ uri: imageUri[2] }} />
+                      {imgsUri[2].length ? (
+                        <Image style={styles.uploadPhotoGrid} source={{ uri: imgsUri[2] }} />
                       ) : (
                         <View style={styles.uploadPhotoGrid}>
                           <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
@@ -261,8 +274,8 @@ export default function UserProfileScreen(): JSX.Element {
 
                   <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
                     <Pressable onPress={() => handlePickImage(3)} style={{ flex: 1 }}>
-                      {imageUri[3].length ? (
-                        <Image style={styles.uploadPhotoGrid} source={{ uri: imageUri[3] }} />
+                      {imgsUri[3].length ? (
+                        <Image style={styles.uploadPhotoGrid} source={{ uri: imgsUri[3] }} />
                       ) : (
                         <View style={styles.uploadPhotoGrid}>
                           <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
@@ -270,8 +283,8 @@ export default function UserProfileScreen(): JSX.Element {
                       )}
                     </Pressable>
                     <Pressable onPress={() => handlePickImage(4)} style={{ flex: 1 }}>
-                      {imageUri[4].length ? (
-                        <Image style={styles.uploadPhotoGrid} source={{ uri: imageUri[4] }} />
+                      {imgsUri[4].length ? (
+                        <Image style={styles.uploadPhotoGrid} source={{ uri: imgsUri[4] }} />
                       ) : (
                         <View style={styles.uploadPhotoGrid}>
                           <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
@@ -323,7 +336,7 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 24,
     paddingHorizontal: 20,
-    paddingVertical: 60
+    paddingVertical: 30
   },
 
   stats: {

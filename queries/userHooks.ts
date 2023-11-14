@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import userService from '../services/userService';
 import { GetUserProfile } from '../models/User';
 import { QueryKeys } from './queryKeys';
@@ -32,6 +32,8 @@ export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
 type MultiplePhotosParams = { imgFiles: ImagePickerAsset[], userID: number };
 
 export const useMutationUploadUserPhotos = () => {
+  const queryClient = useQueryClient();
+
   return (
     useMutation({
       mutationFn: async ({ imgFiles, userID }: MultiplePhotosParams) => {
@@ -45,10 +47,7 @@ export const useMutationUploadUserPhotos = () => {
       },
       onMutate: async () => { },
       onSuccess: async () => {
-        await Promise.all([
-          // queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] }),
-          // queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT] })
-        ]);
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO] });
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
