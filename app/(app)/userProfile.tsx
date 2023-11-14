@@ -172,7 +172,6 @@ export default function UserProfileScreen(): JSX.Element {
                   contentContainerStyle={{ gap: 12, justifyContent: 'center' }}
                   showsHorizontalScrollIndicator={false}
                   // pagingEnabled={true}
-                  // alwaysBounceHorizontal={false}
                   horizontal={true}
                   data={userProfile?.likedEvents}
                   renderItem={({ item }) => (
@@ -194,7 +193,7 @@ export default function UserProfileScreen(): JSX.Element {
               <View style={styles.cardWrapper}>
                 <Text style={{ fontSize: 17, fontWeight: '700' }}>Photos</Text>
 
-                <View style={{ minHeight: 140 }}>
+                <View style={{ minHeight: 150 }}>
                   {userProfile?.photos.length === 0 ? (
                     <Text>No photos available</Text>
                   ) : (
@@ -211,7 +210,9 @@ export default function UserProfileScreen(): JSX.Element {
             <View style={styles.cardWrapper}>
               <Text style={{ fontSize: 22, fontWeight: '700' }}>Photos</Text>
 
-              <View style={{ minHeight: 140, flexDirection: 'row', gap: 12 }}>
+              <View style={{ height: 150, flexDirection: 'row', gap: 12 }}>
+
+                {/* col 1 */}
                 <Pressable onPress={() => handlePickImage(0)} style={{ flex: 1 }}>
                   {imageUri[0].length ? (
                     <Image style={[styles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: imageUri[0] }} />
@@ -222,11 +223,13 @@ export default function UserProfileScreen(): JSX.Element {
                   )}
                 </Pressable>
 
-                <View style={{ flex: 1, gap: 12, alignSelf: 'stretch' }}>
-                  <View style={{ flexDirection: 'row', gap: 12, flex: 1, height: '100%' }}>
-                    <Pressable onPress={() => handlePickImage(1)} style={{ flex: 1, height: '100%' }}>
+                {/* grid */}
+                <View style={{ flex: 1, gap: 12 }}>
+
+                  <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
+                    <Pressable onPress={() => handlePickImage(1)} style={{ flex: 1 }}>
                       {imageUri[1].length ? (
-                        <Image style={[styles.uploadPhotoGrid, { objectFit: 'contain', height: '100%' }]} source={{ uri: imageUri[1] }} />
+                        <Image style={styles.uploadPhotoGrid} source={{ uri: imageUri[1] }} />
                       ) : (
                         <View style={styles.uploadPhotoGrid}>
                           <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
@@ -234,9 +237,9 @@ export default function UserProfileScreen(): JSX.Element {
                       )}
                     </Pressable>
 
-                    <Pressable onPress={() => handlePickImage(2)} style={{ flex: 1, height: '100%' }}>
+                    <Pressable onPress={() => handlePickImage(2)} style={{ flex: 1 }}>
                       {imageUri[2].length ? (
-                        <Image style={[styles.uploadPhotoGrid, { objectFit: 'contain' }]} source={{ uri: imageUri[2] }} />
+                        <Image style={styles.uploadPhotoGrid} source={{ uri: imageUri[2] }} />
                       ) : (
                         <View style={styles.uploadPhotoGrid}>
                           <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
@@ -245,10 +248,10 @@ export default function UserProfileScreen(): JSX.Element {
                     </Pressable>
                   </View>
 
-                  <View style={{ flexDirection: 'row', gap: 12, flex: 1 }}>
+                  <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
                     <Pressable onPress={() => handlePickImage(3)} style={{ flex: 1 }}>
                       {imageUri[3].length ? (
-                        <Image style={[styles.uploadPhotoGrid, { objectFit: 'contain' }]} source={{ uri: imageUri[3] }} />
+                        <Image style={styles.uploadPhotoGrid} source={{ uri: imageUri[3] }} />
                       ) : (
                         <View style={styles.uploadPhotoGrid}>
                           <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
@@ -257,7 +260,7 @@ export default function UserProfileScreen(): JSX.Element {
                     </Pressable>
                     <Pressable onPress={() => handlePickImage(4)} style={{ flex: 1 }}>
                       {imageUri[4].length ? (
-                        <Image style={[styles.uploadPhotoGrid, { objectFit: 'contain' }]} source={{ uri: imageUri[4] }} />
+                        <Image style={styles.uploadPhotoGrid} source={{ uri: imageUri[4] }} />
                       ) : (
                         <View style={styles.uploadPhotoGrid}>
                           <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
@@ -343,7 +346,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#ead4fa',
     borderRadius: 26,
     flex: 1,
-    // height: '100%',
     justifyContent: 'center'
   },
 });
