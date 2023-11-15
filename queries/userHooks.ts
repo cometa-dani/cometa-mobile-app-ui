@@ -29,15 +29,15 @@ export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
 };
 
 
-type MultiplePhotosParams = { imgFiles: ImagePickerAsset[], userID: number };
+type MultiplePhotosParams = { pickedImgFiles: ImagePickerAsset[], userID: number };
 
 export const useMutationUploadUserPhotos = () => {
   const queryClient = useQueryClient();
 
   return (
     useMutation({
-      mutationFn: async ({ imgFiles, userID }: MultiplePhotosParams) => {
-        const res = await userService.uploadManyImagesByUserId(userID, imgFiles);
+      mutationFn: async ({ userID, pickedImgFiles }: MultiplePhotosParams) => {
+        const res = await userService.uploadManyImagesByUserId(userID, pickedImgFiles);
         if (res.status === 200) {
           return res.data;
         }

@@ -28,33 +28,34 @@ class UserService extends RestApiService {
   }
 
 
-  public uploadImageById(userID: number, imgFile: ImagePickerAsset) {
+  public uploadImageById(userID: number, pickedImgFile: ImagePickerAsset) {
     const formData = new FormData();
-    const fileExtension = imgFile.uri.split('.').at(-1);
+    const fileExtension = pickedImgFile.uri.split('.').at(-1);
     const headers = { 'Content-Type': 'multipart/form-data', };
-    const payload = {
-      uri: imgFile.uri,
-      type: `${imgFile.type}/${fileExtension}`,
+    const imgFile = {
+      uri: pickedImgFile.uri,
+      type: `${pickedImgFile.type}/${fileExtension}`,
       name: uuid.v4(),
     };
-    formData.append('file', payload);
+    formData.append('file', imgFile);
 
     return this.http.patch<UserClientState>(`/users/${userID}/avatar`, formData, { headers });
   }
 
 
-  public uploadManyImagesByUserId(userID: number, imgFiles: ImagePickerAsset[]) {
+  public uploadManyImagesByUserId(userID: number, pickedImgFiles: ImagePickerAsset[]) {
     const formData = new FormData();
     const headers = { 'Content-Type': 'multipart/form-data', };
-    [...imgFiles].forEach((imgFile) => {
-      const fileExtension = imgFile.uri.split('.').at(-1);
-      const file = ({
-        uri: imgFile.uri,
-        type: `${imgFile.type}/${fileExtension}`,
+
+    pickedImgFiles.forEach((pickedImgFile) => {
+      const fileExtension = pickedImgFile.uri.split('.').at(-1);
+      const imgFile = ({
+        uri: pickedImgFile.uri,
+        type: `${pickedImgFile.type}/${fileExtension}`,
         name: uuid.v4(),
       });
 
-      formData.append('files', file);
+      formData.append('files', imgFile);
     });
 
     return this.http.patch<GetUserProfile>(`/users/${userID}/photos`, formData, { headers });

@@ -15,10 +15,10 @@ import * as ImagePicker from 'expo-image-picker';
 import type { ImagePickerAsset } from 'expo-image-picker';
 
 
-const imagePiked = {} as ImagePickerAsset;
+const pickedImg = {} as ImagePickerAsset;
 const initialValues = {
   imgsUris: ['', '', '', '', ''],
-  imgFilesRef: [imagePiked, imagePiked, imagePiked, imagePiked, imagePiked]
+  imgFilesRef: [pickedImg, pickedImg, pickedImg, pickedImg, pickedImg]
 };
 
 export default function UserProfileScreen(): JSX.Element {
@@ -43,17 +43,17 @@ export default function UserProfileScreen(): JSX.Element {
   const descriptionRef = useRef<TextInput>(null);
 
   // modal/img-picker
-  const [imgsUri, setImageUri] = useState<string[]>(initialValues.imgsUris);
-  const imgFilesRef = useRef<ImagePickerAsset[]>(initialValues.imgFilesRef);
+  const [pickedimgsUriList, setPickedImgsUriList] = useState<string[]>(initialValues.imgsUris);
+  const pickedImagesListRef = useRef<ImagePickerAsset[]>(initialValues.imgFilesRef);
 
 
   const handleSumitUserInfo = (): void => {
-    const filterFiles = imgFilesRef.current.filter(imgFile => imgFile?.uri?.length);
+    const pickedImages = pickedImagesListRef.current.filter(imgFile => imgFile?.uri?.length);
 
-    if (userProfile?.id && filterFiles.length) {
+    if (userProfile?.id && pickedImages.length) {
       mutateUserInfo.mutate({
         userID: userProfile?.id,
-        imgFiles: filterFiles
+        pickedImgFiles: pickedImages
       });
     }
     // setToggleEdit(false);
@@ -73,11 +73,11 @@ export default function UserProfileScreen(): JSX.Element {
         quality: 1,
       });
       if (!result.canceled) {
-        imgFilesRef.current[photo] = result.assets[0];
+        pickedImagesListRef.current[photo] = result.assets[0];
 
-        setImageUri(prev => {
-          if (imgFilesRef.current[photo]?.uri) {
-            prev[photo] = imgFilesRef.current[photo]?.uri;
+        setPickedImgsUriList(prev => {
+          if (pickedImagesListRef.current[photo]?.uri) {
+            prev[photo] = pickedImagesListRef.current[photo]?.uri;
           }
           return [...prev];
         });
@@ -248,8 +248,8 @@ export default function UserProfileScreen(): JSX.Element {
 
                 {/* col 1 */}
                 <Pressable onPress={() => handlePickImage(0)} style={{ flex: 1 }}>
-                  {imgsUri[0].length ? (
-                    <Image style={[styles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: imgsUri[0] }} />
+                  {pickedimgsUriList[0].length ? (
+                    <Image style={[styles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: pickedimgsUriList[0] }} />
                   ) : (
                     <View style={styles.uploadPhoto1}>
                       <FontAwesome style={{ fontSize: 34, color: gray500 }} name='plus-square-o' />
@@ -262,8 +262,8 @@ export default function UserProfileScreen(): JSX.Element {
 
                   <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
                     <Pressable onPress={() => handlePickImage(1)} style={{ flex: 1 }}>
-                      {imgsUri[1].length ? (
-                        <Image style={styles.uploadPhotoGrid} source={{ uri: imgsUri[1] }} />
+                      {pickedimgsUriList[1].length ? (
+                        <Image style={styles.uploadPhotoGrid} source={{ uri: pickedimgsUriList[1] }} />
                       ) : (
                         <View style={styles.uploadPhotoGrid}>
                           <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
@@ -272,8 +272,8 @@ export default function UserProfileScreen(): JSX.Element {
                     </Pressable>
 
                     <Pressable onPress={() => handlePickImage(2)} style={{ flex: 1 }}>
-                      {imgsUri[2].length ? (
-                        <Image style={styles.uploadPhotoGrid} source={{ uri: imgsUri[2] }} />
+                      {pickedimgsUriList[2].length ? (
+                        <Image style={styles.uploadPhotoGrid} source={{ uri: pickedimgsUriList[2] }} />
                       ) : (
                         <View style={styles.uploadPhotoGrid}>
                           <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
@@ -284,8 +284,8 @@ export default function UserProfileScreen(): JSX.Element {
 
                   <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
                     <Pressable onPress={() => handlePickImage(3)} style={{ flex: 1 }}>
-                      {imgsUri[3].length ? (
-                        <Image style={styles.uploadPhotoGrid} source={{ uri: imgsUri[3] }} />
+                      {pickedimgsUriList[3].length ? (
+                        <Image style={styles.uploadPhotoGrid} source={{ uri: pickedimgsUriList[3] }} />
                       ) : (
                         <View style={styles.uploadPhotoGrid}>
                           <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
@@ -293,8 +293,8 @@ export default function UserProfileScreen(): JSX.Element {
                       )}
                     </Pressable>
                     <Pressable onPress={() => handlePickImage(4)} style={{ flex: 1 }}>
-                      {imgsUri[4].length ? (
-                        <Image style={styles.uploadPhotoGrid} source={{ uri: imgsUri[4] }} />
+                      {pickedimgsUriList[4].length ? (
+                        <Image style={styles.uploadPhotoGrid} source={{ uri: pickedimgsUriList[4] }} />
                       ) : (
                         <View style={styles.uploadPhotoGrid}>
                           <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
