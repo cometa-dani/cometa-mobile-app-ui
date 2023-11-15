@@ -37,7 +37,7 @@ export const useMutationUploadUserPhotos = () => {
   return (
     useMutation({
       mutationFn: async ({ imgFiles, userID }: MultiplePhotosParams) => {
-        const res = await userService.uploadManyImagesById(userID, imgFiles);
+        const res = await userService.uploadManyImagesByUserId(userID, imgFiles);
         if (res.status === 200) {
           return res.data;
         }

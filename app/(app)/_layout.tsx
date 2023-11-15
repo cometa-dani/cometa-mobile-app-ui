@@ -89,14 +89,12 @@ export default function AppLayout() {
             tabBarIcon: ({ color }) => <TabBarIcon name="envelope" color={color} />,
           }}
         />
-        {/* <Tabs.Screen
-          name="userProfile"
+        <Tabs.Screen
+          name='userProfile'
           options={{
-            headerShown: true,
-            headerTitleAlign: 'center',
             tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
           }}
-        /> */}
+        />
       </Tabs>
     </>
   );

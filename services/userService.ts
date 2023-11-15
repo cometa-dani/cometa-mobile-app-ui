@@ -43,20 +43,18 @@ class UserService extends RestApiService {
   }
 
 
-  public uploadManyImagesById(userID: number, imgFiles: ImagePickerAsset[]) {
+  public uploadManyImagesByUserId(userID: number, imgFiles: ImagePickerAsset[]) {
     const formData = new FormData();
     const headers = { 'Content-Type': 'multipart/form-data', };
-
-    imgFiles.forEach(imgFile => {
-      const randomUuid = uuid.v4() as string;
+    [...imgFiles].forEach((imgFile) => {
       const fileExtension = imgFile.uri.split('.').at(-1);
-      const payload = {
+      const file = ({
         uri: imgFile.uri,
         type: `${imgFile.type}/${fileExtension}`,
-        name: randomUuid,
-      };
+        name: uuid.v4(),
+      });
 
-      formData.append(randomUuid, payload);
+      formData.append('files', file);
     });
 
     return this.http.patch<GetUserProfile>(`/users/${userID}/photos`, formData, { headers });

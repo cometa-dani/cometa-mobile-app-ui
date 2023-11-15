@@ -10,11 +10,16 @@ import { CoCard } from '../../components/card/card';
 import { FlatList } from 'react-native-gesture-handler';
 import { useEffect, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
+import { Stack } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import type { ImagePickerAsset } from 'expo-image-picker';
-import { Tabs } from 'expo-router';
-import { TabBarIcon } from './_layout';
 
+
+const imagePiked = {} as ImagePickerAsset;
+const initialValues = {
+  imgsUris: ['', '', '', '', ''],
+  imgFilesRef: [imagePiked, imagePiked, imagePiked, imagePiked, imagePiked]
+};
 
 export default function UserProfileScreen(): JSX.Element {
   const { gray500, background } = useColors();
@@ -38,15 +43,22 @@ export default function UserProfileScreen(): JSX.Element {
   const descriptionRef = useRef<TextInput>(null);
 
   // modal/img-picker
-  const imagePiked = {} as ImagePickerAsset;
-  const [imgsUri, setImageUri] = useState<string[]>(['', '', '', '', '']);
-  const imgFilesRef = useRef<ImagePickerAsset[]>([imagePiked, imagePiked, imagePiked, imagePiked, imagePiked]);
+  const [imgsUri, setImageUri] = useState<string[]>(initialValues.imgsUris);
+  const imgFilesRef = useRef<ImagePickerAsset[]>(initialValues.imgFilesRef);
 
 
   const handleSumitUserInfo = (): void => {
-    if (userProfile?.id && imgFilesRef.current.length) {
-      mutateUserInfo.mutate({ userID: userProfile?.id, imgFiles: imgFilesRef.current });
+    const filterFiles = imgFilesRef.current.filter(imgFile => imgFile?.uri?.length);
+
+    if (userProfile?.id && filterFiles.length) {
+      mutateUserInfo.mutate({
+        userID: userProfile?.id,
+        imgFiles: filterFiles
+      });
     }
+    // setToggleEdit(false);
+    // setImageUri(initialValues.imgsUris);
+    // imgFilesRef.current = initialValues.imgFilesRef;
   };
 
 
@@ -95,14 +107,12 @@ export default function UserProfileScreen(): JSX.Element {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style={'auto'} />
-      <Tabs.Screen
+      <Stack.Screen
         options={{
-          headerShown: true,
-          headerTitle: '@cesar_rivera',
-          headerTitleAlign: 'center',
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          headerShown: true, headerTitle: '@cesar_rivera', headerTitleAlign: 'center'
         }}
       />
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: background }}
@@ -159,7 +169,7 @@ export default function UserProfileScreen(): JSX.Element {
             </View>
 
             {toggleEdit ? (
-              <CoButton onPress={() => setToggleEdit(false)} btnColor='primary' text='Save Profile' />
+              <CoButton onPress={() => handleSumitUserInfo()} btnColor='primary' text='Save Profile' />
             ) : (
               <CoButton onPress={() => setToggleEdit(true)} btnColor='white' text='Edit Profile' />
             )}
