@@ -28,7 +28,7 @@ class UserService extends RestApiService {
   }
 
 
-  public uploadImageById(userID: number, pickedImgFile: ImagePickerAsset) {
+  public uploadOrUpdateAvatarImgByUserID(userID: number, pickedImgFile: ImagePickerAsset) {
     const formData = new FormData();
     const fileExtension = pickedImgFile.uri.split('.').at(-1);
     const headers = { 'Content-Type': 'multipart/form-data', };
@@ -60,6 +60,26 @@ class UserService extends RestApiService {
 
     return this.http.post<GetUserProfile>(`/users/${userID}/photos`, formData, { headers });
   }
+
+
+  public updateManyImagesByUserId(userID: number, pickedImgFiles: ImagePickerAsset[], imgsUuid: string[]) {
+    const formData = new FormData();
+    const headers = { 'Content-Type': 'multipart/form-data', };
+
+    pickedImgFiles.forEach((pickedImgFile, i) => {
+      const fileExtension = pickedImgFile.uri.split('.').at(-1);
+      const imgFile = ({
+        uri: pickedImgFile.uri,
+        type: `${pickedImgFile.type}/${fileExtension}`,
+        name: imgsUuid[i],
+      });
+
+      formData.append('files', imgFile);
+    });
+
+    return this.http.post<GetUserProfile>(`/users/${userID}/photos`, formData, { headers });
+  }
 }
+
 
 export default new UserService();

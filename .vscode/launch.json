@@ -8,6 +8,7 @@
       "type": "expo",
       "request": "attach",
       "name": "Debug Expo app",
+
       "projectRoot": "${workspaceFolder}",
       "bundlerPort": "8081",
       "bundlerHost": "192.168.0.101"
@@ -17,9 +18,10 @@
       // "request": "launch",
       // "type": "reactnativedirect",
       // "cwd": "${workspaceFolder}",
-      // "platform": "android",
+      "platform": "android",
+
       "request": "attach",
-      "type": "reactnative",
+      "type": "reactnativedirect",
       "cwd": "${workspaceFolder}",
       "address": "exp://192.168.0.101",
       "port": 8081

@@ -50,12 +50,16 @@ export default function UserProfileScreen(): JSX.Element {
   const handleSumitUserInfo = (): void => {
     const pickedImages = pickedImagesListRef.current.filter(imgFile => imgFile?.uri?.length);
 
+    // 1. sending photos to server
     if (userProfile?.id && pickedImages.length) {
       mutateUserInfo.mutate({
         userID: userProfile?.id,
         pickedImgFiles: pickedImages
       });
     }
+
+    // 2. cleaning client state 
+
     // setToggleEdit(false);
     // setImageUri(initialValues.imgsUris);
     // imgFilesRef.current = initialValues.imgFilesRef;
@@ -232,7 +236,7 @@ export default function UserProfileScreen(): JSX.Element {
                     <Text>No photos available</Text>
                   ) : (
                     userProfile?.photos.map((photo) => (
-                      <View key={photo.uuid}>{photo.uuid}</View>
+                      <Text key={photo.uuid}>{photo.url}</Text>
                     ))
                   )}
                 </View>

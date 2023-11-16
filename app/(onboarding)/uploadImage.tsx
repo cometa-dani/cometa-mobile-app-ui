@@ -56,7 +56,7 @@ export default function UploadImageScreen(): JSX.Element {
           const [{ user: userCrendentials }] = (
             await Promise.all([
               createUserWithEmailAndPassword(auth, onboardingUser.email, onboardingUser.password),
-              usersService.uploadImageById(newCreatedUser.id, imgFileRef?.current),
+              usersService.uploadOrUpdateAvatarImgByUserID(newCreatedUser.id, imgFileRef?.current),
             ])
           );
           await usersService.updateById(newCreatedUser.id, { uid: userCrendentials.uid });
