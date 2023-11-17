@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { ScrollView, StyleSheet, Button, SafeAreaView, Image, TextInput, Pressable } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
@@ -8,7 +9,7 @@ import { useMutationUploadUserPhotos, useQueryGetUserProfileByUid } from '../../
 import { CoButton } from '../../components/buttons/buttons';
 import { CoCard } from '../../components/card/card';
 import { FlatList } from 'react-native-gesture-handler';
-import { useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -51,40 +52,41 @@ export default function UserProfileScreen(): JSX.Element {
     const pickedImages = pickedImagesListRef.current.filter(imgFile => imgFile?.uri?.length);
 
     // 1. sending photos to server
-    if (userProfile?.id && pickedImages.length) {
-      mutateUserInfo.mutate({
-        userID: userProfile?.id,
-        pickedImgFiles: pickedImages
-      });
-    }
+    // if (userProfile?.id && pickedImages.length) {
+    //   mutateUserInfo.mutate({
+    //     userID: userProfile?.id,
+    //     pickedImgFiles: pickedImages
+    //   });
+    // }
 
     // 2. cleaning client state 
 
-    // setToggleEdit(false);
+    setToggleEdit(false);
     // setImageUri(initialValues.imgsUris);
     // imgFilesRef.current = initialValues.imgFilesRef;
   };
 
 
-  const handlePickImage = async (photo: number) => {
+  const handlePickImage = async () => {
     try {
       // No permissions request is necessary for launching the image library
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        // allowsMultipleSelection: true,
+        // allowsEditing: true,
+        allowsMultipleSelection: true,
+        selectionLimit: 5,
         aspect: [4, 3],
         quality: 1,
       });
       if (!result.canceled) {
-        pickedImagesListRef.current[photo] = result.assets[0];
+        // pickedImagesListRef.current[photo] = result.assets[0];
 
-        setPickedImgsUriList(prev => {
-          if (pickedImagesListRef.current[photo]?.uri) {
-            prev[photo] = pickedImagesListRef.current[photo]?.uri;
-          }
-          return [...prev];
-        });
+        // setPickedImgsUriList(prev => {
+        //   if (pickedImagesListRef.current[photo]?.uri) {
+        //     prev[photo] = pickedImagesListRef.current[photo]?.uri;
+        //   }
+        //   return [...prev];
+        // });
       }
     }
     catch (error) {
@@ -225,6 +227,7 @@ export default function UserProfileScreen(): JSX.Element {
           )}
           {/* BUCKETLIST */}
 
+
           {/* PHOTOS */}
           {!toggleEdit ? (
             <CoCard>
@@ -235,82 +238,26 @@ export default function UserProfileScreen(): JSX.Element {
                   {userProfile?.photos.length === 0 ? (
                     <Text>No photos available</Text>
                   ) : (
-                    userProfile?.photos.map((photo) => (
-                      <Text key={photo.uuid}>{photo.url}</Text>
-                    ))
+                    <Grid
+                      imagesList={userProfile?.photos.map(item => item.url) || []}
+                      onHandlePickImage={() => null}
+                    />
                   )}
                 </View>
               </View>
             </CoCard>
-
           ) : (
+
             // UPLOAD PHOTOS
             <View style={styles.cardWrapper}>
               <Text style={{ fontSize: 22, fontWeight: '700' }}>Photos</Text>
 
-              <View style={{ height: 150, flexDirection: 'row', gap: 12 }}>
+              <Grid imagesList={pickedimgsUriList} onHandlePickImage={handlePickImage} />
 
-                {/* col 1 */}
-                <Pressable onPress={() => handlePickImage(0)} style={{ flex: 1 }}>
-                  {pickedimgsUriList[0].length ? (
-                    <Image style={[styles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: pickedimgsUriList[0] }} />
-                  ) : (
-                    <View style={styles.uploadPhoto1}>
-                      <FontAwesome style={{ fontSize: 34, color: gray500 }} name='plus-square-o' />
-                    </View>
-                  )}
-                </Pressable>
-
-                {/* grid */}
-                <View style={{ flex: 1, gap: 12 }}>
-
-                  <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
-                    <Pressable onPress={() => handlePickImage(1)} style={{ flex: 1 }}>
-                      {pickedimgsUriList[1].length ? (
-                        <Image style={styles.uploadPhotoGrid} source={{ uri: pickedimgsUriList[1] }} />
-                      ) : (
-                        <View style={styles.uploadPhotoGrid}>
-                          <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
-                        </View>
-                      )}
-                    </Pressable>
-
-                    <Pressable onPress={() => handlePickImage(2)} style={{ flex: 1 }}>
-                      {pickedimgsUriList[2].length ? (
-                        <Image style={styles.uploadPhotoGrid} source={{ uri: pickedimgsUriList[2] }} />
-                      ) : (
-                        <View style={styles.uploadPhotoGrid}>
-                          <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
-                        </View>
-                      )}
-                    </Pressable>
-                  </View>
-
-                  <View style={{ flexDirection: 'row', gap: 12, flex: 0.5 }}>
-                    <Pressable onPress={() => handlePickImage(3)} style={{ flex: 1 }}>
-                      {pickedimgsUriList[3].length ? (
-                        <Image style={styles.uploadPhotoGrid} source={{ uri: pickedimgsUriList[3] }} />
-                      ) : (
-                        <View style={styles.uploadPhotoGrid}>
-                          <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
-                        </View>
-                      )}
-                    </Pressable>
-                    <Pressable onPress={() => handlePickImage(4)} style={{ flex: 1 }}>
-                      {pickedimgsUriList[4].length ? (
-                        <Image style={styles.uploadPhotoGrid} source={{ uri: pickedimgsUriList[4] }} />
-                      ) : (
-                        <View style={styles.uploadPhotoGrid}>
-                          <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
-                        </View>
-                      )}
-                    </Pressable>
-                  </View>
-                </View>
-              </View>
             </View>
             // UPLOAD PHOTOS
           )}
+
           {/* PHOTOS */}
         </View>
       </ScrollView>
@@ -369,6 +316,72 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '700',
     textTransform: 'capitalize',
+  }
+});
+
+
+interface Props {
+  onHandlePickImage: () => void,
+  imagesList: string[]
+}
+const Grid: FC<Props> = ({ onHandlePickImage, imagesList }) => {
+  const { gray500 } = useColors();
+  return (
+    // <Pressable onPress={onHandlePickImage}>
+    <View style={{ height: 150, flexDirection: 'row', gap: 12 }}>
+
+      {/* col 1 */}
+      <View style={{ flex: 1 }}>
+        {imagesList[0].length ? (
+          <Image style={[gridStyles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: imagesList[0] }} />
+        ) : (
+          <View style={gridStyles.uploadPhoto1}>
+            <Pressable onPress={onHandlePickImage}>
+              <FontAwesome style={{ fontSize: 34, color: gray500 }} name='plus-square-o' />
+            </Pressable>
+          </View>
+        )}
+      </View>
+      {/* col 1 */}
+
+      {/* grid */}
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          alignContent: 'space-between'
+        }}>
+
+        {imagesList.slice(1).map((img, i) => (
+          <View
+            key={i}
+            style={gridStyles.item}>
+            {img.length ? (
+              <Image style={gridStyles.uploadPhotoGrid} source={{ uri: img }} />
+            ) : (
+              <View style={gridStyles.uploadPhotoGrid}>
+                <Pressable onPress={onHandlePickImage}>
+                  <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
+                </Pressable>
+              </View>
+            )}
+          </View>
+        ))}
+
+      </View>
+      {/* grid */}
+    </View>
+    // </Pressable>
+  );
+};
+
+
+const gridStyles = StyleSheet.create({
+  item: {
+    height: '46.6%',
+    width: '46.6%',
   },
 
   uploadPhoto1: {
@@ -384,6 +397,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#ead4fa',
     borderRadius: 26,
     flex: 1,
-    justifyContent: 'center'
-  },
+    justifyContent: 'center',
+  }
 });
