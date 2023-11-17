@@ -5,25 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "expo",
-      "request": "attach",
-      "name": "Debug Expo app",
-
-      "projectRoot": "${workspaceFolder}",
-      "bundlerPort": "8081",
-      "bundlerHost": "192.168.0.101"
-    },
-    {
       "name": "Debug Android Hermes",
-      // "request": "launch",
-      // "type": "reactnativedirect",
-      // "cwd": "${workspaceFolder}",
       "platform": "android",
-
       "request": "attach",
       "type": "reactnativedirect",
       "cwd": "${workspaceFolder}",
-      "address": "exp://192.168.0.101",
       "port": 8081
     }
   ]
