@@ -8,6 +8,7 @@ export interface UserClientState {
   avatar: string;
   photos: Photo[];
   username: string;
+  name: string;
   email: string;
   phone: string;
   password: string;
@@ -31,30 +32,34 @@ export interface UsersWhoLikedEvent {
   updatedAt: string;
   eventId: number;
   userId: number;
-  user: UserRes;
+  user: GetBasicUserProfile;
 }
 
 // used in react query for SERVER STATE
-export interface UserRes {
+export interface GetBasicUserProfile {
   id: number;
   avatar: string;
   photos: Photo[];
   username: string;
-  email: string;
-  phone: null;
-  uid: string;
-  outgoingFriendships: Friendship[];
-  incomingFriendships: Friendship[];
-}
-
-export interface GetUserProfile {
-  id: number;
-  avatar: string;
-  photos: Photo[];
-  username: string;
+  name: string
   description: string;
   email: string;
-  phone: null;
+  phone: string;
+  uid: string;
+  // outgoingFriendships?: Friendship[];
+  // incomingFriendships?: Friendship[];
+}
+
+export interface GetDetailedUserProfile {
+  id: number;
+  avatar: string;
+  photos: Photo[];
+  maxNumPhotos: 5;
+  username: string;
+  name: string
+  description: string;
+  email: string;
+  phone?: string;
   uid: string;
   likedEvents: LikedEvent[];
   incomingFriendships: OutgoingFriendship[];

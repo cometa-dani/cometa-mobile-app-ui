@@ -12,15 +12,15 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import type { ImagePickerAsset } from 'expo-image-picker';
+// import type { ImagePickerAsset } from 'expo-image-picker';
 import { Photo } from '../../models/User';
 
 
-const pickedImg = {} as ImagePickerAsset;
-const initialValues = {
-  imgsUris: ['', '', '', '', ''], // for rendering in the UI
-  imgFilesRef: [pickedImg, pickedImg, pickedImg, pickedImg, pickedImg] // for sending to the backend
-};
+// const pickedImg = {} as ImagePickerAsset;
+// const initialValues = {
+//   // imgsUris: ['', '', '', '', ''], // for rendering in the UI
+//   imgFilesRef: [pickedImg, pickedImg, pickedImg, pickedImg, pickedImg] // for sending to the backend
+// };
 
 export default function UserProfileScreen(): JSX.Element {
   const { gray500, background } = useColors();
@@ -35,19 +35,21 @@ export default function UserProfileScreen(): JSX.Element {
     (userProfile?._count.outgoingFriendships || 0);
 
   // mutations
-  const mutateUserInfo = useMutationUploadUserPhotos();
+  const mutateUserPhotos = useMutationUploadUserPhotos();
+
 
   // initial value for name input
   const [name, setName] = useState(userProfile?.username || '');
   // initial value for description input
   const [description, setDescription] = useState(userProfile?.description || 'Join me');
 
+
   const [toggleEdit, setToggleEdit] = useState(false);
   const usernameRef = useRef<TextInput>(null);
   const descriptionRef = useRef<TextInput>(null);
 
   // modal/img-picker
-  const [pickedimgsUriList, setPickedImgsUriList] = useState<string[]>(initialValues.imgsUris);
+  // const [pickedimgsUriList, setPickedImgsUriList] = useState<string[]>(initialValues.imgsUris);
   // const pickedImagesListRef = useRef<ImagePickerAsset[]>(initialValues.imgFilesRef);
 
 
@@ -82,7 +84,15 @@ export default function UserProfileScreen(): JSX.Element {
         quality: 1,
       });
       if (!result.canceled) {
+        const payloadPhotos = result.assets;
         // pickedImagesListRef.current[photo] = result.assets[0];
+
+        if (userProfile?.id) {
+          mutateUserPhotos.mutate({
+            userID: userProfile?.id,
+            pickedImgFiles: payloadPhotos
+          });
+        }
 
         // setPickedImgsUriList(prev => {
         //   if (pickedImagesListRef.current[photo]?.uri) {
@@ -252,7 +262,7 @@ export default function UserProfileScreen(): JSX.Element {
                   <Text>No photos available</Text>
                 ) : (
                   <Grid
-                    imagesList={userPhotos.map(photo => photo?.url)}
+                    photosList={userPhotos}
                     onHandlePickImage={() => null}
                   />
                 )}
@@ -264,7 +274,7 @@ export default function UserProfileScreen(): JSX.Element {
             <View style={styles.cardWrapper}>
               <Text style={{ fontSize: 22, fontWeight: '700' }}>Photos</Text>
 
-              <Grid imagesList={pickedimgsUriList} onHandlePickImage={handlePickImage} />
+              <Grid photosList={userPhotos} onHandlePickImage={handlePickImage} />
 
             </View>
             // UPLOAD PHOTOS
@@ -334,9 +344,9 @@ const styles = StyleSheet.create({
 
 interface Props {
   onHandlePickImage: () => void,
-  imagesList: string[]
+  photosList: Photo[]
 }
-const Grid: FC<Props> = ({ onHandlePickImage, imagesList }) => {
+const Grid: FC<Props> = ({ onHandlePickImage, photosList }) => {
   const { gray500 } = useColors();
   return (
     // <Pressable onPress={onHandlePickImage}>
@@ -344,8 +354,8 @@ const Grid: FC<Props> = ({ onHandlePickImage, imagesList }) => {
 
       {/* col 1 */}
       <View style={{ flex: 1 }}>
-        {imagesList[0]?.length ? (
-          <Image style={[gridStyles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: imagesList[0] }} />
+        {photosList[0]?.url.length ? (
+          <Image style={[gridStyles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: photosList[0]?.url }} />
         ) : (
           <View style={gridStyles.uploadPhoto1}>
             <Pressable onPress={onHandlePickImage}>
@@ -366,12 +376,12 @@ const Grid: FC<Props> = ({ onHandlePickImage, imagesList }) => {
           alignContent: 'space-between'
         }}>
 
-        {imagesList?.slice(1).map((img, i) => (
+        {photosList?.slice(1).map(({ url, uuid }) => (
           <View
-            key={i}
+            key={uuid}
             style={gridStyles.item}>
-            {img.length ? (
-              <Image style={gridStyles.uploadPhotoGrid} source={{ uri: img }} />
+            {url.length ? (
+              <Image style={gridStyles.uploadPhotoGrid} source={{ uri: url }} />
             ) : (
               <View style={gridStyles.uploadPhotoGrid}>
                 <Pressable onPress={onHandlePickImage}>

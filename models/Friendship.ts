@@ -1,4 +1,4 @@
-import { UserRes } from './User';
+import { GetBasicUserProfile } from './User';
 
 
 export interface Friendship {
@@ -6,11 +6,11 @@ export interface Friendship {
   createdAt: string;
   updatedAt: string;
   senderId: number;
-  sender: UserRes;
+  sender: GetBasicUserProfile;
   receiverId: number;
-  receiver: UserRes
+  receiver: GetBasicUserProfile
   status: Status;
-  friend: UserRes
+  friend: GetBasicUserProfile
 }
 
 export type Status = 'PENDING' | 'ACCEPTED' | 'BLOCKED'

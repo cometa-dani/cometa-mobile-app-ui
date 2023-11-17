@@ -12,7 +12,7 @@ import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from
 import { useCometaStore } from '../store/cometaStore';
 import { useQueryGetUserProfileByUid } from '../queries/userHooks';
 import { FontAwesome } from '@expo/vector-icons';
-import { UserRes } from '../models/User';
+import { GetBasicUserProfile } from '../models/User';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { addDoc, collection } from 'firebase/firestore';
@@ -43,7 +43,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();
 
   // mutations
-  const [incommginFriendshipSender, setIncommginFriendshipSender] = useState({} as UserRes);
+  const [incommginFriendshipSender, setIncommginFriendshipSender] = useState({} as GetBasicUserProfile);
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
   const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
   const mutationCancelFriendship = useMutationCancelFriendshipInvitation();
@@ -51,9 +51,9 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   /**
   * 
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
-  * @param {UserRes} sender the sender of the friendship invitation
+  * @param {GetBasicUserProfile} sender the sender of the friendship invitation
   */
-  const handleUserIsSender = (sender: UserRes): void => {
+  const handleUserIsSender = (sender: GetBasicUserProfile): void => {
     setIncommginFriendshipSender(sender);
     setTimeout(() => setToggleModal(true), 100);
     const friendshipID = sender.outgoingFriendships[0].id;
@@ -63,18 +63,18 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   /**
   * 
   * @description for a receiver user, sends a friendship invitation with status 'PENDING'
-  * @param {UserRes} receiver the receiver of the friendship invitation
+  * @param {GetBasicUserProfile} receiver the receiver of the friendship invitation
   */
-  const handleUserIsNietherSenderNorReceiver = (receiver: UserRes): void => {
+  const handleUserIsNietherSenderNorReceiver = (receiver: GetBasicUserProfile): void => {
     mutationSentFriendship.mutate(receiver.id);
   };
 
   /**
   * 
   * @description cancels a friendship invitation with status 'PENDING'
-  * @param {UserRes} receiver the receiver of the friendship invitation
+  * @param {GetBasicUserProfile} receiver the receiver of the friendship invitation
   */
-  const handleCancelFriendshipInvitation = (receiver: UserRes): void => {
+  const handleCancelFriendshipInvitation = (receiver: GetBasicUserProfile): void => {
     mutationCancelFriendship.mutate(receiver.id);
   };
 

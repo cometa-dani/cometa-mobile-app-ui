@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import userService from '../services/userService';
-import { GetUserProfile, Photo } from '../models/User';
+import { GetBasicUserProfile, GetDetailedUserProfile, Photo } from '../models/User';
 import { QueryKeys } from './queryKeys';
 import { useCometaStore } from '../store/cometaStore';
 import { ImagePickerAsset } from 'expo-image-picker';
@@ -14,7 +14,7 @@ export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
     useQuery({
       enabled: !!dynamicParam,
       queryKey: [QueryKeys.GET_USER_INFO, dynamicParam],
-      queryFn: async (): Promise<GetUserProfile> => {
+      queryFn: async (): Promise<GetDetailedUserProfile> => {
         const res = await userService.getUserInfoByUid(dynamicParam, accessToken);
         if (res.status === 200) {
           return res.data;
@@ -30,38 +30,42 @@ export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
 };
 
 
-type MultiplePhotosParams = { pickedImgFiles: ImagePickerAsset[], userID: number };
+type PhotosParams = { pickedImgFiles: ImagePickerAsset[], userID: number };
 
 export const useMutationUploadUserPhotos = () => {
   const queryClient = useQueryClient();
 
   return (
     useMutation({
-      mutationFn: async ({ userID, pickedImgFiles }: MultiplePhotosParams) => {
-        const res = await userService.uploadManyImagesByUserId(userID, pickedImgFiles);
-        if (res.status === 200) {
-          return res.data;
-        }
-        else {
-          throw new Error('failed fech');
-        }
-      },
+      mutationFn:
+        async ({ userID, pickedImgFiles }: PhotosParams): Promise<GetBasicUserProfile> => {
+          const res = await userService.uploadManyImagesByUserId(userID, pickedImgFiles);
+          if (res.status === 200) {
+            return res.data;
+          }
+          else {
+            throw new Error('failed fech');
+          }
+        },
+
       onMutate: async ({ pickedImgFiles }) => {
+        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO] });
         // TODO
         queryClient
-          .setQueryData<GetUserProfile>
-          ([QueryKeys.GET_USER_INFO], (oldState): GetUserProfile => {
+          .setQueryData<GetDetailedUserProfile>
+          ([QueryKeys.GET_USER_INFO], (oldState): GetDetailedUserProfile => {
             const newPhotos: Photo[] = pickedImgFiles.map(img => ({ url: img.uri, uuid: uuid.v4() as string }));
 
             const optimisticState = {
               ...oldState,
               photos: oldState?.photos.concat(newPhotos)
 
-            } as GetUserProfile;
+            } as GetDetailedUserProfile;
 
             return optimisticState;
           });
       },
+
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO] });
       },

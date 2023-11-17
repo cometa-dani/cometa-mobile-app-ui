@@ -1,4 +1,4 @@
-import { GetUserProfile, UserClientState } from '../models/User';
+import { GetBasicUserProfile, GetDetailedUserProfile, UserClientState } from '../models/User';
 import { RestApiService } from './restService';
 import { ImagePickerAsset } from 'expo-image-picker';
 import FormData from 'form-data';
@@ -9,17 +9,17 @@ class UserService extends RestApiService {
 
   public create(payload: Partial<UserClientState>) {
     const { email, username } = payload;
-    return this.http.post<UserClientState>('/users', { email, username });
+    return this.http.post<GetBasicUserProfile>('/users', { email, username });
   }
 
 
   public getUserInfoByUid(uid: string, accessToken: string) {
-    return this.http.get<GetUserProfile>(`/users/${uid}`, this.configAuthHeader(accessToken));
+    return this.http.get<GetDetailedUserProfile>(`/users/${uid}`, this.configAuthHeader(accessToken));
   }
 
 
   public updateById(userID: number, payload: Partial<UserClientState>) {
-    return this.http.patch<UserClientState>(`/users/${userID}`, payload);
+    return this.http.patch<GetBasicUserProfile>(`/users/${userID}`, payload);
   }
 
 
@@ -39,7 +39,7 @@ class UserService extends RestApiService {
     };
     formData.append('file', imgFile);
 
-    return this.http.patch<UserClientState>(`/users/${userID}/avatar`, formData, { headers });
+    return this.http.patch<GetBasicUserProfile>(`/users/${userID}/avatar`, formData, { headers });
   }
 
 
@@ -58,7 +58,12 @@ class UserService extends RestApiService {
       formData.append('files', imgFile);
     });
 
-    return this.http.post<GetUserProfile>(`/users/${userID}/photos`, formData, { headers });
+    return this.http.post<GetBasicUserProfile>(`/users/${userID}/photos`, formData, { headers });
+  }
+
+
+  public deletePhotoByUuid(userID: number, uuid: number, accessToken: string) {
+    return this.http.delete(`/users/${userID}/photos/${uuid}`, this.configAuthHeader(accessToken));
   }
 
 
@@ -77,7 +82,7 @@ class UserService extends RestApiService {
       formData.append('files', imgFile);
     });
 
-    return this.http.post<GetUserProfile>(`/users/${userID}/photos`, formData, { headers });
+    return this.http.post<GetBasicUserProfile>(`/users/${userID}/photos`, formData, { headers });
   }
 }
 
