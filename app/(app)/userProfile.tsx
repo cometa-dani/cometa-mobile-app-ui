@@ -13,6 +13,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Photo } from '../../models/User';
+import { HorizontalCarousel } from '../../components/carousels/horizaontalCarousel';
 
 
 export default function UserProfileScreen(): JSX.Element {
@@ -198,26 +199,10 @@ export default function UserProfileScreen(): JSX.Element {
 
           {/* BUCKETLIST */}
           {!toggleEdit && (
-            <CoCard>
-              <View style={styles.cardWrapper}>
-                <Text style={{ fontSize: 17, fontWeight: '700' }}>BucketList</Text>
-
-                <FlatList
-                  contentContainerStyle={{ gap: 12, justifyContent: 'center' }}
-                  showsHorizontalScrollIndicator={false}
-                  // pagingEnabled={true}
-                  horizontal={true}
-                  data={userProfile?.likedEvents}
-                  renderItem={({ item }) => (
-                    <Image
-                      style={styles.bucketListImage}
-                      key={item.id}
-                      source={{ uri: item.event.mediaUrl }}
-                    />
-                  )}
-                />
-              </View>
-            </CoCard>
+            <HorizontalCarousel
+              list={userProfile?.likedEvents.map(item => ({ id: item.id, img: item.event.mediaUrl })) || []}
+              title='BucketList'
+            />
           )}
           {/* BUCKETLIST */}
 
@@ -276,11 +261,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  bucketListImage: {
-    borderRadius: 12,
-    height: 84,
-    width: 130
-  },
+  // bucketListImage: {
+  //   borderRadius: 12,
+  //   height: 84,
+  //   width: 130
+  // },
 
   cardWrapper: {
     gap: 12

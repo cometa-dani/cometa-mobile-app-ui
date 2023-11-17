@@ -46,8 +46,8 @@ export interface GetBasicUserProfile {
   email: string;
   phone: string;
   uid: string;
-  // outgoingFriendships?: Friendship[];
-  // incomingFriendships?: Friendship[];
+  outgoingFriendships: Friendship[];
+  incomingFriendships: Friendship[];
 }
 
 export interface GetDetailedUserProfile {
