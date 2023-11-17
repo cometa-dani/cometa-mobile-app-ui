@@ -13,12 +13,13 @@ import { FontAwesome } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import type { ImagePickerAsset } from 'expo-image-picker';
+import { Photo } from '../../models/User';
 
 
 const pickedImg = {} as ImagePickerAsset;
 const initialValues = {
-  imgsUris: ['', '', '', '', ''],
-  imgFilesRef: [pickedImg, pickedImg, pickedImg, pickedImg, pickedImg]
+  imgsUris: ['', '', '', '', ''], // for rendering in the UI
+  imgFilesRef: [pickedImg, pickedImg, pickedImg, pickedImg, pickedImg] // for sending to the backend
 };
 
 export default function UserProfileScreen(): JSX.Element {
@@ -27,6 +28,7 @@ export default function UserProfileScreen(): JSX.Element {
 
   // queries
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
+  const userPhotos: Photo[] = userProfile?.photos ?? [];
   const totalFriends =
     (userProfile?._count.incomingFriendships || 0)
     +
@@ -35,20 +37,22 @@ export default function UserProfileScreen(): JSX.Element {
   // mutations
   const mutateUserInfo = useMutationUploadUserPhotos();
 
-  // edit
-  const [username, setUsername] = useState(userProfile?.username || '');
+  // initial value for name input
+  const [name, setName] = useState(userProfile?.username || '');
+  // initial value for description input
   const [description, setDescription] = useState(userProfile?.description || 'Join me');
+
   const [toggleEdit, setToggleEdit] = useState(false);
   const usernameRef = useRef<TextInput>(null);
   const descriptionRef = useRef<TextInput>(null);
 
   // modal/img-picker
   const [pickedimgsUriList, setPickedImgsUriList] = useState<string[]>(initialValues.imgsUris);
-  const pickedImagesListRef = useRef<ImagePickerAsset[]>(initialValues.imgFilesRef);
+  // const pickedImagesListRef = useRef<ImagePickerAsset[]>(initialValues.imgFilesRef);
 
 
   const handleSumitUserInfo = (): void => {
-    const pickedImages = pickedImagesListRef.current.filter(imgFile => imgFile?.uri?.length);
+    // const pickedImages = pickedImagesListRef.current.filter(imgFile => imgFile?.uri?.length);
 
     // 1. sending photos to server
     // if (userProfile?.id && pickedImages.length) {
@@ -101,7 +105,7 @@ export default function UserProfileScreen(): JSX.Element {
 
   useEffect(() => {
     if (userProfile?.username) {
-      setUsername(userProfile?.username);
+      setName(userProfile?.username);
     }
     if (userProfile?.description) {
       setDescription(userProfile.description);
@@ -133,16 +137,16 @@ export default function UserProfileScreen(): JSX.Element {
               {/* NAME */}
               {!toggleEdit ? (
                 <Text style={styles.title}>
-                  {username}
+                  {name}
                 </Text>
               ) : (
                 <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
                   <View style={{ width: 24 }} />
                   <TextInput
                     style={styles.title}
-                    onChangeText={(text) => setUsername(text)}
+                    onChangeText={(text) => setName(text)}
                     ref={usernameRef}
-                    value={username}
+                    value={name}
                   />
                   <FontAwesome
                     onPress={() => usernameRef.current?.focus()}
@@ -187,6 +191,7 @@ export default function UserProfileScreen(): JSX.Element {
             ) : (
               <CoButton onPress={() => setToggleEdit(true)} btnColor='white' text='Edit Profile' />
             )}
+
 
             {/* STATS */}
             <View style={styles.stats}>
@@ -243,16 +248,14 @@ export default function UserProfileScreen(): JSX.Element {
               <View style={styles.cardWrapper}>
                 <Text style={{ fontSize: 17, fontWeight: '700' }}>Photos</Text>
 
-                <View style={{ minHeight: 150 }}>
-                  {userProfile?.photos.length === 0 ? (
-                    <Text>No photos available</Text>
-                  ) : (
-                    <Grid
-                      imagesList={userProfile?.photos.map(item => item.url) || []}
-                      onHandlePickImage={() => null}
-                    />
-                  )}
-                </View>
+                {userProfile?.photos.length === 0 ? (
+                  <Text>No photos available</Text>
+                ) : (
+                  <Grid
+                    imagesList={userPhotos.map(photo => photo?.url)}
+                    onHandlePickImage={() => null}
+                  />
+                )}
               </View>
             </CoCard>
           ) : (

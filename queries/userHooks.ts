@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import userService from '../services/userService';
-import { GetUserProfile } from '../models/User';
+import { GetUserProfile, Photo } from '../models/User';
 import { QueryKeys } from './queryKeys';
 import { useCometaStore } from '../store/cometaStore';
 import { ImagePickerAsset } from 'expo-image-picker';
+import uuid from 'react-native-uuid';
 
 
 export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
@@ -45,7 +46,22 @@ export const useMutationUploadUserPhotos = () => {
           throw new Error('failed fech');
         }
       },
-      onMutate: async () => { },
+      onMutate: async ({ pickedImgFiles }) => {
+        // TODO
+        queryClient
+          .setQueryData<GetUserProfile>
+          ([QueryKeys.GET_USER_INFO], (oldState): GetUserProfile => {
+            const newPhotos: Photo[] = pickedImgFiles.map(img => ({ url: img.uri, uuid: uuid.v4() as string }));
+
+            const optimisticState = {
+              ...oldState,
+              photos: oldState?.photos.concat(newPhotos)
+
+            } as GetUserProfile;
+
+            return optimisticState;
+          });
+      },
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO] });
       },
