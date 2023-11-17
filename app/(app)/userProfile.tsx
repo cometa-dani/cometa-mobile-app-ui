@@ -315,6 +315,7 @@ const styles = StyleSheet.create({
 
 interface Props {
   onHandlePickImage?: () => void,
+  onDeleteImage?: (uuid: string) => void,
   photosList: Photo[],
   placeholders?: number
 }
