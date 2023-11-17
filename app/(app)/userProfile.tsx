@@ -12,15 +12,8 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-// import type { ImagePickerAsset } from 'expo-image-picker';
 import { Photo } from '../../models/User';
 
-
-// const pickedImg = {} as ImagePickerAsset;
-// const initialValues = {
-//   // imgsUris: ['', '', '', '', ''], // for rendering in the UI
-//   imgFilesRef: [pickedImg, pickedImg, pickedImg, pickedImg, pickedImg] // for sending to the backend
-// };
 
 export default function UserProfileScreen(): JSX.Element {
   const { gray500, background } = useColors();
@@ -238,10 +231,7 @@ export default function UserProfileScreen(): JSX.Element {
                 {userProfile?.photos.length === 0 ? (
                   <Text>No photos available</Text>
                 ) : (
-                  <Grid
-                    photosList={userPhotos}
-                    onHandlePickImage={() => null}
-                  />
+                  <Grid photosList={userPhotos} />
                 )}
               </View>
             </CoCard>
@@ -252,9 +242,9 @@ export default function UserProfileScreen(): JSX.Element {
               <Text style={{ fontSize: 22, fontWeight: '700' }}>Photos</Text>
 
               <Grid
-                placeholders={selectionLimit}
                 photosList={userPhotos}
                 onHandlePickImage={handlePickImage}
+                placeholders={selectionLimit}
               />
 
             </View>
@@ -324,7 +314,7 @@ const styles = StyleSheet.create({
 
 
 interface Props {
-  onHandlePickImage: () => void,
+  onHandlePickImage?: () => void,
   photosList: Photo[],
   placeholders?: number
 }
@@ -340,7 +330,6 @@ const Grid: FC<Props> = ({ onHandlePickImage, photosList, placeholders = 0 }) =>
   );
 
   return (
-    // <Pressable onPress={onHandlePickImage}>
     <View style={{ height: 150, flexDirection: 'row', gap: 12 }}>
 
       {/* col 1 */}
@@ -386,7 +375,6 @@ const Grid: FC<Props> = ({ onHandlePickImage, photosList, placeholders = 0 }) =>
       </View>
       {/* grid */}
     </View>
-    // </Pressable>
   );
 };
 
