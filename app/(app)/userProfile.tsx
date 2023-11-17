@@ -26,84 +26,61 @@ export default function UserProfileScreen(): JSX.Element {
   const { gray500, background } = useColors();
   const uid = useCometaStore(state => state.uid); // this can be abstracted
 
+  // mutations
+  const mutateUserPhotos = useMutationUploadUserPhotos();
+
   // queries
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
   const userPhotos: Photo[] = userProfile?.photos ?? [];
+  const selectionLimit: number = (userProfile?.maxNumPhotos || 0) - (userPhotos?.length || 0);
+
   const totalFriends =
     (userProfile?._count.incomingFriendships || 0)
     +
     (userProfile?._count.outgoingFriendships || 0);
 
-  // mutations
-  const mutateUserPhotos = useMutationUploadUserPhotos();
-
-
-  // initial value for name input
-  const [name, setName] = useState(userProfile?.username || '');
-  // initial value for description input
-  const [description, setDescription] = useState(userProfile?.description || 'Join me');
-
-
+  // toggle edit mode
   const [toggleEdit, setToggleEdit] = useState(false);
+
+  // edit user name & description
+  const [name, setName] = useState(userProfile?.username || '');
+  const [description, setDescription] = useState(userProfile?.description || 'Join me');
   const usernameRef = useRef<TextInput>(null);
   const descriptionRef = useRef<TextInput>(null);
 
-  // modal/img-picker
-  // const [pickedimgsUriList, setPickedImgsUriList] = useState<string[]>(initialValues.imgsUris);
-  // const pickedImagesListRef = useRef<ImagePickerAsset[]>(initialValues.imgFilesRef);
-
 
   const handleSumitUserInfo = (): void => {
-    // const pickedImages = pickedImagesListRef.current.filter(imgFile => imgFile?.uri?.length);
-
-    // 1. sending photos to server
-    // if (userProfile?.id && pickedImages.length) {
-    //   mutateUserInfo.mutate({
-    //     userID: userProfile?.id,
-    //     pickedImgFiles: pickedImages
-    //   });
-    // }
-
-    // 2. cleaning client state 
-
+    // TODO: handle saving username, name & description
     setToggleEdit(false);
-    // setImageUri(initialValues.imgsUris);
-    // imgFilesRef.current = initialValues.imgFilesRef;
   };
 
 
   const handlePickImage = async () => {
-    try {
-      // No permissions request is necessary for launching the image library
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        // allowsEditing: true,
-        allowsMultipleSelection: true,
-        selectionLimit: 5,
-        aspect: [4, 3],
-        quality: 1,
-      });
-      if (!result.canceled) {
-        const payloadPhotos = result.assets;
-        // pickedImagesListRef.current[photo] = result.assets[0];
-
-        if (userProfile?.id) {
+    if (selectionLimit == 0) {
+      // TODO: write logic to delete photos
+      return;
+    }
+    else {
+      // upload new photos
+      try {
+        // No permissions request is necessary for launching the image library
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsMultipleSelection: true,
+          selectionLimit, // only allows to select a number below the limit
+          aspect: [4, 3],
+          quality: 1,
+        });
+        if (!result.canceled && userProfile?.id) {
           mutateUserPhotos.mutate({
             userID: userProfile?.id,
-            pickedImgFiles: payloadPhotos
+            pickedImgFiles: result.assets
           });
         }
-
-        // setPickedImgsUriList(prev => {
-        //   if (pickedImagesListRef.current[photo]?.uri) {
-        //     prev[photo] = pickedImagesListRef.current[photo]?.uri;
-        //   }
-        //   return [...prev];
-        // });
       }
-    }
-    catch (error) {
-      console.log(error);
+      catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -274,7 +251,11 @@ export default function UserProfileScreen(): JSX.Element {
             <View style={styles.cardWrapper}>
               <Text style={{ fontSize: 22, fontWeight: '700' }}>Photos</Text>
 
-              <Grid photosList={userPhotos} onHandlePickImage={handlePickImage} />
+              <Grid
+                placeholders={selectionLimit}
+                photosList={userPhotos}
+                onHandlePickImage={handlePickImage}
+              />
 
             </View>
             // UPLOAD PHOTOS
@@ -344,10 +325,20 @@ const styles = StyleSheet.create({
 
 interface Props {
   onHandlePickImage: () => void,
-  photosList: Photo[]
+  photosList: Photo[],
+  placeholders?: number
 }
-const Grid: FC<Props> = ({ onHandlePickImage, photosList }) => {
+const Grid: FC<Props> = ({ onHandlePickImage, photosList, placeholders = 0 }) => {
   const { gray500 } = useColors();
+  const placeholdersPhotos = (
+    placeholders == 0 ?
+      []
+      :
+      Array
+        .from({ length: placeholders }, (_, index) => index)
+        .map(() => ({} as Photo))
+  );
+
   return (
     // <Pressable onPress={onHandlePickImage}>
     <View style={{ height: 150, flexDirection: 'row', gap: 12 }}>
@@ -376,11 +367,11 @@ const Grid: FC<Props> = ({ onHandlePickImage, photosList }) => {
           alignContent: 'space-between'
         }}>
 
-        {photosList?.slice(1).map(({ url, uuid }) => (
+        {photosList?.slice(1).concat(placeholdersPhotos).map(({ url, uuid }, i) => (
           <View
-            key={uuid}
+            key={uuid ?? i}
             style={gridStyles.item}>
-            {url.length ? (
+            {url?.length ? (
               <Image style={gridStyles.uploadPhotoGrid} source={{ uri: url }} />
             ) : (
               <View style={gridStyles.uploadPhotoGrid}>

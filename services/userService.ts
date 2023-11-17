@@ -62,8 +62,8 @@ class UserService extends RestApiService {
   }
 
 
-  public deletePhotoByUuid(userID: number, uuid: number, accessToken: string) {
-    return this.http.delete(`/users/${userID}/photos/${uuid}`, this.configAuthHeader(accessToken));
+  public deletePhotoByUuid(userID: number, photoUuid: number) {
+    return this.http.delete(`/users/${userID}/photos/${photoUuid}`);
   }
 
 
