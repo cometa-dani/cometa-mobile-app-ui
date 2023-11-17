@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { ScrollView, StyleSheet, Button, SafeAreaView, Image, TextInput, Pressable } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
@@ -113,6 +112,8 @@ export default function UserProfileScreen(): JSX.Element {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style={'auto'} />
+
+      {/* TODO: EDIT USER_NAME */}
       <Stack.Screen
         options={{
           headerShown: true, headerTitle: '@cesar_rivera', headerTitleAlign: 'center'
@@ -129,6 +130,7 @@ export default function UserProfileScreen(): JSX.Element {
             <View style={styles.avatarFigure}>
               <Image style={styles.avatar} source={{ uri: userProfile?.avatar }} />
 
+              {/* NAME */}
               {!toggleEdit ? (
                 <Text style={styles.title}>
                   {username}
@@ -149,7 +151,10 @@ export default function UserProfileScreen(): JSX.Element {
                   />
                 </View>
               )}
+              {/* NAME */}
 
+
+              {/* DESCRIPTION */}
               {!toggleEdit ? (
                 <Text style={{ color: gray500, padding: 0 }}>
                   {description}
@@ -172,8 +177,11 @@ export default function UserProfileScreen(): JSX.Element {
                   />
                 </View>
               )}
+              {/* DESCRIPTION */}
             </View>
 
+
+            {/* EDIT BUTTON */}
             {toggleEdit ? (
               <CoButton onPress={() => handleSumitUserInfo()} btnColor='primary' text='Save Profile' />
             ) : (
@@ -197,6 +205,7 @@ export default function UserProfileScreen(): JSX.Element {
             </View>
             {/* STATS */}
 
+            {/* TODO: LOG OUT */}
             {false && (
               <Button onPress={() => handleLogout()} title='log out' />
             )}
@@ -332,7 +341,7 @@ const Grid: FC<Props> = ({ onHandlePickImage, imagesList }) => {
 
       {/* col 1 */}
       <View style={{ flex: 1 }}>
-        {imagesList[0].length ? (
+        {imagesList[0]?.length ? (
           <Image style={[gridStyles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: imagesList[0] }} />
         ) : (
           <View style={gridStyles.uploadPhoto1}>
@@ -354,7 +363,7 @@ const Grid: FC<Props> = ({ onHandlePickImage, imagesList }) => {
           alignContent: 'space-between'
         }}>
 
-        {imagesList.slice(1).map((img, i) => (
+        {imagesList?.slice(1).map((img, i) => (
           <View
             key={i}
             style={gridStyles.item}>
