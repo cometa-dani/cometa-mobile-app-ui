@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Button, SafeAreaView, Image, TextInput, Pressable } from 'react-native';
+import { ScrollView, Button, SafeAreaView, Image, TextInput } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
@@ -7,8 +7,7 @@ import { useCometaStore } from '../../store/cometaStore';
 import { useMutationUploadUserPhotos, useQueryGetUserProfileByUid } from '../../queries/userHooks';
 import { CoButton } from '../../components/buttons/buttons';
 import { CoCard } from '../../components/card/card';
-import { FlatList } from 'react-native-gesture-handler';
-import { FC, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
