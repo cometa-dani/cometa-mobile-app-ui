@@ -14,6 +14,10 @@ import { Stack } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Photo } from '../../models/User';
 import { HorizontalCarousel } from '../../components/carousels/horizaontalCarousel';
+import { profileStyles } from '../../components/profile/profileStyles';
+import { Stats } from '../../components/stats/Stats';
+import { ProfileAvatar } from '../../components/profile/profileAvatar';
+import { PhotosGrid } from '../../components/profile/photosGrid';
 
 
 export default function UserProfileScreen(): JSX.Element {
@@ -109,22 +113,23 @@ export default function UserProfileScreen(): JSX.Element {
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: background }}
       >
-        <View style={styles.container}>
+        <View style={profileStyles.container}>
+          <View style={profileStyles.avatarContainer}>
 
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatarFigure}>
-              <Image style={styles.avatar} source={{ uri: userProfile?.avatar }} />
-
-              {/* NAME */}
-              {!toggleEdit ? (
-                <Text style={styles.title}>
-                  {name}
-                </Text>
-              ) : (
+            {!toggleEdit ? (
+              <ProfileAvatar
+                avatar={userProfile?.avatar}
+                description={description}
+                name={name}
+              />
+            ) : (
+              <View style={profileStyles.avatarFigure}>
+                <Image style={profileStyles.avatar} source={{ uri: userProfile?.avatar }} />
+                {/* NAME */}
                 <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
                   <View style={{ width: 24 }} />
                   <TextInput
-                    style={styles.title}
+                    style={profileStyles.title}
                     onChangeText={(text) => setName(text)}
                     ref={usernameRef}
                     value={name}
@@ -135,16 +140,9 @@ export default function UserProfileScreen(): JSX.Element {
                     name="edit"
                   />
                 </View>
-              )}
-              {/* NAME */}
+                {/* NAME */}
 
-
-              {/* DESCRIPTION */}
-              {!toggleEdit ? (
-                <Text style={{ color: gray500, padding: 0 }}>
-                  {description}
-                </Text>
-              ) : (
+                {/* DESCRIPTION */}
                 <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
                   <View style={{ width: 16 }} />
 
@@ -161,9 +159,9 @@ export default function UserProfileScreen(): JSX.Element {
                     name="edit"
                   />
                 </View>
-              )}
-              {/* DESCRIPTION */}
-            </View>
+                {/* DESCRIPTION */}
+              </View>
+            )}
 
 
             {/* EDIT BUTTON */}
@@ -173,23 +171,10 @@ export default function UserProfileScreen(): JSX.Element {
               <CoButton onPress={() => setToggleEdit(true)} btnColor='white' text='Edit Profile' />
             )}
 
-
-            {/* STATS */}
-            <View style={styles.stats}>
-              <View>
-                <Text style={styles.statsNumber}>
-                  {userProfile?._count.likedEvents}
-                </Text>
-                <Text style={{ color: gray500 }}>events</Text>
-              </View>
-              <View>
-                <Text style={styles.statsNumber}>
-                  {totalFriends}
-                </Text>
-                <Text style={{ color: gray500 }}>friends</Text>
-              </View>
-            </View>
-            {/* STATS */}
+            <Stats
+              totalEvents={userProfile?._count.likedEvents || 0}
+              totalFriends={totalFriends}
+            />
 
             {/* TODO: LOG OUT */}
             {false && (
@@ -210,23 +195,22 @@ export default function UserProfileScreen(): JSX.Element {
           {/* PHOTOS */}
           {!toggleEdit ? (
             <CoCard>
-              <View style={styles.cardWrapper}>
+              <View style={profileStyles.cardWrapper}>
                 <Text style={{ fontSize: 17, fontWeight: '700' }}>Photos</Text>
 
                 {userProfile?.photos.length === 0 ? (
                   <Text>No photos available</Text>
                 ) : (
-                  <Grid photosList={userPhotos} />
+                  <PhotosGrid photosList={userPhotos} />
                 )}
               </View>
             </CoCard>
           ) : (
-
             // UPLOAD PHOTOS
-            <View style={styles.cardWrapper}>
+            <View style={profileStyles.cardWrapper}>
               <Text style={{ fontSize: 22, fontWeight: '700' }}>Photos</Text>
 
-              <Grid
+              <PhotosGrid
                 photosList={userPhotos}
                 onHandlePickImage={handlePickImage}
                 placeholders={selectionLimit}
@@ -242,148 +226,3 @@ export default function UserProfileScreen(): JSX.Element {
     </SafeAreaView>
   );
 }
-
-
-const styles = StyleSheet.create({
-
-  avatar: {
-    aspectRatio: 1,
-    borderRadius: 100,
-    height: 100,
-    margin: 'auto',
-  },
-
-  avatarContainer: {
-    gap: 14
-  },
-
-  avatarFigure: {
-    alignItems: 'center',
-  },
-
-  // bucketListImage: {
-  //   borderRadius: 12,
-  //   height: 84,
-  //   width: 130
-  // },
-
-  cardWrapper: {
-    gap: 12
-  },
-
-  container: {
-    flex: 1,
-    gap: 24,
-    paddingHorizontal: 20,
-    paddingVertical: 30
-  },
-
-  stats: {
-    flexDirection: 'row',
-    gap: 50,
-    justifyContent: 'center'
-  },
-
-  statsNumber: {
-    fontSize: 24,
-    fontWeight: '900',
-    textAlign: 'center'
-  },
-
-  title: {
-    fontSize: 26,
-    fontWeight: '700',
-    textTransform: 'capitalize',
-  }
-});
-
-
-interface Props {
-  onHandlePickImage?: () => void,
-  onDeleteImage?: (uuid: string) => void,
-  photosList: Photo[],
-  placeholders?: number
-}
-const Grid: FC<Props> = ({ onHandlePickImage, photosList, placeholders = 0 }) => {
-  const { gray500 } = useColors();
-  const placeholdersPhotos = (
-    placeholders == 0 ?
-      []
-      :
-      Array
-        .from({ length: placeholders }, (_, index) => index)
-        .map(() => ({} as Photo))
-  );
-
-  return (
-    <View style={{ height: 150, flexDirection: 'row', gap: 12 }}>
-
-      {/* col 1 */}
-      <View style={{ flex: 1 }}>
-        {photosList[0]?.url.length ? (
-          <Image style={[gridStyles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: photosList[0]?.url }} />
-        ) : (
-          <View style={gridStyles.uploadPhoto1}>
-            <Pressable onPress={onHandlePickImage}>
-              <FontAwesome style={{ fontSize: 34, color: gray500 }} name='plus-square-o' />
-            </Pressable>
-          </View>
-        )}
-      </View>
-      {/* col 1 */}
-
-      {/* grid */}
-      <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          justifyContent: 'space-between',
-          alignContent: 'space-between'
-        }}>
-
-        {photosList?.slice(1).concat(placeholdersPhotos).map(({ url, uuid }, i) => (
-          <View
-            key={uuid ?? i}
-            style={gridStyles.item}>
-            {url?.length ? (
-              <Image style={gridStyles.uploadPhotoGrid} source={{ uri: url }} />
-            ) : (
-              <View style={gridStyles.uploadPhotoGrid}>
-                <Pressable onPress={onHandlePickImage}>
-                  <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
-                </Pressable>
-              </View>
-            )}
-          </View>
-        ))}
-
-      </View>
-      {/* grid */}
-    </View>
-  );
-};
-
-
-const gridStyles = StyleSheet.create({
-  item: {
-    height: '46.6%',
-    width: '46.6%',
-  },
-
-  uploadPhoto1: {
-    alignItems: 'center',
-    backgroundColor: '#ead4fa',
-    borderRadius: 26,
-    flex: 1,
-    justifyContent: 'center'
-  },
-
-  uploadPhotoGrid: {
-    alignItems: 'center',
-    backgroundColor: '#ead4fa',
-    borderRadius: 26,
-    flex: 1,
-    justifyContent: 'center',
-  }
-});
