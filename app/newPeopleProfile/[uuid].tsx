@@ -27,10 +27,13 @@ const searchParamsSchemma = Yup.object({
   uuid: Yup.string().required(),
 });
 
+
 export default function NewPeopleProfileScreen(): JSX.Element {
   const { background } = useColors();
+  // url params
   const urlParams = useLocalSearchParams();
   const { isFriend, uuid } = searchParamsSchemma.validateSync(urlParams);
+  // queries
   const { data: newPeopleProfile } = useQueryGetNewPeopleProfileByUid(uuid);
   const { data: matchedEvents } = useQueryGetMatchedEvents(uuid);
 
@@ -102,7 +105,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
                 <Text>No photos available</Text>
               ) : (
                 <PhotosGrid
-                  photosList={newPeopleProfile?.photos ?? []}
+                  photosList={newPeopleProfile?.photos || []}
                 />
               )}
             </View>

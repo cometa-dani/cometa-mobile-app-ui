@@ -83,7 +83,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
     async (values: Message, actions: FormikHelpers<Message>): Promise<void> => {
       // start chat with new friend
       const messagePayload: IMessage = {
-        _id: Math.round(Math.random() * 1000000),
+        _id: Math.round(Math.random() * 1_000_000),
         text: values.message,
         createdAt: new Date(),
         user: {
