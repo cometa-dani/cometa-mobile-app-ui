@@ -10,7 +10,7 @@ import { router } from 'expo-router';
 
 export default function BuckectListScreen(): JSX.Element {
   const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteQueryGetLatestLikedEvents();
-  const handlingInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
+  const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -21,7 +21,7 @@ export default function BuckectListScreen(): JSX.Element {
           pagingEnabled={false}
           data={data?.pages.flatMap(page => page.events)}
           contentContainerStyle={styles.flatListContent}
-          onEndReached={handlingInfiniteFetch}
+          onEndReached={handleInfiniteFetch}
           onEndReachedThreshold={0.2}
           renderItem={({ item }) => (
             <Pressable key={item.id} onPress={() => router.push(`/${item.id}`)}>

@@ -197,7 +197,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                   return (
                     <View key={index} style={styles.user}>
                       <View style={styles.avatarContainer}>
-                        <Pressable onPress={() => router.push(`/newPeopleProfile/${friend.id}`)}>
+                        <Pressable onPress={() => router.push(`/newPeopleProfile/${friend.id}?isFriend=true&eventId=${urlParam}`)}>
                           <Image style={styles.userAvatar} source={{ uri: friend?.avatar }} />
                         </Pressable>
 
@@ -235,7 +235,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                   return (
                     <View key={index} style={styles.user}>
                       <View style={styles.avatarContainer}>
-                        <Pressable onPress={() => router.push(`/newPeopleProfile/${user.id}`)}>
+                        <Pressable onPress={() => router.push(`/newPeopleProfile/${user.id}?isFriend=false&eventId=${urlParam}`)}>
                           <Image style={styles.userAvatar} source={{ uri: user.avatar }} />
                         </Pressable>
 

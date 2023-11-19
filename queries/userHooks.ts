@@ -30,6 +30,29 @@ export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
 };
 
 
+export const useQueryGetNewPeopleProfileByUid = (dynamicParam: string) => {
+  const accessToken = useCometaStore(state => state.accessToken);
+
+  return (
+    useQuery({
+      enabled: !!dynamicParam,
+      queryKey: [QueryKeys.GET_NEW_PEOPLE_INFO, dynamicParam],
+      queryFn: async (): Promise<GetDetailedUserProfile> => {
+        const res = await userService.getUserInfoByUid(dynamicParam, accessToken);
+        if (res.status === 200) {
+          return res.data;
+        }
+        else {
+          throw new Error('failed to fetched');
+        }
+      },
+      retry: 3,
+      retryDelay: 1_000 * 60 * 3
+    })
+  );
+};
+
+
 type PhotosParams = { pickedImgFiles: ImagePickerAsset[], userID: number };
 
 export const useMutationUploadUserPhotos = () => {
