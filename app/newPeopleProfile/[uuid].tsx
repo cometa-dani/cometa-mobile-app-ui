@@ -58,11 +58,13 @@ export default function NewPeopleProfileScreen(): JSX.Element {
             description={newPeopleProfile?.description || 'Hi there, let\'s meet '}
           />
 
+          {/* ACTION BUTTON */}
           {isFriend ? (
             <CoButton btnColor='gray' text='Chat' />
           ) : (
             <CoButton btnColor='black' text='Join' />
           )}
+          {/* ACTION BUTTON */}
 
           <Stats
             totalEvents={newPeopleProfile?._count.likedEvents || 0}
@@ -73,20 +75,25 @@ export default function NewPeopleProfileScreen(): JSX.Element {
             }
           />
 
+          {/* MATCHES */}
           <HorizontalCarousel
             title='Matches'
             list={matchedEvents?.map(
               ({ event }) => ({ id: event.id, img: event.mediaUrl })) || []
             }
           />
+          {/* MATCHES */}
 
+          {/* BUCKETLIST */}
           <HorizontalCarousel
             title='BucketList'
             list={newPeopleProfile?.likedEvents.map(
-              item => ({ id: item.id, img: item.event.mediaUrl })) || []
+              (likedEvent) => ({ id: likedEvent.id, img: likedEvent.event.mediaUrl })) || []
             }
           />
+          {/* BUCKETLIST */}
 
+          {/* PHOTOS */}
           <CoCard>
             <View style={profileStyles.cardWrapper}>
               <Text style={{ fontSize: 17, fontWeight: '700' }}>Photos</Text>
@@ -100,6 +107,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
               )}
             </View>
           </CoCard>
+          {/* PHOTOS */}
         </View>
       </ScrollView>
     </SafeAreaView>
