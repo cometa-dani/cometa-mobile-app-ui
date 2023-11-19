@@ -18,8 +18,9 @@ export default function BuckectListScreen(): JSX.Element {
 
       <View style={styles.container}>
         <FlatList
-          pagingEnabled={false}
           data={data?.pages.flatMap(page => page.events)}
+          pagingEnabled={false}
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.flatListContent}
           onEndReached={handleInfiniteFetch}
           onEndReachedThreshold={0.2}

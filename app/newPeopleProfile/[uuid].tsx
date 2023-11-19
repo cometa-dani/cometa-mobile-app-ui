@@ -5,10 +5,14 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Text, View, useColors } from '../../components/Themed';
 import * as Yup from 'yup';
 import { profileStyles } from '../../components/profile/profileStyles';
-import { useQueryGetNewPeopleProfileByUid, useQueryGetUserProfileByUid } from '../../queries/userHooks';
-import { useCometaStore } from '../../store/cometaStore';
+import { useQueryGetNewPeopleProfileByUid } from '../../queries/userHooks';
 import { useQueryGetMatchedEvents } from '../../queries/eventHooks';
-// import { ProfileAvatar } from '../../components/profile/profileAvatar';
+import { ProfileAvatar } from '../../components/profile/profileAvatar';
+import { CoButton } from '../../components/buttons/buttons';
+import { Stats } from '../../components/stats/Stats';
+import { HorizontalCarousel } from '../../components/carousels/horizaontalCarousel';
+import { PhotosGrid } from '../../components/profile/photosGrid';
+import { CoCard } from '../../components/card/card';
 
 
 const searchParamsSchemma = Yup.object({
@@ -27,11 +31,8 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   const { background } = useColors();
   const urlParams = useLocalSearchParams();
   const { isFriend, uuid } = searchParamsSchemma.validateSync(urlParams);
-  console.log(urlParams);
-  // const currentUserUuid = useCometaStore(state => state.uid);
   const { data: newPeopleProfile } = useQueryGetNewPeopleProfileByUid(uuid);
   const { data: matchedEvents } = useQueryGetMatchedEvents(uuid);
-  // console.log(newPeopleProfile);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -51,14 +52,56 @@ export default function NewPeopleProfileScreen(): JSX.Element {
         style={{ backgroundColor: background }}
       >
         <View style={profileStyles.container}>
-          {/* <ProfileAvatar
-            avatar={}
-            description={description}
-            name={name}
-          /> */}
+          <ProfileAvatar
+            avatar={newPeopleProfile?.avatar}
+            name={newPeopleProfile?.username || ''}
+            description={newPeopleProfile?.description || 'Hi there, let\'s meet '}
+          />
+
+          {isFriend ? (
+            <CoButton btnColor='gray' text='Chat' />
+          ) : (
+            <CoButton btnColor='black' text='Join' />
+          )}
+
+          <Stats
+            totalEvents={newPeopleProfile?._count.likedEvents || 0}
+            totalFriends={
+              (newPeopleProfile?._count.incomingFriendships || 0)
+              +
+              (newPeopleProfile?._count.outgoingFriendships || 0)
+            }
+          />
+
+          <HorizontalCarousel
+            title='Matches'
+            list={matchedEvents?.map(
+              ({ event }) => ({ id: event.id, img: event.mediaUrl })) || []
+            }
+          />
+
+          <HorizontalCarousel
+            title='BucketList'
+            list={newPeopleProfile?.likedEvents.map(
+              item => ({ id: item.id, img: item.event.mediaUrl })) || []
+            }
+          />
+
+          <CoCard>
+            <View style={profileStyles.cardWrapper}>
+              <Text style={{ fontSize: 17, fontWeight: '700' }}>Photos</Text>
+
+              {newPeopleProfile?.photos.length === 0 ? (
+                <Text>No photos available</Text>
+              ) : (
+                <PhotosGrid
+                  photosList={newPeopleProfile?.photos ?? []}
+                />
+              )}
+            </View>
+          </CoCard>
         </View>
       </ScrollView>
-
     </SafeAreaView>
   );
 }
