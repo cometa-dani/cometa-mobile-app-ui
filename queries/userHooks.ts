@@ -5,6 +5,7 @@ import { QueryKeys } from './queryKeys';
 import { useCometaStore } from '../store/cometaStore';
 import { ImagePickerAsset } from 'expo-image-picker';
 import uuid from 'react-native-uuid';
+import eventService from '../services/eventService';
 
 
 export const useQueryGetUserProfileByUid = (dynamicParam: string) => {

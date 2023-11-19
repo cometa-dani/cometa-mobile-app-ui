@@ -8,7 +8,7 @@ import {
   from '@tanstack/react-query';
 import { useCometaStore } from '../store/cometaStore';
 import eventService from '../services/eventService';
-import { GetLatestEventsWithPagination, CreateEventLike } from '../models/Event';
+import { GetLatestEventsWithPagination, CreateEventLike, MatchedEvents } from '../models/Event';
 import { GetAllLikedEventsWithPagination } from '../models/LikedEvent';
 import { GetUsersWhoLikedEventWithPagination } from '../models/User';
 import { GetLikedEventByID } from '../models/EventLike';
@@ -107,10 +107,10 @@ export const useInfiteQueryGetUsersWhoLikedEventByID = (eventID: number) => {
 
   return (
     useInfiniteQuery({
-      queryKey: [QueryKeys.GET_USERS_LIKED_SAME_EVENT],
+      queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetUsersWhoLikedEventWithPagination> => {
-        const res = await eventService.getUsersWhoLikedSameEvent(eventID, pageParam, 5, accessToken);
+        const res = await eventService.getAllUsersWhoLikedSameEvent(eventID, pageParam, 5, accessToken);
         if (res.status === 200) {
           return res.data;
         }
@@ -132,6 +132,27 @@ export const useInfiteQueryGetUsersWhoLikedEventByID = (eventID: number) => {
   );
 };
 
+
+export const useQueryGetMatchedEvents = (user2: string, take = 5,) => {
+  const user1Token = useCometaStore(state => state.accessToken);
+
+  return (
+    useQuery({
+      queryKey: [QueryKeys.GET_MATCHED_EVENTS_BY_TWO_USERS],
+      queryFn: async (): Promise<MatchedEvents[]> => {
+        const res = await eventService.getMatchedEventsByTwoUsers(user2, take, user1Token);
+        if (res.status === 200) {
+          return res.data;
+        }
+        else {
+          throw new Error('failed to request data');
+        }
+      },
+      retry: 3,
+      retryDelay: 1_000 * 60 * 3
+    })
+  );
+};
 
 // Mutation to like or dislike an event
 export const useMutationLikeOrDislikeEvent = () => {

@@ -1,11 +1,14 @@
 import { StyleSheet, SafeAreaView } from 'react-native';
-import { Stack, useGlobalSearchParams, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Text, View, useColors } from '../../components/Themed';
 import * as Yup from 'yup';
 import { profileStyles } from '../../components/profile/profileStyles';
-import { ProfileAvatar } from '../../components/profile/profileAvatar';
+import { useQueryGetNewPeopleProfileByUid, useQueryGetUserProfileByUid } from '../../queries/userHooks';
+import { useCometaStore } from '../../store/cometaStore';
+import { useQueryGetMatchedEvents } from '../../queries/eventHooks';
+// import { ProfileAvatar } from '../../components/profile/profileAvatar';
 
 
 const searchParamsSchemma = Yup.object({
@@ -17,24 +20,18 @@ const searchParamsSchemma = Yup.object({
     // Otherwise, leave it as is
     return originalValue;
   }),
-  userId: Yup.string().required(),
-  // Yup.number().required().transform((originalValue, originalObject) => {
-  //   // Coerce string to number if it's a parsable number
-  //   if (typeof originalValue === 'string') {
-  //     return parseInt(originalValue, 10);
-  //   }
-  //   // Otherwise, leave it as is
-  //   return originalValue;
-  // }),
-
-  eventId: Yup.string().required()
+  uuid: Yup.string().required(),
 });
 
 export default function NewPeopleProfileScreen(): JSX.Element {
   const { background } = useColors();
   const urlParams = useLocalSearchParams();
-  const safeParams = searchParamsSchemma.validateSync(urlParams);
-  console.log(safeParams);
+  const { isFriend, uuid } = searchParamsSchemma.validateSync(urlParams);
+  console.log(urlParams);
+  // const currentUserUuid = useCometaStore(state => state.uid);
+  const { data: newPeopleProfile } = useQueryGetNewPeopleProfileByUid(uuid);
+  const { data: matchedEvents } = useQueryGetMatchedEvents(uuid);
+  // console.log(newPeopleProfile);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

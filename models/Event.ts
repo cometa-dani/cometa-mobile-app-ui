@@ -8,7 +8,11 @@ export interface CreateEventLike {
   userId: number
 }
 
-export interface CreateEventRes {
+export interface MatchedEvents {
+  event: GetBasicEvent;
+}
+
+export interface GetBasicEvent {
   id: number;
   createdAt: string;
   updatedAt: string;
