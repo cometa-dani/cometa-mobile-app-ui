@@ -2,7 +2,9 @@ const primary_100 = '#a22bfa';
 const white_50 = '#fff';
 const red_100 = '#ff2d55';
 const blue_100 = '#5ac8fa';
+const gray_50 = '#f0f0f0';
 const gray_100 = '#e5e5e5';
+const gray_200 = '#afafaa';
 const gray_500 = '#4f4f4f';
 
 
@@ -18,7 +20,7 @@ export const buttonColors = {
   },
 
   gray: {
-    background: '#f0f0f0',
+    background: gray_50,
     color: '#000'
   },
 
@@ -38,7 +40,9 @@ export default {
     primary100: primary_100,
     red100: red_100,
     blue100: blue_100,
+    gray50: gray_50,
     gray100: gray_100,
+    gray200: gray_200,
     gray500: gray_500,
     text: '#030303',
     altText: gray_500,
@@ -52,7 +56,9 @@ export default {
     primary100: primary_100,
     red100: red_100,
     blue100: blue_100,
+    gray50: gray_50,
     gray100: gray_100,
+    gray200: gray_200,
     gray500: gray_500,
     altText: gray_500,
     text: '#fff',

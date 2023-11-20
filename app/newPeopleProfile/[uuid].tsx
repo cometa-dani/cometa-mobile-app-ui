@@ -69,6 +69,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           )}
           {/* ACTION BUTTON */}
 
+          {/* STATISTICS */}
           <AppStats
             totalEvents={newPeopleProfile?._count?.likedEvents || 0}
             totalFriends={
@@ -77,6 +78,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
               (newPeopleProfile?._count?.outgoingFriendships || 0)
             }
           />
+          {/* STATISTICS */}
 
           {/* MATCHES */}
           <AppCarousel
@@ -89,6 +91,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
 
           {/* BUCKETLIST */}
           <AppCarousel
+            isFriend={isFriend}
             title='BucketList'
             list={newPeopleProfile?.likedEvents.map(
               (likedEvent) => ({ id: likedEvent.id, img: likedEvent.event.mediaUrl })) || []

@@ -170,10 +170,12 @@ export default function UserProfileScreen(): JSX.Element {
               <AppButton onPress={() => setToggleEdit(true)} btnColor='white' text='Edit Profile' />
             )}
 
+            {/* STATISTICS */}
             <AppStats
               totalEvents={userProfile?._count.likedEvents || 0}
               totalFriends={totalFriends}
             />
+            {/* STATISTICS */}
 
             {/* TODO: LOG OUT */}
             {false && (
