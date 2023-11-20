@@ -16,20 +16,26 @@ export const HorizontalCarousel: FC<Props> = ({ list, title }) => {
       <View style={styles.cardWrapper}>
         <Text style={{ fontSize: 17, fontWeight: '700' }}>{title}</Text>
 
-        <FlatList
-          contentContainerStyle={{ gap: 12, justifyContent: 'center' }}
-          showsHorizontalScrollIndicator={false}
-          // pagingEnabled={true}
-          horizontal={true}
-          data={list}
-          renderItem={({ item }) => (
-            <Image
-              style={styles.bucketListImage}
-              key={item.id}
-              source={{ uri: item.img }}
-            />
-          )}
-        />
+        {list.length === 0 ? (
+          <View style={styles.bucketListImage}>
+            <Text>No {title} available</Text>
+          </View>
+        ) : (
+          <FlatList
+            contentContainerStyle={{ gap: 12, justifyContent: 'center' }}
+            showsHorizontalScrollIndicator={false}
+            // pagingEnabled={true}
+            horizontal={true}
+            data={list}
+            renderItem={({ item }) => (
+              <Image
+                style={styles.bucketListImage}
+                key={item.id}
+                source={{ uri: item.img }}
+              />
+            )}
+          />
+        )}
       </View>
     </CoCard>
   );

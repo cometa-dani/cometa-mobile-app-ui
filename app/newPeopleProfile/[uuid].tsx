@@ -70,11 +70,11 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           {/* ACTION BUTTON */}
 
           <Stats
-            totalEvents={newPeopleProfile?._count.likedEvents || 0}
+            totalEvents={newPeopleProfile?._count?.likedEvents || 0}
             totalFriends={
-              (newPeopleProfile?._count.incomingFriendships || 0)
+              (newPeopleProfile?._count?.incomingFriendships || 0)
               +
-              (newPeopleProfile?._count.outgoingFriendships || 0)
+              (newPeopleProfile?._count?.outgoingFriendships || 0)
             }
           />
 
@@ -100,14 +100,9 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           <CoCard>
             <View style={profileStyles.cardWrapper}>
               <Text style={{ fontSize: 17, fontWeight: '700' }}>Photos</Text>
-
-              {newPeopleProfile?.photos.length === 0 ? (
-                <Text>No photos available</Text>
-              ) : (
-                <PhotosGrid
-                  photosList={newPeopleProfile?.photos || []}
-                />
-              )}
+              <PhotosGrid
+                photosList={newPeopleProfile?.photos || []}
+              />
             </View>
           </CoCard>
           {/* PHOTOS */}
