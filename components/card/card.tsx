@@ -7,7 +7,7 @@ interface CoProps extends ViewProps {
   children: ReactNode
 }
 
-export const CoCard: FC<CoProps> = ({ children, ...props }) => {
+export const AppCard: FC<CoProps> = ({ children, ...props }) => {
   const { style: otherStyles = {}, ...otherProps } = props;
 
   return (

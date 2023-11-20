@@ -11,7 +11,7 @@ interface Props {
   photosList: Photo[],
   placeholders?: number
 }
-export const PhotosGrid: FC<Props> = ({ onHandlePickImage, photosList, placeholders = 0 }) => {
+export const AppPhotosGrid: FC<Props> = ({ onHandlePickImage, photosList, placeholders = 0 }) => {
   const { gray500 } = useColors();
   const placeholdersPhotos = (
     placeholders == 0 ?

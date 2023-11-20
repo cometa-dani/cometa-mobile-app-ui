@@ -8,7 +8,7 @@ interface Props {
   totalFriends: number
 }
 
-export const Stats: FC<Props> = ({ totalEvents, totalFriends }) => {
+export const AppStats: FC<Props> = ({ totalEvents, totalFriends }) => {
   const { gray500 } = useColors();
   return (
     < View style={profileStyles.stats} >

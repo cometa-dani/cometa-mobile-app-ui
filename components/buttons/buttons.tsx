@@ -8,7 +8,7 @@ interface Props extends PressableProps {
   text: string
   textStyles?: TextStyle
 }
-
+// TODO: remove this button is unnecesary and replace it with AppButton
 export const LightButton: FC<Props> = ({ text, textStyles = {}, ...props }) => {
   const { background } = useColors();
 
@@ -25,7 +25,7 @@ interface CoProps extends PressableProps {
   btnColor: 'black' | 'gray' | 'blue' | 'white' | 'primary',
 }
 
-export const CoButton: FC<CoProps> = ({ text, btnColor, ...props }) => {
+export const AppButton: FC<CoProps> = ({ text, btnColor, ...props }) => {
   const { background, color } = buttonColors[btnColor];
   return (
     <Pressable {...props} style={[styles.button, { backgroundColor: background }]}>

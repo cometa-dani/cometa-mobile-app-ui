@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { StyleSheet, Image } from 'react-native';
-import { CoCard } from '../card/card';
+import { AppCard } from '../card/card';
 import { Text, View } from '../Themed';
 import { FlatList } from 'react-native-gesture-handler';
 
@@ -11,9 +11,9 @@ interface Props {
   isFriend?: boolean
 }
 
-export const HorizontalCarousel: FC<Props> = ({ list, title, isFriend = true }) => {
+export const AppCarousel: FC<Props> = ({ list, title, isFriend = true }) => {
   return (
-    <CoCard>
+    <AppCard>
       <View style={styles.cardWrapper}>
         <Text style={{ fontSize: 17, fontWeight: '700' }}>{title}</Text>
 
@@ -38,7 +38,7 @@ export const HorizontalCarousel: FC<Props> = ({ list, title, isFriend = true }) 
           />
         )}
       </View>
-    </CoCard>
+    </AppCard>
   );
 };
 

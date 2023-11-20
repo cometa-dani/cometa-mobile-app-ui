@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useQueryGetEventById, useInfiteQueryGetUsersWhoLikedEventByID } from '../queries/eventHooks';
 import { Image } from 'react-native';
 import { FlatList, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
-import { CoButton } from '../components/buttons/buttons';
+import { AppButton } from '../components/buttons/buttons';
 import { StatusBar } from 'expo-status-bar';
 import { useInfiniteQueryGetNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../queries/friendshipHooks';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
@@ -207,7 +207,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                         </View>
                       </View>
 
-                      <CoButton
+                      <AppButton
                         onPress={() => router.push(`/chat/${friend.id}`)}
                         text="CHAT"
                         btnColor='gray'
@@ -246,21 +246,21 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                       </View>
 
                       {isReceiver && (
-                        <CoButton
+                        <AppButton
                           onPress={() => handleCancelFriendshipInvitation(user)}
                           text="PENDING"
                           btnColor='blue'
                         />
                       )}
                       {isSender && (
-                        <CoButton
+                        <AppButton
                           onPress={() => handleUserIsSender(user)}
                           text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
                           btnColor='black'
                         />
                       )}
                       {!isReceiver && !isSender && (
-                        <CoButton
+                        <AppButton
                           onPress={() => handleUserIsNietherSenderNorReceiver(user)}
                           text="JOIN"
                           btnColor='black'

@@ -10,7 +10,7 @@ interface Props {
   description: string
 }
 
-export const ProfileAvatar: FC<Props> = ({ avatar, description, name }) => {
+export const AppProfileAvatar: FC<Props> = ({ avatar, description, name }) => {
   const { gray500 } = useColors();
   return (
     <View style={profileStyles.avatarFigure}>

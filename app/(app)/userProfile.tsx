@@ -5,18 +5,18 @@ import { auth } from '../../firebase/firebase';
 import { StatusBar } from 'expo-status-bar';
 import { useCometaStore } from '../../store/cometaStore';
 import { useMutationUploadUserPhotos, useQueryGetUserProfileByUid } from '../../queries/userHooks';
-import { CoButton } from '../../components/buttons/buttons';
-import { CoCard } from '../../components/card/card';
+import { AppButton } from '../../components/buttons/buttons';
+import { AppCard } from '../../components/card/card';
 import { useEffect, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Photo } from '../../models/User';
-import { HorizontalCarousel } from '../../components/carousels/horizaontalCarousel';
+import { AppCarousel } from '../../components/carousels/carousel';
 import { profileStyles } from '../../components/profile/profileStyles';
-import { Stats } from '../../components/stats/Stats';
-import { ProfileAvatar } from '../../components/profile/profileAvatar';
-import { PhotosGrid } from '../../components/profile/photosGrid';
+import { AppStats } from '../../components/stats/Stats';
+import { AppProfileAvatar } from '../../components/profile/profileAvatar';
+import { AppPhotosGrid } from '../../components/profile/photosGrid';
 
 
 export default function UserProfileScreen(): JSX.Element {
@@ -116,7 +116,7 @@ export default function UserProfileScreen(): JSX.Element {
           <View style={profileStyles.avatarContainer}>
 
             {!toggleEdit ? (
-              <ProfileAvatar
+              <AppProfileAvatar
                 avatar={userProfile?.avatar}
                 description={description}
                 name={name}
@@ -165,12 +165,12 @@ export default function UserProfileScreen(): JSX.Element {
 
             {/* EDIT BUTTON */}
             {toggleEdit ? (
-              <CoButton onPress={() => handleSumitUserInfo()} btnColor='primary' text='Save Profile' />
+              <AppButton onPress={() => handleSumitUserInfo()} btnColor='primary' text='Save Profile' />
             ) : (
-              <CoButton onPress={() => setToggleEdit(true)} btnColor='white' text='Edit Profile' />
+              <AppButton onPress={() => setToggleEdit(true)} btnColor='white' text='Edit Profile' />
             )}
 
-            <Stats
+            <AppStats
               totalEvents={userProfile?._count.likedEvents || 0}
               totalFriends={totalFriends}
             />
@@ -183,7 +183,7 @@ export default function UserProfileScreen(): JSX.Element {
 
           {/* BUCKETLIST */}
           {!toggleEdit && (
-            <HorizontalCarousel
+            <AppCarousel
               list={userProfile?.likedEvents.map(item => ({ id: item.id, img: item.event.mediaUrl })) || []}
               title='BucketList'
             />
@@ -193,23 +193,23 @@ export default function UserProfileScreen(): JSX.Element {
 
           {/* PHOTOS */}
           {!toggleEdit ? (
-            <CoCard>
+            <AppCard>
               <View style={profileStyles.cardWrapper}>
                 <Text style={{ fontSize: 17, fontWeight: '700' }}>Photos</Text>
 
                 {userProfile?.photos.length === 0 ? (
                   <Text>No photos available</Text>
                 ) : (
-                  <PhotosGrid photosList={userPhotos} />
+                  <AppPhotosGrid photosList={userPhotos} />
                 )}
               </View>
-            </CoCard>
+            </AppCard>
           ) : (
             // UPLOAD PHOTOS
             <View style={profileStyles.cardWrapper}>
               <Text style={{ fontSize: 22, fontWeight: '700' }}>Photos</Text>
 
-              <PhotosGrid
+              <AppPhotosGrid
                 photosList={userPhotos}
                 onHandlePickImage={handlePickImage}
                 placeholders={selectionLimit}
