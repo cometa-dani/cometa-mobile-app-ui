@@ -9,13 +9,21 @@ import { FontAwesome } from '@expo/vector-icons';
 interface Props {
   title: string,
   list: Array<{ id: string | number, img: string }>
-  isFriend?: boolean
+  isLocked?: boolean
 }
 
-export const AppCarousel: FC<Props> = ({ list, title, isFriend = true }) => {
+export const AppCarousel: FC<Props> = ({ list, title, isLocked: isLocked = false }) => {
   const { gray50, gray200 } = useColors();
+
   return (
-    isFriend ? (
+    isLocked ? (
+      <AppCard style={[styles.lock, { backgroundColor: gray50 }]}>
+        <FontAwesome
+          name='lock'
+          style={{ fontSize: 48, backgroundColor: gray50, color: gray200 }}
+        />
+      </AppCard>
+    ) : (
       <AppCard>
         <View style={styles.cardWrapper}>
           <Text style={{ fontSize: 17, fontWeight: '700' }}>{title}</Text>
@@ -41,10 +49,6 @@ export const AppCarousel: FC<Props> = ({ list, title, isFriend = true }) => {
             />
           )}
         </View>
-      </AppCard>
-    ) : (
-      <AppCard style={[styles.lock, { backgroundColor: gray50 }]}>
-        <FontAwesome style={{ fontSize: 48, backgroundColor: gray50, color: gray200 }} name='lock' />
       </AppCard>
     )
   );

@@ -91,7 +91,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
 
           {/* BUCKETLIST */}
           <AppCarousel
-            isFriend={isFriend}
+            isLocked={!isFriend}
             title='BucketList'
             list={newPeopleProfile?.likedEvents.map(
               (likedEvent) => ({ id: likedEvent.id, img: likedEvent.event.mediaUrl })) || []
