@@ -53,7 +53,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
   * @param {GetBasicUserProfile} sender the sender of the friendship invitation
   */
-  const handleUserIsSender = (sender: GetBasicUserProfile): void => {
+  const handleCurrentUserHasAPendingInvitation = (sender: GetBasicUserProfile): void => {
     setIncommginFriendshipSender(sender);
     setTimeout(() => setToggleModal(true), 100);
     const friendshipID = sender.outgoingFriendships[0].id;
@@ -65,7 +65,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   * @description for a receiver user, sends a friendship invitation with status 'PENDING'
   * @param {GetBasicUserProfile} receiver the receiver of the friendship invitation
   */
-  const handleUserIsNietherSenderNorReceiver = (receiver: GetBasicUserProfile): void => {
+  const handleCurrentUserHasNoPendingInvitations = (receiver: GetBasicUserProfile): void => {
     mutationSentFriendship.mutate(receiver.id);
   };
 
@@ -130,6 +130,8 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
       <StatusBar backgroundColor="transparent" translucent={true} style={'auto'} />
 
       <View style={styles.screenContainer}>
+
+        {/* MOVE TO A PARENT COMPONENT */}
         <Modal
           animationType="slide"
           transparent={true}
@@ -183,6 +185,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
             </View>
           </DefaultView>
         </Modal>
+        {/* MOVE TO A PARENT COMPONENT */}
 
         <TabsHeader />
 
@@ -228,18 +231,18 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                 // ListHeaderComponent={}
                 contentContainerStyle={styles.flatList}
                 data={newPeopleRes.data?.pages.flatMap(page => page.usersWhoLikedEvent)}
-                renderItem={({ item: { user }, index }) => {
-                  const isReceiver: boolean = user?.incomingFriendships[0]?.status === 'PENDING';
-                  const isSender: boolean = user?.outgoingFriendships[0]?.status === 'PENDING';
+                renderItem={({ item: { user: anotherUser }, index }) => {
+                  const isReceiver: boolean = anotherUser?.incomingFriendships[0]?.status === 'PENDING';
+                  const isSender: boolean = anotherUser?.outgoingFriendships[0]?.status === 'PENDING';
 
                   return (
                     <View key={index} style={styles.user}>
-                      <Pressable onPress={() => router.push(`/newPeopleProfile/${user.uid}?isFriend=false`)}>
+                      <Pressable onPress={() => router.push(`/newPeopleProfile/${anotherUser.uid}?isFriend=false`)}>
                         <View style={styles.avatarContainer}>
-                          <Image style={styles.userAvatar} source={{ uri: user.avatar }} />
+                          <Image style={styles.userAvatar} source={{ uri: anotherUser.avatar }} />
 
                           <View style={styles.textContainer}>
-                            <Text style={styles.userName}>{user.username}</Text>
+                            <Text style={styles.userName}>{anotherUser.username}</Text>
                             <Text>online</Text>
                           </View>
                         </View>
@@ -247,21 +250,21 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
 
                       {isReceiver && (
                         <AppButton
-                          onPress={() => handleCancelFriendshipInvitation(user)}
+                          onPress={() => handleCancelFriendshipInvitation(anotherUser)}
                           text="PENDING"
                           btnColor='blue'
                         />
                       )}
                       {isSender && (
                         <AppButton
-                          onPress={() => handleUserIsSender(user)}
+                          onPress={() => handleCurrentUserHasAPendingInvitation(anotherUser)}
                           text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
                           btnColor='black'
                         />
                       )}
                       {!isReceiver && !isSender && (
                         <AppButton
-                          onPress={() => handleUserIsNietherSenderNorReceiver(user)}
+                          onPress={() => handleCurrentUserHasNoPendingInvitations(anotherUser)}
                           text="JOIN"
                           btnColor='black'
                         />

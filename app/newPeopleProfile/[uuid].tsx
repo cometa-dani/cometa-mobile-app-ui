@@ -13,6 +13,7 @@ import { AppStats } from '../../components/stats/Stats';
 import { AppCarousel } from '../../components/carousels/carousel';
 import { AppPhotosGrid } from '../../components/profile/photosGrid';
 import { AppCard } from '../../components/card/card';
+import { nodeEnv } from '../../constants/vars';
 
 
 const searchParamsSchemma = Yup.object({
@@ -36,6 +37,8 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   // queries
   const { data: newPeopleProfile } = useQueryGetNewPeopleProfileByUid(uuid);
   const { data: matchedEvents } = useQueryGetMatchedEvents(uuid);
+  const isReceiver: boolean = newPeopleProfile?.incomingFriendships[0]?.status === 'PENDING';
+  const isSender: boolean = newPeopleProfile?.outgoingFriendships[0]?.status === 'PENDING';
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -61,7 +64,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
             description={newPeopleProfile?.description || 'Hi there, let\'s meet '}
           />
 
-          {/* ACTION BUTTON */}
+          {/* ACTION BUTTONS */}
           {isFriend ? (
             <AppButton
               onPress={() => router.push(`/chat/${newPeopleProfile?.id}`)}
@@ -69,9 +72,31 @@ export default function NewPeopleProfileScreen(): JSX.Element {
               text='CHAT'
             />
           ) : (
-            <AppButton btnColor='black' text='JOIN' />
+            <>
+              {isReceiver && (
+                <AppButton
+                  // onPress={() => handleCancelFriendshipInvitation(anotherUser)}
+                  text="PENDING"
+                  btnColor='blue'
+                />
+              )}
+              {isSender && (
+                <AppButton
+                  // onPress={() => handleCurrentUserHasAPendingInvitation(anotherUser)}
+                  text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
+                  btnColor='black'
+                />
+              )}
+              {!isReceiver && !isSender && (
+                <AppButton
+                  // onPress={() => handleCurrentUserHasNoPendingInvitations(anotherUser)}
+                  text="JOIN"
+                  btnColor='black'
+                />
+              )}
+            </>
           )}
-          {/* ACTION BUTTON */}
+          {/* ACTION BUTTONS */}
 
           {/* STATISTICS */}
           <AppStats
