@@ -12,7 +12,7 @@ interface Props {
   isLocked?: boolean
 }
 
-export const AppCarousel: FC<Props> = ({ list, title, isLocked: isLocked = false }) => {
+export const AppCarousel: FC<Props> = ({ list, title, isLocked = false }) => {
   const { gray50, gray200 } = useColors();
 
   return (

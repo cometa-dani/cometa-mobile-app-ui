@@ -1,5 +1,5 @@
 import { StyleSheet, SafeAreaView } from 'react-native';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Text, View, useColors } from '../../components/Themed';
@@ -63,9 +63,13 @@ export default function NewPeopleProfileScreen(): JSX.Element {
 
           {/* ACTION BUTTON */}
           {isFriend ? (
-            <AppButton btnColor='gray' text='Chat' />
+            <AppButton
+              onPress={() => router.push(`/chat/${newPeopleProfile?.id}`)}
+              btnColor='gray'
+              text='CHAT'
+            />
           ) : (
-            <AppButton btnColor='black' text='Join' />
+            <AppButton btnColor='black' text='JOIN' />
           )}
           {/* ACTION BUTTON */}
 

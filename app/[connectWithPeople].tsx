@@ -196,16 +196,16 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                 renderItem={({ item: { friend }, index }) => {
                   return (
                     <View key={index} style={styles.user}>
-                      <View style={styles.avatarContainer}>
-                        <Pressable onPress={() => router.push(`/newPeopleProfile/${friend.uid}?isFriend=true`)}>
+                      <Pressable onPress={() => router.push(`/newPeopleProfile/${friend.uid}?isFriend=true`)}>
+                        <View style={styles.avatarContainer}>
                           <Image style={styles.userAvatar} source={{ uri: friend?.avatar }} />
-                        </Pressable>
 
-                        <View style={styles.textContainer}>
-                          <Text style={styles.userName}>{friend?.username}</Text>
-                          <Text>online</Text>
+                          <View style={styles.textContainer}>
+                            <Text style={styles.userName}>{friend?.username}</Text>
+                            <Text>online</Text>
+                          </View>
                         </View>
-                      </View>
+                      </Pressable>
 
                       <AppButton
                         onPress={() => router.push(`/chat/${friend.id}`)}
