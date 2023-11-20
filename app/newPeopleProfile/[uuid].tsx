@@ -35,7 +35,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   const urlParams = useLocalSearchParams();
   const { isFriend, uuid } = searchParamsSchemma.validateSync(urlParams);
   // queries
-  const { data: newPeopleProfile } = useQueryGetNewPeopleProfileByUid(uuid);
+  const { data: newPeopleProfile, isSuccess } = useQueryGetNewPeopleProfileByUid(uuid);
   const { data: matchedEvents } = useQueryGetMatchedEvents(uuid);
   const isReceiver: boolean = newPeopleProfile?.incomingFriendships[0]?.status === 'PENDING';
   const isSender: boolean = newPeopleProfile?.outgoingFriendships[0]?.status === 'PENDING';
@@ -65,37 +65,40 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           />
 
           {/* ACTION BUTTONS */}
-          {isFriend ? (
-            <AppButton
-              onPress={() => router.push(`/chat/${newPeopleProfile?.id}`)}
-              btnColor='gray'
-              text='CHAT'
-            />
-          ) : (
-            <>
-              {isReceiver && (
-                <AppButton
-                  // onPress={() => handleCancelFriendshipInvitation(anotherUser)}
-                  text="PENDING"
-                  btnColor='blue'
-                />
-              )}
-              {isSender && (
-                <AppButton
-                  // onPress={() => handleCurrentUserHasAPendingInvitation(anotherUser)}
-                  text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
-                  btnColor='black'
-                />
-              )}
-              {!isReceiver && !isSender && (
-                <AppButton
-                  // onPress={() => handleCurrentUserHasNoPendingInvitations(anotherUser)}
-                  text="JOIN"
-                  btnColor='black'
-                />
-              )}
-            </>
+          {isSuccess && (
+            isFriend ? (
+              <AppButton
+                onPress={() => router.push(`/chat/${newPeopleProfile?.id}`)}
+                btnColor='gray'
+                text='CHAT'
+              />
+            ) : (
+              <>
+                {isReceiver && (
+                  <AppButton
+                    // onPress={() => handleCancelFriendshipInvitation(anotherUser)}
+                    text="PENDING"
+                    btnColor='blue'
+                  />
+                )}
+                {isSender && (
+                  <AppButton
+                    // onPress={() => handleCurrentUserHasAPendingInvitation(anotherUser)}
+                    text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
+                    btnColor='black'
+                  />
+                )}
+                {!isReceiver && !isSender && (
+                  <AppButton
+                    // onPress={() => handleCurrentUserHasNoPendingInvitations(anotherUser)}
+                    text="JOIN"
+                    btnColor='black'
+                  />
+                )}
+              </>
+            )
           )}
+
           {/* ACTION BUTTONS */}
 
           {/* STATISTICS */}
