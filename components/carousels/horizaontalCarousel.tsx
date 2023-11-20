@@ -8,9 +8,10 @@ import { FlatList } from 'react-native-gesture-handler';
 interface Props {
   title: string,
   list: Array<{ id: string | number, img: string }>
+  isFriend?: boolean
 }
 
-export const HorizontalCarousel: FC<Props> = ({ list, title }) => {
+export const HorizontalCarousel: FC<Props> = ({ list, title, isFriend = true }) => {
   return (
     <CoCard>
       <View style={styles.cardWrapper}>

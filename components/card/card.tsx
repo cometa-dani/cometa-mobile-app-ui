@@ -1,15 +1,17 @@
 import { FC, ReactNode } from 'react';
-import { View } from '../Themed';
+import { View, ViewProps } from '../Themed';
 import { StyleSheet } from 'react-native';
 
 
-interface CoProps {
+interface CoProps extends ViewProps {
   children: ReactNode
 }
 
-export const CoCard: FC<CoProps> = ({ children }) => {
+export const CoCard: FC<CoProps> = ({ children, ...props }) => {
+  const { style: otherStyles = {}, ...otherProps } = props;
+
   return (
-    <View style={styles.cardWrapper}>
+    <View style={[styles.cardWrapper, otherStyles]} {...otherProps}>
       {children}
     </View>
   );
