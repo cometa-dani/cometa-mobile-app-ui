@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import Modal from 'react-native-modal';
-import { SafeAreaView, StyleSheet, View as DefaultView, Pressable, Dimensions, Platform } from 'react-native';
+import { SafeAreaView, StyleSheet, Pressable } from 'react-native';
 import { Text, View } from '../components/Themed';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQueryGetEventById, useInfiteQueryGetUsersWhoLikedEventByID } from '../queries/eventHooks';
@@ -30,10 +30,14 @@ const messageSchemmaValidation = Yup.object<Message>({
 
 
 export default function ConnectWithPeopleScreen(): JSX.Element {
+  // client state
   const uid = useCometaStore(state => state.uid);
+  const toggleModal = useCometaStore(state => state.toggleModal);
+  const setToggleModal = useCometaStore(state => state.setToggleModal);
+  const incommginFriendshipSender = useCometaStore(state => state.incommginFriendshipSender);
+  const setIncommginFriendshipSender = useCometaStore(state => state.setIncommginFriendshipSender);
 
-  // toggling modal & tabs
-  const [toggleModal, setToggleModal] = useState(false);
+  // toggling tabs
   const [toggleTabs, setToggleTabs] = useState(false);
 
   // queries
@@ -44,7 +48,6 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();
 
   // mutations
-  const [incommginFriendshipSender, setIncommginFriendshipSender] = useState({} as GetBasicUserProfile);
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
   const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
   const mutationCancelFriendship = useMutationCancelFriendshipInvitation();
@@ -56,7 +59,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   */
   const handleCurrentUserHasAPendingInvitation = (sender: GetBasicUserProfile): void => {
     setIncommginFriendshipSender(sender);
-    setTimeout(() => setToggleModal(true), 100);
+    setTimeout(() => setToggleModal(), 100);
     const friendshipID = sender.outgoingFriendships[0].id;
     mutationAcceptFriendship.mutate(friendshipID);
   };
@@ -94,7 +97,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
         }
       };
       actions.resetForm();
-      setToggleModal(false);
+      setToggleModal();
       actions.setSubmitting(false);
 
       const friendshipID = mutationAcceptFriendship.data?.id;
@@ -174,7 +177,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
 
             <Pressable
               style={modalStyles.iconButton}
-              onPress={() => setToggleModal(false)}
+              onPress={() => setToggleModal()}
             >
               <FontAwesome style={modalStyles.icon} name='times-circle' />
             </Pressable>

@@ -44,7 +44,7 @@ export interface GetBasicUserProfile {
   name: string
   description: string;
   email: string;
-  phone: string;
+  phone?: string;
   uid: string;
   outgoingFriendships: Friendship[];
   incomingFriendships: Friendship[];
