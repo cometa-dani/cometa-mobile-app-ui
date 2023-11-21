@@ -4,7 +4,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { StatusBar } from 'expo-status-bar';
 import { useCometaStore } from '../../store/cometaStore';
-import { useMutationUploadUserPhotos, useQueryGetUserProfileByUid } from '../../queries/userHooks';
+import { useMutationDeleteUserPhotoByUuid, useMutationUploadUserPhotos, useQueryGetUserProfileByUid } from '../../queries/userHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppCard } from '../../components/card/card';
 import { useEffect, useRef, useState } from 'react';
@@ -24,7 +24,8 @@ export default function UserProfileScreen(): JSX.Element {
   const uid = useCometaStore(state => state.uid); // this can be abstracted
 
   // mutations
-  const mutateUserPhotos = useMutationUploadUserPhotos();
+  const mutateUserPhotosUpload = useMutationUploadUserPhotos();
+  const mutateUserPhotosDelete = useMutationDeleteUserPhotoByUuid();
 
   // queries
   const { data: userProfile, isSuccess } = useQueryGetUserProfileByUid(uid);
@@ -54,7 +55,6 @@ export default function UserProfileScreen(): JSX.Element {
 
   const handlePickImage = async () => {
     if (selectionLimit == 0) {
-      // TODO: write logic to delete photos
       return;
     }
     else {
@@ -69,7 +69,7 @@ export default function UserProfileScreen(): JSX.Element {
           quality: 1,
         });
         if (!result.canceled && userProfile?.id) {
-          mutateUserPhotos.mutate({
+          mutateUserPhotosUpload.mutate({
             userID: userProfile?.id,
             pickedImgFiles: result.assets
           });
@@ -79,6 +79,11 @@ export default function UserProfileScreen(): JSX.Element {
         console.log(error);
       }
     }
+  };
+
+
+  const handleDeleteImage = async (photoUuid: string) => {
+    mutateUserPhotosDelete.mutate({ userID: userProfile?.id as number, photoUuid });
   };
 
 
@@ -215,6 +220,7 @@ export default function UserProfileScreen(): JSX.Element {
                 <AppPhotosGrid
                   photosList={userPhotos}
                   onHandlePickImage={handlePickImage}
+                  onDeleteImage={handleDeleteImage}
                   placeholders={selectionLimit}
                 />
 

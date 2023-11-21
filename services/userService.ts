@@ -43,7 +43,7 @@ class UserService extends RestApiService {
   }
 
 
-  public uploadManyImagesByUserId(userID: number, pickedImgFiles: ImagePickerAsset[]) {
+  public uploadManyPhotosByUserId(userID: number, pickedImgFiles: ImagePickerAsset[]) {
     const formData = new FormData();
     const headers = { 'Content-Type': 'multipart/form-data', };
 
@@ -62,12 +62,12 @@ class UserService extends RestApiService {
   }
 
 
-  public deletePhotoByUuid(userID: number, photoUuid: number) {
+  public deletePhotoByUuid(userID: number, photoUuid: string) {
     return this.http.delete(`/users/${userID}/photos/${photoUuid}`);
   }
 
 
-  public updateManyImagesByUserId(userID: number, pickedImgFiles: ImagePickerAsset[], imgsUuid: string[]) {
+  public updateManyPhotosByUserId(userID: number, pickedImgFiles: ImagePickerAsset[], imgsUuid: string[]) {
     const formData = new FormData();
     const headers = { 'Content-Type': 'multipart/form-data', };
 

@@ -63,7 +63,7 @@ export const useMutationUploadUserPhotos = () => {
     useMutation({
       mutationFn:
         async ({ userID, pickedImgFiles }: PhotosParams): Promise<GetBasicUserProfile> => {
-          const res = await userService.uploadManyImagesByUserId(userID, pickedImgFiles);
+          const res = await userService.uploadManyPhotosByUserId(userID, pickedImgFiles);
           if (res.status === 200) {
             return res.data;
           }
@@ -83,6 +83,52 @@ export const useMutationUploadUserPhotos = () => {
             const optimisticState = {
               ...oldState,
               photos: oldState?.photos.concat(newPhotos)
+
+            } as GetDetailedUserProfile;
+
+            return optimisticState;
+          });
+      },
+
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO] });
+      },
+      retry: 3,
+      retryDelay: 1_000 * 60 * 3
+    })
+  );
+};
+
+
+type DeletePhotoArgs = { userID: number, photoUuid: string }
+
+export const useMutationDeleteUserPhotoByUuid = () => {
+  const queryClient = useQueryClient();
+
+  return (
+    useMutation({
+      mutationFn:
+        async ({ userID, photoUuid }: DeletePhotoArgs): Promise<GetBasicUserProfile> => {
+          const res = await userService.deletePhotoByUuid(userID, photoUuid);
+          if (res.status === 204) {
+            return res.data;
+          }
+          else {
+            throw new Error('failed fech');
+          }
+        },
+
+      onMutate: async ({ photoUuid }) => {
+        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO] });
+        // TODO
+        queryClient
+          .setQueryData<GetDetailedUserProfile>
+          ([QueryKeys.GET_USER_INFO], (oldState): GetDetailedUserProfile => {
+            const filteredPhotos: Photo[] = oldState?.photos.filter(({ uuid }) => photoUuid !== uuid) || [];
+
+            const optimisticState = {
+              ...oldState,
+              photos: filteredPhotos
 
             } as GetDetailedUserProfile;
 
