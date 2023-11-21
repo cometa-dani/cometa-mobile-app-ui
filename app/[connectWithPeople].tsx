@@ -1,5 +1,6 @@
 import { FC, useState } from 'react';
-import { SafeAreaView, StyleSheet, Modal, View as DefaultView, Pressable } from 'react-native';
+import Modal from 'react-native-modal';
+import { SafeAreaView, StyleSheet, View as DefaultView, Pressable, Dimensions, Platform } from 'react-native';
 import { Text, View } from '../components/Themed';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQueryGetEventById, useInfiteQueryGetUsersWhoLikedEventByID } from '../queries/eventHooks';
@@ -19,6 +20,8 @@ import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { IMessage, } from 'react-native-gifted-chat';
 import { nodeEnv } from '../constants/vars';
+// import extraDimesions from 'react-native-extra-dimensions-android';
+
 
 
 type Message = { message: string };
@@ -29,6 +32,14 @@ const messageSchemmaValidation = Yup.object<Message>({
 
 
 export default function ConnectWithPeopleScreen(): JSX.Element {
+
+
+  // const deviceWidth = Dimensions.get('window').width;
+  // const deviceHeight =
+  //   Platform.OS === 'ios'
+  //     ? Dimensions.get('window').height
+  //     : extraDimesions?.getRealWindowHeight();
+
   const uid = useCometaStore(state => state.uid);
 
   // toggling modal & tabs
@@ -132,58 +143,52 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
       <View style={styles.screenContainer}>
 
         {/* MOVE TO A PARENT COMPONENT */}
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={toggleModal}
-        >
-          <DefaultView style={modalStyles.centeredView}>
-            <View style={modalStyles.modalView}>
-              <View style={modalStyles.avatarMatchContainer}>
-                <Image style={modalStyles.avatarMatch} source={{ uri: userProfile?.avatar }} />
-                {incommginFriendshipSender?.avatar && (
-                  <Image style={modalStyles.avatarMatch} source={{ uri: incommginFriendshipSender.avatar }} />
-                )}
-              </View>
-
-              <View>
-                <Text style={modalStyles.modalText}>It&apos;s a match!</Text>
-                <Text style={modalStyles.modalText}>You have a new friend</Text>
-              </View>
-
-              <Formik
-                validationSchema={messageSchemmaValidation}
-                initialValues={{ message: '' }}
-                onSubmit={handleMessageNewFriend}
-              >
-                {({ handleSubmit, handleBlur, handleChange, values }) => (
-                  <View style={modalStyles.inputContainer}>
-                    <TextInput
-                      numberOfLines={1}
-                      style={modalStyles.input}
-                      onChangeText={handleChange('message')}
-                      onBlur={handleBlur('message')}
-                      value={values.message}
-                      placeholder={`Mesage ${incommginFriendshipSender.username} to join together`}
-                    />
-                    <Pressable
-                      style={modalStyles.btnSubmit}
-                      onPress={() => handleSubmit()}
-                    >
-                      <FontAwesome style={{ fontSize: 26, color: '#fff' }} name='send' />
-                    </Pressable>
-                  </View>
-                )}
-              </Formik>
-
-              <Pressable
-                style={modalStyles.iconButton}
-                onPress={() => setToggleModal(false)}
-              >
-                <FontAwesome style={modalStyles.icon} name='times-circle' />
-              </Pressable>
+        <Modal isVisible={toggleModal}>
+          <View style={modalStyles.modalView}>
+            <View style={modalStyles.avatarMatchContainer}>
+              <Image style={modalStyles.avatarMatch} source={{ uri: userProfile?.avatar }} />
+              {incommginFriendshipSender?.avatar && (
+                <Image style={modalStyles.avatarMatch} source={{ uri: incommginFriendshipSender.avatar }} />
+              )}
             </View>
-          </DefaultView>
+
+            <View>
+              <Text style={modalStyles.modalText}>It&apos;s a match!</Text>
+              <Text style={modalStyles.modalText}>You have a new friend</Text>
+            </View>
+
+            <Formik
+              validationSchema={messageSchemmaValidation}
+              initialValues={{ message: '' }}
+              onSubmit={handleMessageNewFriend}
+            >
+              {({ handleSubmit, handleBlur, handleChange, values }) => (
+                <View style={modalStyles.inputContainer}>
+                  <TextInput
+                    numberOfLines={1}
+                    style={modalStyles.input}
+                    onChangeText={handleChange('message')}
+                    onBlur={handleBlur('message')}
+                    value={values.message}
+                    placeholder={`Mesage ${incommginFriendshipSender.username} to join together`}
+                  />
+                  <Pressable
+                    style={modalStyles.btnSubmit}
+                    onPress={() => handleSubmit()}
+                  >
+                    <FontAwesome style={{ fontSize: 26, color: '#fff' }} name='send' />
+                  </Pressable>
+                </View>
+              )}
+            </Formik>
+
+            <Pressable
+              style={modalStyles.iconButton}
+              onPress={() => setToggleModal(false)}
+            >
+              <FontAwesome style={modalStyles.icon} name='times-circle' />
+            </Pressable>
+          </View>
         </Modal>
         {/* MOVE TO A PARENT COMPONENT */}
 
@@ -307,15 +312,6 @@ const modalStyles = StyleSheet.create({
     shadowOffset: { width: 6, height: 6 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
-  },
-
-  centeredView: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    flex: 1,
-    height: '100%',
-    justifyContent: 'center',
-    padding: 20,
   },
 
   icon: {
