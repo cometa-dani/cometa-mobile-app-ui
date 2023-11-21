@@ -27,7 +27,7 @@ export default function UserProfileScreen(): JSX.Element {
   const mutateUserPhotos = useMutationUploadUserPhotos();
 
   // queries
-  const { data: userProfile } = useQueryGetUserProfileByUid(uid);
+  const { data: userProfile, isSuccess } = useQueryGetUserProfileByUid(uid);
   const userPhotos: Photo[] = userProfile?.photos ?? [];
   const selectionLimit: number = (userProfile?.maxNumPhotos || 0) - (userPhotos?.length || 0);
 
@@ -194,34 +194,36 @@ export default function UserProfileScreen(): JSX.Element {
 
 
           {/* PHOTOS */}
-          {!toggleEdit ? (
-            <AppCard>
+          {isSuccess && (
+            !toggleEdit ? (
+              <AppCard>
+                <View style={profileStyles.cardWrapper}>
+                  <Text style={{ fontSize: 17, fontWeight: '700' }}>Photos</Text>
+
+                  {userProfile?.photos.length === 0 ? (
+                    <Text>No photos available</Text>
+                  ) : (
+                    <AppPhotosGrid photosList={userPhotos} />
+                  )}
+                </View>
+              </AppCard>
+            ) : (
+              // UPLOAD PHOTOS
               <View style={profileStyles.cardWrapper}>
-                <Text style={{ fontSize: 17, fontWeight: '700' }}>Photos</Text>
+                <Text style={{ fontSize: 22, fontWeight: '700' }}>Photos</Text>
 
-                {userProfile?.photos.length === 0 ? (
-                  <Text>No photos available</Text>
-                ) : (
-                  <AppPhotosGrid photosList={userPhotos} />
-                )}
+                <AppPhotosGrid
+                  photosList={userPhotos}
+                  onHandlePickImage={handlePickImage}
+                  placeholders={selectionLimit}
+                />
+
               </View>
-            </AppCard>
-          ) : (
-            // UPLOAD PHOTOS
-            <View style={profileStyles.cardWrapper}>
-              <Text style={{ fontSize: 22, fontWeight: '700' }}>Photos</Text>
-
-              <AppPhotosGrid
-                photosList={userPhotos}
-                onHandlePickImage={handlePickImage}
-                placeholders={selectionLimit}
-              />
-
-            </View>
-            // UPLOAD PHOTOS
+              // UPLOAD PHOTOS
+            )
           )}
-
           {/* PHOTOS */}
+
         </View>
       </ScrollView>
     </SafeAreaView>

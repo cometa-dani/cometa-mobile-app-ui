@@ -6,6 +6,7 @@ const gray_50 = '#f0f0f0';
 const gray_100 = '#e5e5e5';
 const gray_200 = '#afafaa';
 const gray_500 = '#4f4f4f';
+const gray_900 = '#030303';
 
 
 export const buttonColors = {
@@ -44,6 +45,9 @@ export default {
     gray100: gray_100,
     gray200: gray_200,
     gray500: gray_500,
+    gray900: gray_900,
+    white50: white_50,
+
     text: '#030303',
     altText: gray_500,
     background: '#fff',
@@ -60,6 +64,9 @@ export default {
     gray100: gray_100,
     gray200: gray_200,
     gray500: gray_500,
+    gray900: gray_900,
+    white50: white_50,
+
     altText: gray_500,
     text: '#fff',
     background: '#030303',
