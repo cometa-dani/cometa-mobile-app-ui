@@ -20,8 +20,6 @@ import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { IMessage, } from 'react-native-gifted-chat';
 import { nodeEnv } from '../constants/vars';
-// import extraDimesions from 'react-native-extra-dimensions-android';
-
 
 
 type Message = { message: string };
@@ -32,14 +30,6 @@ const messageSchemmaValidation = Yup.object<Message>({
 
 
 export default function ConnectWithPeopleScreen(): JSX.Element {
-
-
-  // const deviceWidth = Dimensions.get('window').width;
-  // const deviceHeight =
-  //   Platform.OS === 'ios'
-  //     ? Dimensions.get('window').height
-  //     : extraDimesions?.getRealWindowHeight();
-
   const uid = useCometaStore(state => state.uid);
 
   // toggling modal & tabs
