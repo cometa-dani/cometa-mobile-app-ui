@@ -16,7 +16,7 @@ import { AppCard } from '../../components/card/card';
 import { nodeEnv } from '../../constants/vars';
 import { useCometaStore } from '../../store/cometaStore';
 import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/friendshipHooks';
-import { GetBasicUserProfile, GetDetailedUserProfile } from '../../models/User';
+import { GetDetailedUserProfile } from '../../models/User';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
 
