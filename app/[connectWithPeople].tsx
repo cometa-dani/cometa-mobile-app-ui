@@ -38,7 +38,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const setIncommginFriendshipSender = useCometaStore(state => state.setIncommginFriendshipSender);
 
   // toggling tabs
-  const [toggleTabs, setToggleTabs] = useState(false);
+  const [toggleTabs, setToggleTabs] = useState(true);
 
   // queries
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);

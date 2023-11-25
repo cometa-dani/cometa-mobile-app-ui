@@ -11,6 +11,7 @@ import { useColorScheme, } from 'react-native';
 
 // query client for server state
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 
 // Catch any errors thrown by the Layout component.
@@ -54,21 +55,22 @@ export default function RootLayout() {
 function RootLayoutNav(): JSX.Element {
   const colorScheme = useColorScheme();
   const screenOptions = { headerShown: false, animation: 'slide_from_right' } as ScreenProps;
-
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <QueryClientProvider client={new QueryClient()}>
-        <Stack>
-          <Stack.Screen name='index' options={screenOptions} />
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Stack>
+            <Stack.Screen name='index' options={screenOptions} />
 
-          <Stack.Screen name="(onboarding)" options={screenOptions} />
+            <Stack.Screen name="(onboarding)" options={screenOptions} />
 
-          <Stack.Screen name="(app)" options={screenOptions} />
+            <Stack.Screen name="(app)" options={screenOptions} />
 
-          <Stack.Screen name="bucketList" options={{ presentation: 'modal', headerTitle: 'BucketList' }} />
+            <Stack.Screen name="bucketList" options={{ presentation: 'modal', headerTitle: 'BucketList' }} />
 
-          <Stack.Screen name="[connectWithPeople]" options={{ presentation: 'modal', headerTitle: 'Connect with People' }} />
-        </Stack>
+            <Stack.Screen name="[connectWithPeople]" options={{ presentation: 'modal', headerTitle: 'Connect with People' }} />
+          </Stack>
+        </GestureHandlerRootView>
       </QueryClientProvider>
     </ThemeProvider>
   );
