@@ -1,9 +1,9 @@
-import { Image, StyleSheet, TextInput } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { router } from 'expo-router';
-import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
+import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 
 // // auth services
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -11,6 +11,7 @@ import { auth } from '../../firebase/firebase';
 import { useState } from 'react';
 import { useCometaStore } from '../../store/cometaStore';
 import { AppButton } from '../../components/buttons/buttons';
+import { AppTextInput } from '../../components/textInput/AppTextInput';
 
 
 type UserForm = {
@@ -49,7 +50,7 @@ export default function LoginScreen(): JSX.Element {
     };
 
   return (
-    <WrapperOnBoarding>
+    <AppWrapperOnBoarding>
       <View style={{ flex: 1, width: '100%' }}>
 
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 32 }}>
@@ -66,16 +67,14 @@ export default function LoginScreen(): JSX.Element {
 
             {({ handleSubmit, handleChange, handleBlur, values }) => (
               <View style={styles.form}>
-                <TextInput
+                <AppTextInput
                   keyboardType="email-address"
-                  style={styles.input}
                   onChangeText={handleChange('email')}
                   onBlur={handleBlur('email')}
                   value={values.email}
                   placeholder='Email'
                 />
-                <TextInput
-                  style={styles.input}
+                <AppTextInput
                   onChangeText={handleChange('password')}
                   onBlur={handleBlur('password')}
                   value={values.password}
@@ -100,7 +99,7 @@ export default function LoginScreen(): JSX.Element {
         />
 
       </View>
-    </WrapperOnBoarding>
+    </AppWrapperOnBoarding>
   );
 }
 
@@ -111,18 +110,6 @@ const styles = StyleSheet.create({
     gap: 32,
     justifyContent: 'center',
     width: '100%'
-  },
-
-  input: {
-    backgroundColor: '#fff',
-    borderRadius: 50,
-    elevation: 4,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    shadowColor: '#171717',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
   },
 
   logo: {

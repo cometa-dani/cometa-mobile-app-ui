@@ -7,7 +7,7 @@ interface Props {
   children: React.ReactNode
 }
 
-export const WrapperOnBoarding: FC<Props> = ({ children }) => {
+export const AppWrapperOnBoarding: FC<Props> = ({ children }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>

@@ -1,11 +1,12 @@
-/* eslint-disable react-native/no-color-literals */
-import { Image, Pressable, StyleSheet, TextInput } from 'react-native';
-import { Text, View, useColors } from '../../components/Themed';
+import { Image, StyleSheet } from 'react-native';
+import { Text, View } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { router } from 'expo-router';
-import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
+import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 import { useCometaStore } from '../../store/cometaStore';
+import { AppButton } from '../../components/buttons/buttons';
+import { AppTextInput } from '../../components/textInput/AppTextInput';
 
 
 type UserForm = {
@@ -22,7 +23,7 @@ export const loginSchemma = Yup.object<UserForm>({
 
 
 export default function RegisterScreen(): JSX.Element {
-  const { primary100 } = useColors();
+  // const { primary100 } = useColors();
   const setOnboarding = useCometaStore(state => state.setOnboarding);
 
   const handleNextSlide =
@@ -43,7 +44,7 @@ export default function RegisterScreen(): JSX.Element {
     };
 
   return (
-    <WrapperOnBoarding>
+    <AppWrapperOnBoarding>
 
       {/* logo */}
       <View>
@@ -61,123 +62,49 @@ export default function RegisterScreen(): JSX.Element {
 
         {({ handleSubmit, handleChange, handleBlur, values }) => (
           <View style={styles.form}>
-            <TextInput
+            <AppTextInput
               keyboardType="ascii-capable"
-              style={styles.input}
               onChangeText={handleChange('name')}
               onBlur={handleBlur('name')}
               value={values.name}
               placeholder='Name'
             />
-            <TextInput
+            <AppTextInput
               keyboardType="email-address"
-              style={styles.input}
               onChangeText={handleChange('email')}
               onBlur={handleBlur('email')}
               value={values.email}
               placeholder='Email'
             />
-            <TextInput
-              style={styles.input}
+            <AppTextInput
+              secureTextEntry={true}
               onChangeText={handleChange('password')}
               onBlur={handleBlur('password')}
               value={values.password}
               placeholder='Password'
-              secureTextEntry={true}
             />
 
-            <Pressable
+            <AppButton
               onPress={() => handleSubmit()}
-              style={[{
-                backgroundColor: primary100
-              },
-              styles.button
-              ]}>
-              <Text style={styles.buttonText}>Next</Text>
-            </Pressable>
+              btnColor='primary'
+              text='NEXT'
+            />
 
           </View>
         )}
       </Formik>
       {/* create user with email and password */}
 
-      {/* <View style={styles.authProviders}>
-        <Pressable
-          style={[{
-            backgroundColor: background,
-            flex: 1,
-            flexDirection: 'row',
-            gap: 8
-          },
-          styles.button
-          ]}>
-          <FontAwesome name='google' size={24} style={{ color: text }} />
-          <Text style={[styles.buttonText, { color: text, fontSize: 17 }]}>Google</Text>
-        </Pressable>
-        <Pressable
-          style={[{
-            backgroundColor: background,
-            flex: 1,
-            flexDirection: 'row',
-            gap: 8
-          },
-          styles.button
-          ]}>
-          <FontAwesome name='facebook' size={24} style={{ color: text }} />
-          <Text style={[styles.buttonText, { color: text, fontSize: 17 }]}>Facebook</Text>
-        </Pressable>
-      </View> */}
-
-    </WrapperOnBoarding>
+    </AppWrapperOnBoarding>
   );
 }
 
 const styles = StyleSheet.create({
-
-  // authProviders: {
-  //   flexDirection: 'row',
-  //   gap: 20,
-  // },
-
-  button: {
-    borderRadius: 50,
-    elevation: 4,
-    flexDirection: 'row',
-    gap: 10,
-    justifyContent: 'center',
-    paddingHorizontal: 28,
-    paddingVertical: 14,
-    shadowColor: '#171717',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-  },
-
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '800',
-    textAlign: 'center',
-    textTransform: 'uppercase'
-  },
-
   form: {
     flexDirection: 'column',
     gap: 26,
     justifyContent: 'center',
     width: '100%'
-  },
-
-  input: {
-    backgroundColor: '#fff',
-    borderRadius: 50,
-    elevation: 4,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    shadowColor: '#171717',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
   },
 
   logo: {

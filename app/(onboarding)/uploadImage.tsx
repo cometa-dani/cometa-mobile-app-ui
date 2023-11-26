@@ -4,7 +4,7 @@ import { Link, router } from 'expo-router';
 import { Text, View, useColors } from '../../components/Themed';
 import { useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { WrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
+import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 import * as ImagePicker from 'expo-image-picker';
 
 // services
@@ -80,7 +80,7 @@ export default function UploadImageScreen(): JSX.Element {
 
 
   return (
-    <WrapperOnBoarding>
+    <AppWrapperOnBoarding>
 
       {/* logo */}
       <View style={{ alignItems: 'center' }}>
@@ -129,7 +129,7 @@ export default function UploadImageScreen(): JSX.Element {
       </View>
       {/* create user with email and password */}
 
-    </WrapperOnBoarding>
+    </AppWrapperOnBoarding>
   );
 }
 
