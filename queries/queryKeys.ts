@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 export enum QueryKeys {
   GET_EVENTS,
   GET_LIKED_EVENTS,

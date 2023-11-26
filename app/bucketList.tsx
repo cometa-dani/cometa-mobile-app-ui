@@ -1,21 +1,31 @@
+import { FC } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, SafeAreaView, Image } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { Text, View } from '../components/Themed';
 import { FlatList, Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { useInfiniteQueryGetLatestLikedEvents } from '../queries/eventHooks';
+import { useInfiniteQueryGetLatestLikedEvents, useMutationLikeOrDislikeEvent } from '../queries/eventHooks';
 import { router } from 'expo-router';
-import { FC } from 'react';
 import { GetAllLikedEventsWithPagination } from '../models/LikedEvent';
+import { useQueryClient } from '@tanstack/react-query';
+import { QueryKeys } from '../queries/queryKeys';
 
 
 interface Props {
-  item: GetAllLikedEventsWithPagination['events'][0]
+  item: GetAllLikedEventsWithPagination['events'][0],
+  likeOrDislikeMutation: () => void
 }
 const LikedEventItem: FC<Props> = ({ item }) => {
-  const pressed = useSharedValue(false);
+  const removed = useSharedValue(false);
   const offset = useSharedValue(0);
+
+
+  // useDerivedValue(() => {
+  //   if (removed.value === true) {
+  //     likeOrDislikeMutation();
+  //   }
+  // }, [removed, likeOrDislikeMutation]);
 
   const pan = Gesture.Pan()
     .onBegin(() => {
@@ -26,21 +36,21 @@ const LikedEventItem: FC<Props> = ({ item }) => {
     })
     .onFinalize((event) => {
       const distance = event.translationX;
-      if (Math.abs(distance) > 90) {
+      if (Math.abs(distance) > 80) {
         if (Math.sign(distance) < 0) {
           offset.value -= 300;
         }
         if (Math.sign(distance) > 0) {
           offset.value += 300;
         }
-
-        // TODO: delelete from DB
+        removed.value = true;
+        // likeOrDislikeMutation();
       }
       else {
         offset.value = withSpring(0);
-        // pressed.value = false;
       }
     });
+
 
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [
@@ -73,10 +83,21 @@ const LikedEventItem: FC<Props> = ({ item }) => {
   );
 };
 
+
 export default function BuckectListScreen(): JSX.Element {
   const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteQueryGetLatestLikedEvents();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
-  // Animated.
+  const likeOrDislikeMutation = useMutationLikeOrDislikeEvent();
+  const queryClient = useQueryClient();
+
+  const handleDislikeMutation = (itemID: number): void => {
+    likeOrDislikeMutation.mutate(itemID, {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS] });
+      }
+    });
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style={'auto'} />
@@ -90,7 +111,11 @@ export default function BuckectListScreen(): JSX.Element {
           onEndReached={handleInfiniteFetch}
           onEndReachedThreshold={0.2}
           renderItem={({ item }) => (
-            <LikedEventItem key={item.id} item={item} />
+            <LikedEventItem
+              key={item.id}
+              item={item}
+              likeOrDislikeMutation={() => handleDislikeMutation(item.id)}
+            />
           )}
         />
       </View>
