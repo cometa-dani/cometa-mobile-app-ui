@@ -1,7 +1,7 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, SafeAreaView, Image } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 import { Text, View } from '../components/Themed';
 import { FlatList, Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -16,8 +16,9 @@ interface Props {
   item: GetAllLikedEventsWithPagination['events'][0],
   likeOrDislikeMutation: () => void
 }
-const LikedEventItem: FC<Props> = ({ item }) => {
+const LikedEventItem: FC<Props> = ({ item, likeOrDislikeMutation = () => { } }) => {
   const offset = useSharedValue(0);
+  const removed = useSharedValue(false);
 
 
   // useDerivedValue(() => {
@@ -45,7 +46,12 @@ const LikedEventItem: FC<Props> = ({ item }) => {
           newDistance = offset.value + 300;
         }
 
-        offset.value = withTiming(newDistance, { duration: 240 });
+        offset.value = withTiming(newDistance, { duration: 240 }, (finished) => {
+          runOnJS(likeOrDislikeMutation)();
+
+          console.log('ends', finished);
+        });
+        removed.value = true;
       }
       else {
         offset.value = withSpring(0);
@@ -53,13 +59,23 @@ const LikedEventItem: FC<Props> = ({ item }) => {
     });
 
 
-  const animatedStyles = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: offset.value },
-      // { scale: withTiming(pressed.value ? 1.18 : 1) },
-    ],
-    // backgroundColor: pressed.value ? '#FFE04B' : '#b58df1',
-  }));
+  const animatedStyles = useAnimatedStyle(() => {
+    console.log(offset.value);
+    return ({
+      transform: [
+        { translateX: offset.value },
+        // { scale: withTiming(pressed.value ? 1.18 : 1) },
+      ],
+      // backgroundColor: pressed.value ? '#FFE04B' : '#b58df1',
+    });
+  }, []);
+
+
+  // useEffect(() => {
+  //   if (removed.value === true) {
+  //     console.log('removed', offset.value);
+  //   }
+  // }, [animatedStyles]);
 
   return (
     <Pressable key={item.id} onPress={() => router.push(`/${item.id}`)}>
