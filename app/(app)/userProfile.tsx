@@ -181,11 +181,6 @@ export default function UserProfileScreen(): JSX.Element {
               totalFriends={totalFriends}
             />
             {/* STATISTICS */}
-
-            {/* TODO: LOG OUT */}
-            {false && (
-              <Button onPress={() => handleLogout()} title='log out' />
-            )}
           </View>
 
           {/* BUCKETLIST */}
@@ -230,6 +225,8 @@ export default function UserProfileScreen(): JSX.Element {
           )}
           {/* PHOTOS */}
 
+          {/* TODO: LOG OUT */}
+          <Button onPress={() => handleLogout()} title='log out' />
         </View>
       </ScrollView>
     </SafeAreaView>
