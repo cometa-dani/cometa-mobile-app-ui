@@ -1,7 +1,7 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, SafeAreaView, Image } from 'react-native';
-import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 import { Text, View } from '../components/Themed';
 import { FlatList, Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -18,14 +18,6 @@ interface Props {
 }
 const LikedEventItem: FC<Props> = ({ item, likeOrDislikeMutation = () => { } }) => {
   const offset = useSharedValue(0);
-  const removed = useSharedValue(false);
-
-
-  // useDerivedValue(() => {
-  //   if (removed.value === true) {
-  //     likeOrDislikeMutation();
-  //   }
-  // }, [removed, likeOrDislikeMutation]);
 
   const pan = Gesture.Pan()
     .cancelsTouchesInView(true)
@@ -47,11 +39,9 @@ const LikedEventItem: FC<Props> = ({ item, likeOrDislikeMutation = () => { } }) 
         }
 
         offset.value = withTiming(newDistance, { duration: 240 }, (finished) => {
-          runOnJS(likeOrDislikeMutation)();
-
-          console.log('ends', finished);
+          if (finished)
+            runOnJS(likeOrDislikeMutation)();
         });
-        removed.value = true;
       }
       else {
         offset.value = withSpring(0);
@@ -60,7 +50,6 @@ const LikedEventItem: FC<Props> = ({ item, likeOrDislikeMutation = () => { } }) 
 
 
   const animatedStyles = useAnimatedStyle(() => {
-    console.log(offset.value);
     return ({
       transform: [
         { translateX: offset.value },
@@ -70,12 +59,6 @@ const LikedEventItem: FC<Props> = ({ item, likeOrDislikeMutation = () => { } }) 
     });
   }, []);
 
-
-  // useEffect(() => {
-  //   if (removed.value === true) {
-  //     console.log('removed', offset.value);
-  //   }
-  // }, [animatedStyles]);
 
   return (
     <Pressable key={item.id} onPress={() => router.push(`/${item.id}`)}>
