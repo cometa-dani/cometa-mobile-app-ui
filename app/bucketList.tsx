@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, SafeAreaView, Image } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 import { Text, View } from '../components/Themed';
 import { FlatList, Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -17,7 +17,6 @@ interface Props {
   likeOrDislikeMutation: () => void
 }
 const LikedEventItem: FC<Props> = ({ item }) => {
-  const removed = useSharedValue(false);
   const offset = useSharedValue(0);
 
 
@@ -28,6 +27,7 @@ const LikedEventItem: FC<Props> = ({ item }) => {
   // }, [removed, likeOrDislikeMutation]);
 
   const pan = Gesture.Pan()
+    .cancelsTouchesInView(true)
     .onBegin(() => {
       // pressed.value = true;
     })
@@ -35,16 +35,17 @@ const LikedEventItem: FC<Props> = ({ item }) => {
       offset.value = event.translationX;
     })
     .onFinalize((event) => {
-      const distance = event.translationX;
-      if (Math.abs(distance) > 80) {
-        if (Math.sign(distance) < 0) {
-          offset.value -= 300;
+      const currentDistance = event.translationX;
+      if (Math.abs(currentDistance) > 90) {
+        let newDistance!: number;
+        if (Math.sign(currentDistance) < 0) {
+          newDistance = offset.value - 300;
         }
-        if (Math.sign(distance) > 0) {
-          offset.value += 300;
+        if (Math.sign(currentDistance) > 0) {
+          newDistance = offset.value + 300;
         }
-        removed.value = true;
-        // likeOrDislikeMutation();
+
+        offset.value = withTiming(newDistance, { duration: 240 });
       }
       else {
         offset.value = withSpring(0);
