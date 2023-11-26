@@ -1,5 +1,5 @@
-import { Image, Pressable, StyleSheet, TextInput } from 'react-native';
-import { Text, View, useColors } from '../../components/Themed';
+import { Image, StyleSheet, TextInput } from 'react-native';
+import { Text, View } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { router } from 'expo-router';
@@ -10,6 +10,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useState } from 'react';
 import { useCometaStore } from '../../store/cometaStore';
+import { AppButton } from '../../components/buttons/buttons';
 
 
 type UserForm = {
@@ -24,7 +25,6 @@ export const loginSchemma = Yup.object<UserForm>({
 
 
 export default function LoginScreen(): JSX.Element {
-  const { primary100, background } = useColors();
   const [isLoading, setIsLoading] = useState(false);
   const setAccessToken = useCometaStore(state => state.setAccessToken);
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
@@ -50,103 +50,61 @@ export default function LoginScreen(): JSX.Element {
 
   return (
     <WrapperOnBoarding>
+      <View style={{ flex: 1, width: '100%' }}>
 
-      {/* logo */}
-      <View>
-        <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 32 }}>
+          <View>
+            <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={styles.title}>Log In</Text>
-      </View>
-      {/* logo */}
-
-      {/* create user with email and password */}
-      <Formik
-        initialValues={{ email: '', password: '' }}
-        validationSchema={loginSchemma}
-        onSubmit={handleLogin}>
-
-        {({ handleSubmit, handleChange, handleBlur, values }) => (
-          <View style={styles.form}>
-            <TextInput
-              keyboardType="email-address"
-              style={styles.input}
-              onChangeText={handleChange('email')}
-              onBlur={handleBlur('email')}
-              value={values.email}
-              placeholder='Email'
-            />
-            <TextInput
-              style={styles.input}
-              onChangeText={handleChange('password')}
-              onBlur={handleBlur('password')}
-              value={values.password}
-              placeholder='Password'
-              secureTextEntry={true}
-            />
-
-            <Pressable
-              onPress={() => handleSubmit()}
-              style={[{
-                backgroundColor: primary100
-              },
-              styles.button
-              ]}>
-              <Text style={styles.buttonText}>{isLoading ? 'Loading...' : 'Log In'}</Text>
-            </Pressable>
+            <Text style={styles.title}>Log In</Text>
           </View>
-        )}
-      </Formik>
-      {/* create user with email and password */}
 
-      <Pressable
-        onPress={() => router.push('/(onboarding)/register')}
-        style={[{
-          position: 'absolute',
-          bottom: 30,
-          backgroundColor: background,
-          width: '100%',
-          gap: 8
-        },
-        styles.button
-        ]}>
-        <Text
-          style={[
-            styles.buttonText,
-            {
-              color: '#6c6c6c',
-              fontWeight: '500',
-              fontSize: 16,
-              textTransform: 'none'
-            }]}>
-          Don&apos;t have an account? Sign Up
-        </Text>
-      </Pressable>
+          <Formik
+            initialValues={{ email: '', password: '' }}
+            validationSchema={loginSchemma}
+            onSubmit={handleLogin}>
 
+            {({ handleSubmit, handleChange, handleBlur, values }) => (
+              <View style={styles.form}>
+                <TextInput
+                  keyboardType="email-address"
+                  style={styles.input}
+                  onChangeText={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                  value={values.email}
+                  placeholder='Email'
+                />
+                <TextInput
+                  style={styles.input}
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                  value={values.password}
+                  placeholder='Password'
+                  secureTextEntry={true}
+                />
+
+                <AppButton
+                  btnColor='primary'
+                  onPress={() => handleSubmit()}
+                  text={isLoading ? 'Loading...' : 'Log In'}
+                />
+              </View>
+            )}
+          </Formik>
+        </View>
+
+        <AppButton
+          btnColor='white'
+          onPress={() => router.push('/(onboarding)/register')}
+          text='Don&apos;t have an account? Sign Up'
+        />
+
+      </View>
     </WrapperOnBoarding>
   );
 }
 
 const styles = StyleSheet.create({
-
-  button: {
-    borderRadius: 50,
-    elevation: 4,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
-    shadowColor: '#171717',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-  },
-
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '800',
-    textAlign: 'center',
-    textTransform: 'uppercase'
-  },
-
 
   form: {
     flexDirection: 'column',
@@ -159,8 +117,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 50,
     elevation: 4,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
     shadowColor: '#171717',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
@@ -175,5 +133,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    textAlign: 'center'
   }
 });
