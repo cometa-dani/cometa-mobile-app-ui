@@ -11,32 +11,28 @@ import { AppTextInput } from '../../components/textInput/AppTextInput';
 
 type UserForm = {
   name: string,
-  email: string,
-  password: string
+  username: string,
 }
 
 export const loginSchemma = Yup.object<UserForm>({
   name: Yup.string().min(2).required(),
-  email: Yup.string().email().required(),
-  password: Yup.string().min(6).required(),
+  username: Yup.string().min(2).required(),
 });
 
 
-export default function RegisterScreen(): JSX.Element {
-  // const { primary100 } = useColors();
+export default function WhatIsYourNameScreen(): JSX.Element {
   const setOnboarding = useCometaStore(state => state.setOnboarding);
 
   const handleNextSlide =
     async (values: UserForm, actions: FormikHelpers<UserForm>) => {
       try {
         setOnboarding({
-          email: values.email,
-          password: values.password,
-          username: values.name
+          name: values.name,
+          username: values.username
         });
         actions.resetForm();
         actions.setSubmitting(false);
-        router.push('/(onboarding)/uploadImage');
+        router.push('/(onboarding)/whatIsYourEmail');
       }
       catch (error) {
         console.log(error);
@@ -45,23 +41,23 @@ export default function RegisterScreen(): JSX.Element {
 
   return (
     <AppWrapperOnBoarding>
-
       {/* logo */}
-      <View>
+      <View style={styles.figure}>
         <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={styles.title}>Sign Up</Text>
+        <Text style={styles.title}>What is your name?</Text>
       </View>
       {/* logo */}
 
       {/* create user with email and password */}
       <Formik
-        initialValues={{ name: '', email: '', password: '' }}
+        initialValues={{ name: '', username: '' }}
         validationSchema={loginSchemma}
         onSubmit={handleNextSlide}>
 
         {({ handleSubmit, handleChange, handleBlur, values }) => (
           <View style={styles.form}>
+
             <AppTextInput
               keyboardType="ascii-capable"
               onChangeText={handleChange('name')}
@@ -69,19 +65,13 @@ export default function RegisterScreen(): JSX.Element {
               value={values.name}
               placeholder='Name'
             />
+
             <AppTextInput
-              keyboardType="email-address"
-              onChangeText={handleChange('email')}
-              onBlur={handleBlur('email')}
-              value={values.email}
-              placeholder='Email'
-            />
-            <AppTextInput
-              secureTextEntry={true}
-              onChangeText={handleChange('password')}
-              onBlur={handleBlur('password')}
-              value={values.password}
-              placeholder='Password'
+              keyboardType="ascii-capable"
+              onChangeText={handleChange('username')}
+              onBlur={handleBlur('username')}
+              value={values.username}
+              placeholder='Username'
             />
 
             <AppButton
@@ -89,7 +79,6 @@ export default function RegisterScreen(): JSX.Element {
               btnColor='primary'
               text='NEXT'
             />
-
           </View>
         )}
       </Formik>
@@ -100,6 +89,10 @@ export default function RegisterScreen(): JSX.Element {
 }
 
 const styles = StyleSheet.create({
+  figure: {
+    alignItems: 'center',
+  },
+
   form: {
     flexDirection: 'column',
     gap: 26,

@@ -94,7 +94,7 @@ export default function LoginScreen(): JSX.Element {
 
         <AppButton
           btnColor='white'
-          onPress={() => router.push('/(onboarding)/register')}
+          onPress={() => router.push('/(onboarding)/whatIsYourName')}
           text='Don&apos;t have an account? Sign Up'
         />
 

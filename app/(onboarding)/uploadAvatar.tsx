@@ -15,7 +15,7 @@ import { auth } from '../../firebase/firebase';
 import { UserClientState } from '../../models/User';
 
 
-export default function UploadImageScreen(): JSX.Element {
+export default function UploadAvatarScreen(): JSX.Element {
   const { primary100, background, text } = useColors();
   const [imageUri, setImageUri] = useState<string>('');
   const imgFileRef = useRef<ImagePicker.ImagePickerAsset>();

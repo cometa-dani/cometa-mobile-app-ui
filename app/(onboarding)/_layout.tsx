@@ -12,10 +12,12 @@ export default function OnboardingLayout() {
           headerShown: false,
           animation: 'slide_from_right',
         }}>
-        {/* <Stack.Screen name="index" /> */}
-        <Stack.Screen name="register" />
         <Stack.Screen name="login" />
-        <Stack.Screen name="uploadImage" />
+        <Stack.Screen name="whatIsYourName" />
+        <Stack.Screen name="whatIsYourEmail" />
+        <Stack.Screen name="whenIsYourBirthday" />
+        <Stack.Screen name="uploadAvatar" />
+        <Stack.Screen name="addPhotosAndVideos" />
       </Stack>
     </>
   );

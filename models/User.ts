@@ -1,16 +1,10 @@
+/* eslint-disable no-unused-vars */
+import { EventCategory } from './Event';
 import { Friendship, Status } from './Friendship';
 
 
 // used in zustand store for global CLIENT STATE
-export interface UserClientState {
-  id: number;
-  uid: string;
-  avatar: string;
-  photos: Photo[];
-  username: string;
-  name: string;
-  email: string;
-  phone: string;
+export interface UserClientState extends GetBasicUserProfile {
   password: string;
 }
 
@@ -35,6 +29,18 @@ export interface UsersWhoLikedEvent {
   user: GetBasicUserProfile;
 }
 
+enum LookingFor {
+  MEET_NEW_PEOPLE,
+  DISCOVER_NEW_EVENTS
+}
+
+enum Education {
+  SECONDARY,
+  UNIVERSITY,
+  POST_GRADUATE,
+  NONE
+}
+
 // used in react query for SERVER STATE
 export interface GetBasicUserProfile {
   id: number;
@@ -45,21 +51,40 @@ export interface GetBasicUserProfile {
   description: string;
   email: string;
   phone?: string;
+
+  birthday?: Date;
+  address?: string;
+  interests?: EventCategory[];
+  activateNotifications: boolean;
+  lookingFor?: LookingFor;
+  occupation?: string;
+  education?: Education
+
   uid: string;
   outgoingFriendships: Friendship[];
   incomingFriendships: Friendship[];
 }
 
+
 export interface GetDetailedUserProfile {
   id: number;
   avatar: string;
   photos: Photo[];
-  maxNumPhotos: 5;
+  maxNumPhotos: number;
   username: string;
   name: string
   description: string;
   email: string;
   phone?: string;
+
+  birthday?: Date;
+  address?: string;
+  interests?: EventCategory[];
+  activateNotifications: boolean;
+  lookingFor?: LookingFor;
+  occupation?: string;
+  education?: Education
+
   uid: string;
   likedEvents: LikedEvent[];
   incomingFriendships: OutgoingFriendship[];
