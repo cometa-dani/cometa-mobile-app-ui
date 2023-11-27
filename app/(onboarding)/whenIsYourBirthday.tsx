@@ -45,7 +45,7 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
       <View style={styles.figure}>
         <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={styles.title}>What is your name?</Text>
+        <Text style={styles.title}>When is your birthday?</Text>
       </View>
       {/* logo */}
 
@@ -64,14 +64,6 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
               onBlur={handleBlur('name')}
               value={values.name}
               placeholder='Name'
-            />
-
-            <AppTextInput
-              keyboardType="ascii-capable"
-              onChangeText={handleChange('username')}
-              onBlur={handleBlur('username')}
-              value={values.username}
-              placeholder='Username'
             />
 
             <AppButton

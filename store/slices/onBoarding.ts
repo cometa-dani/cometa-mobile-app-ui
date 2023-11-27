@@ -6,7 +6,6 @@ import { UserClientState } from '../../models/User';
 export type OnboardingSlice = {
   onboarding: {
     user: Partial<UserClientState>
-
   }
 
   setOnboarding: (user: Partial<UserClientState>) => void
@@ -20,10 +19,13 @@ export const createOnboardingSlice: StateCreator<OnboardingSlice> = (set) => ({
   },
 
   setOnboarding: (user: Partial<UserClientState>) => {
-    set({
+    set(prev => ({
       onboarding: {
-        user
+        user: {
+          ...prev.onboarding.user,
+          ...user
+        }
       }
-    });
+    }));
   }
 });

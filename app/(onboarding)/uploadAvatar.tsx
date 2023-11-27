@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-color-literals */
 import { Image, Pressable, StyleSheet } from 'react-native';
 import { Link, router } from 'expo-router';
 import { Text, View, useColors } from '../../components/Themed';
@@ -59,7 +58,7 @@ export default function UploadAvatarScreen(): JSX.Element {
               usersService.uploadOrUpdateAvatarImgByUserID(newCreatedUser.id, imgFileRef?.current),
             ])
           );
-          await usersService.updateById(newCreatedUser.id, { uid: userCrendentials.uid });
+          await usersService.updateById(newCreatedUser.id, { ...onboardingUser, uid: userCrendentials.uid });
           setUserUid(userCrendentials.uid);
           setIsAuthenticated(true);
           setAccessToken(await userCrendentials.getIdToken());

@@ -32,7 +32,7 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
         });
         actions.resetForm();
         actions.setSubmitting(false);
-        router.push('/(onboarding)/whenIsYourBirthday');
+        router.push('/(onboarding)/addPhotosAndVideos');
       }
       catch (error) {
         console.log(error);
