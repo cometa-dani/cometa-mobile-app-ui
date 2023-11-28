@@ -1,19 +1,56 @@
 import { FC } from 'react';
 import { TextInputProps, StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
-import { useColors } from '../Themed';
+import { View, useColors } from '../Themed';
+import { FontAwesome, } from '@expo/vector-icons';
 
 
-export const AppTextInput: FC<TextInputProps> = ({ ...props }) => {
-  const { background: backgroundColor } = useColors();
+interface AppTextInputProps extends TextInputProps {
+  iconName?: React.ComponentProps<typeof FontAwesome>['name']
+}
+
+export const AppTextInput: FC<AppTextInputProps> = ({ iconName, ...props }) => {
+  const { background: backgroundColor, altText } = useColors();
   const { style, ...otherProps } = props;
   return (
-    <TextInput {...otherProps} style={[styles.input, { backgroundColor }, style]} />
+    iconName ? (
+      <View>
+        <View style={styles.formFieldIconContainer}>
+          <FontAwesome
+            style={[styles.formFieldIcon, { color: altText }]}
+            name={iconName}
+            size={22}
+          />
+        </View>
+
+        <TextInput {...otherProps} style={[styles.input, { backgroundColor, paddingLeft: 50, }, style]} />
+      </View>
+    )
+      : (
+        <TextInput {...otherProps} style={[styles.input, { backgroundColor }, style]} />
+      )
   );
 };
 
 
 const styles = StyleSheet.create({
+
+  formFieldIcon: {
+    fontWeight: '700',
+    zIndex: 10
+  },
+
+  formFieldIconContainer: {
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    flex: 1,
+    height: '100%',
+    justifyContent: 'center',
+    paddingLeft: 18,
+    position: 'absolute',
+    zIndex: 10
+  },
+
   input: {
     borderRadius: 50,
     elevation: 4,

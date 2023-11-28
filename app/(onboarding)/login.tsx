@@ -68,6 +68,7 @@ export default function LoginScreen(): JSX.Element {
             {({ handleSubmit, handleChange, handleBlur, values }) => (
               <View style={styles.form}>
                 <AppTextInput
+                  iconName='envelope-o'
                   keyboardType="email-address"
                   onChangeText={handleChange('email')}
                   onBlur={handleBlur('email')}
@@ -75,6 +76,7 @@ export default function LoginScreen(): JSX.Element {
                   placeholder='Email'
                 />
                 <AppTextInput
+                  iconName='key'
                   onChangeText={handleChange('password')}
                   onBlur={handleBlur('password')}
                   value={values.password}

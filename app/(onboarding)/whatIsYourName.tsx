@@ -1,5 +1,5 @@
 import { Image, StyleSheet } from 'react-native';
-import { Text, View } from '../../components/Themed';
+import { Text, View, useColors } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { router } from 'expo-router';
@@ -24,6 +24,7 @@ export const loginSchemma = Yup.object<UserForm>({
 
 
 export default function WhatIsYourNameScreen(): JSX.Element {
+  const { altText } = useColors();
   const setOnboarding = useCometaStore(state => state.setOnboarding);
   const [isAvaibleToUse, setIsAvailableToUse] = useState(true);
   const [username, setUsername] = useState('');
@@ -77,15 +78,16 @@ export default function WhatIsYourNameScreen(): JSX.Element {
         validationSchema={loginSchemma}
         onSubmit={handleNextSlide}>
 
-        {({ handleSubmit, handleChange, handleBlur, values, errors, touched, }) => (
+        {({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
           <View style={styles.form}>
 
             <AppTextInput
+              iconName='user-o'
               keyboardType="ascii-capable"
               onChangeText={handleChange('name')}
               onBlur={handleBlur('name')}
               value={values.name}
-              placeholder='Name'
+              placeholder='Names'
             />
 
             <View style={styles.formField}>
@@ -96,26 +98,17 @@ export default function WhatIsYourNameScreen(): JSX.Element {
                 <Text style={styles.formLabel}>Your username already exists</Text>
               )}
 
-              <View>
-                <View style={{ position: 'absolute', flex: 1, zIndex: 10, alignItems: 'center', height: '100%', justifyContent: 'center', backgroundColor: 'transparent', paddingLeft: 12 }}>
-                  <FontAwesome
-                    style={styles.formFieldIcon}
-                    name='at'
-                    size={22}
-                  />
-                </View>
-
-                <AppTextInput
-                  keyboardType="ascii-capable"
-                  onChangeText={(text) => {
-                    handleChange('username')(text);
-                    setUsername(text);
-                  }}
-                  onBlur={handleBlur('username')}
-                  value={values.username}
-                  placeholder='Username'
-                />
-              </View>
+              <AppTextInput
+                iconName='at'
+                keyboardType="ascii-capable"
+                onChangeText={(text) => {
+                  handleChange('username')(text);
+                  setUsername(text);
+                }}
+                onBlur={handleBlur('username')}
+                value={values.username}
+                placeholder='Username'
+              />
             </View>
 
             <AppButton
@@ -149,13 +142,6 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
 
-  formFieldIcon: {
-    fontWeight: '900',
-    // height: '100%',
-    // position: 'absolute',
-    // top: '50%',
-    zIndex: 10
-  },
 
   formLabel: {
     color: '#bc544c',
