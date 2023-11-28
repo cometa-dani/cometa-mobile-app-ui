@@ -1,5 +1,5 @@
 import { Image, StyleSheet } from 'react-native';
-import { Text, View, useColors } from '../../components/Themed';
+import { Text, View } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { router } from 'expo-router';
@@ -9,7 +9,6 @@ import { AppButton } from '../../components/buttons/buttons';
 import { AppTextInput } from '../../components/textInput/AppTextInput';
 import { useEffect, useState } from 'react';
 import userService from '../../services/userService';
-import { FontAwesome } from '@expo/vector-icons';
 
 
 type UserForm = {
@@ -18,19 +17,20 @@ type UserForm = {
 }
 
 export const loginSchemma = Yup.object<UserForm>({
-  name: Yup.string().min(2).required(),
+  name: Yup.string().min(3).required(),
   username: Yup.string().min(3).required(),
 });
 
 
 export default function WhatIsYourNameScreen(): JSX.Element {
-  const { altText } = useColors();
   const setOnboarding = useCometaStore(state => state.setOnboarding);
   const [isAvaibleToUse, setIsAvailableToUse] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
   const [username, setUsername] = useState('');
 
   const handleNextSlide =
     async (values: UserForm, actions: FormikHelpers<UserForm>) => {
+      if (!isAvaibleToUse || isFetching) return;
       try {
         setOnboarding({
           name: values.name,
@@ -48,16 +48,24 @@ export default function WhatIsYourNameScreen(): JSX.Element {
   useEffect(() => {
     const timoutId = setTimeout(async () => {
       if (username.length >= 3) {
-        const res = await userService.getUsersWithFilters({ username });
-        console.log(res.status);
-        if (res.status === 204) {
-          setIsAvailableToUse(true);
+        try {
+          setIsFetching(true);
+          const res = await userService.getUsersWithFilters({ username });
+          if (res.status === 204) {
+            setIsAvailableToUse(true);
+          }
+          else {
+            setIsAvailableToUse(false);
+          }
+          setIsFetching(false);
         }
-        else {
+        catch (error) {
+          console.log(error);
+          setIsFetching(false);
           setIsAvailableToUse(false);
         }
       }
-    }, 1_400);
+    }, 1_200);
 
     return () => clearTimeout(timoutId);
   }, [username]);
@@ -81,21 +89,26 @@ export default function WhatIsYourNameScreen(): JSX.Element {
         {({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
           <View style={styles.form}>
 
-            <AppTextInput
-              iconName='user-o'
-              keyboardType="ascii-capable"
-              onChangeText={handleChange('name')}
-              onBlur={handleBlur('name')}
-              value={values.name}
-              placeholder='Names'
-            />
+            <View style={styles.formField}>
+              {touched.name && errors.name && (
+                <Text style={styles.formLabel}>{errors.name}</Text>
+              )}
+              <AppTextInput
+                iconName='user-o'
+                keyboardType="ascii-capable"
+                onChangeText={handleChange('name')}
+                onBlur={handleBlur('name')}
+                value={values.name}
+                placeholder='Names'
+              />
+            </View>
 
             <View style={styles.formField}>
-              {errors.username && (
+              {touched.username && errors.username && (
                 <Text style={styles.formLabel}>{errors.username}</Text>
               )}
               {!errors.username && !isAvaibleToUse && (
-                <Text style={styles.formLabel}>Your username already exists</Text>
+                <Text style={styles.formLabel}>Your username is already taken</Text>
               )}
 
               <AppTextInput

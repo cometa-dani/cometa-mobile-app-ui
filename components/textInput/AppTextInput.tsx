@@ -19,11 +19,11 @@ export const AppTextInput: FC<AppTextInputProps> = ({ iconName, ...props }) => {
           <FontAwesome
             style={[styles.formFieldIcon, { color: altText }]}
             name={iconName}
-            size={22}
+            size={21}
           />
         </View>
 
-        <TextInput {...otherProps} style={[styles.input, { backgroundColor, paddingLeft: 50, }, style]} />
+        <TextInput {...otherProps} style={[styles.input, { backgroundColor, paddingLeft: 48 }, style]} />
       </View>
     )
       : (
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
 
   input: {
     borderRadius: 50,
-    elevation: 4,
+    elevation: 3,
     paddingHorizontal: 24,
     paddingVertical: 12,
     shadowColor: '#171717',

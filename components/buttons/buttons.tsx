@@ -46,7 +46,7 @@ export const AppButton: FC<CoProps> = ({ children, text, btnColor, ...props }) =
 const styles = StyleSheet.create({
   button: {
     borderRadius: 50,
-    elevation: 4,
+    elevation: 3,
     minWidth: 130,
     paddingHorizontal: 24,
     paddingVertical: 12,
@@ -61,6 +61,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     textAlign: 'center',
-    // textTransform: 'uppercase'
   },
 });

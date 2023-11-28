@@ -10,7 +10,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useState } from 'react';
 import { useCometaStore } from '../../store/cometaStore';
-import { AppButton } from '../../components/buttons/buttons';
+import { AppButton, LightButton } from '../../components/buttons/buttons';
 import { AppTextInput } from '../../components/textInput/AppTextInput';
 
 
@@ -94,8 +94,7 @@ export default function LoginScreen(): JSX.Element {
           </Formik>
         </View>
 
-        <AppButton
-          btnColor='white'
+        <LightButton
           onPress={() => router.push('/(onboarding)/whatIsYourName')}
           text='Don&apos;t have an account? Sign Up'
         />
