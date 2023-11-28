@@ -42,7 +42,7 @@ export default function UserProfileScreen(): JSX.Element {
 
   // edit user name & description
   const [name, setName] = useState(userProfile?.username || '');
-  const [description, setDescription] = useState(userProfile?.description || 'Join me');
+  const [biography, setBiography] = useState(userProfile?.biography || 'Join me');
   const usernameRef = useRef<TextInput>(null);
   const descriptionRef = useRef<TextInput>(null);
 
@@ -96,10 +96,10 @@ export default function UserProfileScreen(): JSX.Element {
     if (userProfile?.username) {
       setName(userProfile?.username);
     }
-    if (userProfile?.description) {
-      setDescription(userProfile.description);
+    if (userProfile?.biography) {
+      setBiography(userProfile.biography);
     }
-  }, [userProfile?.username, userProfile?.description]);
+  }, [userProfile?.username, userProfile?.biography]);
 
 
   return (
@@ -123,7 +123,7 @@ export default function UserProfileScreen(): JSX.Element {
             {!toggleEdit ? (
               <AppProfileAvatar
                 avatar={userProfile?.avatar}
-                description={description}
+                description={biography}
                 name={name}
               />
             ) : (
@@ -152,9 +152,9 @@ export default function UserProfileScreen(): JSX.Element {
 
                   <TextInput
                     style={{ color: gray500, padding: 0 }}
-                    onChangeText={(text) => setDescription(text)}
+                    onChangeText={(text) => setBiography(text)}
                     ref={descriptionRef}
-                    value={description}
+                    value={biography}
                   />
 
                   <FontAwesome

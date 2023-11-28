@@ -1,9 +1,10 @@
-import { Image, Pressable, StyleSheet } from 'react-native';
-import { Link, router } from 'expo-router';
+import { Image, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
 import { Text, View, useColors } from '../../components/Themed';
 import { useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
+import { AppButton } from '../../components/buttons/buttons';
 import * as ImagePicker from 'expo-image-picker';
 
 // services
@@ -15,7 +16,7 @@ import { UserClientState } from '../../models/User';
 
 
 export default function UploadAvatarScreen(): JSX.Element {
-  const { primary100, background, text } = useColors();
+  const { text } = useColors();
   const [imageUri, setImageUri] = useState<string>('');
   const imgFileRef = useRef<ImagePicker.ImagePickerAsset>();
   const onboarding = useCometaStore(state => state.onboarding);
@@ -45,20 +46,20 @@ export default function UploadAvatarScreen(): JSX.Element {
 
   // TODO: verify that username & phone & email are unique and do not exist already
   const handleUserRegistration = async () => {
-    const onboardingUser = onboarding?.user as UserClientState;
+    const { username, email, password, ...otherUserFields } = onboarding?.user as UserClientState;
     try {
       if (imgFileRef?.current?.uri) {
         // put this step on the register form
-        const payload = { username: onboardingUser.username, email: onboardingUser.email };
+        const payload = { username, email };
         const { data: newCreatedUser } = await usersService.create(payload); // first checks if user exists
         try {
           const [{ user: userCrendentials }] = (
             await Promise.all([
-              createUserWithEmailAndPassword(auth, onboardingUser.email, onboardingUser.password),
+              createUserWithEmailAndPassword(auth, email, password),
               usersService.uploadOrUpdateAvatarImgByUserID(newCreatedUser.id, imgFileRef?.current),
             ])
           );
-          await usersService.updateById(newCreatedUser.id, { ...onboardingUser, uid: userCrendentials.uid });
+          await usersService.updateById(newCreatedUser.id, { ...otherUserFields, uid: userCrendentials.uid });
           setUserUid(userCrendentials.uid);
           setIsAuthenticated(true);
           setAccessToken(await userCrendentials.getIdToken());
@@ -80,18 +81,13 @@ export default function UploadAvatarScreen(): JSX.Element {
 
   return (
     <AppWrapperOnBoarding>
-
       {/* logo */}
       <View style={{ alignItems: 'center' }}>
         <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
-
-        <Link href={'/(onboarding)/login'}>
-          <Text style={styles.title}>Upload your Image</Text>
-        </Link>
+        <Text style={styles.title}>Upload your Image</Text>
       </View>
       {/* logo */}
 
-      {/* create user with email and password */}
       <View style={{ alignItems: 'center' }}>
         {imageUri ? (
           <Image style={styles.avatar} source={{ uri: imageUri }} />
@@ -99,35 +95,23 @@ export default function UploadAvatarScreen(): JSX.Element {
           <View style={styles.avatar} />
         )}
 
-        <View style={styles.form}>
-          <Pressable
-            onPress={() => handlePickImage()}
-            style={[{
-              backgroundColor: background,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              gap: 10
-            },
-            styles.button
-            ]}>
-            <FontAwesome name='upload' size={24} style={{ color: text }} />
-            <Text style={[styles.buttonText, { color: text, fontSize: 17 }]}>Pick Image</Text>
-          </Pressable>
+        <View style={styles.btnsContainer}>
+          <AppButton
+            btnColor='white'
+            onPress={() => handlePickImage()}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              <FontAwesome name='upload' size={24} style={{ color: text }} />
+              <Text style={[styles.buttonText, { color: text }]}>Pick Image</Text>
+            </View>
+          </AppButton>
 
-          <Pressable
+          <AppButton
             onPress={() => handleUserRegistration()}
-            style={[{
-              backgroundColor: primary100
-            },
-            styles.button
-            ]}>
-            <Text style={styles.buttonText}>Create account</Text>
-          </Pressable>
-
+            text='CREATE ACCOUNT'
+            btnColor='primary'
+          />
         </View>
       </View>
-      {/* create user with email and password */}
-
     </AppWrapperOnBoarding>
   );
 }
@@ -142,30 +126,18 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
 
-  button: {
-    borderRadius: 50,
-    elevation: 4,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
-    shadowColor: '#171717',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-  },
-
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '800',
-    textAlign: 'center',
-    textTransform: 'uppercase'
-  },
-
-  form: {
+  btnsContainer: {
     flexDirection: 'column',
     gap: 26,
     justifyContent: 'center',
     width: '100%'
+  },
+
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    textAlign: 'center',
+    textTransform: 'uppercase'
   },
 
   logo: {

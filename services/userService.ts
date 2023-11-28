@@ -7,6 +7,12 @@ import uuid from 'react-native-uuid';
 
 class UserService extends RestApiService {
 
+  public getUsersWithFilters(userFields: Partial<UserClientState>) {
+    type Res = GetBasicUserProfile[] | GetBasicUserProfile | null;
+    return this.http.get<Res>('/users', { params: userFields });
+  }
+
+
   public create(payload: Partial<UserClientState>) {
     const { email, username } = payload;
     return this.http.post<GetBasicUserProfile>('/users', { email, username });

@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -22,7 +22,7 @@ import { QueryKeys } from '../../queries/queryKeys';
 
 
 const searchParamsSchemma = Yup.object({
-  isFriend: Yup.boolean().required().transform((originalValue, originalObject) => {
+  isFriend: Yup.boolean().required().transform((originalValue) => {
     // Coerce string to number if it's a parsable number
     if (typeof originalValue === 'string') {
       return JSON.parse(originalValue); // boolean
@@ -122,7 +122,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           <AppProfileAvatar
             avatar={newPeopleProfile?.avatar}
             name={newPeopleProfile?.username || ''}
-            description={newPeopleProfile?.description || 'Hi there, let\'s meet '}
+            description={newPeopleProfile?.biography || 'Hi there, let\'s meet '}
           />
 
           {/* ACTION BUTTONS */}
@@ -207,13 +207,3 @@ export default function NewPeopleProfileScreen(): JSX.Element {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-
-  // container: {
-  //   flex: 1,
-  //   gap: 24,
-  //   paddingHorizontal: 20,
-  //   paddingVertical: 30
-  // },
-});

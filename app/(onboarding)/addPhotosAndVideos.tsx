@@ -34,7 +34,7 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
       <View style={styles.figure}>
         <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={styles.title}>Add photos and videos</Text>
+        <Text style={styles.title}>Add photos to your profile</Text>
       </View>
       {/* logo */}
 

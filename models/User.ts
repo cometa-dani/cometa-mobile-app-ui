@@ -48,7 +48,7 @@ export interface GetBasicUserProfile {
   photos: Photo[];
   username: string;
   name: string
-  description: string;
+  biography: string;
   email: string;
   phone?: string;
 
@@ -73,7 +73,7 @@ export interface GetDetailedUserProfile {
   maxNumPhotos: number;
   username: string;
   name: string
-  description: string;
+  biography: string;
   email: string;
   phone?: string;
 

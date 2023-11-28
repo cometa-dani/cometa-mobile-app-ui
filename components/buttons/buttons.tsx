@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import { Pressable, PressableProps, Text, StyleSheet, TextStyle } from 'react-native';
 import { useColors } from '../Themed';
 import { buttonColors } from '../../constants/colors';
@@ -21,15 +21,23 @@ export const LightButton: FC<Props> = ({ text, textStyles = {}, ...props }) => {
 
 
 interface CoProps extends PressableProps {
-  text: string,
+  text?: string,
+  children?: ReactNode
   btnColor: 'black' | 'gray' | 'blue' | 'white' | 'primary',
 }
 
-export const AppButton: FC<CoProps> = ({ text, btnColor, ...props }) => {
+export const AppButton: FC<CoProps> = ({ children, text, btnColor, ...props }) => {
   const { background, color } = buttonColors[btnColor];
   return (
     <Pressable {...props} style={[styles.button, { backgroundColor: background }]}>
-      <Text style={[styles.buttonText, { color }]}>{text}</Text>
+      {text ? (
+        <Text style={[styles.buttonText, { color }]}>{text}</Text>
+      ) :
+        children ?
+          (children)
+          :
+          (null)
+      }
     </Pressable>
   );
 };
