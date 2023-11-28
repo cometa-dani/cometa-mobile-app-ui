@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 import { useCometaStore } from '../../store/cometaStore';
 import { AppButton } from '../../components/buttons/buttons';
-import { AppTextInput } from '../../components/textInput/AppTextInput';
+import { AppInputFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
 import { useEffect, useState } from 'react';
 import userService from '../../services/userService';
 
@@ -29,7 +29,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
   const [username, setUsername] = useState('');
 
   const handleNextSlide =
-    async (values: UserForm, actions: FormikHelpers<UserForm>) => {
+    (values: UserForm, actions: FormikHelpers<UserForm>): void => {
       if (!isAvaibleToUse || isFetching) return;
       try {
         setOnboarding({
@@ -45,6 +45,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
       }
     };
 
+  // checking if @username is available to used for current user
   useEffect(() => {
     const timoutId = setTimeout(async () => {
       if (username.length >= 3) {
@@ -70,6 +71,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
     return () => clearTimeout(timoutId);
   }, [username]);
 
+
   return (
     <AppWrapperOnBoarding>
       {/* logo */}
@@ -80,18 +82,18 @@ export default function WhatIsYourNameScreen(): JSX.Element {
       </View>
       {/* logo */}
 
-      {/* create user with email and password */}
       <Formik
         initialValues={{ name: '', username: '' }}
         validationSchema={loginSchemma}
-        onSubmit={handleNextSlide}>
-
+        onSubmit={handleNextSlide}
+      >
         {({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
           <View style={styles.form}>
 
+            {/* names */}
             <View style={styles.formField}>
               {touched.name && errors.name && (
-                <Text style={styles.formLabel}>{errors.name}</Text>
+                <AppInputFeedbackMsg text={errors.name} />
               )}
               <AppTextInput
                 iconName='user-o'
@@ -102,13 +104,15 @@ export default function WhatIsYourNameScreen(): JSX.Element {
                 placeholder='Names'
               />
             </View>
+            {/* name */}
 
+            {/* @username */}
             <View style={styles.formField}>
               {touched.username && errors.username && (
-                <Text style={styles.formLabel}>{errors.username}</Text>
+                <AppInputFeedbackMsg text={errors.username} />
               )}
               {!errors.username && !isAvaibleToUse && (
-                <Text style={styles.formLabel}>Your username is already taken</Text>
+                <AppInputFeedbackMsg text='Your username is already taken' />
               )}
 
               <AppTextInput
@@ -123,6 +127,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
                 placeholder='Username'
               />
             </View>
+            {/* @username */}
 
             <AppButton
               onPress={() => handleSubmit()}
@@ -132,11 +137,10 @@ export default function WhatIsYourNameScreen(): JSX.Element {
           </View>
         )}
       </Formik>
-      {/* create user with email and password */}
-
     </AppWrapperOnBoarding>
   );
 }
+
 
 const styles = StyleSheet.create({
   figure: {
@@ -153,14 +157,6 @@ const styles = StyleSheet.create({
 
   formField: {
     position: 'relative',
-  },
-
-
-  formLabel: {
-    color: '#bc544c',
-    paddingLeft: 20,
-    position: 'absolute',
-    top: -24
   },
 
   logo: {

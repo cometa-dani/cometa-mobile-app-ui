@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { TextInputProps, StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
-import { View, useColors } from '../Themed';
+import { Text, View, useColors } from '../Themed';
 import { FontAwesome, } from '@expo/vector-icons';
 
 
@@ -61,4 +61,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 3,
   }
+});
+
+
+export const AppInputFeedbackMsg: FC<{ text: string }> = ({ text }) => (
+  <Text style={formFieldStyles.formLabel}>{text}</Text>
+);
+
+const formFieldStyles = StyleSheet.create({
+  formLabel: {
+    color: '#bc544c',
+    paddingLeft: 20,
+    position: 'absolute',
+    top: -24
+  },
 });
