@@ -6,7 +6,9 @@ import { router } from 'expo-router';
 import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 import { useCometaStore } from '../../store/cometaStore';
 import { AppButton } from '../../components/buttons/buttons';
-import { AppTextInput } from '../../components/textInput/AppTextInput';
+import { AppInputFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
+import { useEffect, useState } from 'react';
+import userService from '../../services/userService';
 
 
 type UserForm = {
@@ -16,15 +18,19 @@ type UserForm = {
 
 export const loginSchemma = Yup.object<UserForm>({
   email: Yup.string().email().required(),
-  password: Yup.string().min(6).required(),
+  password: Yup.string().min(6).max(18).required(),
 });
 
 
 export default function WhatIsYourEmailScreen(): JSX.Element {
   const setOnboarding = useCometaStore(state => state.setOnboarding);
+  const [isAvaibleToUse, setIsAvailableToUse] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
+  const [email, setEmail] = useState('');
 
   const handleNextSlide =
-    async (values: UserForm, actions: FormikHelpers<UserForm>) => {
+    (values: UserForm, actions: FormikHelpers<UserForm>): void => {
+      if (!isAvaibleToUse || isFetching) return;
       try {
         setOnboarding({
           email: values.email,
@@ -38,6 +44,34 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
         console.log(error);
       }
     };
+
+
+  // checking if @username is available to used for current user
+  useEffect(() => {
+    const timoutId = setTimeout(async () => {
+      if (email.includes('@')) {
+        try {
+          setIsFetching(true);
+          const res = await userService.getUsersWithFilters({ email });
+          if (res.status === 204) {
+            setIsAvailableToUse(true);
+          }
+          else {
+            setIsAvailableToUse(false);
+          }
+          setIsFetching(false);
+        }
+        catch (error) {
+          console.log(error);
+          setIsFetching(false);
+          setIsAvailableToUse(false);
+        }
+      }
+    }, 1_200);
+
+    return () => clearTimeout(timoutId);
+  }, [email]);
+
 
   return (
     <AppWrapperOnBoarding>
@@ -55,25 +89,43 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
         validationSchema={loginSchemma}
         onSubmit={handleNextSlide}>
 
-        {({ handleSubmit, handleChange, handleBlur, values }) => (
+        {({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
           <View style={styles.form}>
 
-            <AppTextInput
-              keyboardType="email-address"
-              onChangeText={handleChange('email')}
-              onBlur={handleBlur('email')}
-              value={values.email}
-              placeholder='Email'
-            />
+            <View style={{ position: 'relative' }}>
+              {touched.email && errors.email && (
+                <AppInputFeedbackMsg text={errors.email} />
+              )}
+              {!errors.email && !isAvaibleToUse && (
+                <AppInputFeedbackMsg text='Your email already exists' />
+              )}
+              <AppTextInput
+                iconName='envelope-o'
+                keyboardType="email-address"
+                onChangeText={(text) => {
+                  handleChange('email')(text);
+                  setEmail(text);
+                }}
+                onBlur={handleBlur('email')}
+                value={values.email}
+                placeholder='Email'
+              />
+            </View>
 
-            <AppTextInput
-              keyboardType="ascii-capable"
-              secureTextEntry={true}
-              onChangeText={handleChange('password')}
-              onBlur={handleBlur('password')}
-              value={values.password}
-              placeholder='Password'
-            />
+            <View style={{ position: 'relative' }}>
+              {touched.password && errors.password && (
+                <AppInputFeedbackMsg text={errors.password} />
+              )}
+              <AppTextInput
+                iconName='key'
+                keyboardType="ascii-capable"
+                secureTextEntry={true}
+                onChangeText={handleChange('password')}
+                onBlur={handleBlur('password')}
+                value={values.password}
+                placeholder='Password'
+              />
+            </View>
 
             <AppButton
               onPress={() => handleSubmit()}

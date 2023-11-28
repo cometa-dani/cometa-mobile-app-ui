@@ -17,8 +17,8 @@ type UserForm = {
 }
 
 export const loginSchemma = Yup.object<UserForm>({
-  name: Yup.string().min(3).required(),
-  username: Yup.string().min(3).required(),
+  name: Yup.string().min(3).max(26).required(),
+  username: Yup.string().min(3).max(18).required(),
 });
 
 
