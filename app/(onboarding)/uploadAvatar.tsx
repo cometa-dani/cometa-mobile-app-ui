@@ -8,6 +8,9 @@ import { AppButton } from '../../components/buttons/buttons';
 import * as ImagePicker from 'expo-image-picker';
 import { UserClientState } from '../../models/User';
 import { TextInput } from 'react-native-gesture-handler';
+import { Formik, FormikHelpers } from 'formik';
+import { AppInputFeedbackMsg } from '../../components/textInput/AppTextInput';
+import * as Yup from 'yup';
 
 // services
 import usersService from '../../services/userService';
@@ -15,6 +18,10 @@ import { useCometaStore } from '../../store/cometaStore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 
+
+const validationSchemma = Yup.object({
+  bio: Yup.string().min(5).max(32).required()
+});
 
 export default function UploadAvatarScreen(): JSX.Element {
   const { text, gray500 } = useColors();
@@ -26,27 +33,26 @@ export default function UploadAvatarScreen(): JSX.Element {
 
   // bio/description
   const bioRef = useRef<TextInput>(null);
-  const [biography, setBiography] = useState('Join me');
   const [toggleBio, setToggleBio] = useState(false);
 
 
-  const handleToggleBio = (): void => {
+  const handleToggleBioInput = (): void => {
     if (toggleBio === false) {
-      setToggleBio(true);
+      setToggleBio(true); // opens input
       setTimeout(() => {
         bioRef.current?.focus();
       }, 200);
     }
     else {
       bioRef.current?.blur();
-      setToggleBio(false);
+      setToggleBio(false); // closes input
     }
   };
 
 
+  // No permissions request is necessary for launching the image library
   const handlePickImage = async () => {
     try {
-      // No permissions request is necessary for launching the image library
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
@@ -64,40 +70,42 @@ export default function UploadAvatarScreen(): JSX.Element {
   };
 
   // TODO: verify that username & phone & email are unique and do not exist already
-  const handleUserRegistration = async () => {
-    const { username, email, password, ...otherUserFields } = onboarding?.user as UserClientState;
-    try {
-      if (imgFileRef?.current?.uri) {
-        // put this step on the register form
-        const { data: newCreatedUser } = await usersService.create({ username, email }); // first checks if user exists
-        try {
-          const [{ user: userCrendentials }] = (
-            await Promise.all([
-              createUserWithEmailAndPassword(auth, email, password),
-              usersService.uploadOrUpdateAvatarImgByUserID(newCreatedUser.id, imgFileRef?.current),
-            ])
-          );
-          await usersService.updateById(
-            newCreatedUser.id,
-            { ...otherUserFields, uid: userCrendentials.uid, biography }
-          );
-          toggleBio && setToggleBio(false); // just in case is open
-          setUserUid(userCrendentials.uid);
-          setAccessToken(await userCrendentials.getIdToken());
-          router.push('/(onboarding)/addPhotosAndVideos');
+  const handleUserRegistrationAndSlideNext =
+    async (values: { bio: string }, actions: FormikHelpers<{ bio: string }>) => {
+      const { username, email, password, ...otherUserFields } = onboarding?.user as UserClientState;
+      try {
+        if (imgFileRef?.current?.uri) {
+          // put this step on the register form
+          const { data: newCreatedUser } = await usersService.create({ username, email }); // first checks if user exists
+          try {
+            const [{ user: userCrendentials }] = (
+              await Promise.all([
+                createUserWithEmailAndPassword(auth, email, password),
+                usersService.uploadOrUpdateAvatarImgByUserID(newCreatedUser.id, imgFileRef?.current),
+              ])
+            );
+            await usersService.updateById(
+              newCreatedUser.id,
+              { ...otherUserFields, uid: userCrendentials.uid, biography: values.bio }
+            );
+            toggleBio && setToggleBio(false); // just in case is open
+            setUserUid(userCrendentials.uid);
+            setAccessToken(await userCrendentials.getIdToken());
+            actions.setSubmitting(false);
+            router.push('/(onboarding)/addPhotosAndVideos');
+          }
+          catch (error) {
+            console.log(error);
+          }
         }
-        catch (error) {
-          console.log(error);
+        else {
+          throw new Error('image not provided');
         }
       }
-      else {
-        throw new Error('image not provided');
+      catch (error) {
+        console.log(error); // triggers when user already exists
       }
-    }
-    catch (error) {
-      console.log(error); // triggers when user already exists
-    }
-  };
+    };
 
 
   return (
@@ -127,39 +135,62 @@ export default function UploadAvatarScreen(): JSX.Element {
           </AppButton>
         </View>
       </View>
-      {/* biography */}
 
-      <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
-        <View style={{ width: 16 }} />
+      <Formik
+        validationSchema={validationSchemma}
+        initialValues={{ bio: 'Tell me something about you' }}
+        onSubmit={handleUserRegistrationAndSlideNext}
+      >
+        {({ handleBlur, handleChange, handleSubmit, values, errors }) => (
+          <>
+            {/* biography */}
+            <View style={{ position: 'relative', width: '100%' }}>
+              {errors.bio && (
+                <AppInputFeedbackMsg text={errors.bio} />
+              )}
+              <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View style={{ width: 16 }} />
 
-        <View>
-          {toggleBio ? (
-            <TextInput
-              style={{ color: gray500, padding: 0, fontSize: 16 }}
-              onChangeText={(text) => setBiography(text)}
-              ref={bioRef}
-              value={biography}
+                <View>
+                  {toggleBio ? (
+                    <TextInput
+                      style={{
+                        color: gray500,
+                        padding: 0,
+                        fontSize: 16,
+                        textAlign: 'center',
+                        flexGrow: 1,
+                        width: '100%'
+                      }}
+                      onBlur={handleBlur('bio')}
+                      onChangeText={handleChange('bio')}
+                      ref={bioRef}
+                      value={values.bio}
+                    />
+                  ) : (
+                    <Text style={{ fontSize: 16, textAlign: 'center' }}>{values.bio}</Text>
+                  )}
+                </View>
+
+                <FontAwesome
+                  onPress={handleToggleBioInput}
+                  style={{ fontSize: 18, top: 5 }}
+                  name="edit"
+                />
+              </View>
+            </View>
+            {/* biography */}
+
+            <AppButton
+              style={{ width: '100%' }}
+              onPress={() => handleSubmit()}
+              text='NEXT'
+              btnColor='primary'
             />
+          </>
+        )}
+      </Formik>
 
-          ) : (
-            <Text style={{ fontSize: 16 }}>{biography}</Text>
-          )}
-        </View>
-
-        <FontAwesome
-          onPress={handleToggleBio}
-          style={{ fontSize: 18, top: 5 }}
-          name="edit"
-        />
-      </View>
-      {/* biography */}
-
-      <AppButton
-        style={{ width: '100%' }}
-        onPress={() => handleUserRegistration()}
-        text='NEXT'
-        btnColor='primary'
-      />
     </AppWrapperOnBoarding>
   );
 }
