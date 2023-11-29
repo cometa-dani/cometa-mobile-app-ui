@@ -47,7 +47,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
 
   // checking if @username is available to used for current user
   useEffect(() => {
-    const timoutId = setTimeout(async () => {
+    const timeOutId = setTimeout(async () => {
       if (username.length >= 3) {
         try {
           setIsFetching(true);
@@ -68,7 +68,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
       }
     }, 1_200);
 
-    return () => clearTimeout(timoutId);
+    return () => clearTimeout(timeOutId);
   }, [username]);
 
 

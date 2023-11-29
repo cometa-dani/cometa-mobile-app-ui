@@ -1,12 +1,12 @@
 import { Image, StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
-import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { router } from 'expo-router';
 import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 import { useCometaStore } from '../../store/cometaStore';
 import { AppButton } from '../../components/buttons/buttons';
-import { AppTextInput } from '../../components/textInput/AppTextInput';
+import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { useState } from 'react';
 
 
 type UserForm = {
@@ -22,22 +22,29 @@ export const loginSchemma = Yup.object<UserForm>({
 
 export default function WhenIsYourBirthdayScreen(): JSX.Element {
   const setOnboarding = useCometaStore(state => state.setOnboarding);
+  const [toggle, setToggle] = useState(false);
 
-  const handleNextSlide =
-    async (values: UserForm, actions: FormikHelpers<UserForm>) => {
-      try {
-        setOnboarding({
-          name: values.name,
-          username: values.username
-        });
-        actions.resetForm();
-        actions.setSubmitting(false);
-        router.push('/(onboarding)/addPhotosAndVideos');
-      }
-      catch (error) {
-        console.log(error);
-      }
-    };
+  const handleNextSlide = async () => {
+    try {
+      setToggle(prev => !prev);
+      // setOnboarding({
+      //   name: values.name,
+      //   username: values.username
+      // });
+      // router.push('/(onboarding)/addPhotosAndVideos');
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
+
+  const setDate = (event: DateTimePickerEvent, date: Date) => {
+    const {
+      type,
+      nativeEvent: { timestamp },
+    } = event;
+  };
+
 
   return (
     <AppWrapperOnBoarding>
@@ -49,32 +56,20 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
       </View>
       {/* logo */}
 
-      {/* create user with email and password */}
-      <Formik
-        initialValues={{ name: '', username: '' }}
-        validationSchema={loginSchemma}
-        onSubmit={handleNextSlide}>
+      {toggle && (
+        <RNDateTimePicker is24Hour={true} value={new Date()} />
+      )}
 
-        {({ handleSubmit, handleChange, handleBlur, values }) => (
-          <View style={styles.form}>
-
-            <AppTextInput
-              keyboardType="ascii-capable"
-              onChangeText={handleChange('name')}
-              onBlur={handleBlur('name')}
-              value={values.name}
-              placeholder='Name'
-            />
-
-            <AppButton
-              onPress={() => handleSubmit()}
-              btnColor='primary'
-              text='NEXT'
-            />
-          </View>
-        )}
-      </Formik>
-      {/* create user with email and password */}
+      <AppButton
+        onPress={() => handleNextSlide()}
+        btnColor='white'
+        text='PICK DATE'
+      />
+      <AppButton
+        onPress={() => router.push('/(onboarding)/addPhotosAndVideos')}
+        btnColor='primary'
+        text='NEXT'
+      />
 
     </AppWrapperOnBoarding>
   );
@@ -83,13 +78,6 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
 const styles = StyleSheet.create({
   figure: {
     alignItems: 'center',
-  },
-
-  form: {
-    flexDirection: 'column',
-    gap: 26,
-    justifyContent: 'center',
-    width: '100%'
   },
 
   logo: {

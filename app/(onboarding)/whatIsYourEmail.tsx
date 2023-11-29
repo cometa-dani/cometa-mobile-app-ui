@@ -38,7 +38,7 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
         });
         actions.resetForm();
         actions.setSubmitting(false);
-        router.push('/(onboarding)/addPhotosAndVideos');
+        router.push('/(onboarding)/whenIsYourBirthday');
       }
       catch (error) {
         console.log(error);
@@ -48,7 +48,7 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
 
   // checking if @username is available to used for current user
   useEffect(() => {
-    const timoutId = setTimeout(async () => {
+    const timeOutId = setTimeout(async () => {
       if (email.includes('@')) {
         try {
           setIsFetching(true);
@@ -69,7 +69,7 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
       }
     }, 1_200);
 
-    return () => clearTimeout(timoutId);
+    return () => clearTimeout(timeOutId);
   }, [email]);
 
 
@@ -83,15 +83,15 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
       </View>
       {/* logo */}
 
-      {/* create user with email and password */}
       <Formik
         initialValues={{ email: '', password: '' }}
         validationSchema={loginSchemma}
-        onSubmit={handleNextSlide}>
-
+        onSubmit={handleNextSlide}
+      >
         {({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
           <View style={styles.form}>
 
+            {/* email */}
             <View style={{ position: 'relative' }}>
               {touched.email && errors.email && (
                 <AppInputFeedbackMsg text={errors.email} />
@@ -111,7 +111,9 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
                 placeholder='Email'
               />
             </View>
+            {/* email */}
 
+            {/* password */}
             <View style={{ position: 'relative' }}>
               {touched.password && errors.password && (
                 <AppInputFeedbackMsg text={errors.password} />
@@ -126,6 +128,7 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
                 placeholder='Password'
               />
             </View>
+            {/* password */}
 
             <AppButton
               onPress={() => handleSubmit()}
