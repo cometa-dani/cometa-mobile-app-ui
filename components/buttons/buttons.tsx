@@ -28,8 +28,9 @@ interface CoProps extends PressableProps {
 
 export const AppButton: FC<CoProps> = ({ children, text, btnColor, ...props }) => {
   const { background, color } = buttonColors[btnColor];
+  const { style, ...otherProps } = props;
   return (
-    <Pressable {...props} style={[styles.button, { backgroundColor: background }]}>
+    <Pressable {...otherProps} style={[styles.button, { backgroundColor: background }, { ...style as object }]}>
       {text ? (
         <Text style={[styles.buttonText, { color }]}>{text}</Text>
       ) :

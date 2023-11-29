@@ -6,22 +6,42 @@ import { FontAwesome } from '@expo/vector-icons';
 import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 import { AppButton } from '../../components/buttons/buttons';
 import * as ImagePicker from 'expo-image-picker';
+import { UserClientState } from '../../models/User';
+import { TextInput } from 'react-native-gesture-handler';
 
 // services
 import usersService from '../../services/userService';
 import { useCometaStore } from '../../store/cometaStore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
-import { UserClientState } from '../../models/User';
 
 
 export default function UploadAvatarScreen(): JSX.Element {
-  const { text } = useColors();
+  const { text, gray500 } = useColors();
   const [imageUri, setImageUri] = useState<string>('');
   const imgFileRef = useRef<ImagePicker.ImagePickerAsset>();
   const onboarding = useCometaStore(state => state.onboarding);
   const setUserUid = useCometaStore(state => state.setUid);
   const setAccessToken = useCometaStore(state => state.setAccessToken);
+
+  // bio/description
+  const bioRef = useRef<TextInput>(null);
+  const [biography, setBiography] = useState('Join me');
+  const [toggleBio, setToggleBio] = useState(false);
+
+
+  const handleToggleBio = (): void => {
+    if (toggleBio === false) {
+      setToggleBio(true);
+      setTimeout(() => {
+        bioRef.current?.focus();
+      }, 200);
+    }
+    else {
+      bioRef.current?.blur();
+      setToggleBio(false);
+    }
+  };
 
 
   const handlePickImage = async () => {
@@ -49,8 +69,7 @@ export default function UploadAvatarScreen(): JSX.Element {
     try {
       if (imgFileRef?.current?.uri) {
         // put this step on the register form
-        const payload = { username, email };
-        const { data: newCreatedUser } = await usersService.create(payload); // first checks if user exists
+        const { data: newCreatedUser } = await usersService.create({ username, email }); // first checks if user exists
         try {
           const [{ user: userCrendentials }] = (
             await Promise.all([
@@ -58,7 +77,11 @@ export default function UploadAvatarScreen(): JSX.Element {
               usersService.uploadOrUpdateAvatarImgByUserID(newCreatedUser.id, imgFileRef?.current),
             ])
           );
-          await usersService.updateById(newCreatedUser.id, { ...otherUserFields, uid: userCrendentials.uid });
+          await usersService.updateById(
+            newCreatedUser.id,
+            { ...otherUserFields, uid: userCrendentials.uid, biography }
+          );
+          toggleBio && setToggleBio(false); // just in case is open
           setUserUid(userCrendentials.uid);
           setAccessToken(await userCrendentials.getIdToken());
           router.push('/(onboarding)/addPhotosAndVideos');
@@ -98,24 +121,51 @@ export default function UploadAvatarScreen(): JSX.Element {
             btnColor='white'
             onPress={() => handlePickImage()}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-              <FontAwesome name='upload' size={24} style={{ color: text }} />
+              <FontAwesome name='upload' size={22} style={{ color: text }} />
               <Text style={[styles.buttonText, { color: text }]}>Pick Image</Text>
             </View>
           </AppButton>
-
-          <AppButton
-            onPress={() => handleUserRegistration()}
-            text='CREATE ACCOUNT'
-            btnColor='primary'
-          />
         </View>
       </View>
+      {/* biography */}
+
+      <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{ width: 16 }} />
+
+        <View>
+          {toggleBio ? (
+            <TextInput
+              style={{ color: gray500, padding: 0, fontSize: 16 }}
+              onChangeText={(text) => setBiography(text)}
+              ref={bioRef}
+              value={biography}
+            />
+
+          ) : (
+            <Text style={{ fontSize: 16 }}>{biography}</Text>
+          )}
+        </View>
+
+        <FontAwesome
+          onPress={handleToggleBio}
+          style={{ fontSize: 18, top: 5 }}
+          name="edit"
+        />
+      </View>
+      {/* biography */}
+
+      <AppButton
+        style={{ width: '100%' }}
+        onPress={() => handleUserRegistration()}
+        text='NEXT'
+        btnColor='primary'
+      />
     </AppWrapperOnBoarding>
   );
 }
 
-const styles = StyleSheet.create({
 
+const styles = StyleSheet.create({
   avatar: {
     aspectRatio: 1,
     backgroundColor: '#eee',
