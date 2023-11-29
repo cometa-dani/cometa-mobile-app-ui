@@ -66,7 +66,7 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
         text='PICK DATE'
       />
       <AppButton
-        onPress={() => router.push('/(onboarding)/addPhotosAndVideos')}
+        onPress={() => router.push('/(onboarding)/uploadAvatar')}
         btnColor='primary'
         text='NEXT'
       />

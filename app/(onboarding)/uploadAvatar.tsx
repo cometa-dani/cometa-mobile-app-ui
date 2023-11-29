@@ -20,7 +20,6 @@ export default function UploadAvatarScreen(): JSX.Element {
   const [imageUri, setImageUri] = useState<string>('');
   const imgFileRef = useRef<ImagePicker.ImagePickerAsset>();
   const onboarding = useCometaStore(state => state.onboarding);
-  const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const setUserUid = useCometaStore(state => state.setUid);
   const setAccessToken = useCometaStore(state => state.setAccessToken);
 
@@ -61,9 +60,8 @@ export default function UploadAvatarScreen(): JSX.Element {
           );
           await usersService.updateById(newCreatedUser.id, { ...otherUserFields, uid: userCrendentials.uid });
           setUserUid(userCrendentials.uid);
-          setIsAuthenticated(true);
           setAccessToken(await userCrendentials.getIdToken());
-          router.push('/(app)/');
+          router.push('/(onboarding)/addPhotosAndVideos');
         }
         catch (error) {
           console.log(error);
