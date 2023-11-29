@@ -23,7 +23,7 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
   const selectionLimit: number = (userProfile?.maxNumPhotos || 5) - (userPhotos?.length || 1);
 
 
-  const handlePickImage = async () => {
+  const handlePickMultipleImages = async () => {
     if (selectionLimit === 0) {
       return;
     }
@@ -75,7 +75,7 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
 
       <AppPhotosGrid
         photosList={userPhotos}
-        onHandlePickImage={handlePickImage}
+        onHandlePickImage={handlePickMultipleImages}
         onDeleteImage={handleDeleteImage}
         placeholders={selectionLimit}
       />
