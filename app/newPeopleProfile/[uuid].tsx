@@ -110,7 +110,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           presentation: 'modal',
           animation: 'default',
           headerShown: true,
-          headerTitle: '@new_people',
+          headerTitle: newPeopleProfile?.username || '',
           headerTitleAlign: 'center'
         }}
       />
@@ -121,7 +121,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
         <View style={profileStyles.container}>
           <AppProfileAvatar
             avatar={newPeopleProfile?.avatar}
-            name={newPeopleProfile?.username || ''}
+            name={newPeopleProfile?.name || ''}
             description={newPeopleProfile?.biography || 'Hi there, let\'s meet '}
           />
 

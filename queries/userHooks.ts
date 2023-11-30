@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import userService from '../services/userService';
-import { GetBasicUserProfile, GetDetailedUserProfile, Photo } from '../models/User';
+import { GetBasicUserProfile, GetDetailedUserProfile, Photo, UserClientState } from '../models/User';
 import { QueryKeys } from './queryKeys';
 import { useCometaStore } from '../store/cometaStore';
 import { ImagePickerAsset } from 'expo-image-picker';
@@ -22,6 +22,30 @@ export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
         else {
           throw new Error('failed to fetched');
         }
+      },
+      retry: 3,
+      retryDelay: 1_000 * 60 * 3
+    })
+  );
+};
+
+
+export const useMutationUserProfileById = () => {
+  const queryClient = useQueryClient();
+
+  return (
+    useMutation({
+      mutationFn: async (args: { userId: number, payload: Partial<UserClientState> }) => {
+        const res = await userService.updateById(args.userId, args.payload);
+        if (res.status == 201) {
+          return res.data;
+        }
+        else {
+          throw new Error('failed fetched');
+        }
+      },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO] });
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
@@ -73,7 +97,6 @@ export const useMutationUploadUserPhotos = () => {
 
       onMutate: async ({ pickedImgFiles }) => {
         await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO] });
-        // TODO
         queryClient
           .setQueryData<GetDetailedUserProfile>
           ([QueryKeys.GET_USER_INFO], (oldState): GetDetailedUserProfile => {

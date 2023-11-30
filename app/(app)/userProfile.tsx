@@ -4,7 +4,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { StatusBar } from 'expo-status-bar';
 import { useCometaStore } from '../../store/cometaStore';
-import { useMutationDeleteUserPhotoByUuid, useMutationUploadUserPhotos, useQueryGetUserProfileByUid } from '../../queries/userHooks';
+import { useMutationDeleteUserPhotoByUuid, useMutationUploadUserPhotos, useMutationUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppCard } from '../../components/card/card';
 import { useEffect, useRef, useState } from 'react';
@@ -26,6 +26,7 @@ export default function UserProfileScreen(): JSX.Element {
   // mutations
   const mutateUserPhotosUpload = useMutationUploadUserPhotos();
   const mutateUserPhotosDelete = useMutationDeleteUserPhotoByUuid();
+  const mutateUserProfileById = useMutationUserProfileById();
 
   // queries
   const { data: userProfile, isSuccess } = useQueryGetUserProfileByUid(uid);
@@ -41,7 +42,7 @@ export default function UserProfileScreen(): JSX.Element {
   const [toggleEdit, setToggleEdit] = useState(false);
 
   // edit user name & description
-  const [name, setName] = useState(userProfile?.username || '');
+  const [name, setName] = useState(userProfile?.name || '');
   const [biography, setBiography] = useState(userProfile?.biography || 'Join me');
   const usernameRef = useRef<TextInput>(null);
   const descriptionRef = useRef<TextInput>(null);
@@ -93,13 +94,13 @@ export default function UserProfileScreen(): JSX.Element {
 
 
   useEffect(() => {
-    if (userProfile?.username) {
-      setName(userProfile?.username);
+    if (userProfile?.name) {
+      setName(userProfile?.name);
     }
     if (userProfile?.biography) {
       setBiography(userProfile.biography);
     }
-  }, [userProfile?.username, userProfile?.biography]);
+  }, [userProfile?.name, userProfile?.biography]);
 
 
   return (
@@ -109,7 +110,7 @@ export default function UserProfileScreen(): JSX.Element {
       {/* TODO: EDIT USER_NAME */}
       <Stack.Screen
         options={{
-          headerShown: true, headerTitle: '@cesar_rivera', headerTitleAlign: 'center'
+          headerShown: true, headerTitle: userProfile?.username || '', headerTitleAlign: 'center'
         }}
       />
 
