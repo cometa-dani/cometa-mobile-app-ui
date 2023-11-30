@@ -95,6 +95,7 @@ export default function UploadAvatarScreen(): JSX.Element {
             router.push('/(onboarding)/addPhotosAndVideos');
           }
           catch (error) {
+            // delete user from DB and firebase
             console.log(error);
           }
         }

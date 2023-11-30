@@ -1,6 +1,5 @@
 import { Image, StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
-import * as Yup from 'yup';
 import { router } from 'expo-router';
 import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 import { useCometaStore } from '../../store/cometaStore';
@@ -9,40 +8,23 @@ import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/d
 import { useState } from 'react';
 
 
-type UserForm = {
-  name: string,
-  username: string,
-}
 
-export const loginSchemma = Yup.object<UserForm>({
-  name: Yup.string().min(2).required(),
-  username: Yup.string().min(2).required(),
-});
-
+const initialDate = new Date('1990');
 
 export default function WhenIsYourBirthdayScreen(): JSX.Element {
   const setOnboarding = useCometaStore(state => state.setOnboarding);
+  const user = useCometaStore(state => state.onboarding.user);
   const [toggle, setToggle] = useState(false);
 
-  const handleNextSlide = async () => {
-    try {
-      setToggle(prev => !prev);
-      // setOnboarding({
-      //   name: values.name,
-      //   username: values.username
-      // });
-      // router.push('/(onboarding)/addPhotosAndVideos');
-    }
-    catch (error) {
-      console.log(error);
-    }
+
+  const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    setToggle(prev => !prev);
+    setOnboarding({ birthday: selectedDate });
   };
 
-  const setDate = (event: DateTimePickerEvent, date: Date) => {
-    const {
-      type,
-      nativeEvent: { timestamp },
-    } = event;
+
+  const handleSlideNext = () => {
+    user?.birthday && router.push('/(onboarding)/uploadAvatar');
   };
 
 
@@ -57,16 +39,22 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
       {/* logo */}
 
       {toggle && (
-        <RNDateTimePicker is24Hour={true} value={new Date()} />
+        <RNDateTimePicker
+          testID="dateTimePicker"
+          value={user?.birthday || initialDate}
+          onChange={onChange}
+          mode={'date'}
+        />
       )}
 
       <AppButton
-        onPress={() => handleNextSlide()}
+        onPress={() => setToggle(prev => !prev)}
         btnColor='white'
         text='PICK DATE'
       />
+
       <AppButton
-        onPress={() => router.push('/(onboarding)/uploadAvatar')}
+        onPress={handleSlideNext}
         btnColor='primary'
         text='NEXT'
       />
