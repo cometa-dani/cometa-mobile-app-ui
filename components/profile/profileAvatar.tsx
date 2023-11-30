@@ -7,10 +7,10 @@ import { profileStyles } from './profileStyles';
 interface Props {
   avatar?: string,
   name: string,
-  description: string
+  biography: string
 }
 
-export const AppProfileAvatar: FC<Props> = ({ avatar, description, name }) => {
+export const AppProfileAvatar: FC<Props> = ({ avatar, biography, name }) => {
   const { gray500 } = useColors();
   return (
     <View style={profileStyles.avatarFigure}>
@@ -25,7 +25,7 @@ export const AppProfileAvatar: FC<Props> = ({ avatar, description, name }) => {
       </Text>
 
       <Text style={{ color: gray500, padding: 0 }}>
-        {description}
+        {biography}
       </Text>
 
     </View>

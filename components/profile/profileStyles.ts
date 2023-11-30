@@ -11,7 +11,7 @@ export const profileStyles = StyleSheet.create({
   },
 
   avatarContainer: {
-    gap: 14
+    gap: 20
   },
 
   avatarFigure: {
@@ -42,8 +42,9 @@ export const profileStyles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: '700',
-    textTransform: 'capitalize',
+    marginBottom: 4,
+    textTransform: 'capitalize'
   }
 });

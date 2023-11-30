@@ -7,7 +7,7 @@ import { useCometaStore } from '../../store/cometaStore';
 import { useMutationDeleteUserPhotoByUuid, useMutationUploadUserPhotos, useMutationUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppCard } from '../../components/card/card';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -21,12 +21,12 @@ import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 
 
-type UserProfile = {
+type ProfileValues = {
   name: string,
   biography: string
 }
 
-const validationSchemma = Yup.object<UserProfile>({
+const validationSchemma = Yup.object<ProfileValues>({
   name: Yup.string().min(3).max(26).required(),
   biography: Yup.string().min(5).max(32).required()
 });
@@ -52,22 +52,19 @@ export default function UserProfileScreen(): JSX.Element {
 
   // toggle edit mode
   const [toggleEdit, setToggleEdit] = useState(false);
-
-  // edit user name & description
-  // const [name, setName] = useState(userProfile?.name || '');
-  // const [biography, setBiography] = useState(userProfile?.biography || 'Join me');
   const usernameRef = useRef<TextInput>(null);
   const descriptionRef = useRef<TextInput>(null);
 
 
   const handleSumitUserInfo =
-    async (values: UserProfile, actions: FormikHelpers<UserProfile>): Promise<void> => {
-      // TODO: handle saving username, name & description
+    async (values: ProfileValues, actions: FormikHelpers<ProfileValues>): Promise<void> => {
       setToggleEdit(false);
+      mutateUserProfileById.mutate({ userId: userProfile?.id as number, payload: values });
+      actions.setSubmitting(false);
     };
 
 
-  const handlePickImage = async () => {
+  const handlePickMultipleImages = async () => {
     if (selectionLimit == 0) {
       return;
     }
@@ -106,16 +103,6 @@ export default function UserProfileScreen(): JSX.Element {
   };
 
 
-  // useEffect(() => {
-  //   if (userProfile?.name) {
-  //     setName(userProfile?.name);
-  //   }
-  //   if (userProfile?.biography) {
-  //     setBiography(userProfile.biography);
-  //   }
-  // }, [userProfile?.name, userProfile?.biography]);
-
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style={'auto'} />
@@ -148,7 +135,7 @@ export default function UserProfileScreen(): JSX.Element {
                     !toggleEdit ? (
                       <AppProfileAvatar
                         avatar={userProfile?.avatar}
-                        description={values.biography}
+                        biography={values.biography}
                         name={values.name}
                       />
                     ) : (
@@ -246,7 +233,7 @@ export default function UserProfileScreen(): JSX.Element {
 
                 <AppPhotosGrid
                   photosList={userPhotos}
-                  onHandlePickImage={handlePickImage}
+                  onHandlePickImage={handlePickMultipleImages}
                   onDeleteImage={handleDeleteImage}
                   placeholders={selectionLimit}
                 />

@@ -122,7 +122,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           <AppProfileAvatar
             avatar={newPeopleProfile?.avatar}
             name={newPeopleProfile?.name || ''}
-            description={newPeopleProfile?.biography || 'Hi there, let\'s meet '}
+            biography={newPeopleProfile?.biography || 'Hi there, let\'s meet '}
           />
 
           {/* ACTION BUTTONS */}
