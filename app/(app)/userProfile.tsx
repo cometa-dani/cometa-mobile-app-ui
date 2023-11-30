@@ -17,7 +17,19 @@ import { profileStyles } from '../../components/profile/profileStyles';
 import { AppStats } from '../../components/stats/Stats';
 import { AppProfileAvatar } from '../../components/profile/profileAvatar';
 import { AppPhotosGrid } from '../../components/profile/photosGrid';
+import { Formik, FormikHelpers } from 'formik';
+import * as Yup from 'yup';
 
+
+type UserProfile = {
+  name: string,
+  biography: string
+}
+
+const validationSchemma = Yup.object<UserProfile>({
+  name: Yup.string().min(3).max(26).required(),
+  biography: Yup.string().min(5).max(32).required()
+});
 
 export default function UserProfileScreen(): JSX.Element {
   const { gray500, background } = useColors();
@@ -42,16 +54,17 @@ export default function UserProfileScreen(): JSX.Element {
   const [toggleEdit, setToggleEdit] = useState(false);
 
   // edit user name & description
-  const [name, setName] = useState(userProfile?.name || '');
-  const [biography, setBiography] = useState(userProfile?.biography || 'Join me');
+  // const [name, setName] = useState(userProfile?.name || '');
+  // const [biography, setBiography] = useState(userProfile?.biography || 'Join me');
   const usernameRef = useRef<TextInput>(null);
   const descriptionRef = useRef<TextInput>(null);
 
 
-  const handleSumitUserInfo = (): void => {
-    // TODO: handle saving username, name & description
-    setToggleEdit(false);
-  };
+  const handleSumitUserInfo =
+    async (values: UserProfile, actions: FormikHelpers<UserProfile>): Promise<void> => {
+      // TODO: handle saving username, name & description
+      setToggleEdit(false);
+    };
 
 
   const handlePickImage = async () => {
@@ -93,14 +106,14 @@ export default function UserProfileScreen(): JSX.Element {
   };
 
 
-  useEffect(() => {
-    if (userProfile?.name) {
-      setName(userProfile?.name);
-    }
-    if (userProfile?.biography) {
-      setBiography(userProfile.biography);
-    }
-  }, [userProfile?.name, userProfile?.biography]);
+  // useEffect(() => {
+  //   if (userProfile?.name) {
+  //     setName(userProfile?.name);
+  //   }
+  //   if (userProfile?.biography) {
+  //     setBiography(userProfile.biography);
+  //   }
+  // }, [userProfile?.name, userProfile?.biography]);
 
 
   return (
@@ -110,7 +123,9 @@ export default function UserProfileScreen(): JSX.Element {
       {/* TODO: EDIT USER_NAME */}
       <Stack.Screen
         options={{
-          headerShown: true, headerTitle: userProfile?.username || '', headerTitleAlign: 'center'
+          headerShown: true,
+          headerTitle: userProfile?.username || '',
+          headerTitleAlign: 'center'
         }}
       />
 
@@ -121,60 +136,76 @@ export default function UserProfileScreen(): JSX.Element {
         <View style={profileStyles.container}>
           <View style={profileStyles.avatarContainer}>
 
-            {!toggleEdit ? (
-              <AppProfileAvatar
-                avatar={userProfile?.avatar}
-                description={biography}
-                name={name}
-              />
-            ) : (
-              <View style={profileStyles.avatarFigure}>
-                <Image style={profileStyles.avatar} source={{ uri: userProfile?.avatar }} />
-                {/* NAME */}
-                <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <View style={{ width: 24 }} />
-                  <TextInput
-                    style={profileStyles.title}
-                    onChangeText={(text) => setName(text)}
-                    ref={usernameRef}
-                    value={name}
-                  />
-                  <FontAwesome
-                    onPress={() => usernameRef.current?.focus()}
-                    style={{ fontSize: 24, top: 10 }}
-                    name="edit"
-                  />
-                </View>
-                {/* NAME */}
+            <Formik
+              enableReinitialize
+              validationSchema={validationSchemma}
+              initialValues={{ name: userProfile?.name || '', biography: userProfile?.biography || '' }}
+              onSubmit={handleSumitUserInfo}
+            >
+              {({ handleBlur, handleChange, handleSubmit, values }) => (
+                <>
+                  {
+                    !toggleEdit ? (
+                      <AppProfileAvatar
+                        avatar={userProfile?.avatar}
+                        description={values.biography}
+                        name={values.name}
+                      />
+                    ) : (
+                      <View style={profileStyles.avatarFigure}>
+                        <Image style={profileStyles.avatar} source={{ uri: userProfile?.avatar }} />
+                        {/* NAME */}
+                        <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <View style={{ width: 24 }} />
+                          <TextInput
+                            style={profileStyles.title}
+                            onChangeText={handleChange('name')}
+                            onBlur={handleBlur('name')}
+                            ref={usernameRef}
+                            value={values.name}
+                          />
+                          <FontAwesome
+                            onPress={() => usernameRef.current?.focus()}
+                            style={{ fontSize: 24, top: 10 }}
+                            name="edit"
+                          />
+                        </View>
+                        {/* NAME */}
 
-                {/* DESCRIPTION */}
-                <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <View style={{ width: 16 }} />
+                        {/* DESCRIPTION */}
+                        <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <View style={{ width: 16 }} />
 
-                  <TextInput
-                    style={{ color: gray500, padding: 0 }}
-                    onChangeText={(text) => setBiography(text)}
-                    ref={descriptionRef}
-                    value={biography}
-                  />
+                          <TextInput
+                            style={{ color: gray500, padding: 0 }}
+                            onChangeText={handleChange('biography')}
+                            onBlur={handleBlur('biography')}
+                            ref={descriptionRef}
+                            value={values.biography}
+                          />
 
-                  <FontAwesome
-                    onPress={() => descriptionRef.current?.focus()}
-                    style={{ fontSize: 18, top: 5 }}
-                    name="edit"
-                  />
-                </View>
-                {/* DESCRIPTION */}
-              </View>
-            )}
+                          <FontAwesome
+                            onPress={() => descriptionRef.current?.focus()}
+                            style={{ fontSize: 18, top: 5 }}
+                            name="edit"
+                          />
+                        </View>
+                        {/* DESCRIPTION */}
+                      </View>
+                    )
+                  }
 
+                  {toggleEdit ? (
+                    // submit button
+                    <AppButton onPress={() => handleSubmit()} btnColor='primary' text='Save Profile' />
+                  ) : (
+                    // toggle button
+                    <AppButton onPress={() => setToggleEdit(true)} btnColor='white' text='Edit Profile' />
+                  )}
+                </>
+              )}
+            </Formik>
 
-            {/* EDIT BUTTON */}
-            {toggleEdit ? (
-              <AppButton onPress={() => handleSumitUserInfo()} btnColor='primary' text='Save Profile' />
-            ) : (
-              <AppButton onPress={() => setToggleEdit(true)} btnColor='white' text='Edit Profile' />
-            )}
 
             {/* STATISTICS */}
             <AppStats
