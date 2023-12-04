@@ -1,11 +1,11 @@
-export const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-export const nodeEnv = process.env.NODE_ENV;
+export const apiUrl = process.env?.EXPO_PUBLIC_API_URL || 'https://qfrzp2ntmv.eu-west-3.awsapprunner.com/api/v1';
+export const nodeEnv = process.env?.NODE_ENV || 'development';
 
 // firebase
-export const apiKey = process.env.EXPO_PUBLIC_API_KEY;
-export const authDomain = process.env.EXPO_PUBLIC_AUTH_DOMAIN;
-export const projectId = process.env.EXPO_PUBLIC_PROJECT_ID;
-export const storageBucket = process.env.EXPO_PUBLIC_STORAGE_BUCKET;
-export const messagingSenderId = process.env.EXPO_PUBLIC_MESAGING_SENDER_ID;
-export const appId = process.env.EXPO_PUBLIC_APP_ID;
-export const measurementId = process.env.EXPO_PUBLIC_MEASURING_ID;
+export const apiKey = process.env?.EXPO_PUBLIC_API_KEY || 'AIzaSyCraiiYgLG1BU3GDGNFuCheu2OknqUw24Y';
+export const authDomain = process.env?.EXPO_PUBLIC_AUTH_DOMAIN || 'cometa-e5dd5.firebaseapp.com';
+export const projectId = process.env?.EXPO_PUBLIC_PROJECT_ID || 'cometa-e5dd5';
+export const storageBucket = process.env?.EXPO_PUBLIC_STORAGE_BUCKET || 'cometa-e5dd5.appspot.com';
+export const messagingSenderId = process.env?.EXPO_PUBLIC_MESAGING_SENDER_ID || '1018637932302';
+export const appId = process.env?.EXPO_PUBLIC_APP_ID || '1:1018637932302:web:4e1c21f6d236d2aedda95f';
+export const measurementId = process.env?.EXPO_PUBLIC_MEASURING_ID || 'G-G4W08CQPBL';
