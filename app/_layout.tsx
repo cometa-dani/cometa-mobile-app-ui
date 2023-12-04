@@ -1,4 +1,4 @@
-import 'expo-dev-client';
+// import 'expo-dev-client';
 
 // components
 import FontAwesome from '@expo/vector-icons/FontAwesome';
