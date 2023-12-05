@@ -4,7 +4,7 @@ import { LikedEvent, CreateEventLike } from '../../models/Event';
 import { StyleSheet, Image, DimensionValue, Pressable, SafeAreaView } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, FlatList, Directions } from 'react-native-gesture-handler';
-import { useActionSheet } from '@expo/react-native-action-sheet';
+import { SheetManager } from 'react-native-actions-sheet';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
@@ -139,36 +139,37 @@ export default function HomeScreen(): JSX.Element {
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
 
   // action sheet for event details
-  const { showActionSheetWithOptions } = useActionSheet();
+  // const { showActionSheetWithOptions } = useActionSheet();
 
 
   const onShowDetails = (item: LikedEvent): void => {
-    const options = ['Delete', 'Save', 'Cancel'];
-    const destructiveButtonIndex = 0;
-    const cancelButtonIndex = 2;
+    // const options = ['Delete', 'Save', 'Cancel'];
+    // const destructiveButtonIndex = 0;
+    // const cancelButtonIndex = 2;
     console.log(item.name);
+    SheetManager.show('example-sheet', { payload: item.name });
+    // showActionSheetWithOptions(
+    //   {
+    //     options,
+    //     containerStyle: { height: 400 },
+    //     cancelButtonIndex,
+    //     destructiveButtonIndex
+    //   },
+    //   (selectedIndex?: number) => {
+    //     switch (selectedIndex) {
+    //       case 1:
+    //         // Save
+    //         break;
 
-    showActionSheetWithOptions(
-      {
-        options,
-        cancelButtonIndex,
-        destructiveButtonIndex
-      },
-      (selectedIndex?: number) => {
-        switch (selectedIndex) {
-          case 1:
-            // Save
-            break;
+    //       case destructiveButtonIndex:
+    //         // Delete
+    //         break;
 
-          case destructiveButtonIndex:
-            // Delete
-            break;
-
-          case cancelButtonIndex:
-          // Canceled
-        }
-      }
-    );
+    //       case cancelButtonIndex:
+    //       // Canceled
+    //     }
+    //   }
+    // );
   };
 
 

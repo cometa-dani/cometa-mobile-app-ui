@@ -3,8 +3,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack, } from 'expo-router';
 import { ScreenProps } from 'react-native-screens';
-import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-
+import { registerSheet, SheetProvider } from 'react-native-actions-sheet';
 
 // hooks
 import { useFonts } from 'expo-font';
@@ -14,11 +13,14 @@ import { useColorScheme, } from 'react-native';
 // query client for server state
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { ExampleSheet } from '../components/actionSheet/actionSheet';
 
 
 // Catch any errors thrown by the Layout component.
 export { ErrorBoundary } from 'expo-router';
 
+// register action sheet
+registerSheet('example-sheet', ExampleSheet);
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
@@ -60,7 +62,7 @@ function RootLayoutNav(): JSX.Element {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <QueryClientProvider client={new QueryClient()}>
-        <ActionSheetProvider>
+        <SheetProvider>
           <GestureHandlerRootView style={{ flex: 1 }}>
             <Stack>
               <Stack.Screen name='index' options={screenOptions} />
@@ -74,7 +76,7 @@ function RootLayoutNav(): JSX.Element {
               <Stack.Screen name="[connectWithPeople]" options={{ presentation: 'modal', headerTitle: 'Connect with People' }} />
             </Stack>
           </GestureHandlerRootView>
-        </ActionSheetProvider>
+        </SheetProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );
