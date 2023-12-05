@@ -1,8 +1,10 @@
+/* eslint-disable no-unused-vars */
 import React, { FC, useState } from 'react';
 import { LikedEvent, CreateEventLike } from '../../models/Event';
 import { StyleSheet, Image, DimensionValue, Pressable, SafeAreaView } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, FlatList, Directions } from 'react-native-gesture-handler';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
@@ -12,6 +14,7 @@ import { StatusBar } from 'expo-status-bar';
 
 // Define the props for the memoized list item
 interface ListItemProps {
+  showDetails: (item: LikedEvent) => void,
   item: LikedEvent,
   layoutHeight: DimensionValue,
   red100: string,
@@ -19,7 +22,7 @@ interface ListItemProps {
   likeOrDislikeMutation: UseMutationResult<CreateEventLike | null, Error, number, void>
 }
 
-const EventItem: FC<ListItemProps> = ({ item, likeOrDislikeMutation, layoutHeight, red100, tabIconDefault }) => {
+const EventItem: FC<ListItemProps> = ({ item, showDetails, likeOrDislikeMutation, layoutHeight, red100, tabIconDefault }) => {
 
   // can be lifted to the parent component like before
   const swipeLeft = Gesture.Fling();
@@ -71,7 +74,7 @@ const EventItem: FC<ListItemProps> = ({ item, likeOrDislikeMutation, layoutHeigh
               <FontAwesome name='share-square-o' size={34} style={{ color: tabIconDefault }} />
             )}
           </Pressable>
-          <Pressable>
+          <Pressable onPress={() => showDetails(item)}>
             {() => (
               <View
                 style={{
@@ -135,6 +138,40 @@ export default function HomeScreen(): JSX.Element {
   // State variables to manage page and item heights
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
 
+  // action sheet for event details
+  const { showActionSheetWithOptions } = useActionSheet();
+
+
+  const onShowDetails = (item: LikedEvent): void => {
+    const options = ['Delete', 'Save', 'Cancel'];
+    const destructiveButtonIndex = 0;
+    const cancelButtonIndex = 2;
+    console.log(item.name);
+
+    showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+        destructiveButtonIndex
+      },
+      (selectedIndex?: number) => {
+        switch (selectedIndex) {
+          case 1:
+            // Save
+            break;
+
+          case destructiveButtonIndex:
+            // Delete
+            break;
+
+          case cancelButtonIndex:
+          // Canceled
+        }
+      }
+    );
+  };
+
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
 
@@ -153,6 +190,7 @@ export default function HomeScreen(): JSX.Element {
           onEndReachedThreshold={1}
           renderItem={({ item }) => (
             <EventItem
+              showDetails={onShowDetails}
               likeOrDislikeMutation={likeOrDislikeMutation}
               key={item.id}
               item={item}

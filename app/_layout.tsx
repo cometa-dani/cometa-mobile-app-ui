@@ -1,10 +1,10 @@
-// import 'expo-dev-client';
-
 // components
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack, } from 'expo-router';
 import { ScreenProps } from 'react-native-screens';
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+
 
 // hooks
 import { useFonts } from 'expo-font';
@@ -60,19 +60,21 @@ function RootLayoutNav(): JSX.Element {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <QueryClientProvider client={new QueryClient()}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Stack>
-            <Stack.Screen name='index' options={screenOptions} />
+        <ActionSheetProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <Stack>
+              <Stack.Screen name='index' options={screenOptions} />
 
-            <Stack.Screen name="(onboarding)" options={screenOptions} />
+              <Stack.Screen name="(onboarding)" options={screenOptions} />
 
-            <Stack.Screen name="(app)" options={screenOptions} />
+              <Stack.Screen name="(app)" options={screenOptions} />
 
-            <Stack.Screen name="bucketList" options={{ presentation: 'modal', headerTitle: 'BucketList' }} />
+              <Stack.Screen name="bucketList" options={{ presentation: 'modal', headerTitle: 'BucketList' }} />
 
-            <Stack.Screen name="[connectWithPeople]" options={{ presentation: 'modal', headerTitle: 'Connect with People' }} />
-          </Stack>
-        </GestureHandlerRootView>
+              <Stack.Screen name="[connectWithPeople]" options={{ presentation: 'modal', headerTitle: 'Connect with People' }} />
+            </Stack>
+          </GestureHandlerRootView>
+        </ActionSheetProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );
