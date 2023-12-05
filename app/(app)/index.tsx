@@ -147,7 +147,7 @@ export default function HomeScreen(): JSX.Element {
     // const destructiveButtonIndex = 0;
     // const cancelButtonIndex = 2;
     console.log(item.name);
-    SheetManager.show('example-sheet', { payload: item.name });
+    SheetManager.show('example-sheet', { payload: item });
     // showActionSheetWithOptions(
     //   {
     //     options,

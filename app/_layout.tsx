@@ -13,14 +13,14 @@ import { useColorScheme, } from 'react-native';
 // query client for server state
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { ExampleSheet } from '../components/actionSheet/actionSheet';
+import { EventActionSheet } from '../components/actionSheet/actionSheet';
 
 
 // Catch any errors thrown by the Layout component.
 export { ErrorBoundary } from 'expo-router';
 
 // register action sheet
-registerSheet('example-sheet', ExampleSheet);
+registerSheet('example-sheet', EventActionSheet);
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
