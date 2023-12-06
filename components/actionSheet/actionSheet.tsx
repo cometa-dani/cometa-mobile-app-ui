@@ -4,6 +4,8 @@ import ActionSheet, { SheetProps } from 'react-native-actions-sheet';
 import { Text, View } from '../Themed';
 import { LikedEvent } from '../../models/Event';
 import { FontAwesome, Feather } from '@expo/vector-icons';
+import MapView, { Marker } from 'react-native-maps';
+import { getRegionForCoordinates } from '../../helpers/getRegionFromCoords';
 
 
 interface ActionSheetProps extends SheetProps {
@@ -11,6 +13,8 @@ interface ActionSheetProps extends SheetProps {
 }
 
 export const EventActionSheet: FC<ActionSheetProps> = ({ sheetId, payload }) => {
+  const { latitude, longitude } = payload.location;
+  const { latitudeDelta, longitudeDelta } = getRegionForCoordinates([{ latitude, longitude }]);
   return (
     <ActionSheet id={sheetId}>
       <View style={styles.container}>
@@ -18,17 +22,40 @@ export const EventActionSheet: FC<ActionSheetProps> = ({ sheetId, payload }) => 
           <Text style={styles.title}>{payload.name}</Text>
 
           <View style={styles.textItem}>
-            <FontAwesome name='calendar-o' size={21} />
+            <FontAwesome name='calendar-o' size={20} />
             <Text>{new Date(payload.date).toDateString()} </Text>
           </View>
           <View style={styles.textItem}>
-            <FontAwesome name='clock-o' size={21} />
+            <FontAwesome name='clock-o' size={20} />
             <Text>{new Date(payload.date).getHours().toFixed(2)}</Text>
           </View>
           <View style={styles.textItem}>
-            <Feather name='map-pin' size={21} />
+            <Feather name='map-pin' size={20} />
             <Text>{payload.location.name}</Text>
           </View>
+        </View>
+
+        <MapView
+          style={styles.map}
+          provider='google'
+          // customMapStyle={[]}
+          // image={{ uri: 'custom_pin' }}
+          region={{
+            latitude: latitude,
+            longitude: longitude,
+            longitudeDelta: longitudeDelta,
+            latitudeDelta: latitudeDelta
+          }}
+        >
+          <Marker
+            coordinate={{ latitude: latitude, longitude: longitude }}
+          />
+        </MapView>
+
+        <View style={styles.containerList}>
+          <Text>
+            {payload.description}
+          </Text>
         </View>
       </View>
     </ActionSheet>
@@ -38,15 +65,23 @@ export const EventActionSheet: FC<ActionSheetProps> = ({ sheetId, payload }) => 
 
 const styles = StyleSheet.create({
   container: {
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    height: 340,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    maxHeight: 600,
+    minHeight: 520
   },
 
   containerList: {
     backgroundColor: 'transparent',
-    gap: 16,
-    padding: 24
+    gap: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 22
+  },
+
+  map: {
+    flex: 1,
+    height: '100%',
+    width: '100%',
   },
 
   textItem: {
@@ -57,6 +92,7 @@ const styles = StyleSheet.create({
 
   title: {
     fontWeight: '800',
+    marginBottom: 8,
     textAlign: 'center'
   }
 });
