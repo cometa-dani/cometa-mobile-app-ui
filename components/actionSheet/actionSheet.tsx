@@ -38,8 +38,10 @@ export const EventActionSheet: FC<ActionSheetProps> = ({ sheetId, payload }) => 
         <MapView
           style={styles.map}
           provider='google'
-          // customMapStyle={[]}
-          // image={{ uri: 'custom_pin' }}
+          zoomEnabled
+          zoomTapEnabled
+          minZoomLevel={8}
+          maxZoomLevel={14}
           region={{
             latitude: latitude,
             longitude: longitude,
