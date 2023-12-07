@@ -36,13 +36,13 @@ export const profileStyles = StyleSheet.create({
   },
 
   statsNumber: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '900',
     textAlign: 'center'
   },
 
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '700',
     marginBottom: 4,
     textTransform: 'capitalize'

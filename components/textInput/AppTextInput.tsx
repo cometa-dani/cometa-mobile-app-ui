@@ -19,7 +19,7 @@ export const AppTextInput: FC<AppTextInputProps> = ({ iconName, ...props }) => {
           <FontAwesome
             style={[styles.formFieldIcon, { color: altText }]}
             name={iconName}
-            size={21}
+            size={20}
           />
         </View>
 

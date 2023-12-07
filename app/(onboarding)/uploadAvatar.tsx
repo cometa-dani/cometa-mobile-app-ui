@@ -215,7 +215,6 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    fontSize: 16,
     fontWeight: '700',
     textAlign: 'center',
     textTransform: 'uppercase'
@@ -227,7 +226,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
   }
 });

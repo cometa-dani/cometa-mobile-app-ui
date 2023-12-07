@@ -87,7 +87,7 @@ export default function WelcomeScreen(): JSX.Element {
 const styles = StyleSheet.create({
   h1: {
     color: '#fff',
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '800',
     textAlign: 'center'
   },

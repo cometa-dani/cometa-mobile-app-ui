@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
 
   avatarName: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '600',
     marginBottom: -2,
     textTransform: 'capitalize'

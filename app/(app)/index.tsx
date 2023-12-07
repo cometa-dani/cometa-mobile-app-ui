@@ -146,7 +146,6 @@ export default function HomeScreen(): JSX.Element {
     // const options = ['Delete', 'Save', 'Cancel'];
     // const destructiveButtonIndex = 0;
     // const cancelButtonIndex = 2;
-    console.log(item.name);
     SheetManager.show('example-sheet', { payload: item });
     // showActionSheetWithOptions(
     //   {
@@ -249,7 +248,7 @@ const styles = StyleSheet.create({
 
   title: {
     // Title color should come from the backend
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '600',
     paddingHorizontal: 20,
     position: 'absolute',

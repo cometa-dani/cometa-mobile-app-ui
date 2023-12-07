@@ -41,7 +41,7 @@ export const EventActionSheet: FC<ActionSheetProps> = ({ sheetId, payload }) => 
           zoomEnabled
           zoomTapEnabled
           minZoomLevel={8}
-          maxZoomLevel={14}
+          maxZoomLevel={15}
           region={{
             latitude: latitude,
             longitude: longitude,

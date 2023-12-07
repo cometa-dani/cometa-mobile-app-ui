@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { FC } from 'react';
 import { Image, Pressable, PressableProps, StyleSheet } from 'react-native';
 import { Photo } from '../../models/User';
@@ -58,7 +59,7 @@ export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDele
             ) : (
               <View style={gridStyles.uploadPhoto1}>
                 <Pressable onPress={onHandlePickImage}>
-                  <FontAwesome style={{ fontSize: 34, color: gray500 }} name='plus-square-o' />
+                  <FontAwesome style={{ fontSize: 32, color: gray500 }} name='plus-square-o' />
                 </Pressable>
               </View>
             )}

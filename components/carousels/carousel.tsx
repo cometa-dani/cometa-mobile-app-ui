@@ -20,13 +20,13 @@ export const AppCarousel: FC<Props> = ({ list, title, isLocked = false }) => {
       <AppCard style={[styles.lock, { backgroundColor: gray50 }]}>
         <FontAwesome
           name='lock'
-          style={{ fontSize: 48, backgroundColor: gray50, color: gray200 }}
+          style={{ fontSize: 44, backgroundColor: gray50, color: gray200 }}
         />
       </AppCard>
     ) : (
       <AppCard>
         <View style={styles.cardWrapper}>
-          <Text style={{ fontSize: 17, fontWeight: '700' }}>{title}</Text>
+          <Text style={{ fontSize: 16, fontWeight: '700' }}>{title}</Text>
 
           {list.length === 0 ? (
             <View style={styles.bucketListImage}>
