@@ -4,12 +4,12 @@ import { LikedEvent, CreateEventLike } from '../../models/Event';
 import { StyleSheet, Image, DimensionValue, Pressable, SafeAreaView } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, FlatList, Directions } from 'react-native-gesture-handler';
-import { SheetManager } from 'react-native-actions-sheet';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
 import { UseMutationResult } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
+import { EventActionSheet } from '../../components/actionSheet/actionSheet';
 
 
 // Define the props for the memoized list item
@@ -139,38 +139,13 @@ export default function HomeScreen(): JSX.Element {
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
 
   // action sheet for event details
-  // const { showActionSheetWithOptions } = useActionSheet();
+  const [likedEventDetails, setLikedEventDetails] = useState({} as LikedEvent);
+  const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
 
-
-  const onShowDetails = (item: LikedEvent): void => {
-    // const options = ['Delete', 'Save', 'Cancel'];
-    // const destructiveButtonIndex = 0;
-    // const cancelButtonIndex = 2;
-    SheetManager.show('example-sheet', { payload: item });
-    // showActionSheetWithOptions(
-    //   {
-    //     options,
-    //     containerStyle: { height: 400 },
-    //     cancelButtonIndex,
-    //     destructiveButtonIndex
-    //   },
-    //   (selectedIndex?: number) => {
-    //     switch (selectedIndex) {
-    //       case 1:
-    //         // Save
-    //         break;
-
-    //       case destructiveButtonIndex:
-    //         // Delete
-    //         break;
-
-    //       case cancelButtonIndex:
-    //       // Canceled
-    //     }
-    //   }
-    // );
+  const onShowEventDetails = (item: LikedEvent): void => {
+    setLikedEventDetails(item);
+    setIsActionSheetOpen(true);
   };
-
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -190,7 +165,7 @@ export default function HomeScreen(): JSX.Element {
           onEndReachedThreshold={1}
           renderItem={({ item }) => (
             <EventItem
-              showDetails={onShowDetails}
+              showDetails={onShowEventDetails}
               likeOrDislikeMutation={likeOrDislikeMutation}
               key={item.id}
               item={item}
@@ -200,6 +175,13 @@ export default function HomeScreen(): JSX.Element {
             />
           )}
         />
+
+        <EventActionSheet
+          eventItem={likedEventDetails}
+          isOpen={isActionSheetOpen}
+          setIsOpen={setIsActionSheetOpen}
+        />
+
         {/* Latest events list */}
       </View>
     </SafeAreaView>
