@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction } from 'react';
+import type { Dispatch, FC, SetStateAction } from 'react';
 import { StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Text, View } from '../Themed';
 import { LikedEvent } from '../../models/Event';
@@ -9,62 +9,65 @@ import {
   Gesture,
   BaseButton,
   GestureDetector,
+  PanGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   runOnJS,
-  withTiming,
   SlideInDown,
   SlideOutDown,
   FadeIn,
   FadeOut,
 } from 'react-native-reanimated';
+import { Dimensions } from 'react-native';
 
-
-const HEIGHT = 520;
-const OVERDRAG = 20;
-const BACKDROP_COLOR = 'rgba(0, 0, 0, 0.2)';
+const TOTAL_HEIGHT = Dimensions.get('window').height;
+const BACKDROP_COLOR = 'rgba(0, 0, 0, 0.3)';
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const initialOffSetY = (TOTAL_HEIGHT / 2) + 50;
 
 
-interface ActionSheetProps {
+interface EventActionSheetProps {
   eventItem: LikedEvent,
   isOpen: boolean,
   setIsOpen: Dispatch<SetStateAction<boolean>>
 }
-export const EventActionSheet: FC<ActionSheetProps> = ({ eventItem, isOpen, setIsOpen }) => {
+export const EventActionSheet: FC<EventActionSheetProps> = ({ eventItem, isOpen, setIsOpen }) => {
   const latitude: number = eventItem?.location?.latitude ?? 0;
   const longitude: number = eventItem?.location?.longitude ?? 0;
   const { latitudeDelta = 0, longitudeDelta = 0 } = getRegionForCoordinates([{ latitude, longitude }]);
 
-  const offset = useSharedValue(0);
+  const offsetY = useSharedValue(initialOffSetY);
 
-  const toggleSheet = () => {
-    setIsOpen(prev => !prev);
-    offset.value = 0;
+  const closeActionSheet = (): void => {
+    setIsOpen(false);
+    setTimeout(() => {
+      offsetY.value = initialOffSetY;
+    }, 200);
   };
 
-  const pan = Gesture.Pan()
-    .onChange((event) => {
-      const offsetDelta = event.changeY + offset.value;
+  const panGestureHandler: PanGesture = (
+    Gesture.Pan()
+      .onChange((event) => {
+        const offsetDelta = event.changeY + offsetY.value;
+        // const clamp = Math.max(-OVERDRAG, offsetDelta);
+        offsetY.value = offsetDelta;
+      })
+      .onTouchesUp(() => {
+        if (offsetY.value < TOTAL_HEIGHT / 3) {
+          offsetY.value = withSpring(0); // opens all the actionSheet
+        }
+        else {
+          runOnJS(closeActionSheet)();
+        }
+      })
+  );
 
-      const clamp = Math.max(-OVERDRAG, offsetDelta);
-      offset.value = offsetDelta > 0 ? offsetDelta : withSpring(clamp);
-    })
-    .onFinalize(() => {
-      if (offset.value < HEIGHT / 3) {
-        offset.value = withSpring(0);
-      } else {
-        offset.value = withTiming(HEIGHT, {}, () => {
-          runOnJS(toggleSheet)();
-        });
-      }
-    });
-
-  const translateY = useAnimatedStyle(() => ({
-    transform: [{ translateY: offset.value }],
+  // animation
+  const transformY = useAnimatedStyle(() => ({
+    transform: [{ translateY: offsetY.value }],
   }));
 
   return (
@@ -74,28 +77,31 @@ export const EventActionSheet: FC<ActionSheetProps> = ({ eventItem, isOpen, setI
           style={styles.backdrop}
           entering={FadeIn}
           exiting={FadeOut}
-          onPress={toggleSheet}
+          onPress={closeActionSheet}
         />
         <Animated.View
-          style={[styles.sheet, translateY]}
-          entering={SlideInDown.springify().damping(15)}
-          exiting={SlideOutDown}
+          style={[styles.sheet, transformY]}
+          entering={
+            SlideInDown
+              .springify()
+              .restSpeedThreshold(2).stiffness(86).mass(0.5)
+          }
+          exiting={SlideOutDown.springify()}
         >
           <View style={styles.container}>
-            <GestureDetector gesture={pan}>
-              <View style={{ backgroundColor: 'transparent', paddingTop: 8, paddingBottom: 8, alignItems: 'center' }}>
+            <GestureDetector gesture={panGestureHandler}>
+              <View style={{ backgroundColor: 'transparent', paddingTop: 9, paddingBottom: 9, alignItems: 'center' }}>
                 <BaseButton
                   style={{
                     backgroundColor: '#eee',
-                    padding: 4,
-                    width: 90,
+                    height: 6,
+                    width: 80,
                     borderRadius: 20
                   }} />
               </View>
             </GestureDetector>
 
             <ScrollView showsVerticalScrollIndicator={false} scrollEnabled>
-
               <View style={styles.containerList}>
                 <View style={{ gap: 4 }}>
                   <Text style={styles.title}>{eventItem.name}</Text>
@@ -119,7 +125,7 @@ export const EventActionSheet: FC<ActionSheetProps> = ({ eventItem, isOpen, setI
                 </View>
               </View>
 
-              <View style={{ height: 200 }}>
+              <View style={{ height: 280 }}>
                 <MapView
                   style={styles.map}
                   provider='google'
@@ -153,13 +159,12 @@ const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: BACKDROP_COLOR,
-    zIndex: 1,
+    zIndex: 2,
   },
 
   container: {
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    maxHeight: 440,
   },
 
   containerList: {
@@ -180,12 +185,10 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     bottom: 0,
-    // bottom: -OVERDRAG * 1.1,
-    // height: HEIGHT,
-    // padding: 16,
+    height: '96%',
     position: 'absolute',
     width: '100%',
-    zIndex: 1,
+    zIndex: 2,
   },
 
   textItem: {
