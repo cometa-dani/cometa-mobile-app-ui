@@ -1,4 +1,5 @@
-import type { Dispatch, FC, SetStateAction } from 'react';
+/* eslint-disable no-unused-vars */
+import type { FC } from 'react';
 import { StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Text, View } from '../Themed';
 import { LikedEvent } from '../../models/Event';
@@ -20,6 +21,7 @@ import Animated, {
   SlideOutDown,
   FadeIn,
   FadeOut,
+  // withTiming,
 } from 'react-native-reanimated';
 import { Dimensions } from 'react-native';
 
@@ -32,7 +34,7 @@ const initialOffSetY = (TOTAL_HEIGHT / 2) + 50;
 interface EventActionSheetProps {
   eventItem: LikedEvent,
   isOpen: boolean,
-  setIsOpen: Dispatch<SetStateAction<boolean>>
+  setIsOpen: (openOrClose: boolean) => void
 }
 export const EventActionSheet: FC<EventActionSheetProps> = ({ eventItem, isOpen, setIsOpen }) => {
   const latitude: number = eventItem?.location?.latitude ?? 0;
@@ -45,7 +47,7 @@ export const EventActionSheet: FC<EventActionSheetProps> = ({ eventItem, isOpen,
     setIsOpen(false);
     setTimeout(() => {
       offsetY.value = initialOffSetY;
-    }, 200);
+    }, 300);
   };
 
   const panGestureHandler: PanGesture = (
@@ -60,6 +62,8 @@ export const EventActionSheet: FC<EventActionSheetProps> = ({ eventItem, isOpen,
         }
         else {
           runOnJS(closeActionSheet)();
+          // offsetY.value = withTiming(initialOffSetY, {}, () => {
+          // });
         }
       })
   );
@@ -76,7 +80,7 @@ export const EventActionSheet: FC<EventActionSheetProps> = ({ eventItem, isOpen,
           style={styles.backdrop}
           entering={FadeIn}
           exiting={FadeOut}
-          onPress={closeActionSheet}
+          onPressOut={closeActionSheet}
         />
         <Animated.View
           style={[styles.sheet, transformY]}

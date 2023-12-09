@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { StateCreator } from 'zustand';
 import { GetBasicUserProfile, GetDetailedUserProfile } from '../../models/User';
 
@@ -10,7 +11,6 @@ export type NewPeopleSlice = {
   incommginFriendshipSender: User
   setIncommginFriendshipSender: (user: User) => void,
 }
-
 
 export const createNewPeopleSlice: StateCreator<NewPeopleSlice> = (set) => {
   return ({

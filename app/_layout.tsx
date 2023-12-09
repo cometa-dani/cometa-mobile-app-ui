@@ -12,6 +12,8 @@ import { useColorScheme, } from 'react-native';
 // query client for server state
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { EventActionSheet } from '../components/actionSheet/actionSheet';
+import { useCometaStore } from '../store/cometaStore';
 
 
 // Catch any errors thrown by the Layout component.
@@ -53,7 +55,11 @@ export default function RootLayout() {
 
 function RootLayoutNav(): JSX.Element {
   const colorScheme = useColorScheme();
+  const likedEvent = useCometaStore(state => state.likedEvent);
+  const toggleActionSheet = useCometaStore(state => state.toggleActionSheet);
+  const setToggleActionSheet = useCometaStore(state => state.setToggleActionSheet);
   const screenOptions = { headerShown: false, animation: 'slide_from_right' } as ScreenProps;
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <QueryClientProvider client={new QueryClient()}>
@@ -69,6 +75,13 @@ function RootLayoutNav(): JSX.Element {
 
             <Stack.Screen name="[connectWithPeople]" options={{ presentation: 'modal', headerTitle: 'Connect with People' }} />
           </Stack>
+
+          <EventActionSheet
+            eventItem={likedEvent}
+            isOpen={toggleActionSheet}
+            setIsOpen={setToggleActionSheet}
+          />
+
         </GestureHandlerRootView>
       </QueryClientProvider>
     </ThemeProvider>

@@ -11,9 +11,7 @@ export type OnboardingSlice = {
   setOnboarding: (user: Partial<UserClientState>) => void
 }
 
-
 export const createOnboardingSlice: StateCreator<OnboardingSlice> = (set) => ({
-
   onboarding: {
     user: {} as UserClientState
   },

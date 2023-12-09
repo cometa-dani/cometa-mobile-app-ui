@@ -10,6 +10,7 @@ import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '
 import { UseMutationResult } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { EventActionSheet } from '../../components/actionSheet/actionSheet';
+import { useCometaStore } from '../../store/cometaStore';
 
 
 // Define the props for the memoized list item
@@ -74,7 +75,7 @@ const EventItem: FC<ListItemProps> = ({ item, showDetails, likeOrDislikeMutation
               <FontAwesome name='share-square-o' size={34} style={{ color: tabIconDefault }} />
             )}
           </Pressable>
-          <Pressable onPress={() => showDetails(item)}>
+          <Pressable onPressOut={() => showDetails(item)}>
             {() => (
               <View
                 style={{
@@ -128,6 +129,9 @@ export default function HomeScreen(): JSX.Element {
   // Get access to colors and store data
   const { red100, tabIconDefault } = useColors();
 
+  // global state
+  const { setToggleActionSheet, setLikedEvent } = useCometaStore(state => state);
+
   // events & function to handle fetching more events when reaching the end
   const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteQueryGetLatestEvents();
   const handleInfititeFetch = () => !isFetching && hasNextPage && fetchNextPage();
@@ -138,13 +142,9 @@ export default function HomeScreen(): JSX.Element {
   // State variables to manage page and item heights
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
 
-  // action sheet for event details
-  const [likedEventDetails, setLikedEventDetails] = useState({} as LikedEvent);
-  const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
-
   const onShowEventDetails = (item: LikedEvent): void => {
-    setLikedEventDetails(item);
-    setIsActionSheetOpen(true);
+    setLikedEvent(item);
+    setToggleActionSheet(true);
   };
 
   return (
@@ -176,13 +176,6 @@ export default function HomeScreen(): JSX.Element {
           )}
         />
       </View>
-
-      <EventActionSheet
-        eventItem={likedEventDetails}
-        isOpen={isActionSheetOpen}
-        setIsOpen={setIsActionSheetOpen}
-      />
-
     </SafeAreaView>
   );
 }
