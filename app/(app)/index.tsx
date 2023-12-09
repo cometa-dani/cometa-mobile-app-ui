@@ -175,15 +175,14 @@ export default function HomeScreen(): JSX.Element {
             />
           )}
         />
-
-        <EventActionSheet
-          eventItem={likedEventDetails}
-          isOpen={isActionSheetOpen}
-          setIsOpen={setIsActionSheetOpen}
-        />
-
-        {/* Latest events list */}
       </View>
+
+      <EventActionSheet
+        eventItem={likedEventDetails}
+        isOpen={isActionSheetOpen}
+        setIsOpen={setIsActionSheetOpen}
+      />
+
     </SafeAreaView>
   );
 }

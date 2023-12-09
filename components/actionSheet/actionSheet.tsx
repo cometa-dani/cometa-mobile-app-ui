@@ -52,7 +52,6 @@ export const EventActionSheet: FC<EventActionSheetProps> = ({ eventItem, isOpen,
     Gesture.Pan()
       .onChange((event) => {
         const offsetDelta = event.changeY + offsetY.value;
-        // const clamp = Math.max(-OVERDRAG, offsetDelta);
         offsetY.value = offsetDelta;
       })
       .onTouchesUp(() => {
