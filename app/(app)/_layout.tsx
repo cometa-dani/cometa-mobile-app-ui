@@ -7,7 +7,6 @@ import { useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
-import { EventActionSheet } from '../../components/actionSheet/actionSheet';
 
 
 /**
@@ -45,8 +44,6 @@ export default function AppLayout() {
   return (
     <>
       <StatusBar style={'light'} />
-
-
 
       <Tabs
         screenOptions={{

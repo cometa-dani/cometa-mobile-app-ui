@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import type { FC } from 'react';
-import { StyleSheet, ScrollView, Pressable } from 'react-native';
+import { StyleSheet, ScrollView, Pressable, Image } from 'react-native';
 import { Text, View } from '../Themed';
 import { LikedEvent } from '../../models/Event';
 import { FontAwesome, Feather } from '@expo/vector-icons';
@@ -24,6 +24,7 @@ import Animated, {
   // withTiming,
 } from 'react-native-reanimated';
 import { Dimensions } from 'react-native';
+import { nodeEnv } from '../../constants/vars';
 
 const TOTAL_HEIGHT = Dimensions.get('window').height;
 const BACKDROP_COLOR = 'rgba(0, 0, 0, 0.3)';
@@ -129,24 +130,31 @@ export const EventActionSheet: FC<EventActionSheetProps> = ({ eventItem, isOpen,
               </View>
 
               <View style={{ height: 280 }}>
-                <MapView
-                  style={styles.map}
-                  provider='google'
-                  zoomEnabled
-                  zoomTapEnabled
-                  minZoomLevel={8}
-                  maxZoomLevel={15}
-                  region={{
-                    latitude: latitude,
-                    longitude: longitude,
-                    longitudeDelta: longitudeDelta,
-                    latitudeDelta: latitudeDelta
-                  }}
-                >
-                  <Marker
-                    coordinate={{ latitude: latitude, longitude: longitude }}
+                {nodeEnv === 'development' ? (
+                  <Image
+                    style={{ flex: 1, width: '100%' }}
+                    source={require('../../assets/images/Placeholder-Map-Image-768x409.png')}
                   />
-                </MapView>
+                ) : (
+                  <MapView
+                    style={styles.map}
+                    provider='google'
+                    zoomEnabled
+                    zoomTapEnabled
+                    minZoomLevel={8}
+                    maxZoomLevel={15}
+                    region={{
+                      latitude: latitude,
+                      longitude: longitude,
+                      longitudeDelta: longitudeDelta,
+                      latitudeDelta: latitudeDelta
+                    }}
+                  >
+                    <Marker
+                      coordinate={{ latitude: latitude, longitude: longitude }}
+                    />
+                  </MapView>
+                )}
               </View>
 
             </ScrollView>
