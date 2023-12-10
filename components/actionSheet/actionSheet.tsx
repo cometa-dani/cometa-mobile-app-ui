@@ -4,7 +4,7 @@ import { StyleSheet, ScrollView, Pressable, Image } from 'react-native';
 import { Text, View } from '../Themed';
 import { LikedEvent } from '../../models/Event';
 import { FontAwesome, Feather } from '@expo/vector-icons';
-import MapView, { Marker } from 'react-native-maps';
+// import MapView, { Marker } from 'react-native-maps';
 import { getRegionForCoordinates } from '../../helpers/getRegionFromCoords';
 import {
   Gesture,
@@ -130,11 +130,11 @@ export const EventActionSheet: FC<EventActionSheetProps> = ({ eventItem, isOpen,
               </View>
 
               <View style={{ height: 280 }}>
-                {nodeEnv === 'development' ? (
-                  <Image
-                    style={{ flex: 1, width: '100%' }}
-                    source={require('../../assets/images/Placeholder-Map-Image-768x409.png')}
-                  />
+                <Image
+                  style={{ flex: 1, width: '100%' }}
+                  source={require('../../assets/images/Placeholder-Map-Image-768x409.png')}
+                />
+                {/* {nodeEnv === 'development' ? (
                 ) : (
                   <MapView
                     style={styles.map}
@@ -154,7 +154,7 @@ export const EventActionSheet: FC<EventActionSheetProps> = ({ eventItem, isOpen,
                       coordinate={{ latitude: latitude, longitude: longitude }}
                     />
                   </MapView>
-                )}
+                )} */}
               </View>
 
             </ScrollView>
