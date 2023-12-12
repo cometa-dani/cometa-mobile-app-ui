@@ -14,7 +14,6 @@ import { buttonColors } from '../../constants/colors';
 const initialDate = new Date('1990');
 
 export default function WhenIsYourBirthdayScreen(): JSX.Element {
-  // const {primary100, } =useColors();
   const setOnboarding = useCometaStore(state => state.setOnboarding);
   const user = useCometaStore(state => state.onboarding.user);
   const [toggleDatePicker, setToggleDatePicker] = useState(false);
@@ -58,6 +57,16 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
         <Text style={styles.title}>When is your birthday?</Text>
       </View>
       {/* logo */}
+      {user.birthday && (
+        <View>
+          <Text style={{ textAlign: 'center' }}>
+            {calAge(user.birthday)} years old
+          </Text>
+          <Text style={modalStyles.modalText}>
+            {user?.birthday?.toDateString()}
+          </Text>
+        </View>
+      )}
 
       {/* date picker */}
       {toggleDatePicker && (
@@ -109,18 +118,25 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
               style={[appButtonstyles.button, { backgroundColor: buttonColors.black.background }]}
               onPress={() => handleEdit()}
             >
-              <Text style={appButtonstyles.buttonText}>Edit</Text>
+              <Text
+                style={[appButtonstyles.buttonText, { color: buttonColors.black.color }]}>
+                Edit
+              </Text>
             </Pressable>
 
             <Pressable
               style={[appButtonstyles.button, { backgroundColor: buttonColors.primary.background }]}
               onPress={() => handleConfirmation()}
             >
-              <Text style={appButtonstyles.buttonText}>Confirm</Text>
+              <Text
+                style={[appButtonstyles.buttonText, { color: buttonColors.primary.color }]}>
+                Confirm
+              </Text>
             </Pressable>
           </View>
         </View>
       </AppModal>
+
     </AppWrapperOnBoarding>
   );
 }
