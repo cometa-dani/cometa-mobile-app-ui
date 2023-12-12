@@ -37,9 +37,9 @@ interface EventActionSheetProps {
   setIsOpen: (openOrClose: boolean) => void
 }
 export const EventActionSheet: FC<EventActionSheetProps> = ({ eventItem, isOpen, setIsOpen }) => {
-  const latitude: number = eventItem?.location?.latitude ?? 0;
-  const longitude: number = eventItem?.location?.longitude ?? 0;
-  const { latitudeDelta = 0, longitudeDelta = 0 } = getRegionForCoordinates([{ latitude, longitude }]);
+  // const latitude: number = eventItem?.location?.latitude ?? 0;
+  // const longitude: number = eventItem?.location?.longitude ?? 0;
+  // const { latitudeDelta = 0, longitudeDelta = 0 } = getRegionForCoordinates([{ latitude, longitude }]);
 
   const offsetY = useSharedValue(initialOffSetY);
 

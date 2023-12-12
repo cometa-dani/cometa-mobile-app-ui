@@ -14,28 +14,33 @@ interface Props extends BaseButtonProps {
 export const LightButton: FC<Props> = ({ text, textStyles = {}, ...props }) => {
   const { background } = useColors();
   const { style, ...otherProps } = props;
+  const buttonStyles = [appButtonstyles.button, { backgroundColor: background }, style];
+  const allTextStyles = [appButtonstyles.buttonText, textStyles];
 
   return (
-    <BaseButton {...otherProps} style={[styles.button, { backgroundColor: background }]}>
-      <Text style={[styles.buttonText, textStyles]}>{text}</Text>
+    <BaseButton {...otherProps} style={buttonStyles}>
+      <Text style={allTextStyles}>{text}</Text>
     </BaseButton>
   );
 };
 
 
-interface CoProps extends BaseButtonProps {
+interface AppButtonProps extends BaseButtonProps {
   text?: string,
   children?: ReactNode
   btnColor: 'black' | 'gray' | 'blue' | 'white' | 'primary',
 }
 
-export const AppButton: FC<CoProps> = ({ children, text, btnColor, ...props }) => {
+export const AppButton: FC<AppButtonProps> = ({ children, text, btnColor, ...props }) => {
   const { background, color } = buttonColors[btnColor];
   const { style, ...otherProps } = props;
+  const buttonStyles = [appButtonstyles.button, { backgroundColor: background }, style];
+  const textStyles = [appButtonstyles.buttonText, { color }];
+
   return (
-    <BaseButton  {...otherProps} style={[styles.button, { backgroundColor: background }]}>
+    <BaseButton  {...otherProps} style={buttonStyles}>
       {text ? (
-        <Text style={[styles.buttonText, { color }]}>{text}</Text>
+        <Text style={textStyles}>{text}</Text>
       ) :
         children ?
           (children)
@@ -47,7 +52,7 @@ export const AppButton: FC<CoProps> = ({ children, text, btnColor, ...props }) =
 };
 
 
-const styles = StyleSheet.create({
+export const appButtonstyles = StyleSheet.create({
   button: {
     borderRadius: 50,
     elevation: 3,

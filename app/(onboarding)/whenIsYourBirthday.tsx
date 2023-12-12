@@ -1,20 +1,20 @@
-import { Button, Image, Pressable, StyleSheet } from 'react-native';
+import { Image, Pressable, StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { router } from 'expo-router';
 import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 import { useCometaStore } from '../../store/cometaStore';
-import { AppButton } from '../../components/buttons/buttons';
+import { AppButton, appButtonstyles } from '../../components/buttons/buttons';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useState } from 'react';
-import Modal from 'react-native-modal';
 import { calAge } from '../../helpers/calcAge';
 import { AppModal } from '../../components/modal/modal';
-// import { BaseButton } from 'react-native-gesture-handler';
+import { buttonColors } from '../../constants/colors';
 
 
 const initialDate = new Date('1990');
 
 export default function WhenIsYourBirthdayScreen(): JSX.Element {
+  // const {primary100, } =useColors();
   const setOnboarding = useCometaStore(state => state.setOnboarding);
   const user = useCometaStore(state => state.onboarding.user);
   const [toggleDatePicker, setToggleDatePicker] = useState(false);
@@ -49,10 +49,8 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
     isBirthdayConfirmed && router.push('/(onboarding)/uploadAvatar');
   };
 
-
   return (
     <AppWrapperOnBoarding>
-
       {/* logo */}
       <View style={styles.figure}>
         <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
@@ -61,21 +59,30 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
       </View>
       {/* logo */}
 
-      {
-        toggleDatePicker && (
-          <RNDateTimePicker
-            value={user?.birthday || initialDate}
-            onChange={onChange}
-            mode={'date'}
-          />
-        )
-      }
+      {/* date picker */}
+      {toggleDatePicker && (
+        <RNDateTimePicker
+          value={user?.birthday || initialDate}
+          onChange={onChange}
+          mode={'date'}
+        />
+      )}
+      {/* date picker */}
 
       <AppButton
         onPress={() => setTimeout(() => setToggleDatePicker(prev => !prev), 400)}
         btnColor='white'
         text='PICK DATE'
       />
+
+      {!isBirthdayConfirmed && (
+        <AppButton
+          style={{ position: 'absolute', bottom: 24 }}
+          onPress={() => router.push('/(onboarding)/uploadAvatar')}
+          btnColor='white'
+          text='Skip this step'
+        />
+      )}
 
       {isBirthdayConfirmed && (
         <AppButton
@@ -85,12 +92,9 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
         />
       )}
 
-
       <AppModal isOpen={toggleModal} setIsOpen={setToggleModal}>
         <View style={modalStyles.modalView}>
-
           <Text style={{ textAlign: 'center' }}>Confirm your birthday</Text>
-
           <View>
             <Text style={{ textAlign: 'center' }}>
               {user?.birthday ? calAge(user.birthday) : 0} years old
@@ -101,14 +105,19 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Pressable onPress={() => handleEdit()} >
-              <Text>Edit</Text>
+            <Pressable
+              style={[appButtonstyles.button, { backgroundColor: buttonColors.black.background }]}
+              onPress={() => handleEdit()}
+            >
+              <Text style={appButtonstyles.buttonText}>Edit</Text>
             </Pressable>
-            <Button onPress={() => handleConfirmation()} title='Confirm' />
 
-            {/* 
-              <AppButton onPress={() => handleEdit()} btnColor='black' text='Edit' />
-              <AppButton onPress={() => handleConfirmation()} btnColor='primary' text='Confirm' /> */}
+            <Pressable
+              style={[appButtonstyles.button, { backgroundColor: buttonColors.primary.background }]}
+              onPress={() => handleConfirmation()}
+            >
+              <Text style={appButtonstyles.buttonText}>Confirm</Text>
+            </Pressable>
           </View>
         </View>
       </AppModal>
@@ -140,19 +149,11 @@ const modalStyles = StyleSheet.create({
   },
 
   modalView: {
-    // alignSelf: 'center',
     borderRadius: 20,
     elevation: 3,
     gap: 20,
     maxWidth: '90%',
     minWidth: 310,
     padding: 24,
-    // shadowColor: '#171717',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 2,
-    // },
-    // shadowOpacity: 0.1,
-    // shadowRadius: 0.4,
   }
 });

@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import type { FC, ReactNode } from 'react';
 import { StyleSheet, Pressable } from 'react-native';
-import { useColors } from '../Themed';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -22,14 +21,13 @@ interface AppModalProps {
   setIsOpen: (openOrClose: boolean) => void
 }
 export const AppModal: FC<AppModalProps> = ({ children, isOpen, setIsOpen }) => {
-  const { background: backgroundColor } = useColors();
   const offsetY = useSharedValue(0);
 
   const closeModal = (): void => {
     setIsOpen(false);
     setTimeout(() => {
       offsetY.value = 0;
-    }, 300);
+    }, 100);
   };
 
   // animation
