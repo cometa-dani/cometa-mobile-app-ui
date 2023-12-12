@@ -1,4 +1,4 @@
-import { Image, StyleSheet } from 'react-native';
+import { Button, Image, Pressable, StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { router } from 'expo-router';
 import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
@@ -8,6 +8,8 @@ import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/d
 import { useState } from 'react';
 import Modal from 'react-native-modal';
 import { calAge } from '../../helpers/calcAge';
+import { AppModal } from '../../components/modal/modal';
+// import { BaseButton } from 'react-native-gesture-handler';
 
 
 const initialDate = new Date('1990');
@@ -16,26 +18,41 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
   const setOnboarding = useCometaStore(state => state.setOnboarding);
   const user = useCometaStore(state => state.onboarding.user);
   const [toggleDatePicker, setToggleDatePicker] = useState(false);
+  const [isBirthdayConfirmed, setIsBirthdarConfirmed] = useState(false);
   const [toggleModal, setToggleModal] = useState(false);
 
 
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date): void => {
     setToggleDatePicker(prev => !prev);
-    setOnboarding({ birthday: selectedDate });
-    setToggleModal(true);
+
+    // when date is set
+    if (event.type === 'set') {
+      setOnboarding({ birthday: selectedDate });
+      console.log(selectedDate);
+      setTimeout(() => setToggleModal(true), 300);
+    }
   };
 
   const handleEdit = (): void => {
     setToggleModal(false);
-    setTimeout(() => { setToggleDatePicker(true); }, 300);
+    setTimeout(() => setToggleDatePicker(prev => !prev), 300);
+  };
+
+  const handleConfirmation = (): void => {
+    if (user.birthday) {
+      setIsBirthdarConfirmed(true);
+      setToggleModal(false);
+    }
   };
 
   const handleSlideNext = (): void => {
-    user?.birthday && router.push('/(onboarding)/uploadAvatar');
+    isBirthdayConfirmed && router.push('/(onboarding)/uploadAvatar');
   };
+
 
   return (
     <AppWrapperOnBoarding>
+
       {/* logo */}
       <View style={styles.figure}>
         <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
@@ -44,7 +61,32 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
       </View>
       {/* logo */}
 
-      <Modal isVisible={toggleModal}>
+      {
+        toggleDatePicker && (
+          <RNDateTimePicker
+            value={user?.birthday || initialDate}
+            onChange={onChange}
+            mode={'date'}
+          />
+        )
+      }
+
+      <AppButton
+        onPress={() => setTimeout(() => setToggleDatePicker(prev => !prev), 400)}
+        btnColor='white'
+        text='PICK DATE'
+      />
+
+      {isBirthdayConfirmed && (
+        <AppButton
+          onPress={handleSlideNext}
+          btnColor='primary'
+          text='NEXT'
+        />
+      )}
+
+
+      <AppModal isOpen={toggleModal} setIsOpen={setToggleModal}>
         <View style={modalStyles.modalView}>
 
           <Text style={{ textAlign: 'center' }}>Confirm your birthday</Text>
@@ -59,36 +101,18 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <AppButton onPress={() => handleEdit()} btnColor='black' text='Edit' />
-            <AppButton btnColor='primary' text='Confirm' />
+            <Pressable onPress={() => handleEdit()} >
+              <Text>Edit</Text>
+            </Pressable>
+            <Button onPress={() => handleConfirmation()} title='Confirm' />
+
+            {/* 
+              <AppButton onPress={() => handleEdit()} btnColor='black' text='Edit' />
+              <AppButton onPress={() => handleConfirmation()} btnColor='primary' text='Confirm' /> */}
           </View>
         </View>
-      </Modal>
-
-      {
-        toggleDatePicker && (
-          <RNDateTimePicker
-            testID="dateTimePicker"
-            value={user?.birthday || initialDate}
-            onChange={onChange}
-            mode={'date'}
-          />
-        )
-      }
-
-      <AppButton
-        onPress={() => setToggleDatePicker(prev => !prev)}
-        btnColor='white'
-        text='PICK DATE'
-      />
-
-      <AppButton
-        onPress={handleSlideNext}
-        btnColor='primary'
-        text='NEXT'
-      />
-
-    </AppWrapperOnBoarding >
+      </AppModal>
+    </AppWrapperOnBoarding>
   );
 }
 
@@ -116,19 +140,19 @@ const modalStyles = StyleSheet.create({
   },
 
   modalView: {
-    alignSelf: 'center',
+    // alignSelf: 'center',
     borderRadius: 20,
     elevation: 3,
     gap: 20,
     maxWidth: '90%',
     minWidth: 310,
     padding: 24,
-    shadowColor: '#171717',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 0.4,
+    // shadowColor: '#171717',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 0.4,
   }
 });

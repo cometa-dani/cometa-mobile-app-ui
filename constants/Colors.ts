@@ -1,12 +1,13 @@
-const primary_100 = '#a22bfa';
-const white_50 = '#fff';
-const red_100 = '#ff2d55';
-const blue_100 = '#5ac8fa';
-const gray_50 = '#f0f0f0';
-const gray_100 = '#e5e5e5';
-const gray_200 = '#afafaa';
-const gray_500 = '#4f4f4f';
-const gray_900 = '#030303';
+export const primary_100 = '#a22bfa';
+export const white_50 = '#fff';
+export const red_100 = '#ff2d55';
+export const blue_100 = '#5ac8fa';
+export const gray_50 = '#f0f0f0';
+export const gray_100 = '#e5e5e5';
+export const gray_200 = '#afafaa';
+export const gray_500 = '#4f4f4f';
+export const gray_900 = '#030303';
+export const backDrop = 'rgba(0, 0, 0, 0.4)';
 
 
 export const buttonColors = {

@@ -24,10 +24,9 @@ import Animated, {
   // withTiming,
 } from 'react-native-reanimated';
 import { Dimensions } from 'react-native';
-import { nodeEnv } from '../../constants/vars';
+import { backDrop } from '../../constants/colors';
 
 const TOTAL_HEIGHT = Dimensions.get('window').height;
-const BACKDROP_COLOR = 'rgba(0, 0, 0, 0.3)';
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const initialOffSetY = (TOTAL_HEIGHT / 2) + 50;
 
@@ -169,7 +168,7 @@ export const EventActionSheet: FC<EventActionSheetProps> = ({ eventItem, isOpen,
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: BACKDROP_COLOR,
+    backgroundColor: backDrop,
     zIndex: 2,
   },
 
