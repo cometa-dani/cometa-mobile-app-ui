@@ -7,6 +7,7 @@ import { AppButton } from '../../components/buttons/buttons';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useState } from 'react';
 import Modal from 'react-native-modal';
+import { calAge } from '../../helpers/calcAge';
 
 
 const initialDate = new Date('1990');
@@ -18,17 +19,20 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
   const [toggleModal, setToggleModal] = useState(false);
 
 
-  const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+  const onChange = (event: DateTimePickerEvent, selectedDate?: Date): void => {
     setToggleDatePicker(prev => !prev);
     setOnboarding({ birthday: selectedDate });
     setToggleModal(true);
   };
 
-
-  const handleSlideNext = () => {
-    user?.birthday && router.push('/(onboarding)/uploadAvatar');
+  const handleEdit = (): void => {
+    setToggleModal(false);
+    setTimeout(() => { setToggleDatePicker(true); }, 300);
   };
 
+  const handleSlideNext = (): void => {
+    user?.birthday && router.push('/(onboarding)/uploadAvatar');
+  };
 
   return (
     <AppWrapperOnBoarding>
@@ -40,23 +44,26 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
       </View>
       {/* logo */}
 
-      {/* MOVE TO A PARENT COMPONENT */}
       <Modal isVisible={toggleModal}>
         <View style={modalStyles.modalView}>
 
-          <Text style={modalStyles.modalText}>
-            {user?.birthday && new Date(user?.birthday).toLocaleString()}
-          </Text>
-        </View>
+          <Text style={{ textAlign: 'center' }}>Confirm your birthday</Text>
 
-        {/* <Pressable
-            style={modalStyles.iconButton}
-            onPress={() => setToggleModal()}
-          >
-            <FontAwesome style={modalStyles.icon} name='times-circle' />
-          </Pressable> */}
+          <View>
+            <Text style={{ textAlign: 'center' }}>
+              {user?.birthday ? calAge(user.birthday) : 0} years old
+            </Text>
+            <Text style={modalStyles.modalText}>
+              {user?.birthday ? user?.birthday?.toDateString() : 'not birthdate selected'}
+            </Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <AppButton onPress={() => handleEdit()} btnColor='black' text='Edit' />
+            <AppButton btnColor='primary' text='Confirm' />
+          </View>
+        </View>
       </Modal>
-      {/* MOVE TO A PARENT COMPONENT */}
 
       {
         toggleDatePicker && (
@@ -103,18 +110,19 @@ const styles = StyleSheet.create({
 
 const modalStyles = StyleSheet.create({
   modalText: {
-    fontSize: 18,
+    fontSize: 16,
+    fontWeight: '700',
     textAlign: 'center',
   },
 
   modalView: {
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    alignSelf: 'center',
     borderRadius: 20,
     elevation: 3,
-    gap: 16,
-    paddingHorizontal: 28,
-    paddingVertical: 24,
+    gap: 20,
+    maxWidth: '90%',
+    minWidth: 310,
+    padding: 24,
     shadowColor: '#171717',
     shadowOffset: {
       width: 0,
@@ -122,6 +130,5 @@ const modalStyles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 0.4,
-    width: '100%'
   }
 });

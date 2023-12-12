@@ -29,6 +29,7 @@ SplashScreen.preventAutoHideAsync();
 
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
@@ -49,41 +50,43 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <QueryClientProvider client={new QueryClient()}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <RootLayoutNav />
+        </GestureHandlerRootView>
+      </QueryClientProvider>
+    </ThemeProvider>
+  );
 }
 
 
 function RootLayoutNav(): JSX.Element {
-  const colorScheme = useColorScheme();
   const likedEvent = useCometaStore(state => state.likedEvent);
   const toggleActionSheet = useCometaStore(state => state.toggleActionSheet);
   const setToggleActionSheet = useCometaStore(state => state.setToggleActionSheet);
   const screenOptions = { headerShown: false, animation: 'slide_from_right' } as ScreenProps;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <QueryClientProvider client={new QueryClient()}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Stack>
-            <Stack.Screen name='index' options={screenOptions} />
+    <>
+      <Stack>
+        <Stack.Screen name='index' options={screenOptions} />
 
-            <Stack.Screen name="(onboarding)" options={screenOptions} />
+        <Stack.Screen name="(onboarding)" options={screenOptions} />
 
-            <Stack.Screen name="(app)" options={screenOptions} />
+        <Stack.Screen name="(app)" options={screenOptions} />
 
-            <Stack.Screen name="bucketList" options={{ presentation: 'modal', headerTitle: 'BucketList' }} />
+        <Stack.Screen name="bucketList" options={{ presentation: 'modal', headerTitle: 'BucketList' }} />
 
-            <Stack.Screen name="[connectWithPeople]" options={{ presentation: 'modal', headerTitle: 'Connect with People' }} />
-          </Stack>
+        <Stack.Screen name="[connectWithPeople]" options={{ presentation: 'modal', headerTitle: 'Connect with People' }} />
+      </Stack>
 
-          <EventActionSheet
-            eventItem={likedEvent}
-            isOpen={toggleActionSheet}
-            setIsOpen={setToggleActionSheet}
-          />
-
-        </GestureHandlerRootView>
-      </QueryClientProvider>
-    </ThemeProvider>
+      <EventActionSheet
+        eventItem={likedEvent}
+        isOpen={toggleActionSheet}
+        setIsOpen={setToggleActionSheet}
+      />
+    </>
   );
 }

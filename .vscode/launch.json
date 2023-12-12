@@ -8,6 +8,7 @@
       "name": "Debug Android Hermes",
       "platform": "android",
       "request": "attach",
+      "sourceMaps": true,
       "type": "reactnativedirect",
       "cwd": "${workspaceFolder}",
       "port": 8081

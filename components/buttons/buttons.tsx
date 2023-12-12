@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { FC, ReactNode } from 'react';
 import { Text, StyleSheet, TextStyle } from 'react-native';
 import { useColors } from '../Themed';
@@ -12,9 +13,10 @@ interface Props extends BaseButtonProps {
 // TODO: remove this button is unnecesary and replace it with AppButton
 export const LightButton: FC<Props> = ({ text, textStyles = {}, ...props }) => {
   const { background } = useColors();
+  const { style, ...otherProps } = props;
 
   return (
-    <BaseButton {...props} style={[styles.button, { backgroundColor: background }]}>
+    <BaseButton {...otherProps} style={[styles.button, { backgroundColor: background }]}>
       <Text style={[styles.buttonText, textStyles]}>{text}</Text>
     </BaseButton>
   );
@@ -31,7 +33,7 @@ export const AppButton: FC<CoProps> = ({ children, text, btnColor, ...props }) =
   const { background, color } = buttonColors[btnColor];
   const { style, ...otherProps } = props;
   return (
-    <BaseButton {...otherProps} style={[styles.button, { backgroundColor: background }, { ...style as object }]}>
+    <BaseButton  {...otherProps} style={[styles.button, { backgroundColor: background }]}>
       {text ? (
         <Text style={[styles.buttonText, { color }]}>{text}</Text>
       ) :

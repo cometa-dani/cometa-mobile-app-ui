@@ -1,4 +1,4 @@
-import { ImageBackground, StyleSheet, View, Text, Image } from 'react-native';
+import { ImageBackground, StyleSheet, View, Text, Image, Button } from 'react-native';
 import { router } from 'expo-router';
 import { LightButton } from '../components/buttons/buttons';
 import { useEffect } from 'react';
@@ -17,6 +17,7 @@ export default function WelcomeScreen(): JSX.Element {
   // Function to handle navigation when "Get Started" button is pressed.
   const handleSlideNextScreen = (): void => {
     unsubscribe && unsubscribe();
+    // router.push('/(onboarding)/whenIsYourBirthday');
     router.push(isAuthenticated ? '/(app)/' : '/(onboarding)/login');
   };
 
@@ -75,6 +76,7 @@ export default function WelcomeScreen(): JSX.Element {
         <Text style={styles.h2}>Start exploring events near you and join like-minded people</Text>
       </View>
 
+      {/* <Button onPress={() => handleSlideNextScreen()} title='get started'></Button> */}
       <LightButton
         onPress={() => handleSlideNextScreen()}
         text='Get Started'
