@@ -20,7 +20,7 @@ import { auth } from '../../firebase/firebase';
 
 
 const validationSchemma = Yup.object({
-  bio: Yup.string().min(5).max(32).required()
+  biography: Yup.string().min(5).max(120).required()
 });
 
 export default function UploadAvatarScreen(): JSX.Element {
@@ -71,7 +71,7 @@ export default function UploadAvatarScreen(): JSX.Element {
 
   // TODO: verify that username & phone & email are unique and do not exist already
   const handleUserRegistrationAndSlideNext =
-    async (values: { bio: string }, actions: FormikHelpers<{ bio: string }>) => {
+    async (values: { biography: string }, actions: FormikHelpers<{ biography: string }>) => {
       const { username, email, password, ...otherUserFields } = onboarding?.user as UserClientState;
       try {
         if (imgFileRef?.current?.uri) {
@@ -86,7 +86,7 @@ export default function UploadAvatarScreen(): JSX.Element {
             );
             await usersService.updateById(
               newCreatedUser.id,
-              { ...otherUserFields, uid: userCrendentials.uid, biography: values.bio }
+              { ...otherUserFields, uid: userCrendentials.uid, biography: values.biography }
             );
             toggleBio && setToggleBio(false); // just in case is open
             setUserUid(userCrendentials.uid);
@@ -140,37 +140,43 @@ export default function UploadAvatarScreen(): JSX.Element {
 
       <Formik
         validationSchema={validationSchemma}
-        initialValues={{ bio: 'Tell me something about you' }}
+        initialValues={{ biography: 'Tell me something about you' }}
         onSubmit={handleUserRegistrationAndSlideNext}
       >
         {({ handleBlur, handleChange, handleSubmit, values, errors }) => (
           <>
             {/* biography */}
             <View style={{ position: 'relative', width: '100%' }}>
-              {errors.bio && (
-                <AppInputFeedbackMsg text={errors.bio} />
+              {errors.biography && (
+                <View style={{ marginLeft: -16 }}>
+                  <AppInputFeedbackMsg text={errors.biography} />
+                </View>
               )}
-              <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <View style={{ width: 16 }} />
-
-                <View>
+              <View style={{
+                gap: 20,
+                flexDirection: 'row',
+                alignItems: 'center'
+              }}>
+                <View style={{ flex: 1 }}>
                   {toggleBio ? (
                     <TextInput
+                      multiline={true}
+                      numberOfLines={4}
+                      textAlignVertical='top'
                       style={{
+                        borderRadius: 20,
+                        padding: 20,
                         color: gray500,
-                        padding: 0,
+                        backgroundColor: '#eee',
                         fontSize: 16,
-                        textAlign: 'center',
-                        flexGrow: 1,
-                        width: '100%'
                       }}
-                      onBlur={handleBlur('bio')}
-                      onChangeText={handleChange('bio')}
+                      onBlur={handleBlur('biography')}
+                      onChangeText={handleChange('biography')}
                       ref={bioRef}
-                      value={values.bio}
+                      value={values.biography}
                     />
                   ) : (
-                    <Text style={{ fontSize: 16, textAlign: 'center' }}>{values.bio}</Text>
+                    <Text style={{ fontSize: 16, textAlign: 'center' }}>{values.biography}</Text>
                   )}
                 </View>
 
