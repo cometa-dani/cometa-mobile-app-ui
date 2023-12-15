@@ -19,7 +19,7 @@ interface Props {
 const LikedEventItem: FC<Props> = ({ item, likeOrDislikeMutation = () => { } }) => {
   const offset = useSharedValue(0);
 
-  const pan = Gesture.Pan()
+  const panGesture = Gesture.Pan()
     .cancelsTouchesInView(true)
     .onBegin(() => {
       // pressed.value = true;
@@ -62,7 +62,7 @@ const LikedEventItem: FC<Props> = ({ item, likeOrDislikeMutation = () => { } }) 
 
   return (
     <Pressable key={item.id} onPress={() => router.push(`/${item.id}`)}>
-      <GestureDetector gesture={pan}>
+      <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.eventContainer, animatedStyles]}>
           <Image style={styles.img} source={{ uri: item.mediaUrl }} />
 

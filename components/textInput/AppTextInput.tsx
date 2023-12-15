@@ -55,8 +55,8 @@ const styles = StyleSheet.create({
   input: {
     borderRadius: 50,
     elevation: 3,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    paddingHorizontal: 22,
+    paddingVertical: 10,
     shadowColor: '#171717',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,

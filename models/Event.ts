@@ -12,6 +12,8 @@ export enum EventCategory {
   COMEDY
 }
 
+export type MediaType = 'IMAGE' | 'VIDEO'
+
 export interface CreateEventLike {
   id: number,
   eventId: number,
@@ -30,7 +32,7 @@ export interface GetBasicEvent {
   name: string;
   description: string;
   mediaUrl: string;
-  mediaType: string;
+  mediaType: MediaType;
   locationId: number;
   organizationId: number;
   category: EventCategory;
@@ -51,7 +53,7 @@ export interface LikedEvent {
   name: string;
   description: string;
   mediaUrl: string;
-  mediaType: string;
+  mediaType: MediaType;
   locationId: number;
   organizationId: number;
   category: string;

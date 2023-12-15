@@ -9,8 +9,8 @@ import { router } from 'expo-router';
 import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
 import { UseMutationResult } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
-import { EventActionSheet } from '../../components/actionSheet/actionSheet';
 import { useCometaStore } from '../../store/cometaStore';
+import { ResizeMode, Video } from 'expo-av';
 
 
 // Define the props for the memoized list item
@@ -46,10 +46,20 @@ const EventItem: FC<ListItemProps> = ({ item, showDetails, likeOrDislikeMutation
       }}>
         {/* Background image */}
         <GestureDetector gesture={doubleTap}>
-          <Image
-            source={{ uri: item.mediaUrl }}
-            style={{ width: '100%', height: '100%' }}
-          />
+          {item.mediaType === 'IMAGE' ? (
+            <Image
+              source={{ uri: item.mediaUrl }}
+              style={{ width: '100%', height: '100%' }}
+            />
+          ) : (
+            <Video
+              useNativeControls
+              resizeMode={ResizeMode.CONTAIN}
+              isLooping
+              source={{ uri: item.mediaUrl }}
+              style={{ width: '100%', height: '100%' }}
+            />
+          )}
         </GestureDetector>
         {/* Event title */}
         <Text lightColor='#fff' darkColor='#eee' style={styles.title}>{item.name}</Text>
@@ -97,7 +107,11 @@ const EventItem: FC<ListItemProps> = ({ item, showDetails, likeOrDislikeMutation
 
       {/* Organizer icon */}
         <View lightColor='transparent' darkColor='transparent' style={styles.organizerContainer}>
-          <Image style={styles.img} source={{ uri: item.organization.mediaUrl }} />
+          {item?.organization?.mediaUrl ? (
+            <Image style={styles.img} source={{ uri: item.organization?.mediaUrl }} />
+          ) : (
+            <Image style={styles.img} source={require('../../assets/images/icon.png')} />
+          )}
           <Text
             lightColor='#fff'
             darkColor='#eee'
@@ -194,7 +208,8 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 50,
     height: 48,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    width: 48,
   },
 
   organizer: {
