@@ -3,6 +3,7 @@ import { TextInputProps, StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { Text, View, useColors } from '../Themed';
 import { FontAwesome, } from '@expo/vector-icons';
+import { messages } from '../../constants/colors';
 
 
 interface AppTextInputProps extends TextInputProps {
@@ -64,13 +65,26 @@ const styles = StyleSheet.create({
 });
 
 
-export const AppInputFeedbackMsg: FC<{ text: string }> = ({ text }) => (
-  <Text style={formFieldStyles.formLabel}>{text}</Text>
+export const AppLabelFeedbackMsg: FC<{ text: string }> = ({ text }) => (
+  <View style={formFieldStyles.formLabel}>
+    <FontAwesome name='close' color={messages.error} size={20} />
+    <Text style={{ color: messages.error }}>{text}</Text>
+  </View>
+);
+
+
+export const AppLabelMsgOk: FC<{ text: string }> = ({ text }) => (
+  <View style={formFieldStyles.formLabel}>
+    <FontAwesome name='check-circle-o' color={messages.ok} size={20} />
+    <Text style={{ color: messages.ok }}>{text} is available</Text>
+  </View>
 );
 
 const formFieldStyles = StyleSheet.create({
   formLabel: {
-    color: '#bc544c',
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 5,
     paddingLeft: 20,
     position: 'absolute',
     top: -24

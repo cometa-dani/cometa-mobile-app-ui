@@ -11,7 +11,7 @@ import { auth } from '../../firebase/firebase';
 import { useState } from 'react';
 import { useCometaStore } from '../../store/cometaStore';
 import { AppButton, LightButton } from '../../components/buttons/buttons';
-import { AppTextInput } from '../../components/textInput/AppTextInput';
+import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
 
 
 type UserForm = {
@@ -21,7 +21,7 @@ type UserForm = {
 
 export const loginSchemma = Yup.object<UserForm>({
   email: Yup.string().email().required(),
-  password: Yup.string().required(),
+  password: Yup.string().min(6).max(18).required(),
 });
 
 
@@ -65,24 +65,36 @@ export default function LoginScreen(): JSX.Element {
             validationSchema={loginSchemma}
             onSubmit={handleLogin}>
 
-            {({ handleSubmit, handleChange, handleBlur, values }) => (
+            {({ handleSubmit, handleChange, handleBlur, values, touched, errors }) => (
               <View style={styles.form}>
-                <AppTextInput
-                  iconName='envelope-o'
-                  keyboardType="email-address"
-                  onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
-                  value={values.email}
-                  placeholder='Email'
-                />
-                <AppTextInput
-                  iconName='key'
-                  onChangeText={handleChange('password')}
-                  onBlur={handleBlur('password')}
-                  value={values.password}
-                  placeholder='Password'
-                  secureTextEntry={true}
-                />
+
+                <View style={{ position: 'relative' }}>
+                  {touched.email && errors.email && (
+                    <AppLabelFeedbackMsg text={errors.email} />
+                  )}
+                  <AppTextInput
+                    iconName='envelope-o'
+                    keyboardType="email-address"
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    value={values.email}
+                    placeholder='Email'
+                  />
+                </View>
+
+                <View style={{ position: 'relative' }}>
+                  {touched.password && errors.password && (
+                    <AppLabelFeedbackMsg text={errors.password} />
+                  )}
+                  <AppTextInput
+                    iconName='key'
+                    onChangeText={handleChange('password')}
+                    onBlur={handleBlur('password')}
+                    value={values.password}
+                    placeholder='Password'
+                    secureTextEntry={true}
+                  />
+                </View>
 
                 <AppButton
                   btnColor='primary'

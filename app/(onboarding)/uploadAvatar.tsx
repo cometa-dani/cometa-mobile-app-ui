@@ -9,7 +9,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { UserClientState } from '../../models/User';
 import { TextInput } from 'react-native-gesture-handler';
 import { Formik, FormikHelpers } from 'formik';
-import { AppInputFeedbackMsg } from '../../components/textInput/AppTextInput';
+import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
 import * as Yup from 'yup';
 
 // services
@@ -149,7 +149,7 @@ export default function UploadAvatarScreen(): JSX.Element {
             <View style={{ position: 'relative', width: '100%' }}>
               {errors.biography && (
                 <View style={{ marginLeft: -16 }}>
-                  <AppInputFeedbackMsg text={errors.biography} />
+                  <AppLabelFeedbackMsg text={errors.biography} />
                 </View>
               )}
               <View style={{

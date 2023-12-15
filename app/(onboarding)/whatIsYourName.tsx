@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 import { useCometaStore } from '../../store/cometaStore';
 import { AppButton } from '../../components/buttons/buttons';
-import { AppInputFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
+import { AppLabelFeedbackMsg, AppLabelMsgOk, AppTextInput } from '../../components/textInput/AppTextInput';
 import { useEffect, useState } from 'react';
 import userService from '../../services/userService';
 
@@ -33,8 +33,8 @@ export default function WhatIsYourNameScreen(): JSX.Element {
       if (!isAvaibleToUse || isFetching) return;
       try {
         setOnboarding({
-          name: values.name,
-          username: values.username
+          name: values.name.trim(),
+          username: values.username.trim()
         });
         actions.resetForm();
         actions.setSubmitting(false);
@@ -51,7 +51,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
       if (username.length >= 3) {
         try {
           setIsFetching(true);
-          const res = await userService.getUsersWithFilters({ username });
+          const res = await userService.getUsersWithFilters({ username: username.trim() });
           if (res.status === 204) {
             setIsAvailableToUse(true);
           }
@@ -83,6 +83,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
       {/* logo */}
 
       <Formik
+        validateOnMount={false}
         initialValues={{ name: '', username: '' }}
         validationSchema={loginSchemma}
         onSubmit={handleNextSlide}
@@ -93,7 +94,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
             {/* names */}
             <View style={styles.formField}>
               {touched.name && errors.name && (
-                <AppInputFeedbackMsg text={errors.name} />
+                <AppLabelFeedbackMsg text={errors.name} />
               )}
               <AppTextInput
                 iconName='user-o'
@@ -108,13 +109,19 @@ export default function WhatIsYourNameScreen(): JSX.Element {
 
             {/* @username */}
             <View style={styles.formField}>
+              {/* sintactic/local validation */}
               {touched.username && errors.username && (
-                <AppInputFeedbackMsg text={errors.username} />
-              )}
-              {!errors.username && !isAvaibleToUse && (
-                <AppInputFeedbackMsg text='Your username is already taken' />
+                <AppLabelFeedbackMsg text={errors.username} />
               )}
 
+              {/* validating in the backend */}
+              {!isFetching && !errors.username && !isAvaibleToUse && (
+                <AppLabelFeedbackMsg text='Your username is already taken' />
+              )}
+              {!isFetching && values.username.length >= 3 && !errors.username && isAvaibleToUse && (
+                <AppLabelMsgOk text={`@${values.username}`} />
+              )}
+              {/* validating in the backend */}
               <AppTextInput
                 iconName='at'
                 keyboardType="ascii-capable"
@@ -149,7 +156,7 @@ const styles = StyleSheet.create({
 
   form: {
     flexDirection: 'column',
-    gap: 34,
+    gap: 32,
     justifyContent: 'center',
     position: 'relative',
     width: '100%'

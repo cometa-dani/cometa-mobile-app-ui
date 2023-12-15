@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
 import { useCometaStore } from '../../store/cometaStore';
 import { AppButton } from '../../components/buttons/buttons';
-import { AppInputFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
+import { AppLabelFeedbackMsg, AppLabelMsgOk, AppTextInput } from '../../components/textInput/AppTextInput';
 import { useEffect, useState } from 'react';
 import userService from '../../services/userService';
 
@@ -94,10 +94,13 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
             {/* email */}
             <View style={{ position: 'relative' }}>
               {touched.email && errors.email && (
-                <AppInputFeedbackMsg text={errors.email} />
+                <AppLabelFeedbackMsg text={errors.email} />
               )}
-              {!errors.email && !isAvaibleToUse && (
-                <AppInputFeedbackMsg text='Your email already exists' />
+              {!isFetching && values.email.includes('@') && !errors.email && !isAvaibleToUse && (
+                <AppLabelFeedbackMsg text='Your email already exists' />
+              )}
+              {!isFetching && values.email.includes('@') && !errors.email && isAvaibleToUse && (
+                <AppLabelMsgOk text='email' />
               )}
               <AppTextInput
                 iconName='envelope-o'
@@ -116,7 +119,7 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
             {/* password */}
             <View style={{ position: 'relative' }}>
               {touched.password && errors.password && (
-                <AppInputFeedbackMsg text={errors.password} />
+                <AppLabelFeedbackMsg text={errors.password} />
               )}
               <AppTextInput
                 iconName='key'
@@ -151,7 +154,7 @@ const styles = StyleSheet.create({
 
   form: {
     flexDirection: 'column',
-    gap: 26,
+    gap: 32,
     justifyContent: 'center',
     width: '100%'
   },
