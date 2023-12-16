@@ -37,7 +37,13 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Cometa app accesses your photos to let you share them with your friends."
+          "photosPermission": "Cometa accesses your photos to let you share them with your friends."
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow $(Cometa) to access your microphone."
         }
       ]
     ],
