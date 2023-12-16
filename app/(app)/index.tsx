@@ -42,9 +42,10 @@ const EventItem: FC<ListItemProps> = ({ item, showDetails, likeOrDislikeMutation
         alignItems: 'center',
         height: layoutHeight,
         justifyContent: 'center',
-        width: '100%',
+        width: '100%'
       }}>
-        {/* Background image */}
+
+        {/* Background image or video */}
         <GestureDetector gesture={doubleTap}>
           {item.mediaType === 'IMAGE' ? (
             <Image
@@ -53,14 +54,17 @@ const EventItem: FC<ListItemProps> = ({ item, showDetails, likeOrDislikeMutation
             />
           ) : (
             <Video
-              useNativeControls
-              resizeMode={ResizeMode.CONTAIN}
+              // useNativeControls
+              resizeMode={ResizeMode.COVER}
+              shouldPlay
               isLooping
               source={{ uri: item.mediaUrl }}
-              style={{ width: '100%', height: '100%' }}
+              style={{ width: '100%', height: '100%', overflow: 'hidden' }}
             />
           )}
         </GestureDetector>
+        {/* Background image or video */}
+
         {/* Event title */}
         <Text lightColor='#fff' darkColor='#eee' style={styles.title}>{item.name}</Text>
 
@@ -119,6 +123,7 @@ const EventItem: FC<ListItemProps> = ({ item, showDetails, likeOrDislikeMutation
             {item.organization.name}
           </Text>
         </View>
+        {/* Organizer icon */}
       </View>
     </GestureDetector>
   );
