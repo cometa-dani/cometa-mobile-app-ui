@@ -5,11 +5,11 @@
     "slug": "cometa-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/cometa-logo.png",
+    "icon": "./assets/images/new-logo-icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/cometa-logo.png",
+      "image": "./assets/images/new-logo-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -43,7 +43,7 @@
       [
         "expo-av",
         {
-          "microphonePermission": "Allow $(Cometa) to access your microphone."
+          "microphonePermission": "Allow Cometa to access your microphone."
         }
       ]
     ],

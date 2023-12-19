@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
-import React, { FC, useState } from 'react';
+import React, { FC, useRef, useState } from 'react';
 import { LikedEvent, CreateEventLike } from '../../models/Event';
-import { StyleSheet, Image, DimensionValue, Pressable, SafeAreaView } from 'react-native';
+import { StyleSheet, Image, DimensionValue, Pressable, SafeAreaView, Dimensions, ViewToken } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, FlatList, Directions } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
@@ -16,6 +16,7 @@ import { ResizeMode, Video } from 'expo-av';
 // Define the props for the memoized list item
 interface ListItemProps {
   showDetails: (item: LikedEvent) => void,
+  videoShoulPlayOnAppear: boolean,
   item: LikedEvent,
   layoutHeight: DimensionValue,
   red100: string,
@@ -23,7 +24,10 @@ interface ListItemProps {
   likeOrDislikeMutation: UseMutationResult<CreateEventLike | null, Error, number, void>
 }
 
-const EventItem: FC<ListItemProps> = ({ item, showDetails, likeOrDislikeMutation, layoutHeight, red100, tabIconDefault }) => {
+const EventItem: FC<ListItemProps> = ({ videoShoulPlayOnAppear, item, showDetails, likeOrDislikeMutation, layoutHeight, red100, tabIconDefault }) => {
+
+  // video
+  const video = React.useRef<Video>(null);
 
   // can be lifted to the parent component like before
   const swipeLeft = Gesture.Fling();
@@ -54,10 +58,10 @@ const EventItem: FC<ListItemProps> = ({ item, showDetails, likeOrDislikeMutation
             />
           ) : (
             <Video
-              // useNativeControls
+              ref={video}
+              useNativeControls
               resizeMode={ResizeMode.COVER}
-              shouldPlay
-              isLooping
+              shouldPlay={videoShoulPlayOnAppear}
               source={{ uri: item.mediaUrl }}
               style={{ width: '100%', height: '100%', overflow: 'hidden' }}
             />
@@ -145,6 +149,14 @@ const EventItem: FC<ListItemProps> = ({ item, showDetails, likeOrDislikeMutation
 
 
 export default function HomeScreen(): JSX.Element {
+  const [playingVideo, setPlayingVideo] = useState<string>('');
+
+  const onViewRef = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    if (viewableItems.length > 0) {
+      setPlayingVideo(viewableItems[0].key);
+    }
+  });
+
   // Get access to colors and store data
   const { red100, tabIconDefault } = useColors();
 
@@ -176,8 +188,9 @@ export default function HomeScreen(): JSX.Element {
         <FlatList
           showsVerticalScrollIndicator={false}
           pagingEnabled={true}
-          // maxToRenderPerBatch={3}
           onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
+          onViewableItemsChanged={onViewRef.current}
+          viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
           data={data?.pages.flatMap(page => page.events)}
           contentContainerStyle={styles.flatListContent}
           onEndReached={handleInfititeFetch}
@@ -188,6 +201,7 @@ export default function HomeScreen(): JSX.Element {
               likeOrDislikeMutation={likeOrDislikeMutation}
               key={item.id}
               item={item}
+              videoShoulPlayOnAppear={String(item.id) === playingVideo}
               layoutHeight={layoutHeight}
               red100={red100}
               tabIconDefault={tabIconDefault}
