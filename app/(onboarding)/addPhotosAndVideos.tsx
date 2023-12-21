@@ -1,4 +1,4 @@
-import { Image, StyleSheet } from 'react-native';
+import { Image, Platform, StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { router } from 'expo-router';
 import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
@@ -8,6 +8,8 @@ import { useMutationDeleteUserPhotoByUuid, useMutationUploadUserPhotos, useQuery
 import { Photo } from '../../models/User';
 import * as ImagePicker from 'expo-image-picker';
 import { useCometaStore } from '../../store/cometaStore';
+import { useEffect } from 'react';
+import { BackHandler } from 'react-native';
 
 
 export default function AddPhotosAndVideosScreen(): JSX.Element {
@@ -20,7 +22,7 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
   // queries
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
   const userPhotos: Photo[] = userProfile?.photos || [];
-  const selectionLimit: number = (userProfile?.maxNumPhotos || 5) - (userPhotos?.length || 1);
+  const selectionLimit: number = userProfile?.maxNumPhotos || 5;
 
 
   const handlePickMultipleImages = async () => {
@@ -61,6 +63,20 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
     setIsAuthenticated(true);
     router.push('/(app)/');
   };
+
+
+  // prevents back button behavior for android
+  useEffect(() => {
+    const backAction = () => {
+      // You can perform a specific action here, or return true to prevent the default back button behavior
+      if (Platform.OS === 'android') {
+        return true;
+      }
+    };
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    // Don't forget to remove the listener when the component is unmounted
+    return () => backHandler.remove();
+  }, []);
 
 
   return (
