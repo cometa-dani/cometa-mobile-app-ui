@@ -25,9 +25,8 @@ const validationSchemma = Yup.object({
 
 export default function UploadAvatarScreen(): JSX.Element {
   const { text, gray500 } = useColors();
-  const [imageUri, setImageUri] = useState<string>('');
-  const imgFileRef = useRef<ImagePicker.ImagePickerAsset>();
   const onboarding = useCometaStore(state => state.onboarding);
+  const setOnboardingUser = useCometaStore(state => state.setOnboarding);
   const setUserUid = useCometaStore(state => state.setUid);
   const setAccessToken = useCometaStore(state => state.setAccessToken);
 
@@ -56,12 +55,11 @@ export default function UploadAvatarScreen(): JSX.Element {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [4, 3],
+        aspect: [4, 4],
         quality: 1,
       });
       if (!result.canceled) {
-        imgFileRef.current = result.assets[0];
-        setImageUri(result.assets[0].uri);
+        setOnboardingUser({ imageRef: result.assets[0] });
       }
     }
     catch (error) {
@@ -74,14 +72,14 @@ export default function UploadAvatarScreen(): JSX.Element {
     async (values: { biography: string }, actions: FormikHelpers<{ biography: string }>) => {
       const { username, email, password, ...otherUserFields } = onboarding?.user as UserClientState;
       try {
-        if (imgFileRef?.current?.uri) {
+        if (onboarding.user.imageRef?.uri) {
           // put this step on the register form
           const { data: newCreatedUser } = await usersService.create({ username, email }); // first checks if user exists
           try {
             const [{ user: userCrendentials }] = (
               await Promise.all([
                 createUserWithEmailAndPassword(auth, email, password),
-                usersService.uploadOrUpdateAvatarImgByUserID(newCreatedUser.id, imgFileRef?.current),
+                usersService.uploadOrUpdateAvatarImgByUserID(newCreatedUser.id, onboarding.user.imageRef),
               ])
             );
             await usersService.updateById(
@@ -120,8 +118,8 @@ export default function UploadAvatarScreen(): JSX.Element {
       {/* logo */}
 
       <View style={{ alignItems: 'center' }}>
-        {imageUri ? (
-          <Image style={styles.avatar} source={{ uri: imageUri }} />
+        {onboarding.user?.imageRef?.uri ? (
+          <Image style={styles.avatar} source={{ uri: onboarding.user?.imageRef?.uri }} />
         ) : (
           <View style={styles.avatar} />
         )}
@@ -140,7 +138,7 @@ export default function UploadAvatarScreen(): JSX.Element {
 
       <Formik
         validationSchema={validationSchemma}
-        initialValues={{ biography: 'Tell me something about you' }}
+        initialValues={{ biography: onboarding.user?.biography || 'Tell me something about you' }}
         onSubmit={handleUserRegistrationAndSlideNext}
       >
         {({ handleBlur, handleChange, handleSubmit, values, errors }) => (
@@ -171,7 +169,10 @@ export default function UploadAvatarScreen(): JSX.Element {
                         fontSize: 16,
                       }}
                       onBlur={handleBlur('biography')}
-                      onChangeText={handleChange('biography')}
+                      onChangeText={(text) => {
+                        handleChange('biography')(text);
+                        setOnboardingUser({ biography: text });
+                      }}
                       ref={bioRef}
                       value={values.biography}
                     />

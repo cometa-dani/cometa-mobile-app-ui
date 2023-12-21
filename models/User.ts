@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import { ImagePickerAsset } from 'expo-image-picker';
 import { EventCategory } from './Event';
 import { Friendship, Status } from './Friendship';
 
@@ -6,6 +7,7 @@ import { Friendship, Status } from './Friendship';
 // used in zustand store for global CLIENT STATE
 export interface UserClientState extends GetBasicUserProfile {
   password: string;
+  imageRef: ImagePickerAsset;
 }
 
 export interface Photo {
