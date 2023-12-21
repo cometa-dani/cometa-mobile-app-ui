@@ -36,7 +36,6 @@ export default function WhatIsYourNameScreen(): JSX.Element {
           name: values.name.trim(),
           username: values.username.trim()
         });
-        actions.resetForm();
         actions.setSubmitting(false);
         router.push('/(onboarding)/whatIsYourEmail');
       }

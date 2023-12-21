@@ -17,7 +17,6 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
   const setOnboarding = useCometaStore(state => state.setOnboarding);
   const user = useCometaStore(state => state.onboarding.user);
   const [toggleDatePicker, setToggleDatePicker] = useState(false);
-  const [isBirthdayConfirmed, setIsBirthdarConfirmed] = useState(false);
   const [toggleModal, setToggleModal] = useState(false);
 
 
@@ -27,25 +26,23 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
     // when date is set
     if (event.type === 'set') {
       setOnboarding({ birthday: selectedDate });
-      console.log(selectedDate);
-      setTimeout(() => setToggleModal(true), 300);
+      setToggleModal(true);
     }
   };
 
   const handleEdit = (): void => {
     setToggleModal(false);
-    setTimeout(() => setToggleDatePicker(prev => !prev), 300);
+    setTimeout(() => setToggleDatePicker(prev => !prev), 100);
   };
 
   const handleConfirmation = (): void => {
     if (user.birthday) {
-      setIsBirthdarConfirmed(true);
       setToggleModal(false);
     }
   };
 
   const handleSlideNext = (): void => {
-    isBirthdayConfirmed && router.push('/(onboarding)/uploadAvatar');
+    router.push('/(onboarding)/uploadAvatar');
   };
 
   return (
@@ -84,7 +81,7 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
         text='PICK DATE'
       />
 
-      {!isBirthdayConfirmed && (
+      {!user.birthday && (
         <AppButton
           style={{ position: 'absolute', bottom: 24 }}
           onPress={() => router.push('/(onboarding)/uploadAvatar')}
@@ -93,7 +90,7 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
         />
       )}
 
-      {isBirthdayConfirmed && (
+      {user.birthday && (
         <AppButton
           onPress={handleSlideNext}
           btnColor='primary'

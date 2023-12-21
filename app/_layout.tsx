@@ -61,25 +61,26 @@ export default function RootLayout() {
   );
 }
 
+const animationDuration = 290;
 
 function RootLayoutNav(): JSX.Element {
   const likedEvent = useCometaStore(state => state.likedEvent);
   const toggleActionSheet = useCometaStore(state => state.toggleActionSheet);
   const setToggleActionSheet = useCometaStore(state => state.setToggleActionSheet);
-  const screenOptions = { headerShown: false, animation: 'slide_from_right' } as ScreenProps;
+  const screenOptions = { headerShown: false, animation: 'slide_from_right', animationDuration } as ScreenProps;
 
   return (
     <>
       <Stack>
         <Stack.Screen name='index' options={screenOptions} />
 
-        <Stack.Screen name="(onboarding)" options={screenOptions} />
+        <Stack.Screen name="(onboarding)" options={{ ...screenOptions }} />
 
         <Stack.Screen name="(app)" options={screenOptions} />
 
-        <Stack.Screen name="bucketList" options={{ presentation: 'modal', headerTitle: 'BucketList' }} />
+        <Stack.Screen name="bucketList" options={{ presentation: 'modal', headerTitle: 'BucketList', animationDuration }} />
 
-        <Stack.Screen name="[connectWithPeople]" options={{ presentation: 'modal', headerTitle: 'Connect with People' }} />
+        <Stack.Screen name="[connectWithPeople]" options={{ presentation: 'modal', headerTitle: 'Connect with People', animationDuration }} />
       </Stack>
 
       <EventActionSheet

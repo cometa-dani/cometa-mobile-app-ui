@@ -24,6 +24,7 @@ export const loginSchemma = Yup.object<UserForm>({
 
 export default function WhatIsYourEmailScreen(): JSX.Element {
   const setOnboarding = useCometaStore(state => state.setOnboarding);
+  const onboarding = useCometaStore(state => state.onboarding.user);
   const [isAvaibleToUse, setIsAvailableToUse] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
   const [email, setEmail] = useState('');
@@ -36,7 +37,6 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
           email: values.email,
           password: values.password
         });
-        actions.resetForm();
         actions.setSubmitting(false);
         router.push('/(onboarding)/whenIsYourBirthday');
       }
@@ -84,7 +84,7 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
       {/* logo */}
 
       <Formik
-        initialValues={{ email: '', password: '' }}
+        initialValues={{ email: onboarding.email || '', password: onboarding.password || '' }}
         validationSchema={loginSchemma}
         onSubmit={handleNextSlide}
       >
