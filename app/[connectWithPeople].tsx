@@ -203,7 +203,13 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                           <Image style={styles.userAvatar} source={{ uri: friend?.avatar }} />
 
                           <View style={styles.textContainer}>
-                            <Text style={styles.userName}>{friend?.username}</Text>
+                            <Text
+                              style={styles.userName}
+                              numberOfLines={1}
+                              ellipsizeMode='tail'
+                            >
+                              {friend?.username}
+                            </Text>
                             <Text>online</Text>
                           </View>
                         </View>
@@ -242,7 +248,13 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                           <Image style={styles.userAvatar} source={{ uri: anotherUser.avatar }} />
 
                           <View style={styles.textContainer}>
-                            <Text style={styles.userName}>{anotherUser.username}</Text>
+                            <Text
+                              style={styles.userName}
+                              numberOfLines={1}
+                              ellipsizeMode='tail'
+                            >
+                              {anotherUser.username}
+                            </Text>
                             <Text>online</Text>
                           </View>
                         </View>
@@ -367,11 +379,11 @@ const modalStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   avatarContainer: {
     flexDirection: 'row',
-    gap: 14,
+    gap: 10,
   },
 
   flatList: {
-    gap: 26,
+    gap: 24,
     paddingHorizontal: 18,
     paddingVertical: 28
   },
@@ -391,7 +403,7 @@ const styles = StyleSheet.create({
   },
 
   tab: {
-    fontSize: 17.6,
+    fontSize: 17,
     fontWeight: '700',
     paddingHorizontal: 10,
     paddingVertical: 2
@@ -418,10 +430,10 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     elevation: 3,
     flexDirection: 'row',
-    gap: 18,
+    gap: 10,
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingVertical: 20,
+    paddingHorizontal: 22,
+    paddingVertical: 18,
     shadowColor: '#171717',
     shadowOffset: { width: 6, height: 6 },
     shadowOpacity: 0.1,
@@ -435,8 +447,9 @@ const styles = StyleSheet.create({
   },
 
   userName: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '700',
-    textTransform: 'capitalize'
+    textTransform: 'capitalize',
+    width: 110
   }
 });
