@@ -1,8 +1,9 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { LikedEvent, } from '../../models/Event';
-import { StyleSheet, Image, DimensionValue, Pressable, SafeAreaView, ViewToken } from 'react-native';
+import { StyleSheet, Image, DimensionValue, Pressable, SafeAreaView, ViewToken, Dimensions } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import { Text, View, useColors } from '../../components/Themed';
-import { GestureDetector, Gesture, FlatList, Directions } from 'react-native-gesture-handler';
+import { GestureDetector, Gesture, Directions } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { router, } from 'expo-router';
 import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
@@ -47,21 +48,19 @@ export default function HomeScreen(): JSX.Element {
 
       <View style={styles.container}>
         {/* Latest events list */}
-        <FlatList
+        <FlashList
           onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
           onViewableItemsChanged={onViewRef.current}
           viewabilityConfig={{ viewAreaCoveragePercentThreshold: 30 }}
           keyExtractor={item => item.id.toString()}
           removeClippedSubviews={true}
           refreshing={isFetching}
-          initialNumToRender={2}
-          maxToRenderPerBatch={3}
           showsVerticalScrollIndicator={false}
+          estimatedItemSize={Dimensions.get('window').height - 54}
           pagingEnabled={true}
           data={data?.pages.flatMap(page => page.events)}
-          contentContainerStyle={styles.flatListContent}
           onEndReached={handleInfiniteFetch}
-          onEndReachedThreshold={1}
+          onEndReachedThreshold={1.5}
           renderItem={({ item }) => (
             <MemoizedEventItem
               key={item.id}
@@ -80,10 +79,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
-  },
-
-  flatListContent: {
-    flexGrow: 1,
   },
 
   img: {

@@ -5,7 +5,7 @@ import { Text, View } from '../components/Themed';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQueryGetEventById, useInfiteQueryGetUsersWhoLikedEventByID } from '../queries/eventHooks';
 import { Image } from 'react-native';
-import { FlatList, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
+import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { AppButton } from '../components/buttons/buttons';
 import { StatusBar } from 'expo-status-bar';
 import { useInfiniteQueryGetNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../queries/friendshipHooks';
@@ -20,6 +20,7 @@ import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { IMessage, } from 'react-native-gifted-chat';
 import { nodeEnv } from '../constants/vars';
+import { FlashList } from '@shopify/flash-list';
 
 
 type Message = { message: string };
@@ -194,9 +195,11 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
         {toggleTabs && (
           newestFriendsRes.isSuccess && (
             <Animated.View style={{ flex: 1 }} entering={SlideInLeft.duration(240)} exiting={SlideOutRight.duration(240)}>
-              <FlatList
-                showsVerticalScrollIndicator={false}
+              <FlashList
+                estimatedItemSize={120}
+                ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
                 contentContainerStyle={styles.flatList}
+                showsVerticalScrollIndicator={false}
                 data={allFriends || []}
                 renderItem={({ item: { friend }, index }) => {
                   return (
@@ -235,10 +238,11 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
         {!toggleTabs && (
           newPeopleRes.isSuccess && (
             <Animated.View style={{ flex: 1 }} entering={SlideInRight.duration(240)} exiting={SlideOutLeft.duration(240)}>
-              <FlatList
-                // ListHeaderComponent={}
-                showsVerticalScrollIndicator={false}
+              <FlashList
+                estimatedItemSize={120}
+                ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
                 contentContainerStyle={styles.flatList}
+                showsVerticalScrollIndicator={false}
                 data={newPeopleRes.data?.pages.flatMap(page => page.usersWhoLikedEvent)}
                 renderItem={({ item: { user: anotherUser }, index }) => {
                   const isReceiver: boolean = anotherUser?.incomingFriendships[0]?.status === 'PENDING';
@@ -386,9 +390,8 @@ const styles = StyleSheet.create({
   },
 
   flatList: {
-    gap: 24,
-    paddingHorizontal: 18,
-    paddingVertical: 28
+    paddingHorizontal: 20,
+    paddingVertical: 26
   },
 
   header: {
@@ -435,6 +438,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     justifyContent: 'space-between',
+    marginBottom: 5,
     paddingHorizontal: 22,
     paddingVertical: 18,
     shadowColor: '#171717',
