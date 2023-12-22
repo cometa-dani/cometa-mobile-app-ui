@@ -58,7 +58,6 @@ export default function UserProfileScreen(): JSX.Element {
 
   const handleSumitUserInfo =
     async (values: ProfileValues, actions: FormikHelpers<ProfileValues>): Promise<void> => {
-      setToggleEdit(false);
       mutateUserProfileById.mutate({ userId: userProfile?.id as number, payload: values });
       actions.setSubmitting(false);
     };
@@ -69,9 +68,7 @@ export default function UserProfileScreen(): JSX.Element {
       return;
     }
     else {
-      // upload new photos
       try {
-        // No permissions request is necessary for launching the image library
         const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsMultipleSelection: true,
@@ -184,10 +181,21 @@ export default function UserProfileScreen(): JSX.Element {
 
                   {toggleEdit ? (
                     // submit button
-                    <AppButton onPress={() => handleSubmit()} btnColor='primary' text='Save Profile' />
+                    <AppButton
+                      onPress={() => {
+                        handleSubmit();
+                        setToggleEdit(false);
+                      }}
+                      btnColor='primary'
+                      text='Save Profile'
+                    />
                   ) : (
                     // toggle button
-                    <AppButton onPress={() => setToggleEdit(true)} btnColor='white' text='Edit Profile' />
+                    <AppButton
+                      onPress={() => setToggleEdit(true)}
+                      btnColor='white'
+                      text='Edit Profile'
+                    />
                   )}
                 </>
               )}

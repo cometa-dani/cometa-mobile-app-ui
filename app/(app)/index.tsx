@@ -18,8 +18,7 @@ export default function HomeScreen(): JSX.Element {
   const onViewRef = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     if (viewableItems.length > 0) {
       if (viewableItems[0].item.mediaType === 'VIDEO') {
-
-        console.log('viewableItems', viewableItems[0].item?.id);
+        // console.log('viewableItems', viewableItems[0].item?.id);
         setPlayingVideo(viewableItems[0].item?.id);
       }
       // TODO: FIXE temporary fix to avoid playing multiple videos at the same time

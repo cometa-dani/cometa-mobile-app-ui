@@ -63,7 +63,7 @@ class UserService extends RestApiService {
 
       formData.append('files', imgFile);
     });
-
+    console.log(formData);
     return this.http.post<GetBasicUserProfile>(`/users/${userID}/photos`, formData, { headers });
   }
 

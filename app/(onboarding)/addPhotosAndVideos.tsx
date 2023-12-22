@@ -22,17 +22,14 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
   // queries
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
   const userPhotos: Photo[] = userProfile?.photos || [];
-  const selectionLimit: number = userProfile?.maxNumPhotos || 5;
-
+  const selectionLimit: number = (userProfile?.maxNumPhotos || 5) - (userPhotos?.length || 1);
 
   const handlePickMultipleImages = async () => {
-    if (selectionLimit === 0) {
+    if (selectionLimit == 0) {
       return;
     }
     else {
-      // upload new photos
       try {
-        // No permissions request is necessary for launching the image library
         const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsMultipleSelection: true,
@@ -40,6 +37,7 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
           aspect: [4, 3],
           quality: 1,
         });
+        console.log(!result.canceled && userProfile?.id);
         if (!result.canceled && userProfile?.id) {
           mutateUserPhotosUpload.mutate({
             userID: userProfile?.id,
