@@ -190,8 +190,9 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
         {/* FRIENDS */}
         {toggleTabs && (
           newestFriendsRes.isSuccess && (
-            <Animated.View entering={SlideInLeft} exiting={SlideOutRight}>
+            <Animated.View style={{ flex: 1 }} entering={SlideInLeft.duration(240)} exiting={SlideOutRight.duration(240)}>
               <FlatList
+                showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.flatList}
                 data={newestFriendsRes.data?.pages.flatMap(page => page?.friendships) || []}
                 renderItem={({ item: { friend }, index }) => {
@@ -224,9 +225,10 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
         {/* NEW PEOPLE */}
         {!toggleTabs && (
           newPeopleRes.isSuccess && (
-            <Animated.View entering={SlideInRight} exiting={SlideOutLeft}>
+            <Animated.View style={{ flex: 1 }} entering={SlideInRight.duration(240)} exiting={SlideOutLeft.duration(240)}>
               <FlatList
                 // ListHeaderComponent={}
+                showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.flatList}
                 data={newPeopleRes.data?.pages.flatMap(page => page.usersWhoLikedEvent)}
                 renderItem={({ item: { user: anotherUser }, index }) => {
@@ -368,7 +370,11 @@ const styles = StyleSheet.create({
     gap: 14,
   },
 
-  flatList: { gap: 26, paddingHorizontal: 18, paddingVertical: 28 },
+  flatList: {
+    gap: 26,
+    paddingHorizontal: 18,
+    paddingVertical: 28
+  },
 
   header: {
     gap: 16
