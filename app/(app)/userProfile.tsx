@@ -84,7 +84,7 @@ export default function UserProfileScreen(): JSX.Element {
         }
       }
       catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     }
   };
@@ -213,7 +213,17 @@ export default function UserProfileScreen(): JSX.Element {
           {/* BUCKETLIST */}
           {!toggleEdit && (
             <AppCarousel
-              list={userProfile?.likedEvents.map(item => ({ id: item.id, img: item.event.mediaUrl })) || []}
+              list={
+                userProfile
+                  ?.likedEvents
+                  .map(
+                    (item) => item.event.mediaType === 'VIDEO' ?
+                      ({ id: item.id, img: '' })
+                      :
+                      ({ id: item.id, img: item.event?.mediaUrl })
+                  )
+                || []
+              }
               title='BucketList'
             />
           )}

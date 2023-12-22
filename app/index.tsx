@@ -32,17 +32,17 @@ export default function WelcomeScreen(): JSX.Element {
             setIsAuthenticated(true);
             setUserUid(user.uid);
             // console.log(user.uid);
-            console.log(`${user.email} is authenticated`);
+            // console.log(`${user.email} is authenticated`);
             resolve(true);
           }
           else {
             setIsAuthenticated(false);
-            console.log('user is logged out');
+            // console.log('user is logged out');
             resolve(false);
           }
         }
         catch (error) {
-          console.log(error);
+          // console.log(error);
         }
       });
     });

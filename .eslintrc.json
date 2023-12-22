@@ -30,6 +30,7 @@
     "react/react-in-jsx-scope": "off",
     "quotes": ["error", "single"],
     "semi": ["error", "always"],
-    "react-native/no-color-literals": "off"
+    "react-native/no-color-literals": "off",
+    "no-console": "warn"
   }
 }

@@ -112,6 +112,7 @@ export interface LikedEvent {
 export interface Event {
   mediaUrl: string;
   name: string;
+  mediaType: 'IMAGE' | 'VIDEO';
 }
 
 export interface OutgoingFriendship {

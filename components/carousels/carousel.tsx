@@ -2,8 +2,8 @@ import { FC } from 'react';
 import { StyleSheet, Image } from 'react-native';
 import { AppCard } from '../card/card';
 import { Text, View, useColors } from '../Themed';
-import { FlatList } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
+import { FlashList } from '@shopify/flash-list';
 
 
 interface Props {
@@ -14,7 +14,6 @@ interface Props {
 
 export const AppCarousel: FC<Props> = ({ list, title, isLocked = false }) => {
   const { gray50, gray200 } = useColors();
-
   return (
     isLocked ? (
       <AppCard style={[styles.lock, { backgroundColor: gray50 }]}>
@@ -33,19 +32,27 @@ export const AppCarousel: FC<Props> = ({ list, title, isLocked = false }) => {
               <Text>No {title} available</Text>
             </View>
           ) : (
-            <FlatList
-              contentContainerStyle={{ gap: 12, justifyContent: 'center' }}
+            <FlashList
               showsHorizontalScrollIndicator={false}
-              // pagingEnabled={true}
+              estimatedItemSize={130}
+              ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
               horizontal={true}
               data={list}
-              renderItem={({ item }) => (
-                <Image
-                  style={styles.bucketListImage}
-                  key={item.id}
-                  source={{ uri: item.img }}
-                />
-              )}
+              renderItem={({ item }) => {
+                return (
+                  item?.img ? (
+                    <Image
+                      style={styles.bucketListImage}
+                      key={item.id}
+                      source={{ uri: item.img }}
+                    />
+                  ) : (
+                    <View key={item.id} style={[styles.bucketListImage, { backgroundColor: '#eee', padding: 12, alignItems: 'center', flex: 1 }]} >
+                      <Text>Photo not available</Text>
+                    </View>
+                  )
+                );
+              }}
             />
           )}
         </View>
