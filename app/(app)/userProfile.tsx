@@ -43,7 +43,7 @@ export default function UserProfileScreen(): JSX.Element {
   // queries
   const { data: userProfile, isSuccess } = useQueryGetUserProfileByUid(uid);
   const userPhotos: Photo[] = userProfile?.photos ?? [];
-  const selectionLimit: number = (userProfile?.maxNumPhotos || 0) - (userPhotos?.length || 0);
+  const selectionLimit: number = (userProfile?.maxNumPhotos || 5) - (userPhotos?.length || 0);
 
   const totalFriends =
     (userProfile?._count.incomingFriendships || 0)
@@ -228,7 +228,6 @@ export default function UserProfileScreen(): JSX.Element {
             />
           )}
           {/* BUCKETLIST */}
-
 
           {/* PHOTOS */}
           {isSuccess && (

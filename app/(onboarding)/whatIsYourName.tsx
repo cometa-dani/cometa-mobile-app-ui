@@ -40,7 +40,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
         router.push('/(onboarding)/whatIsYourEmail');
       }
       catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
@@ -60,7 +60,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
           setIsFetching(false);
         }
         catch (error) {
-          console.log(error);
+          // console.log(error);
           setIsFetching(false);
           setIsAvailableToUse(false);
         }

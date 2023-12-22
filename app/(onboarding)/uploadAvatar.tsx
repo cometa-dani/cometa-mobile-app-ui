@@ -63,7 +63,7 @@ export default function UploadAvatarScreen(): JSX.Element {
       }
     }
     catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
@@ -95,7 +95,7 @@ export default function UploadAvatarScreen(): JSX.Element {
           catch (error) {
 
             // TODO: delete user from DB and firebase
-            console.log(error);
+            // console.log(error);
           }
         }
         else {
@@ -103,7 +103,7 @@ export default function UploadAvatarScreen(): JSX.Element {
         }
       }
       catch (error) {
-        console.log(error); // triggers when user already exists
+        // console.log(error); // triggers when user already exists
       }
     };
 

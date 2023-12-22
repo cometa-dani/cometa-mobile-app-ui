@@ -43,7 +43,7 @@ export default function ChatScreen(): JSX.Element {
       }
     }
     catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }, [friendshipData?.id]);
 

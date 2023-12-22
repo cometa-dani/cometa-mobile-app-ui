@@ -41,7 +41,7 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
         router.push('/(onboarding)/whenIsYourBirthday');
       }
       catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
@@ -62,7 +62,7 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
           setIsFetching(false);
         }
         catch (error) {
-          console.log(error);
+          // console.log(error);
           setIsFetching(false);
           setIsAvailableToUse(false);
         }

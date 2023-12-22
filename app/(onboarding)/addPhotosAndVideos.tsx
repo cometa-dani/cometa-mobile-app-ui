@@ -22,7 +22,7 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
   // queries
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
   const userPhotos: Photo[] = userProfile?.photos || [];
-  const selectionLimit: number = (userProfile?.maxNumPhotos || 5) - (userPhotos?.length || 1);
+  const selectionLimit: number = (userProfile?.maxNumPhotos || 5) - (userPhotos?.length || 0);
 
   // TODO: bug when uploading multiple images in parts
   const handlePickMultipleImages = async () => {
@@ -47,7 +47,7 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
         }
       }
       catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     }
   };

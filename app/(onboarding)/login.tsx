@@ -45,7 +45,7 @@ export default function LoginScreen(): JSX.Element {
         router.push('/(app)/');
       }
       catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 

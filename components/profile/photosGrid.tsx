@@ -19,12 +19,14 @@ interface AppPhotoGridProps {
 export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDeleteImage, photosList, placeholders = 0 }) => {
   const editorMode: boolean = onHandlePickImage || onDeleteImage ? true : false;
   const { gray500, gray900, white50 } = useColors();
+
+  const lastItemOff = photosList.length === 0 ? - 1 : 0;
   const placeholdersPhotos = (
     placeholders == 0 ?
       []
       :
       Array
-        .from({ length: placeholders }, (_, index) => index)
+        .from({ length: placeholders + lastItemOff }, (_, index) => index)
         .map(() => ({} as Photo))
   );
 

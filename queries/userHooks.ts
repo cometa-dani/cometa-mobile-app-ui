@@ -99,14 +99,15 @@ export const useMutationUploadUserPhotos = () => {
 
       onMutate: async ({ pickedImgFiles }) => {
         await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO] });
+
         queryClient
           .setQueryData<GetDetailedUserProfile>
           ([QueryKeys.GET_USER_INFO], (oldState): GetDetailedUserProfile => {
-            const newPhotos: Photo[] = pickedImgFiles.map(img => ({ url: img.uri, uuid: uuid.v4() as string }));
+            const newPhotos: Photo[] = pickedImgFiles.map(img => ({ url: img.uri, uuid: uuid.v4() as string })) || [];
 
             const optimisticState = {
               ...oldState,
-              photos: oldState?.photos.concat(newPhotos)
+              photos: [...(oldState?.photos || []), ...newPhotos]
 
             } as GetDetailedUserProfile;
 
