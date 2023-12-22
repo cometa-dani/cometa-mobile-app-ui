@@ -296,7 +296,8 @@ function arePropsEqual(prevProps: ListItemProps, nextProps: ListItemProps): bool
   // Return true if the props are equal, return false if they are not
   return (
     prevProps.playingVideo === nextProps.playingVideo &&
-    prevProps.item.isLiked === nextProps.item.isLiked
+    prevProps.item.isLiked === nextProps.item.isLiked &&
+    prevProps.layoutHeight === nextProps.layoutHeight
   );
 }
 

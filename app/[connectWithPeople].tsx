@@ -1,4 +1,4 @@
-import { FC, useLayoutEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import Modal from 'react-native-modal';
 import { SafeAreaView, StyleSheet, Pressable } from 'react-native';
 import { Text, View } from '../components/Themed';
