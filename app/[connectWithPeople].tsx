@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useLayoutEffect, useState } from 'react';
 import Modal from 'react-native-modal';
 import { SafeAreaView, StyleSheet, Pressable } from 'react-native';
 import { Text, View } from '../components/Themed';
@@ -37,8 +37,6 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const incommginFriendshipSender = useCometaStore(state => state.incommginFriendshipSender);
   const setIncommginFriendshipSender = useCometaStore(state => state.setIncommginFriendshipSender);
 
-  // toggling tabs
-  const [toggleTabs, setToggleTabs] = useState(true);
 
   // queries
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
@@ -46,6 +44,11 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const eventByIdRes = useQueryGetEventById(+urlParam);
   const newPeopleRes = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();
+
+  const allFriends = newestFriendsRes.data?.pages.flatMap(page => page?.friendships) || [];
+
+  // toggling tabs
+  const [toggleTabs, setToggleTabs] = useState(true); // shuould be store on phone
 
   // mutations
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
@@ -194,7 +197,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
               <FlatList
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.flatList}
-                data={newestFriendsRes.data?.pages.flatMap(page => page?.friendships) || []}
+                data={allFriends || []}
                 renderItem={({ item: { friend }, index }) => {
                   return (
                     <View key={index} style={styles.user}>
