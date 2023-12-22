@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   bubblesContainer: {
     flexDirection: 'row',
     flex: 0,
-    gap: -13,
+    gap: -11,
     justifyContent: 'flex-start',
   },
 
@@ -151,7 +151,6 @@ const styles = StyleSheet.create({
   eventContainer: {
     flex: 1,
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 10
   },
 
@@ -163,14 +162,16 @@ const styles = StyleSheet.create({
 
   img: {
     borderRadius: 26,
-    flex: 1,
-    height: 108
+    height: 108,
+    resizeMode: 'cover',
+    width: '40%',
   },
 
   textContainer: {
-    flex: 1,
+    // flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-around',
+    width: '34%',
   },
 
   title: {
