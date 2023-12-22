@@ -86,9 +86,9 @@ export const useMutationUploadUserPhotos = () => {
     useMutation({
       mutationFn:
         async ({ userID, pickedImgFiles }: PhotosParams): Promise<GetBasicUserProfile> => {
-          console.log(userID, pickedImgFiles);
+          // console.log(userID, pickedImgFiles);
           const res = await userService.uploadManyPhotosByUserId(userID, pickedImgFiles);
-          console.log(res);
+          // console.log(res);
           if (res.status === 200) {
             return res.data;
           }

@@ -24,6 +24,7 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
   const userPhotos: Photo[] = userProfile?.photos || [];
   const selectionLimit: number = (userProfile?.maxNumPhotos || 5) - (userPhotos?.length || 1);
 
+  // TODO: bug when uploading multiple images in parts
   const handlePickMultipleImages = async () => {
     if (selectionLimit == 0) {
       return;
@@ -37,7 +38,7 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
           aspect: [4, 3],
           quality: 1,
         });
-        console.log(!result.canceled && userProfile?.id);
+        // console.log(!result.canceled && userProfile?.id);
         if (!result.canceled && userProfile?.id) {
           mutateUserPhotosUpload.mutate({
             userID: userProfile?.id,
