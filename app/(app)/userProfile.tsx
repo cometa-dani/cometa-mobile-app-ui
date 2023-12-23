@@ -162,7 +162,7 @@ export default function UserProfileScreen(): JSX.Element {
                     ) : (
                       <View style={profileStyles.avatarFigure}>
 
-                        <Pressable onPress={() => handlePickAvatarImg()}>
+                        <Pressable onPress={async () => await handlePickAvatarImg()}>
                           <Image style={profileStyles.avatar} source={{ uri: userProfile?.avatar }} />
                         </Pressable>
 
