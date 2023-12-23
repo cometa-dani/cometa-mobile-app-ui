@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { LikedEvent, } from '../../models/Event';
-import { StyleSheet, Image, DimensionValue, Pressable, SafeAreaView, ViewToken, Dimensions } from 'react-native';
+import { StyleSheet, DimensionValue, Pressable, SafeAreaView, ViewToken, Dimensions } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture, Directions } from 'react-native-gesture-handler';
@@ -10,6 +10,7 @@ import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '
 import { StatusBar } from 'expo-status-bar';
 import { useCometaStore } from '../../store/cometaStore';
 import { ResizeMode, Video } from 'expo-av';
+import { Image } from 'expo-image'; // use with thumbhash
 
 
 export default function HomeScreen(): JSX.Element {
@@ -190,8 +191,10 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
         <GestureDetector gesture={doubleTap}>
           {item.mediaType === 'IMAGE' ? (
             <Image
-              source={{ uri: item.mediaUrl }}
+              source={item.mediaUrl}
               style={{ width: '100%', height: '100%' }}
+              placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
+              transition={200}
             />
           ) : (
             <Video
