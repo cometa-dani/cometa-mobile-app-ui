@@ -16,8 +16,8 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
   const uid = useCometaStore(state => state.uid);
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   // mutations
-  const mutateUserPhotosUpload = useMutationUploadUserPhotos();
-  const mutateUserPhotosDelete = useMutationDeleteUserPhotoByUuid();
+  const mutateUserPhotosUpload = useMutationUploadUserPhotos(uid);
+  const mutateUserPhotosDelete = useMutationDeleteUserPhotoByUuid(uid);
 
   // queries
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);

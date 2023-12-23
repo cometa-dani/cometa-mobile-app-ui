@@ -1,10 +1,10 @@
-import { ScrollView, Button, SafeAreaView, Image, TextInput } from 'react-native';
+import { ScrollView, Button, SafeAreaView, Image, TextInput, Pressable } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { StatusBar } from 'expo-status-bar';
 import { useCometaStore } from '../../store/cometaStore';
-import { useMutationDeleteUserPhotoByUuid, useMutationUploadUserPhotos, useMutationUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
+import { useMutationDeleteUserPhotoByUuid, useMutationUpdateUserAvatar, useMutationUploadUserPhotos, useMutationUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppCard } from '../../components/card/card';
 import { useRef, useState } from 'react';
@@ -36,8 +36,9 @@ export default function UserProfileScreen(): JSX.Element {
   const uid = useCometaStore(state => state.uid); // this can be abstracted
 
   // mutations
-  const mutateUserPhotosUpload = useMutationUploadUserPhotos();
-  const mutateUserPhotosDelete = useMutationDeleteUserPhotoByUuid();
+  const mutateUserPhotosUpload = useMutationUploadUserPhotos(uid);
+  const mutateUserPhotosDelete = useMutationDeleteUserPhotoByUuid(uid);
+  const mutateUserAvatarImg = useMutationUpdateUserAvatar(uid);
   const mutateUserProfileById = useMutationUserProfileById();
 
   // queries
@@ -55,6 +56,29 @@ export default function UserProfileScreen(): JSX.Element {
   const usernameRef = useRef<TextInput>(null);
   const descriptionRef = useRef<TextInput>(null);
 
+  /**
+   * 
+   * @description upload avatar image
+   */
+  const handlePickAvatarImg = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 4],
+        quality: 1,
+      });
+      if (!result.canceled && userProfile?.id) {
+        mutateUserAvatarImg.mutate({
+          userID: userProfile?.id,
+          pickedImgFile: result.assets[0]
+        });
+      }
+    }
+    catch (error) {
+      // console.log(error);
+    }
+  };
 
   const handleSumitUserInfo =
     async (values: ProfileValues, actions: FormikHelpers<ProfileValues>): Promise<void> => {
@@ -137,7 +161,11 @@ export default function UserProfileScreen(): JSX.Element {
                       />
                     ) : (
                       <View style={profileStyles.avatarFigure}>
-                        <Image style={profileStyles.avatar} source={{ uri: userProfile?.avatar }} />
+
+                        <Pressable onPress={() => handlePickAvatarImg()}>
+                          <Image style={profileStyles.avatar} source={{ uri: userProfile?.avatar }} />
+                        </Pressable>
+
                         {/* NAME */}
                         <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
                           <View style={{ width: 24 }} />

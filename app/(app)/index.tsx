@@ -60,7 +60,7 @@ export default function HomeScreen(): JSX.Element {
           pagingEnabled={true}
           data={data?.pages.flatMap(page => page.events)}
           onEndReached={handleInfiniteFetch}
-          onEndReachedThreshold={1.5}
+          onEndReachedThreshold={1}
           renderItem={({ item }) => (
             <MemoizedEventItem
               key={item.id}

@@ -79,16 +79,14 @@ export const useQueryGetNewPeopleProfileByUid = (dynamicParam: string) => {
 
 type PhotosParams = { pickedImgFiles: ImagePickerAsset[], userID: number };
 
-export const useMutationUploadUserPhotos = () => {
+export const useMutationUploadUserPhotos = (dynamicParam: string) => {
   const queryClient = useQueryClient();
 
   return (
     useMutation({
       mutationFn:
         async ({ userID, pickedImgFiles }: PhotosParams): Promise<GetBasicUserProfile> => {
-          // console.log(userID, pickedImgFiles);
           const res = await userService.uploadManyPhotosByUserId(userID, pickedImgFiles);
-          // console.log(res);
           if (res.status === 200) {
             return res.data;
           }
@@ -98,11 +96,11 @@ export const useMutationUploadUserPhotos = () => {
         },
 
       onMutate: async ({ pickedImgFiles }) => {
-        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO] });
+        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO, dynamicParam] });
 
         queryClient
           .setQueryData<GetDetailedUserProfile>
-          ([QueryKeys.GET_USER_INFO], (oldState): GetDetailedUserProfile => {
+          ([QueryKeys.GET_USER_INFO, dynamicParam], (oldState): GetDetailedUserProfile => {
             const newPhotos: Photo[] = pickedImgFiles.map(img => ({ url: img.uri, uuid: uuid.v4() as string })) || [];
 
             const optimisticState = {
@@ -116,7 +114,7 @@ export const useMutationUploadUserPhotos = () => {
       },
 
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO] });
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO, dynamicParam] });
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
@@ -127,7 +125,7 @@ export const useMutationUploadUserPhotos = () => {
 
 type DeletePhotoArgs = { userID: number, photoUuid: string }
 
-export const useMutationDeleteUserPhotoByUuid = () => {
+export const useMutationDeleteUserPhotoByUuid = (dynamicParam: string) => {
   const queryClient = useQueryClient();
 
   return (
@@ -144,11 +142,11 @@ export const useMutationDeleteUserPhotoByUuid = () => {
         },
 
       onMutate: async ({ photoUuid }) => {
-        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO] });
+        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO, dynamicParam] });
         // TODO
         queryClient
           .setQueryData<GetDetailedUserProfile>
-          ([QueryKeys.GET_USER_INFO], (oldState): GetDetailedUserProfile => {
+          ([QueryKeys.GET_USER_INFO, dynamicParam], (oldState): GetDetailedUserProfile => {
             const filteredPhotos: Photo[] = oldState?.photos.filter(({ uuid }) => photoUuid !== uuid) || [];
 
             const optimisticState = {
@@ -162,7 +160,52 @@ export const useMutationDeleteUserPhotoByUuid = () => {
       },
 
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO] });
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO, dynamicParam] });
+      },
+      retry: 3,
+      retryDelay: 1_000 * 60 * 3
+    })
+  );
+};
+
+
+type AvatarParams = { pickedImgFile: ImagePickerAsset, userID: number };
+
+export const useMutationUpdateUserAvatar = (dynamicParam: string) => {
+  const queryClient = useQueryClient();
+
+  return (
+    useMutation({
+      mutationFn:
+        async ({ userID, pickedImgFile }: AvatarParams): Promise<GetBasicUserProfile> => {
+          const res = await userService.uploadOrUpdateAvatarImgByUserID(userID, pickedImgFile);
+          if (res.status === 200) {
+            return res.data;
+          }
+          else {
+            throw new Error('failed fech');
+          }
+        },
+
+      onMutate: async ({ pickedImgFile }) => {
+        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO, dynamicParam] });
+
+        queryClient
+          .setQueryData<GetDetailedUserProfile>
+          ([QueryKeys.GET_USER_INFO, dynamicParam], (oldState): GetDetailedUserProfile => {
+
+            const optimisticState = {
+              ...oldState,
+              avatar: pickedImgFile.uri
+
+            } as GetDetailedUserProfile;
+
+            return optimisticState;
+          });
+      },
+
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO, dynamicParam] });
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
