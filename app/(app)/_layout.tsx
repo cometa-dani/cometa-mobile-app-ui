@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
+import { Image } from 'expo-image';
 
 
 /**
@@ -43,7 +44,7 @@ export default function AppLayout() {
   }
   return (
     <>
-      <StatusBar style={'light'} />
+      <StatusBar style={'auto'} />
 
       <Tabs
         screenOptions={{
@@ -57,9 +58,26 @@ export default function AppLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            headerTitleStyle: { display: 'none' },
+            headerTitleAlign: 'center',
             headerShown: true,
             tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+            headerLeft: () => (
+              <Pressable>
+                {({ pressed }) => (
+                  <FontAwesome
+                    name="search"
+                    size={28}
+                    color={gray300}
+                    style={{ marginLeft: 18, opacity: pressed ? 0.5 : 1 }}
+                  />
+                )}
+              </Pressable>
+            ),
+            headerTitle() {
+              return (
+                <Image style={{ height: 24, width: 110 }} source={require('../../assets/images/letters_cometa.webp')} />
+              );
+            },
             headerRight: () => (
               // <Link href="/bucketList" asChild>
               <Pressable>
@@ -68,7 +86,7 @@ export default function AppLayout() {
                     name="sliders"
                     size={30}
                     color={gray300}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                    style={{ marginRight: 18, opacity: pressed ? 0.5 : 1 }}
                   />
                 )}
               </Pressable>
@@ -80,14 +98,14 @@ export default function AppLayout() {
           listeners={{ tabPress: (e) => e.preventDefault() }}
           name="discover"
           options={{
-            tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} />,
+            tabBarIcon: ({ color }) => <TabBarIcon name="comments" color={color} />,
           }}
         />
         <Tabs.Screen
           listeners={{ tabPress: (e) => e.preventDefault() }}
           name="notifications"
           options={{
-            tabBarIcon: ({ color }) => <TabBarIcon name="envelope" color={color} />,
+            tabBarIcon: ({ color }) => <TabBarIcon name="list-ul" color={color} />,
           }}
         />
         <Tabs.Screen

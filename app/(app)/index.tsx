@@ -188,9 +188,6 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
         height: layoutHeight,
         justifyContent: 'center',
         width: '100%',
-        // paddingHorizontal: 12,
-        // borderRadius: 16,
-        // overflow: 'hidden'
       }}>
 
         {/* Background image or video */}
@@ -209,17 +206,6 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
               resizeMode={ResizeMode.COVER}
               source={{ uri: item.mediaUrl }}
               style={{ width: '100%', height: '100%', overflow: 'hidden' }}
-            // onPlaybackStatusUpdate={(status) => {
-            //   if (!status.isLoaded) {
-            //     // Error handling
-            //   } else {
-            //     if (status.isPlaying && !videoShouldPlay) {
-            //       video.current?.pauseAsync();
-            //     } else if (!status.isPlaying && videoShouldPlay) {
-            //       video.current?.playAsync();
-            //     }
-            //   }
-            // }}
             />
           )}
         </GestureDetector>
@@ -241,11 +227,6 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
           </Pressable>
           <Pressable>
             {() => (
-              <FontAwesome name='commenting-o' size={34} style={{ color: tabIconDefault }} />
-            )}
-          </Pressable>
-          <Pressable>
-            {() => (
               <FontAwesome name='share-square-o' size={34} style={{ color: tabIconDefault }} />
             )}
           </Pressable>
@@ -262,7 +243,7 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
                   borderWidth: 3.4,
                   borderColor: tabIconDefault
                 }}>
-                <FontAwesome name='chevron-down' size={22} style={{ color: tabIconDefault }} />
+                <FontAwesome name='info' size={20} style={{ color: tabIconDefault }} />
               </View>
             )}
           </Pressable>
