@@ -16,6 +16,7 @@ import { Image } from 'expo-image'; // use with thumbhash
 export default function HomeScreen(): JSX.Element {
   // video
   const [playingVideo, setPlayingVideo] = useState<string>('');
+  const { background } = useColors();
 
   const onViewRef = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     if (viewableItems.length > 0) {
@@ -43,7 +44,7 @@ export default function HomeScreen(): JSX.Element {
 
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
 
       <StatusBar style={'auto'} />
 
@@ -78,8 +79,10 @@ export default function HomeScreen(): JSX.Element {
 
 const styles = StyleSheet.create({
   container: {
+    borderRadius: 16,
     flex: 1,
-    position: 'relative',
+    marginHorizontal: 10,
+    overflow: 'hidden'
   },
 
   img: {
@@ -184,7 +187,10 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
         alignItems: 'center',
         height: layoutHeight,
         justifyContent: 'center',
-        width: '100%'
+        width: '100%',
+        // paddingHorizontal: 12,
+        // borderRadius: 16,
+        // overflow: 'hidden'
       }}>
 
         {/* Background image or video */}
@@ -192,7 +198,7 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
           {item.mediaType === 'IMAGE' ? (
             <Image
               source={item.mediaUrl}
-              style={{ width: '100%', height: '100%' }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
               transition={200}
             />
@@ -284,10 +290,10 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
 };
 
 /**
- * 
+ *
  * @description This function is used to compare the props of the list item.
- * If false the list item will be re-rendered, otherwise it will not 
- * @returns boolean 
+ * If false the list item will be re-rendered, otherwise it will not
+ * @returns boolean
  */
 function arePropsEqual(prevProps: ListItemProps, nextProps: ListItemProps): boolean {
   // Implement your custom comparison logic here

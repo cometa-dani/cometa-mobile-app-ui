@@ -1,10 +1,12 @@
 export const primary_100 = '#a22bfa';
 export const white_50 = '#fff';
-export const red_100 = '#ff2d55';
+export const red_100 = '#EA385C';
+// export const secondary_100 = '#EA385C';
 export const blue_100 = '#5ac8fa';
 export const gray_50 = '#f0f0f0';
 export const gray_100 = '#e5e5e5';
 export const gray_200 = '#afafaa';
+export const gray_300 = '#7C8591';
 export const gray_500 = '#4f4f4f';
 export const gray_900 = '#030303';
 export const backDrop = 'rgba(0, 0, 0, 0.4)';
@@ -49,6 +51,7 @@ export default {
     blue100: blue_100,
     gray50: gray_50,
     gray100: gray_100,
+    gray300: gray_300,
     gray200: gray_200,
     gray500: gray_500,
     gray900: gray_900,
@@ -69,6 +72,7 @@ export default {
     gray50: gray_50,
     gray100: gray_100,
     gray200: gray_200,
+    gray300: gray_300,
     gray500: gray_500,
     gray900: gray_900,
     white50: white_50,

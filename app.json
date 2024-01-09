@@ -7,9 +7,9 @@
     "orientation": "portrait",
     "icon": "./assets/images/new-logo-icon.png",
     "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/images/new-logo-icon.png",
+      "image": "./assets/images/letters_cometa.webp",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
