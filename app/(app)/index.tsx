@@ -3,11 +3,9 @@ import { LikedEvent, } from '../../models/Event';
 import { StyleSheet, DimensionValue, Pressable, SafeAreaView, ViewToken, Dimensions } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Text, View, useColors } from '../../components/Themed';
-import { GestureDetector, Gesture, Directions } from 'react-native-gesture-handler';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
-import { router, } from 'expo-router';
 import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
-import { StatusBar } from 'expo-status-bar';
 import { useCometaStore } from '../../store/cometaStore';
 import { ResizeMode, Video } from 'expo-av';
 import { Image } from 'expo-image'; // use with thumbhash
@@ -45,9 +43,6 @@ export default function HomeScreen(): JSX.Element {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
-
-      <StatusBar style={'auto'} />
-
       <View style={styles.container}>
         {/* Latest events list */}
         <FlashList
@@ -156,13 +151,6 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
   const handleLikeOrDislike = () => likeOrDislikeMutation.mutate(item.id);
 
 
-  // can be lifted to the parent component like before
-  const swipeLeft = Gesture.Fling();
-  swipeLeft
-    .direction(Directions.LEFT)
-    .onStart(() => router.push('/bucketList'));
-
-
   const doubleTap = Gesture.Tap();
   doubleTap
     .numberOfTaps(2)
@@ -182,91 +170,88 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
 
 
   return (
-    <GestureDetector gesture={swipeLeft}>
-      <View style={{
-        alignItems: 'center',
-        height: layoutHeight,
-        justifyContent: 'center',
-        width: '100%',
-      }}>
+    <View style={{
+      alignItems: 'center',
+      height: layoutHeight,
+      justifyContent: 'center',
+      width: '100%',
+    }}>
+      {/* Background image or video */}
+      <GestureDetector gesture={doubleTap}>
+        {item.mediaType === 'IMAGE' ? (
+          <Image
+            source={item.mediaUrl}
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
+            transition={200}
+          />
+        ) : (
+          <Video
+            ref={videoRef}
+            useNativeControls
+            resizeMode={ResizeMode.COVER}
+            source={{ uri: item.mediaUrl }}
+            style={{ width: '100%', height: '100%', overflow: 'hidden' }}
+          />
+        )}
+      </GestureDetector>
+      {/* Background image or video */}
 
-        {/* Background image or video */}
-        <GestureDetector gesture={doubleTap}>
-          {item.mediaType === 'IMAGE' ? (
-            <Image
-              source={item.mediaUrl}
-              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-              placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
-              transition={200}
-            />
-          ) : (
-            <Video
-              ref={videoRef}
-              useNativeControls
-              resizeMode={ResizeMode.COVER}
-              source={{ uri: item.mediaUrl }}
-              style={{ width: '100%', height: '100%', overflow: 'hidden' }}
-            />
+      {/* Event title */}
+      <Text lightColor='#fff' darkColor='#eee' style={styles.title}>{item.name}</Text>
+
+      {/* Positioned buttons */}
+      <View lightColor='transparent' darkColor='transparent' style={styles.positionedButtons}>
+        <Pressable onPress={handleLikeOrDislike}>
+          {({ hovered, pressed }) => (
+            (item.isLiked) ? (
+              <FontAwesome name='heart' size={34} style={{ color: (hovered && pressed) ? tabIconDefault : red100 }} />
+            ) : (
+              <FontAwesome name='heart-o' size={34} style={{ color: (hovered && pressed) ? red100 : tabIconDefault }} />
+            )
           )}
-        </GestureDetector>
-        {/* Background image or video */}
-
-        {/* Event title */}
-        <Text lightColor='#fff' darkColor='#eee' style={styles.title}>{item.name}</Text>
-
-        {/* Positioned buttons */}
-        <View lightColor='transparent' darkColor='transparent' style={styles.positionedButtons}>
-          <Pressable onPress={handleLikeOrDislike}>
-            {({ hovered, pressed }) => (
-              (item.isLiked) ? (
-                <FontAwesome name='heart' size={34} style={{ color: (hovered && pressed) ? tabIconDefault : red100 }} />
-              ) : (
-                <FontAwesome name='heart-o' size={34} style={{ color: (hovered && pressed) ? red100 : tabIconDefault }} />
-              )
-            )}
-          </Pressable>
-          <Pressable>
-            {() => (
-              <FontAwesome name='share-square-o' size={34} style={{ color: tabIconDefault }} />
-            )}
-          </Pressable>
-          <Pressable onPressOut={() => showEventDetails(item)}>
-            {() => (
-              <View
-                style={{
-                  borderRadius: 100,
-                  aspectRatio: 1,
-                  width: 34,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'transparent',
-                  borderWidth: 3.4,
-                  borderColor: tabIconDefault
-                }}>
-                <FontAwesome name='info' size={20} style={{ color: tabIconDefault }} />
-              </View>
-            )}
-          </Pressable>
-        </View>
-        {/* Positioned buttons /*}
+        </Pressable>
+        <Pressable>
+          {() => (
+            <FontAwesome name='share-square-o' size={34} style={{ color: tabIconDefault }} />
+          )}
+        </Pressable>
+        <Pressable onPressOut={() => showEventDetails(item)}>
+          {() => (
+            <View
+              style={{
+                borderRadius: 100,
+                aspectRatio: 1,
+                width: 34,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'transparent',
+                borderWidth: 3.4,
+                borderColor: tabIconDefault
+              }}>
+              <FontAwesome name='info' size={20} style={{ color: tabIconDefault }} />
+            </View>
+          )}
+        </Pressable>
+      </View>
+      {/* Positioned buttons /*}
 
       {/* Organizer icon */}
-        <View lightColor='transparent' darkColor='transparent' style={styles.organizerContainer}>
-          {item?.organization?.mediaUrl ? (
-            <Image style={styles.img} source={{ uri: item.organization?.mediaUrl }} />
-          ) : (
-            <Image style={styles.img} source={require('../../assets/images/icon.png')} />
-          )}
-          <Text
-            lightColor='#fff'
-            darkColor='#eee'
-            style={styles.organizer}>
-            {item.organization.name}
-          </Text>
-        </View>
-        {/* Organizer icon */}
+      <View lightColor='transparent' darkColor='transparent' style={styles.organizerContainer}>
+        {item?.organization?.mediaUrl ? (
+          <Image style={styles.img} source={{ uri: item.organization?.mediaUrl }} />
+        ) : (
+          <Image style={styles.img} source={require('../../assets/images/icon.png')} />
+        )}
+        <Text
+          lightColor='#fff'
+          darkColor='#eee'
+          style={styles.organizer}>
+          {item.organization.name}
+        </Text>
       </View>
-    </GestureDetector>
+      {/* Organizer icon */}
+    </View>
   );
 };
 

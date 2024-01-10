@@ -3,14 +3,17 @@ import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, SafeAreaView, Image } from 'react-native';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
-import { Text, View } from '../components/Themed';
+// import { Text, View } from '../../components/Themed';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { useInfiniteQueryGetLatestLikedEvents, useMutationLikeOrDislikeEvent } from '../queries/eventHooks';
+import { useInfiniteQueryGetLatestLikedEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
 import { router } from 'expo-router';
-import { GetAllLikedEventsWithPagination } from '../models/LikedEvent';
+// import { GetAllLikedEventsWithPagination } from '../../models/LikedEvent';
 import { useQueryClient } from '@tanstack/react-query';
-import { QueryKeys } from '../queries/queryKeys';
+// import { QueryKeys } from '../../queries/queryKeys';
 import { FlashList } from '@shopify/flash-list';
+import { View, Text } from '../../components/Themed';
+import { GetAllLikedEventsWithPagination } from '../../models/LikedEvent';
+import { QueryKeys } from '../../queries/queryKeys';
 
 
 export default function BuckectListScreen(): JSX.Element {

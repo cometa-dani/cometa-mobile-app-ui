@@ -2,7 +2,6 @@ import { ScrollView, Button, SafeAreaView, Image, TextInput, Pressable } from 'r
 import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
-import { StatusBar } from 'expo-status-bar';
 import { useCometaStore } from '../../store/cometaStore';
 import { useMutationDeleteUserPhotoByUuid, useMutationUpdateUserAvatar, useMutationUploadUserPhotos, useMutationUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
 import { AppButton } from '../../components/buttons/buttons';
@@ -57,7 +56,7 @@ export default function UserProfileScreen(): JSX.Element {
   const descriptionRef = useRef<TextInput>(null);
 
   /**
-   * 
+   *
    * @description upload avatar image
    */
   const handlePickAvatarImg = async () => {
@@ -126,7 +125,6 @@ export default function UserProfileScreen(): JSX.Element {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar style={'auto'} />
 
       {/* TODO: EDIT USER_NAME */}
       <Stack.Screen

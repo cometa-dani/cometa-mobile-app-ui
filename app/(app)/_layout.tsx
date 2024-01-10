@@ -1,7 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs, router } from 'expo-router';
 import { Pressable } from 'react-native';
-import { useColors } from '../../components/Themed';
+import { View, useColors } from '../../components/Themed';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -18,7 +18,9 @@ export function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
 }) {
-  return <FontAwesome size={31} style={{ marginTop: 0 }} {...props} />;
+  return (
+    <FontAwesome {...props} size={31} />
+  );
 }
 
 
@@ -80,16 +82,28 @@ export default function AppLayout() {
             },
             headerRight: () => (
               // <Link href="/bucketList" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="sliders"
-                    size={30}
-                    color={gray300}
-                    style={{ marginRight: 18, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
+              <View style={{ flex: 1, gap: 4, flexDirection: 'row', alignItems: 'center' }}>
+                <Pressable>
+                  {({ pressed }) => (
+                    <FontAwesome
+                      name="bell"
+                      size={26}
+                      color={gray300}
+                      style={{ marginRight: 18, opacity: pressed ? 0.5 : 1 }}
+                    />
+                  )}
+                </Pressable>
+                <Pressable>
+                  {({ pressed }) => (
+                    <FontAwesome
+                      name="sliders"
+                      size={30}
+                      color={gray300}
+                      style={{ marginRight: 18, opacity: pressed ? 0.5 : 1 }}
+                    />
+                  )}
+                </Pressable>
+              </View>
               // </Link>
             ),
           }}
@@ -102,10 +116,52 @@ export default function AppLayout() {
           }}
         />
         <Tabs.Screen
-          listeners={{ tabPress: (e) => e.preventDefault() }}
-          name="notifications"
+          name="bucketList"
           options={{
+            headerTitleAlign: 'center',
+            headerShown: true,
             tabBarIcon: ({ color }) => <TabBarIcon name="list-ul" color={color} />,
+            headerLeft: () => (
+              <Pressable>
+                {({ pressed }) => (
+                  <FontAwesome
+                    name="search"
+                    size={28}
+                    color={gray300}
+                    style={{ marginLeft: 18, opacity: pressed ? 0.5 : 1 }}
+                  />
+                )}
+              </Pressable>
+            ),
+            headerTitle() {
+              return (
+                <Image style={{ height: 24, width: 110 }} source={require('../../assets/images/bucketList.webp')} />
+              );
+            },
+            headerRight: () => (
+              <View style={{ flex: 1, gap: 4, flexDirection: 'row', alignItems: 'center' }}>
+                <Pressable>
+                  {({ pressed }) => (
+                    <FontAwesome
+                      name="bell"
+                      size={26}
+                      color={gray300}
+                      style={{ marginRight: 18, opacity: pressed ? 0.5 : 1 }}
+                    />
+                  )}
+                </Pressable>
+                <Pressable>
+                  {({ pressed }) => (
+                    <FontAwesome
+                      name="sliders"
+                      size={30}
+                      color={gray300}
+                      style={{ marginRight: 18, opacity: pressed ? 0.5 : 1 }}
+                    />
+                  )}
+                </Pressable>
+              </View>
+            )
           }}
         />
         <Tabs.Screen
