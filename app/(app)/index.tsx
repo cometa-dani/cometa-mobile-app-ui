@@ -9,6 +9,8 @@ import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '
 import { useCometaStore } from '../../store/cometaStore';
 import { ResizeMode, Video } from 'expo-av';
 import { Image } from 'expo-image'; // use with thumbhash
+import { LinearGradient } from 'expo-linear-gradient';
+// import { SvgUri, Svg, Path } from 'react-native-svg';
 
 
 export default function HomeScreen(): JSX.Element {
@@ -73,6 +75,12 @@ export default function HomeScreen(): JSX.Element {
 }
 
 const styles = StyleSheet.create({
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    // backgroundColor: backDrop,
+    zIndex: 2,
+  },
+
   container: {
     borderRadius: 16,
     flex: 1,
@@ -168,7 +176,7 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
     }
   }, [videoShouldPlay]);
 
-
+  // console.log('item', item._count.likes);
   return (
     <View style={{
       alignItems: 'center',
@@ -178,22 +186,30 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
     }}>
       {/* Background image or video */}
       <GestureDetector gesture={doubleTap}>
-        {item.mediaType === 'IMAGE' ? (
-          <Image
-            source={item.mediaUrl}
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-            placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
-            transition={200}
+        <View style={{ flex: 1, width: '100%', height: '100%' }}>
+          <LinearGradient
+            colors={['rgba(0,0,0,0.88)', 'transparent']}
+            start={[0.2, 1]}
+            end={[0, 0.6]}
+            style={styles.backdrop}
           />
-        ) : (
-          <Video
-            ref={videoRef}
-            useNativeControls
-            resizeMode={ResizeMode.COVER}
-            source={{ uri: item.mediaUrl }}
-            style={{ width: '100%', height: '100%', overflow: 'hidden' }}
-          />
-        )}
+          {item.mediaType === 'IMAGE' ? (
+            <Image
+              source={item.mediaUrl}
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
+              transition={200}
+            />
+          ) : (
+            <Video
+              ref={videoRef}
+              useNativeControls
+              resizeMode={ResizeMode.COVER}
+              source={{ uri: item.mediaUrl }}
+              style={{ width: '100%', height: '100%', overflow: 'hidden' }}
+            />
+          )}
+        </View>
       </GestureDetector>
       {/* Background image or video */}
 
@@ -213,7 +229,7 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
         </Pressable>
         <Pressable>
           {() => (
-            <FontAwesome name='share-square-o' size={34} style={{ color: tabIconDefault }} />
+            <Image style={{ objectFit: 'contain', width: 42, height: 34 }} source={require('../../assets/icons/share.jpeg')} />
           )}
         </Pressable>
         <Pressable onPressOut={() => showEventDetails(item)}>

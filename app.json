@@ -5,11 +5,11 @@
     "slug": "cometa-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/new-logo-icon.png",
+    "icon": "./assets/images/logo_cometa.webp",
     "scheme": "myapp",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/images/letters_cometa.webp",
+      "image": "./assets/images/2.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

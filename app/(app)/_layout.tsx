@@ -87,7 +87,7 @@ export default function AppLayout() {
                   {({ pressed }) => (
                     <FontAwesome
                       name="bell"
-                      size={26}
+                      size={25}
                       color={gray300}
                       style={{ marginRight: 18, opacity: pressed ? 0.5 : 1 }}
                     />
@@ -135,7 +135,7 @@ export default function AppLayout() {
             ),
             headerTitle() {
               return (
-                <Image style={{ height: 24, width: 110 }} source={require('../../assets/images/bucketList.webp')} />
+                <Image style={{ height: 70, width: 142 }} source={require('../../assets/images/bucketList.webp')} />
               );
             },
             headerRight: () => (
@@ -144,7 +144,7 @@ export default function AppLayout() {
                   {({ pressed }) => (
                     <FontAwesome
                       name="bell"
-                      size={26}
+                      size={25}
                       color={gray300}
                       style={{ marginRight: 18, opacity: pressed ? 0.5 : 1 }}
                     />

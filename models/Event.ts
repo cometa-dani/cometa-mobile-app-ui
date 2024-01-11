@@ -59,11 +59,19 @@ export interface LikedEvent {
   category: string;
   organization: Organization;
   location: Location;
-  likes: Array<{ userId: number }>
+  likes: Array<Like>
   _count: Count;
   isLiked: boolean;
 }
 
 export interface Count {
   likes: number;
+}
+
+interface Like {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  eventId: number;
+  userId: number;
 }
