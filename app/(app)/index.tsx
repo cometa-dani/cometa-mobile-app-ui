@@ -10,6 +10,7 @@ import { useCometaStore } from '../../store/cometaStore';
 import { ResizeMode, Video } from 'expo-av';
 import { Image } from 'expo-image'; // use with thumbhash
 import { LinearGradient } from 'expo-linear-gradient';
+import Carousel from 'react-native-reanimated-carousel';
 
 
 export default function HomeScreen(): JSX.Element {
@@ -76,14 +77,12 @@ export default function HomeScreen(): JSX.Element {
 }
 
 const styles = StyleSheet.create({
-
   container: {
     borderRadius: 16,
     flex: 1,
     marginHorizontal: 10,
     overflow: 'hidden'
   },
-
 });
 
 
@@ -140,32 +139,49 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
       position: 'relative'
     }}>
       {/* Background image or video */}
-      <GestureDetector gesture={doubleTap}>
-        <View style={{ flex: 1, width: '100%', height: '100%' }}>
-          <LinearGradient
-            colors={['rgba(0,0,0,0.88)', 'transparent']}
-            start={[0.2, 1]}
-            end={[0, 0.6]}
-            style={stylesEventItem.backdrop}
-          />
-          {item.mediaType === 'IMAGE' ? (
-            <Image
-              source={item.mediaUrl}
-              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-              placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
-              transition={200}
-            />
-          ) : (
-            <Video
-              ref={videoRef}
-              useNativeControls
-              resizeMode={ResizeMode.COVER}
-              source={{ uri: item.mediaUrl }}
-              style={{ width: '100%', height: '100%', overflow: 'hidden' }}
-            />
+      <View style={{ flex: 1, width: '100%', height: '100%' }}>
+        <Carousel
+          style={{
+            width: '100%',
+            height: '100%',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+          width={Dimensions.get('window').width}
+          // mode={'parallax'}
+          loop={true}
+          modeConfig={{}}
+          data={[{ ...item, id: '0' }, { ...item, id: '1' }, { ...item, id: '2' }]}
+          renderItem={({ item },) => (
+            <GestureDetector key={item.id} gesture={doubleTap}>
+              <View>
+                <LinearGradient
+                  colors={['rgba(0,0,0,0.8)', 'transparent']}
+                  start={[0.16, 1]}
+                  end={[0, 0.7]}
+                  style={stylesEventItem.backdrop}
+                />
+                {item.mediaType === 'IMAGE' ? (
+                  <Image
+                    source={item.mediaUrl}
+                    style={{ width: '100%', height: '100%' }}
+                    placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
+                    transition={200}
+                  />
+                ) : (
+                  <Video
+                    ref={videoRef}
+                    useNativeControls
+                    resizeMode={ResizeMode.COVER}
+                    source={{ uri: item.mediaUrl }}
+                    style={{ width: '100%', height: '100%', overflow: 'hidden' }}
+                  />
+                )}
+              </View>
+            </GestureDetector>
           )}
-        </View>
-      </GestureDetector>
+        />
+      </View>
 
       <View style={{ backgroundColor: '#83C9DD', paddingVertical: 10, paddingHorizontal: 24 }}>
         <Text style={{ fontWeight: '900', fontSize: 16 }}>{item._count.likes} Likes</Text>
