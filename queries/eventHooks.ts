@@ -191,7 +191,12 @@ export const useMutationLikeOrDislikeEvent = () => {
                           !event.isLiked && (eventID === event.id) ? true
                             :
                             event.isLiked
-                      )
+                      ),
+                      _count: {
+                        likes: event.isLiked ?
+                          event._count.likes - 1
+                          : event._count.likes + 1
+                      }
                     }
                   ))
                 }
@@ -201,11 +206,10 @@ export const useMutationLikeOrDislikeEvent = () => {
       },
       // Invalidate queries after the mutation succeeds
       onSuccess: async () => {
-        // await Promise.all([
-        //   queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_EVENTS] }),
-        //   // failing to update immediatly
-        //   queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS] })
-        // ]);
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_EVENTS] }),
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS] })
+        ]);
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3

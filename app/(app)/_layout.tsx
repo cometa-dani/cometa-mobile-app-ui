@@ -55,7 +55,7 @@ export default function AppLayout() {
           headerShown: false,
           tabBarInactiveTintColor: gray300,
           tabBarShowLabel: false,
-          tabBarActiveTintColor: red100
+          tabBarActiveTintColor: red100,
         }}>
         <Tabs.Screen
           name="index"
