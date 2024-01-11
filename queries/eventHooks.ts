@@ -182,23 +182,20 @@ export const useMutationLikeOrDislikeEvent = () => {
               (page) => (
                 {
                   ...page,
-                  events: page.events.map(event => (
-                    {
-                      ...event,
-                      isLiked: (
-                        event.isLiked && (eventID === event.id) ? false
-                          :
-                          !event.isLiked && (eventID === event.id) ? true
-                            :
-                            event.isLiked
-                      ),
-                      _count: {
-                        likes: event.isLiked ?
-                          event._count.likes - 1
-                          : event._count.likes + 1
+                  events: page.events.map(event =>
+                    eventID === event.id ? (
+                      {
+                        ...event,
+                        isLiked: !event.isLiked,
+                        _count: {
+                          likes: !event.isLiked ?
+                            event._count.likes + 1
+                            : event._count.likes - 1
+                        }
                       }
-                    }
-                  ))
+                    ) :
+                      event
+                  )
                 }
               )) || [],
             pageParams: data?.pageParams || []
