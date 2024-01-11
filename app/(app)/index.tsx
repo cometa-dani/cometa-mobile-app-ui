@@ -10,13 +10,15 @@ import { useCometaStore } from '../../store/cometaStore';
 import { ResizeMode, Video } from 'expo-av';
 import { Image } from 'expo-image'; // use with thumbhash
 import { LinearGradient } from 'expo-linear-gradient';
-// import { SvgUri, Svg, Path } from 'react-native-svg';
 
 
 export default function HomeScreen(): JSX.Element {
+
+  // colors
+  const { background } = useColors();
+
   // video
   const [playingVideo, setPlayingVideo] = useState<string>('');
-  const { background } = useColors();
 
   const onViewRef = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     if (viewableItems.length > 0) {
@@ -46,7 +48,6 @@ export default function HomeScreen(): JSX.Element {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <View style={styles.container}>
-        {/* Latest events list */}
         <FlashList
           onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
           onViewableItemsChanged={onViewRef.current}
@@ -55,7 +56,7 @@ export default function HomeScreen(): JSX.Element {
           removeClippedSubviews={true}
           refreshing={isFetching}
           showsVerticalScrollIndicator={false}
-          estimatedItemSize={Dimensions.get('window').height - 54}
+          estimatedItemSize={Dimensions.get('window').height - 60}
           pagingEnabled={true}
           data={data?.pages.flatMap(page => page.events)}
           onEndReached={handleInfiniteFetch}
@@ -75,11 +76,6 @@ export default function HomeScreen(): JSX.Element {
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    // backgroundColor: backDrop,
-    zIndex: 2,
-  },
 
   container: {
     borderRadius: 16,
@@ -88,46 +84,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden'
   },
 
-  img: {
-    aspectRatio: 1,
-    borderRadius: 50,
-    height: 48,
-    overflow: 'hidden',
-    width: 48,
-  },
-
-  organizer: {
-    fontSize: 18,
-    fontWeight: '500'
-  },
-
-  organizerContainer: {
-    alignItems: 'center',
-    bottom: 30,
-    flexDirection: 'row',
-    gap: 12,
-    left: 20,
-    position: 'absolute'
-  },
-
-  positionedButtons: {
-    alignItems: 'center',
-    bottom: 30,
-    gap: 24,
-    justifyContent: 'center',
-    position: 'absolute',
-    right: 20,
-  },
-
-  title: {
-    // Title color should come from the backend
-    fontSize: 22,
-    fontWeight: '600',
-    paddingHorizontal: 20,
-    position: 'absolute',
-    textAlign: 'center',
-    top: 40
-  }
 });
 
 
@@ -179,10 +135,9 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
   // console.log('item', item._count.likes);
   return (
     <View style={{
-      alignItems: 'center',
       height: layoutHeight,
-      justifyContent: 'center',
-      width: '100%',
+      flex: 1,
+      position: 'relative'
     }}>
       {/* Background image or video */}
       <GestureDetector gesture={doubleTap}>
@@ -191,7 +146,7 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
             colors={['rgba(0,0,0,0.88)', 'transparent']}
             start={[0.2, 1]}
             end={[0, 0.6]}
-            style={styles.backdrop}
+            style={stylesEventItem.backdrop}
           />
           {item.mediaType === 'IMAGE' ? (
             <Image
@@ -211,13 +166,17 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
           )}
         </View>
       </GestureDetector>
+
+      <View style={{ backgroundColor: '#83C9DD', paddingVertical: 10, paddingHorizontal: 24 }}>
+        <Text style={{ fontWeight: '900', fontSize: 16 }}>{item._count.likes} Likes</Text>
+      </View>
       {/* Background image or video */}
 
       {/* Event title */}
-      <Text lightColor='#fff' darkColor='#eee' style={styles.title}>{item.name}</Text>
+      <Text lightColor='#fff' darkColor='#eee' style={stylesEventItem.title}>{item.name}</Text>
 
       {/* Positioned buttons */}
-      <View lightColor='transparent' darkColor='transparent' style={styles.positionedButtons}>
+      <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.positionedButtons}>
         <Pressable onPress={handleLikeOrDislike}>
           {({ hovered, pressed }) => (
             (item.isLiked) ? (
@@ -253,16 +212,16 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
       {/* Positioned buttons /*}
 
       {/* Organizer icon */}
-      <View lightColor='transparent' darkColor='transparent' style={styles.organizerContainer}>
+      <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.organizerContainer}>
         {item?.organization?.mediaUrl ? (
-          <Image style={styles.img} source={{ uri: item.organization?.mediaUrl }} />
+          <Image style={stylesEventItem.img} source={{ uri: item.organization?.mediaUrl }} />
         ) : (
-          <Image style={styles.img} source={require('../../assets/images/icon.png')} />
+          <Image style={stylesEventItem.img} source={require('../../assets/images/icon.png')} />
         )}
         <Text
           lightColor='#fff'
           darkColor='#eee'
-          style={styles.organizer}>
+          style={stylesEventItem.organizer}>
           {item.organization.name}
         </Text>
       </View>
@@ -270,6 +229,54 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
     </View>
   );
 };
+
+const stylesEventItem = StyleSheet.create({
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1,
+  },
+
+  img: {
+    aspectRatio: 1,
+    borderRadius: 50,
+    height: 48,
+    overflow: 'hidden',
+    width: 48,
+  },
+
+  organizer: {
+    fontSize: 18,
+    fontWeight: '500'
+  },
+
+  organizerContainer: {
+    alignItems: 'center',
+    bottom: 64,
+    flexDirection: 'row',
+    gap: 12,
+    left: 20,
+    position: 'absolute'
+  },
+
+  positionedButtons: {
+    alignItems: 'center',
+    bottom: 64,
+    gap: 24,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: 20,
+  },
+
+  title: {
+    alignSelf: 'center',
+    fontSize: 22,
+    fontWeight: '600',
+    paddingHorizontal: 20,
+    position: 'absolute',
+    textAlign: 'center',
+    top: 40
+  }
+});
 
 /**
  *
