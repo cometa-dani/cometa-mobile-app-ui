@@ -102,12 +102,10 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
   return (
     <View style={{
       height: layoutHeight,
-      flex: 1,
-      position: 'relative'
     }}>
-      {/* Background image or video */}
-      <GestureDetector gesture={doubleTap}>
-        <View style={{ flex: 1 }}>
+      {/* carousel */}
+      <View style={{ flex: 1, position: 'relative' }}>
+        <GestureDetector gesture={doubleTap}>
           <Carousel
             layout='default'
             vertical={false}
@@ -119,105 +117,110 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
             data={[{ ...item, id: 100 }, { ...item, id: 110 }, { ...item, id: 210 }]}
             onSnapToItem={(index) => setActiveSlide(index)}
             renderItem={({ item }) => (
-              <View key={item.id}>
-                <LinearGradient
-                  colors={['rgba(0,0,0,0.8)', 'transparent']}
-                  start={[0.16, 1]}
-                  end={[0, 0.7]}
-                  style={stylesEventItem.backdrop}
-                />
-                <Image
-                  source={item.mediaUrl}
-                  style={stylesEventItem.imgBackground}
-                  placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
-                  transition={200}
-                />
-              </View>
+              <MemoizedCarouselItem key={item.id} item={item} />
             )}
           />
-        </View>
-      </GestureDetector>
+        </GestureDetector>
 
-      <View style={{ backgroundColor: '#83C9DD', paddingVertical: 10, paddingHorizontal: 24 }}>
+        <Pagination
+          dotsLength={3}
+          activeDotIndex={activeSlide}
+          containerStyle={stylesEventItem.paginationContainer}
+          dotStyle={stylesEventItem.paginationDots}
+          inactiveDotStyle={{
+            // Define styles for inactive dots here
+          }}
+          inactiveDotOpacity={0.5}
+          inactiveDotScale={0.8}
+        />
+
+        {/* Event title */}
+        <Text lightColor='#fff' darkColor='#eee' style={stylesEventItem.title}>{item.name}</Text>
+
+        {/* Positioned buttons */}
+        <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.positionedButtons}>
+          <Pressable onPress={handleLikeOrDislike}>
+            {({ hovered, pressed }) => (
+              (item.isLiked) ? (
+                <FontAwesome name='heart' size={34} style={{ color: (hovered && pressed) ? tabIconDefault : red100 }} />
+              ) : (
+                <FontAwesome name='heart-o' size={34} style={{ color: (hovered && pressed) ? red100 : tabIconDefault }} />
+              )
+            )}
+          </Pressable>
+          <Pressable>
+            {() => (
+              <Image style={{ objectFit: 'contain', width: 42, height: 34 }} source={require('../../assets/icons/share.jpeg')} />
+            )}
+          </Pressable>
+          <Pressable onPressOut={() => showEventDetails(item)}>
+            {() => (
+              <View
+                style={{
+                  borderRadius: 100,
+                  aspectRatio: 1,
+                  width: 34,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'transparent',
+                  borderWidth: 3.4,
+                  borderColor: tabIconDefault
+                }}>
+                <FontAwesome name='info' size={20} style={{ color: tabIconDefault }} />
+              </View>
+            )}
+          </Pressable>
+        </View>
+        {/* Positioned buttons /*}
+
+        {/* Organizer icon */}
+        <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.organizerContainer}>
+          {item?.organization?.mediaUrl ? (
+            <Image style={stylesEventItem.logo} source={{ uri: item.organization?.mediaUrl }} />
+          ) : (
+            <Image style={stylesEventItem.logo} source={require('../../assets/images/icon.png')} />
+          )}
+          <Text
+            lightColor='#fff'
+            darkColor='#eee'
+            style={stylesEventItem.organizer}>
+            {item.organization.name}
+          </Text>
+        </View>
+        {/* Organizer icon */}
+      </View>
+      {/* carousel */}
+
+      {/* likes */}
+      <View style={stylesEventItem.likesContainer}>
         <Text style={{ fontWeight: '900', fontSize: 16 }}>{item._count.likes} Likes</Text>
       </View>
-      {/* Background image or video */}
-
-      <Pagination
-        dotsLength={3}
-        activeDotIndex={activeSlide}
-        containerStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.2)', position: 'absolute', bottom: 40, width: '100%' }}
-        dotStyle={{
-          width: 10,
-          height: 10,
-          borderRadius: 5,
-          marginHorizontal: 7,
-          backgroundColor: 'rgba(255, 255, 255, 0.92)'
-        }}
-        inactiveDotStyle={{
-          // Define styles for inactive dots here
-        }}
-        inactiveDotOpacity={0.5}
-        inactiveDotScale={0.8}
-      />
-
-      {/* Event title */}
-      <Text lightColor='#fff' darkColor='#eee' style={stylesEventItem.title}>{item.name}</Text>
-
-      {/* Positioned buttons */}
-      <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.positionedButtons}>
-        <Pressable onPress={handleLikeOrDislike}>
-          {({ hovered, pressed }) => (
-            (item.isLiked) ? (
-              <FontAwesome name='heart' size={34} style={{ color: (hovered && pressed) ? tabIconDefault : red100 }} />
-            ) : (
-              <FontAwesome name='heart-o' size={34} style={{ color: (hovered && pressed) ? red100 : tabIconDefault }} />
-            )
-          )}
-        </Pressable>
-        <Pressable>
-          {() => (
-            <Image style={{ objectFit: 'contain', width: 42, height: 34 }} source={require('../../assets/icons/share.jpeg')} />
-          )}
-        </Pressable>
-        <Pressable onPressOut={() => showEventDetails(item)}>
-          {() => (
-            <View
-              style={{
-                borderRadius: 100,
-                aspectRatio: 1,
-                width: 34,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'transparent',
-                borderWidth: 3.4,
-                borderColor: tabIconDefault
-              }}>
-              <FontAwesome name='info' size={20} style={{ color: tabIconDefault }} />
-            </View>
-          )}
-        </Pressable>
-      </View>
-      {/* Positioned buttons /*}
-
-      {/* Organizer icon */}
-      <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.organizerContainer}>
-        {item?.organization?.mediaUrl ? (
-          <Image style={stylesEventItem.logo} source={{ uri: item.organization?.mediaUrl }} />
-        ) : (
-          <Image style={stylesEventItem.logo} source={require('../../assets/images/icon.png')} />
-        )}
-        <Text
-          lightColor='#fff'
-          darkColor='#eee'
-          style={stylesEventItem.organizer}>
-          {item.organization.name}
-        </Text>
-      </View>
-      {/* Organizer icon */}
+      {/* likes */}
     </View>
   );
 };
+
+
+const CarouselItem: FC<{ item: LikedEvent }> = ({ item }) => {
+  return (
+    <View>
+      <LinearGradient
+        colors={['rgba(0,0,0,0.8)', 'transparent']}
+        start={[0.16, 1]}
+        end={[0, 0.7]}
+        style={stylesEventItem.backdrop}
+      />
+      <Image
+        source={item.mediaUrl}
+        style={stylesEventItem.imgBackground}
+        placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
+        transition={200}
+      />
+    </View>
+  );
+};
+
+const MemoizedCarouselItem = React.memo(CarouselItem, () => true);
 
 
 const stylesEventItem = StyleSheet.create({
@@ -227,6 +230,12 @@ const stylesEventItem = StyleSheet.create({
   },
 
   imgBackground: { height: '100%', width: '100%' },
+
+  likesContainer: {
+    backgroundColor: '#83C9DD',
+    paddingHorizontal: 24,
+    paddingVertical: 10
+  },
 
   logo: {
     aspectRatio: 1,
@@ -243,16 +252,31 @@ const stylesEventItem = StyleSheet.create({
 
   organizerContainer: {
     alignItems: 'center',
-    bottom: 64,
+    bottom: 34,
     flexDirection: 'row',
     gap: 12,
     left: 20,
     position: 'absolute'
   },
 
+  paginationContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    bottom: 0,
+    position: 'absolute',
+    width: '100%'
+  },
+
+  paginationDots: {
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    borderRadius: 5,
+    height: 10,
+    marginHorizontal: 7,
+    width: 10
+  },
+
   positionedButtons: {
     alignItems: 'center',
-    bottom: 64,
+    bottom: 34,
     gap: 24,
     justifyContent: 'center',
     position: 'absolute',
