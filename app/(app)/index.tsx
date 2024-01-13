@@ -1,35 +1,20 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import { LikedEvent, } from '../../models/Event';
-import { StyleSheet, DimensionValue, Pressable, SafeAreaView, ViewToken, Dimensions } from 'react-native';
+import { StyleSheet, DimensionValue, Pressable, SafeAreaView, Dimensions } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
 import { useCometaStore } from '../../store/cometaStore';
-import { ResizeMode, Video } from 'expo-av';
 import { Image } from 'expo-image'; // use with thumbhash
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel from 'react-native-reanimated-carousel';
 
 
 export default function HomeScreen(): JSX.Element {
-
   // colors
   const { background } = useColors();
-
-  // video
-  const [playingVideo, setPlayingVideo] = useState<string>('');
-
-  const onViewRef = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    if (viewableItems.length > 0) {
-      if (viewableItems[0].item.mediaType === 'VIDEO') {
-        // console.log('viewableItems', viewableItems[0].item?.id);
-        setPlayingVideo(viewableItems[0].item?.id);
-      }
-      // TODO: FIXE temporary fix to avoid playing multiple videos at the same time
-    }
-  });
 
   // events & function to handle fetching more events when reaching the end
   const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteQueryGetLatestEvents();
@@ -51,22 +36,17 @@ export default function HomeScreen(): JSX.Element {
       <View style={styles.container}>
         <FlashList
           onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
-          onViewableItemsChanged={onViewRef.current}
-          viewabilityConfig={{ viewAreaCoveragePercentThreshold: 30 }}
-          keyExtractor={item => item.id.toString()}
-          removeClippedSubviews={true}
-          refreshing={isFetching}
+          // refreshing={isFetching}
           showsVerticalScrollIndicator={false}
-          estimatedItemSize={Dimensions.get('window').height - 60}
+          estimatedItemSize={Dimensions.get('window').height - 100}
           pagingEnabled={true}
           data={data?.pages.flatMap(page => page.events)}
           onEndReached={handleInfiniteFetch}
-          onEndReachedThreshold={1}
+          onEndReachedThreshold={0.5}
           renderItem={({ item }) => (
             <MemoizedEventItem
               key={item.id}
               item={item}
-              playingVideo={playingVideo}
               layoutHeight={layoutHeight}
             />
           )}
@@ -89,25 +69,20 @@ const styles = StyleSheet.create({
 // Define the props for the memoized list item
 interface ListItemProps {
   item: LikedEvent,
-  playingVideo: string,
   layoutHeight: DimensionValue,
 }
 
-const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
-  // video
-  const videoRef = React.useRef<Video>(null);
-  const videoShouldPlay: boolean = playingVideo === item.id.toString();
-
+const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
   // Get access to colors and store data
   const { red100, tabIconDefault } = useColors();
 
   // global state
   const { setToggleActionSheet, setLikedEvent } = useCometaStore(state => state);
 
-  const showEventDetails = (item: LikedEvent): void => {
+  const showEventDetails = useCallback((item: LikedEvent): void => {
     setLikedEvent(item);
     setToggleActionSheet(true);
-  };
+  }, [item]);
 
   // perform mutations
   const likeOrDislikeMutation = useMutationLikeOrDislikeEvent();
@@ -119,18 +94,6 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
     .numberOfTaps(2)
     .onEnd(() => likeOrDislikeMutation.mutate(item.id));
 
-
-  // play video on appear and pause on disappear
-  useEffect(() => {
-    if (videoRef.current) {
-      if (videoShouldPlay) {
-        videoRef.current.playAsync();
-      } else {
-        videoRef.current.pauseAsync();
-      }
-    }
-  }, [videoShouldPlay]);
-
   // console.log('item', item._count.likes);
   return (
     <View style={{
@@ -139,21 +102,12 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
       position: 'relative'
     }}>
       {/* Background image or video */}
-      <View style={{ flex: 1, width: '100%', height: '100%' }}>
-        <Carousel
-          style={{
-            width: '100%',
-            height: '100%',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-          width={Dimensions.get('window').width}
-          // mode={'parallax'}
-          loop={true}
-          modeConfig={{}}
-          data={[{ ...item, id: '0' }, { ...item, id: '1' }, { ...item, id: '2' }]}
-          renderItem={({ item },) => (
-            <GestureDetector key={item.id} gesture={doubleTap}>
+      <GestureDetector gesture={doubleTap}>
+        <View style={{ flex: 1 }}>
+          <Carousel
+            width={Dimensions.get('window').width - 20}
+            data={[{ ...item, id: 100 }, { ...item, id: 110 }, { ...item, id: 210 }]}
+            renderItem={({ item }) => (
               <View>
                 <LinearGradient
                   colors={['rgba(0,0,0,0.8)', 'transparent']}
@@ -161,27 +115,17 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
                   end={[0, 0.7]}
                   style={stylesEventItem.backdrop}
                 />
-                {item.mediaType === 'IMAGE' ? (
-                  <Image
-                    source={item.mediaUrl}
-                    style={{ width: '100%', height: '100%' }}
-                    placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
-                    transition={200}
-                  />
-                ) : (
-                  <Video
-                    ref={videoRef}
-                    useNativeControls
-                    resizeMode={ResizeMode.COVER}
-                    source={{ uri: item.mediaUrl }}
-                    style={{ width: '100%', height: '100%', overflow: 'hidden' }}
-                  />
-                )}
+                <Image
+                  source={item.mediaUrl}
+                  style={{ width: '100%', height: '100%' }}
+                  placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
+                  transition={200}
+                />
               </View>
-            </GestureDetector>
-          )}
-        />
-      </View>
+            )}
+          />
+        </View>
+      </GestureDetector>
 
       <View style={{ backgroundColor: '#83C9DD', paddingVertical: 10, paddingHorizontal: 24 }}>
         <Text style={{ fontWeight: '900', fontSize: 16 }}>{item._count.likes} Likes</Text>
@@ -246,6 +190,29 @@ const EventItem: FC<ListItemProps> = ({ playingVideo, item, layoutHeight }) => {
   );
 };
 
+
+// const CarouselItem: FC<{ item: LikedEvent }> = ({ item }) => {
+//   return (
+//     <View>
+//       <LinearGradient
+//         colors={['rgba(0,0,0,0.8)', 'transparent']}
+//         start={[0.16, 1]}
+//         end={[0, 0.7]}
+//         style={stylesEventItem.backdrop}
+//       />
+//       <Image
+//         source={item.mediaUrl}
+//         style={{ width: '100%', height: '100%' }}
+//         placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
+//         transition={200}
+//       />
+//     </View>
+//   );
+// };
+
+// const MemoizedCarouselItem = React.memo(CarouselItem);
+
+
 const stylesEventItem = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
@@ -304,7 +271,7 @@ function arePropsEqual(prevProps: ListItemProps, nextProps: ListItemProps): bool
   // Implement your custom comparison logic here
   // Return true if the props are equal, return false if they are not
   return (
-    prevProps.playingVideo === nextProps.playingVideo &&
+    // prevProps.playingVideo === nextProps.playingVideo &&
     prevProps.item.isLiked === nextProps.item.isLiked &&
     prevProps.layoutHeight === nextProps.layoutHeight
   );
