@@ -9,7 +9,8 @@ import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '
 import { useCometaStore } from '../../store/cometaStore';
 import { Image } from 'expo-image'; // use with thumbhash
 import { LinearGradient } from 'expo-linear-gradient';
-import Carousel from 'react-native-reanimated-carousel';
+import Carousel, { Pagination } from 'react-native-snap-carousel';
+// import Carousel from 'react-native-reanimated-carousel';
 
 
 export default function HomeScreen(): JSX.Element {
@@ -36,7 +37,7 @@ export default function HomeScreen(): JSX.Element {
       <View style={styles.container}>
         <FlashList
           onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
-          // refreshing={isFetching}
+          refreshing={isFetching}
           showsVerticalScrollIndicator={false}
           estimatedItemSize={Dimensions.get('window').height - 100}
           pagingEnabled={true}
@@ -76,6 +77,9 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
   // Get access to colors and store data
   const { red100, tabIconDefault } = useColors();
 
+  // carousel slider pagination
+  const [activeSlide, setActiveSlide] = useState<number>(0);
+
   // global state
   const { setToggleActionSheet, setLikedEvent } = useCometaStore(state => state);
 
@@ -88,13 +92,13 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
   const likeOrDislikeMutation = useMutationLikeOrDislikeEvent();
   const handleLikeOrDislike = () => likeOrDislikeMutation.mutate(item.id);
 
-
+  // double tap gesture
   const doubleTap = Gesture.Tap();
   doubleTap
     .numberOfTaps(2)
     .onEnd(() => likeOrDislikeMutation.mutate(item.id));
 
-  // console.log('item', item._count.likes);
+
   return (
     <View style={{
       height: layoutHeight,
@@ -105,10 +109,17 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
       <GestureDetector gesture={doubleTap}>
         <View style={{ flex: 1 }}>
           <Carousel
-            width={Dimensions.get('window').width - 20}
+            layout='default'
+            vertical={false}
+            activeSlideOffset={0}
+            inactiveSlideOpacity={0.6}
+            inactiveSlideScale={0.78}
+            sliderWidth={Dimensions.get('window').width - 20}
+            itemWidth={Dimensions.get('window').width - 20}
             data={[{ ...item, id: 100 }, { ...item, id: 110 }, { ...item, id: 210 }]}
+            onSnapToItem={(index) => setActiveSlide(index)}
             renderItem={({ item }) => (
-              <View>
+              <View key={item.id}>
                 <LinearGradient
                   colors={['rgba(0,0,0,0.8)', 'transparent']}
                   start={[0.16, 1]}
@@ -117,7 +128,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
                 />
                 <Image
                   source={item.mediaUrl}
-                  style={{ width: '100%', height: '100%' }}
+                  style={stylesEventItem.imgBackground}
                   placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
                   transition={200}
                 />
@@ -131,6 +142,24 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
         <Text style={{ fontWeight: '900', fontSize: 16 }}>{item._count.likes} Likes</Text>
       </View>
       {/* Background image or video */}
+
+      <Pagination
+        dotsLength={3}
+        activeDotIndex={activeSlide}
+        containerStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.2)', position: 'absolute', bottom: 40, width: '100%' }}
+        dotStyle={{
+          width: 10,
+          height: 10,
+          borderRadius: 5,
+          marginHorizontal: 7,
+          backgroundColor: 'rgba(255, 255, 255, 0.92)'
+        }}
+        inactiveDotStyle={{
+          // Define styles for inactive dots here
+        }}
+        inactiveDotOpacity={0.5}
+        inactiveDotScale={0.8}
+      />
 
       {/* Event title */}
       <Text lightColor='#fff' darkColor='#eee' style={stylesEventItem.title}>{item.name}</Text>
@@ -174,9 +203,9 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
       {/* Organizer icon */}
       <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.organizerContainer}>
         {item?.organization?.mediaUrl ? (
-          <Image style={stylesEventItem.img} source={{ uri: item.organization?.mediaUrl }} />
+          <Image style={stylesEventItem.logo} source={{ uri: item.organization?.mediaUrl }} />
         ) : (
-          <Image style={stylesEventItem.img} source={require('../../assets/images/icon.png')} />
+          <Image style={stylesEventItem.logo} source={require('../../assets/images/icon.png')} />
         )}
         <Text
           lightColor='#fff'
@@ -191,35 +220,15 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
 };
 
 
-// const CarouselItem: FC<{ item: LikedEvent }> = ({ item }) => {
-//   return (
-//     <View>
-//       <LinearGradient
-//         colors={['rgba(0,0,0,0.8)', 'transparent']}
-//         start={[0.16, 1]}
-//         end={[0, 0.7]}
-//         style={stylesEventItem.backdrop}
-//       />
-//       <Image
-//         source={item.mediaUrl}
-//         style={{ width: '100%', height: '100%' }}
-//         placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
-//         transition={200}
-//       />
-//     </View>
-//   );
-// };
-
-// const MemoizedCarouselItem = React.memo(CarouselItem);
-
-
 const stylesEventItem = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 1,
   },
 
-  img: {
+  imgBackground: { height: '100%', width: '100%' },
+
+  logo: {
     aspectRatio: 1,
     borderRadius: 50,
     height: 48,
