@@ -270,7 +270,6 @@ const stylesEventItem = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.92)',
     borderRadius: 5,
     height: 10,
-    marginHorizontal: 7,
     width: 10
   },
 
