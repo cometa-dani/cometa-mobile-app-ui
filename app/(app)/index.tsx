@@ -10,6 +10,7 @@ import { useCometaStore } from '../../store/cometaStore';
 import { Image } from 'expo-image'; // use with thumbhash
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
+import { gray_200, white_50 } from '../../constants/colors';
 // import Carousel from 'react-native-reanimated-carousel';
 
 
@@ -62,7 +63,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     flex: 1,
     marginHorizontal: 10,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
 });
 
@@ -75,7 +76,7 @@ interface ListItemProps {
 
 const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
   // Get access to colors and store data
-  const { red100, tabIconDefault } = useColors();
+  const { red100, white50 } = useColors();
 
   // carousel slider pagination
   const [activeSlide, setActiveSlide] = useState<number>(0);
@@ -127,24 +128,18 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
           activeDotIndex={activeSlide}
           containerStyle={stylesEventItem.paginationContainer}
           dotStyle={stylesEventItem.paginationDots}
-          inactiveDotStyle={{
-            // Define styles for inactive dots here
-          }}
           inactiveDotOpacity={0.5}
           inactiveDotScale={0.8}
         />
-
-        {/* Event title */}
-        <Text lightColor='#fff' darkColor='#eee' style={stylesEventItem.title}>{item.name}</Text>
 
         {/* Positioned buttons */}
         <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.positionedButtons}>
           <Pressable onPress={handleLikeOrDislike}>
             {({ hovered, pressed }) => (
               (item.isLiked) ? (
-                <FontAwesome name='heart' size={34} style={{ color: (hovered && pressed) ? tabIconDefault : red100 }} />
+                <FontAwesome name='heart' size={34} style={{ color: (hovered && pressed) ? white50 : red100 }} />
               ) : (
-                <FontAwesome name='heart-o' size={34} style={{ color: (hovered && pressed) ? red100 : tabIconDefault }} />
+                <FontAwesome name='heart-o' size={34} style={{ color: (hovered && pressed) ? red100 : white50 }} />
               )
             )}
           </Pressable>
@@ -163,10 +158,10 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   backgroundColor: 'transparent',
-                  borderWidth: 3.4,
-                  borderColor: tabIconDefault
+                  borderWidth: 3,
+                  borderColor: white50
                 }}>
-                <FontAwesome name='info' size={20} style={{ color: tabIconDefault }} />
+                <FontAwesome name='info' size={20} style={{ color: white50 }} />
               </View>
             )}
           </Pressable>
@@ -174,18 +169,20 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
         {/* Positioned buttons /*}
 
         {/* Organizer icon */}
-        <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.organizerContainer}>
-          {item?.organization?.mediaUrl ? (
-            <Image style={stylesEventItem.logo} source={{ uri: item.organization?.mediaUrl }} />
-          ) : (
-            <Image style={stylesEventItem.logo} source={require('../../assets/images/icon.png')} />
-          )}
+        <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.eventInfoContainer}>
           <Text
             lightColor='#fff'
             darkColor='#eee'
-            style={stylesEventItem.organizer}>
-            {item.organization.name}
+            numberOfLines={2}
+            ellipsizeMode='tail'
+            style={stylesEventItem.eventTitle}
+          >
+            {item.name}
           </Text>
+
+          <View style={stylesEventItem.tagContainer}>
+            <Text style={stylesEventItem.tagText}>{item.category}</Text>
+          </View>
         </View>
         {/* Organizer icon */}
       </View>
@@ -193,7 +190,9 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
 
       {/* likes */}
       <View style={stylesEventItem.likesContainer}>
-        <Text style={{ fontWeight: '900', fontSize: 16 }}>{item._count.likes} Likes</Text>
+        <Text style={{ fontWeight: '900', fontSize: 16 }}>
+          {item._count.likes} Likes
+          s</Text>
       </View>
       {/* likes */}
     </View>
@@ -206,8 +205,8 @@ const CarouselItem: FC<{ item: LikedEvent }> = ({ item }) => {
     <View>
       <LinearGradient
         colors={['rgba(0,0,0,0.8)', 'transparent']}
-        start={[0.16, 1]}
-        end={[0, 0.7]}
+        start={[0.2, 1]}
+        end={[0, 0.6]}
         style={stylesEventItem.backdrop}
       />
       <Image
@@ -229,34 +228,25 @@ const stylesEventItem = StyleSheet.create({
     zIndex: 1,
   },
 
+  eventInfoContainer: {
+    bottom: 64,
+    gap: 12,
+    left: 20,
+    position: 'absolute',
+    width: '60%'
+  },
+
+  eventTitle: {
+    fontSize: 18,
+    fontWeight: '500',
+  },
+
   imgBackground: { height: '100%', width: '100%' },
 
   likesContainer: {
     backgroundColor: '#83C9DD',
     paddingHorizontal: 24,
     paddingVertical: 10
-  },
-
-  logo: {
-    aspectRatio: 1,
-    borderRadius: 50,
-    height: 48,
-    overflow: 'hidden',
-    width: 48,
-  },
-
-  organizer: {
-    fontSize: 18,
-    fontWeight: '500'
-  },
-
-  organizerContainer: {
-    alignItems: 'center',
-    bottom: 34,
-    flexDirection: 'row',
-    gap: 12,
-    left: 20,
-    position: 'absolute'
   },
 
   paginationContainer: {
@@ -268,8 +258,9 @@ const stylesEventItem = StyleSheet.create({
 
   paginationDots: {
     backgroundColor: 'rgba(255, 255, 255, 0.92)',
-    borderRadius: 5,
+    borderRadius: 10,
     height: 10,
+    marginHorizontal: -2,
     width: 10
   },
 
@@ -282,14 +273,23 @@ const stylesEventItem = StyleSheet.create({
     right: 20,
   },
 
-  title: {
-    alignSelf: 'center',
-    fontSize: 22,
-    fontWeight: '600',
-    paddingHorizontal: 20,
-    position: 'absolute',
-    textAlign: 'center',
-    top: 40
+  tagContainer: {
+    alignSelf: 'flex-start',
+    backgroundColor: gray_200,
+    borderRadius: 10,
+    elevation: 3,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    shadowColor: '#171717',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+  },
+  tagText: {
+    color: white_50,
+    fontSize: 17,
+    fontWeight: '500',
+    textTransform: 'uppercase'
   }
 });
 
