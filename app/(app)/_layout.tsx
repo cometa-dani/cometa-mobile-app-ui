@@ -68,7 +68,6 @@ export default function AppLayout() {
                 :
                 <Image style={{ width: 34, height: 34 }} source={require('../../assets/icons/Homepage.png')} />
             ),
-            // <TabBarIcon name="home" color={color} />,
             headerLeft: () => (
               <Pressable>
                 {({ pressed }) => (
@@ -88,15 +87,10 @@ export default function AppLayout() {
             },
             headerRight: () => (
               // <Link href="/bucketList" asChild>
-              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginRight: 18 }}>
+              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginRight: 18, gap: 8 }}>
                 <Pressable>
                   {({ pressed }) => (
-                    <FontAwesome
-                      name="bell"
-                      size={25}
-                      color={gray300}
-                      style={{ marginRight: 18, opacity: pressed ? 0.5 : 1 }}
-                    />
+                    <Image style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }} source={require('../../assets/icons/Notifications.png')} />
                   )}
                 </Pressable>
                 <Pressable>
@@ -114,11 +108,10 @@ export default function AppLayout() {
           options={{
             tabBarIcon: ({ focused }) => (
               focused ?
-                <Image style={{ width: 30, height: 30 }} source={require('../../assets/icons/Chat (2).png')} />
+                <Image style={{ width: 30, height: 30 }} source={require('../../assets/icons/Chat-color.png')} />
                 :
-                <Image style={{ width: 30, height: 30 }} source={require('../../assets/icons/comment.png')} />
+                <Image style={{ width: 30, height: 30 }} source={require('../../assets/icons/Chat.png')} />
             ),
-            // tabBarIcon: ({ color }) => <TabBarIcon name="comments" color={color} />,
           }}
         />
         <Tabs.Screen
@@ -132,7 +125,6 @@ export default function AppLayout() {
                 :
                 <Image style={{ width: 38, height: 38 }} source={require('../../assets/icons/Bucketlist.png')} />
             ),
-            // tabBarIcon: ({ color }) => <TabBarIcon name="list-ul" color={color} />,
             headerTitle() {
               return (
                 <Image style={{ height: 70, width: 142 }} source={require('../../assets/images/bucketList.webp')} />
@@ -156,7 +148,6 @@ export default function AppLayout() {
                 :
                 <Image style={{ width: 34, height: 34 }} source={require('../../assets/icons/Profile.png')} />
             ),
-            // tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
           }}
         />
       </Tabs>

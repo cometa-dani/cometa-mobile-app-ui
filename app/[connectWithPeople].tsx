@@ -21,6 +21,7 @@ import { db } from '../firebase/firebase';
 import { IMessage, } from 'react-native-gifted-chat';
 import { nodeEnv } from '../constants/vars';
 import { FlashList } from '@shopify/flash-list';
+import { gray_200 } from '../constants/colors';
 
 
 type Message = { message: string };
@@ -57,7 +58,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const mutationCancelFriendship = useMutationCancelFriendshipInvitation();
 
   /**
-  * 
+  *
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
   * @param {GetBasicUserProfile} sender the sender of the friendship invitation
   */
@@ -69,7 +70,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   };
 
   /**
-  * 
+  *
   * @description for a receiver user, sends a friendship invitation with status 'PENDING'
   * @param {GetBasicUserProfile} receiver the receiver of the friendship invitation
   */
@@ -78,7 +79,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   };
 
   /**
-  * 
+  *
   * @description cancels a friendship invitation with status 'PENDING'
   * @param {GetBasicUserProfile} receiver the receiver of the friendship invitation
   */
@@ -122,11 +123,11 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
 
       <View style={styles.tabs}>
         <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
-          <Text style={[styles.tab, toggleTabs && styles.tabActive]}>Friends</Text>
+          <Text style={[{ color: '#83C9DD' }, styles.tab, toggleTabs && styles.tabActive]}>Friends</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
-          <Text style={[styles.tab, !toggleTabs && styles.tabActive]}>New People</Text>
+          <Text style={[{ color: '#E44063' }, styles.tab, !toggleTabs && styles.tabActive]}>New People</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -417,7 +418,7 @@ const styles = StyleSheet.create({
 
   tabActive: {
     borderBottomWidth: 2,
-    borderColor: 'gray'
+    borderColor: gray_200
   },
 
   tabs: {

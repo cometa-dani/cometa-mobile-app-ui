@@ -147,26 +147,14 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
           </Pressable>
           <Pressable>
             {() => (
-              <Image style={{ objectFit: 'contain', width: 42, height: 34 }} source={require('../../assets/icons/share.jpeg')} />
+              <Image style={{ objectFit: 'contain', width: 42, height: 34 }} source={require('../../assets/icons/Share.png')} />
             )}
           </Pressable>
           <Pressable
           // onPressOut={() => showEventDetails(item)}
           >
             {() => (
-              <View
-                style={{
-                  borderRadius: 100,
-                  aspectRatio: 1,
-                  width: 34,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'transparent',
-                  borderWidth: 3,
-                  borderColor: white50
-                }}>
-                <FontAwesome name='info' size={20} style={{ color: white50 }} />
-              </View>
+              <Image style={{ objectFit: 'contain', width: 34, height: 34 }} source={require('../../assets/icons/info.png')} />
             )}
           </Pressable>
         </View>
