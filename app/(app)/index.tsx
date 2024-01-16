@@ -3,7 +3,7 @@ import { LikedEvent, } from '../../models/Event';
 import { StyleSheet, DimensionValue, Pressable, SafeAreaView, Dimensions } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Text, View, useColors } from '../../components/Themed';
-import { GestureDetector, Gesture, ScrollView } from 'react-native-gesture-handler';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
 // import { useCometaStore } from '../../store/cometaStore';
@@ -11,7 +11,8 @@ import { Image } from 'expo-image'; // use with thumbhash
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { gray_200, white_50 } from '../../constants/colors';
-import { AppTransparentModal } from '../../components/modal/transparentModal';
+// import { AppTransparentModal } from '../../components/modal/transparentModal';
+// import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 // import Carousel from 'react-native-reanimated-carousel';
 
 
@@ -81,7 +82,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
 
   // carousel slider pagination
   const [activeSlide, setActiveSlide] = useState<number>(0);
-  const [toggleMoreInfo, setToggleMoreInfo] = useState<boolean>(false);
+  // const [toggleMoreInfo, setToggleMoreInfo] = useState<boolean>(false);
 
   // global state
   // const { setToggleActionSheet, setLikedEvent } = useCometaStore(state => state);
@@ -101,6 +102,21 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
     .numberOfTaps(2)
     .onEnd(() => likeOrDislikeMutation.mutate(item.id));
 
+
+  const [isExpanded, setIsExpanded] = useState(false);
+  // const animationValue = useSharedValue(isExpanded ? 10 : 2);
+
+  // const animatedStyles = useAnimatedStyle(() => {
+  //   return {
+  //     maxHeight: withTiming(animationValue.value * 15, { duration: 160 }), // Change 300 to your desired max height
+  //   };
+  // });
+
+
+  // const toggleExpanded = () => {
+  //   setIsExpanded(!isExpanded);
+  //   animationValue.value = isExpanded ? 10 : 2;
+  // };
 
   return (
     <View style={{
@@ -160,40 +176,35 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
         </View>
         {/* Positioned buttons /*}
 
-        {/* modal */}
-        <AppTransparentModal>
-          {(setIsOpen) => (
-            <ScrollView>
-              <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.eventInfoContainer}>
-                <Text
-                  lightColor='#fff'
-                  darkColor='#eee'
-                  numberOfLines={2}
-                  ellipsizeMode='tail'
-                  style={stylesEventItem.eventTitle}
-                >
-                  {item.name}
-                </Text>
+        {/* collapsed */}
+        <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.eventInfoContainer}>
+          <Text
+            lightColor='#fff'
+            darkColor='#eee'
+            numberOfLines={2}
+            ellipsizeMode='tail'
+            style={stylesEventItem.eventTitle}
+          >
+            {item.name}
+          </Text>
 
-                <View style={stylesEventItem.tagContainer}>
-                  <Text style={stylesEventItem.tagText}>{item.category}</Text>
-                </View>
+          <View style={stylesEventItem.tagContainer}>
+            <Text style={stylesEventItem.tagText}>{item.category}</Text>
+          </View>
 
-                <Text
-                  lightColor='#fff'
-                  darkColor='#eee'
-                  numberOfLines={2}
-                  ellipsizeMode='tail'
-                  onPress={() => setIsOpen(true)}
-                >
-                  {item.description}
-                </Text>
-                {/* collapsed */}
-              </View>
-            </ScrollView>
-          )}
-        </AppTransparentModal>
-        {/* modal */}
+          {/* <Animated.View style={animatedStyles}>
+              </Animated.View> */}
+          <Text
+            lightColor='#fff'
+            darkColor='#eee'
+            numberOfLines={isExpanded ? 14 : 2}
+            ellipsizeMode='tail'
+            onPress={() => setIsExpanded(prev => !prev)}
+          >
+            {item.description}
+          </Text>
+        </View>
+        {/* collapsed */}
       </View>
       {/* carousel */}
 
@@ -240,7 +251,7 @@ const stylesEventItem = StyleSheet.create({
   eventInfoContainer: {
     bottom: 60,
     gap: 12,
-    height: 300,
+    // height: 300,
     left: 20,
     position: 'absolute',
     width: '72%',
