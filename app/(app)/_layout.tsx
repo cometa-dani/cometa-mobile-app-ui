@@ -62,7 +62,12 @@ export default function AppLayout() {
           options={{
             headerTitleAlign: 'center',
             headerShown: true,
-            tabBarIcon: () => <Image style={{ width: 34, height: 34 }} source={require('../../assets/icons/home.png')} />,
+            tabBarIcon: ({ focused }) => (
+              focused ?
+                <Image style={{ width: 34, height: 34 }} source={require('../../assets/icons/Homepage-color.png')} />
+                :
+                <Image style={{ width: 34, height: 34 }} source={require('../../assets/icons/Homepage.png')} />
+            ),
             // <TabBarIcon name="home" color={color} />,
             headerLeft: () => (
               <Pressable>
@@ -83,7 +88,7 @@ export default function AppLayout() {
             },
             headerRight: () => (
               // <Link href="/bucketList" asChild>
-              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginRight: 18 }}>
                 <Pressable>
                   {({ pressed }) => (
                     <FontAwesome
@@ -96,26 +101,7 @@ export default function AppLayout() {
                 </Pressable>
                 <Pressable>
                   {({ pressed }) => (
-                    <View
-                      style={{
-                        borderRadius: 100,
-                        aspectRatio: 1,
-                        width: 36,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: 'transparent',
-                        borderWidth: 2.6,
-                        borderColor: gray300,
-                        opacity: pressed ? 0.5 : 1,
-                        marginRight: 18
-                      }}>
-                      <FontAwesome
-                        name="sliders"
-                        size={22}
-                        color={gray300}
-                        style={{ opacity: pressed ? 0.5 : 1 }}
-                      />
-                    </View>
+                    <Image style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }} source={require('../../assets/icons/Filter.png')} />
                   )}
                 </Pressable>
               </View>
@@ -126,7 +112,12 @@ export default function AppLayout() {
           listeners={{ tabPress: (e) => e.preventDefault() }}
           name="discover"
           options={{
-            tabBarIcon: () => <Image style={{ width: 30, height: 30 }} source={require('../../assets/icons/comment.png')} />,
+            tabBarIcon: ({ focused }) => (
+              focused ?
+                <Image style={{ width: 30, height: 30 }} source={require('../../assets/icons/Chat (2).png')} />
+                :
+                <Image style={{ width: 30, height: 30 }} source={require('../../assets/icons/comment.png')} />
+            ),
             // tabBarIcon: ({ color }) => <TabBarIcon name="comments" color={color} />,
           }}
         />
@@ -135,7 +126,12 @@ export default function AppLayout() {
           options={{
             headerTitleAlign: 'center',
             headerShown: true,
-            tabBarIcon: () => <Image style={{ width: 38, height: 38 }} source={require('../../assets/icons/heart_list.png')} />,
+            tabBarIcon: ({ focused }) => (
+              focused ?
+                <Image style={{ width: 38, height: 38 }} source={require('../../assets/icons/Bucketlist-color.png')} />
+                :
+                <Image style={{ width: 38, height: 38 }} source={require('../../assets/icons/Bucketlist.png')} />
+            ),
             // tabBarIcon: ({ color }) => <TabBarIcon name="list-ul" color={color} />,
             headerTitle() {
               return (
@@ -143,28 +139,9 @@ export default function AppLayout() {
               );
             },
             headerRight: () => (
-              <Pressable>
+              <Pressable style={{ marginRight: 18 }}>
                 {({ pressed }) => (
-                  <View
-                    style={{
-                      borderRadius: 100,
-                      aspectRatio: 1,
-                      width: 36,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: 'transparent',
-                      borderWidth: 2.6,
-                      borderColor: gray300,
-                      opacity: pressed ? 0.5 : 1,
-                      marginRight: 18
-                    }}>
-                    <FontAwesome
-                      name="sliders"
-                      size={22}
-                      color={gray300}
-                      style={{ opacity: pressed ? 0.5 : 1 }}
-                    />
-                  </View>
+                  <Image style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }} source={require('../../assets/icons/Filter.png')} />
                 )}
               </Pressable>
             )
@@ -173,7 +150,12 @@ export default function AppLayout() {
         <Tabs.Screen
           name='userProfile'
           options={{
-            tabBarIcon: () => <Image style={{ width: 34, height: 34 }} source={require('../../assets/icons/user.png')} />,
+            tabBarIcon: ({ focused }) => (
+              focused ?
+                <Image style={{ width: 34, height: 34 }} source={require('../../assets/icons/Profile-color.png')} />
+                :
+                <Image style={{ width: 34, height: 34 }} source={require('../../assets/icons/Profile.png')} />
+            ),
             // tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
           }}
         />

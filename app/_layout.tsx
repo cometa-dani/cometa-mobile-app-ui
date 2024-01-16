@@ -14,6 +14,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { EventActionSheet } from '../components/actionSheet/actionSheet';
 import { useCometaStore } from '../store/cometaStore';
+import { Image } from 'expo-image';
 
 
 // Catch any errors thrown by the Layout component.
@@ -78,7 +79,16 @@ function RootLayoutNav(): JSX.Element {
 
         <Stack.Screen name="(app)" options={screenOptions} />
 
-        <Stack.Screen name="[connectWithPeople]" options={{ presentation: 'modal', headerTitle: 'Connect with People', animationDuration }} />
+        <Stack.Screen
+          name="[connectWithPeople]"
+          options={{
+            presentation: 'modal',
+            headerTitleAlign: 'center',
+            headerShadowVisible: true,
+            headerTitle: () => <Image style={{ height: 24, width: 110 }} source={require('../assets/images/letters_cometa.webp')} />,
+            animationDuration,
+          }}
+        />
       </Stack>
 
       <EventActionSheet

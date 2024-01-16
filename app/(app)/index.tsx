@@ -3,14 +3,15 @@ import { LikedEvent, } from '../../models/Event';
 import { StyleSheet, DimensionValue, Pressable, SafeAreaView, Dimensions } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Text, View, useColors } from '../../components/Themed';
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { GestureDetector, Gesture, ScrollView } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
-import { useCometaStore } from '../../store/cometaStore';
+// import { useCometaStore } from '../../store/cometaStore';
 import { Image } from 'expo-image'; // use with thumbhash
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { gray_200, white_50 } from '../../constants/colors';
+import { AppTransparentModal } from '../../components/modal/transparentModal';
 // import Carousel from 'react-native-reanimated-carousel';
 
 
@@ -80,14 +81,15 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
 
   // carousel slider pagination
   const [activeSlide, setActiveSlide] = useState<number>(0);
+  const [toggleMoreInfo, setToggleMoreInfo] = useState<boolean>(false);
 
   // global state
-  const { setToggleActionSheet, setLikedEvent } = useCometaStore(state => state);
+  // const { setToggleActionSheet, setLikedEvent } = useCometaStore(state => state);
 
-  const showEventDetails = useCallback((item: LikedEvent): void => {
-    setLikedEvent(item);
-    setToggleActionSheet(true);
-  }, [item]);
+  // const showEventDetails = useCallback((item: LikedEvent): void => {
+  //   setLikedEvent(item);
+  //   setToggleActionSheet(true);
+  // }, [item]);
 
   // perform mutations
   const likeOrDislikeMutation = useMutationLikeOrDislikeEvent();
@@ -148,7 +150,9 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
               <Image style={{ objectFit: 'contain', width: 42, height: 34 }} source={require('../../assets/icons/share.jpeg')} />
             )}
           </Pressable>
-          <Pressable onPressOut={() => showEventDetails(item)}>
+          <Pressable
+          // onPressOut={() => showEventDetails(item)}
+          >
             {() => (
               <View
                 style={{
@@ -168,23 +172,40 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
         </View>
         {/* Positioned buttons /*}
 
-        {/* Organizer icon */}
-        <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.eventInfoContainer}>
-          <Text
-            lightColor='#fff'
-            darkColor='#eee'
-            numberOfLines={2}
-            ellipsizeMode='tail'
-            style={stylesEventItem.eventTitle}
-          >
-            {item.name}
-          </Text>
+        {/* modal */}
+        <AppTransparentModal>
+          {(setIsOpen) => (
+            <ScrollView>
+              <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.eventInfoContainer}>
+                <Text
+                  lightColor='#fff'
+                  darkColor='#eee'
+                  numberOfLines={2}
+                  ellipsizeMode='tail'
+                  style={stylesEventItem.eventTitle}
+                >
+                  {item.name}
+                </Text>
 
-          <View style={stylesEventItem.tagContainer}>
-            <Text style={stylesEventItem.tagText}>{item.category}</Text>
-          </View>
-        </View>
-        {/* Organizer icon */}
+                <View style={stylesEventItem.tagContainer}>
+                  <Text style={stylesEventItem.tagText}>{item.category}</Text>
+                </View>
+
+                <Text
+                  lightColor='#fff'
+                  darkColor='#eee'
+                  numberOfLines={2}
+                  ellipsizeMode='tail'
+                  onPress={() => setIsOpen(true)}
+                >
+                  {item.description}
+                </Text>
+                {/* collapsed */}
+              </View>
+            </ScrollView>
+          )}
+        </AppTransparentModal>
+        {/* modal */}
       </View>
       {/* carousel */}
 
@@ -192,7 +213,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
       <View style={stylesEventItem.likesContainer}>
         <Text style={{ fontWeight: '900', fontSize: 16 }}>
           {item._count.likes} Likes
-          s</Text>
+        </Text>
       </View>
       {/* likes */}
     </View>
@@ -229,15 +250,16 @@ const stylesEventItem = StyleSheet.create({
   },
 
   eventInfoContainer: {
-    bottom: 64,
+    bottom: 60,
     gap: 12,
+    height: 300,
     left: 20,
     position: 'absolute',
-    width: '60%'
+    width: '72%',
   },
 
   eventTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '500',
   },
 
@@ -250,7 +272,7 @@ const stylesEventItem = StyleSheet.create({
   },
 
   paginationContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: 'rgba(0, 0, 0, 0)',
     bottom: 0,
     position: 'absolute',
     width: '100%'
@@ -287,7 +309,7 @@ const stylesEventItem = StyleSheet.create({
   },
   tagText: {
     color: white_50,
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '500',
     textTransform: 'uppercase'
   }
