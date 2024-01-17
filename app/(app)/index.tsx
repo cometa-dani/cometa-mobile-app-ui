@@ -26,7 +26,7 @@ export default function HomeScreen(): JSX.Element {
 
   // events & function to handle fetching more events when reaching the end
   const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteQueryGetLatestEvents();
-  const eventsData = useMemo(() => data?.pages.flatMap(page => page.events), [data?.pages.length]);
+  const eventsData = useMemo(() => data?.pages.flatMap(page => page.events), [data?.pages]);
 
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 

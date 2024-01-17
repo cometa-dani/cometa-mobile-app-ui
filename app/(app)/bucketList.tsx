@@ -1,46 +1,70 @@
-import { FC, memo } from 'react';
+import { FC, memo, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, SafeAreaView, Image } from 'react-native';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
-// import { Text, View } from '../../components/Themed';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useInfiniteQueryGetLatestLikedEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
 import { router } from 'expo-router';
-// import { GetAllLikedEventsWithPagination } from '../../models/LikedEvent';
 import { useQueryClient } from '@tanstack/react-query';
-// import { QueryKeys } from '../../queries/queryKeys';
 import { FlashList } from '@shopify/flash-list';
 import { View, Text } from '../../components/Themed';
 import { GetAllLikedEventsWithPagination } from '../../models/LikedEvent';
 import { QueryKeys } from '../../queries/queryKeys';
 
+import ContentLoader, { Rect } from 'react-content-loader/native';
+
+const SkeletonLoader = () => (
+  <ContentLoader
+    speed={2}
+    width={400}
+    height={160}
+    viewBox="0 0 400 160"
+    backgroundColor="#f3f3f3"
+    foregroundColor="#ecebeb"
+  >
+    <Rect x="48" y="8" rx="3" ry="3" width="88" height="6" />
+    <Rect x="48" y="26" rx="3" ry="3" width="52" height="6" />
+    <Rect x="0" y="56" rx="3" ry="3" width="410" height="6" />
+    <Rect x="0" y="72" rx="3" ry="3" width="380" height="6" />
+    <Rect x="0" y="88" rx="3" ry="3" width="178" height="6" />
+  </ContentLoader>
+);
+
+const renderItem = ({ item }: { item: GetAllLikedEventsWithPagination['events'][0] }) => {
+  return (
+    <MemoizedEventItem
+      key={item.id}
+      item={item}
+    />
+  );
+};
 
 export default function BuckectListScreen(): JSX.Element {
-  const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteQueryGetLatestLikedEvents();
+  const { data, isFetching, hasNextPage, fetchNextPage, isLoading } = useInfiniteQueryGetLatestLikedEvents();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
+  const eventsData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style={'auto'} />
 
       <View style={styles.container}>
-        <FlashList
-          data={data?.pages.flatMap(page => page.events) || []}
-          pagingEnabled={false}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 26 }}
-          onEndReached={handleInfiniteFetch}
-          ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
-          onEndReachedThreshold={0.2}
-          estimatedItemSize={107}
-          renderItem={({ item }) => (
-            <MemoizedEventItem
-              key={item.id}
-              item={item}
+        {isLoading ?
+          <SkeletonLoader />
+          : (
+            <FlashList
+              data={eventsData}
+              pagingEnabled={false}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 26 }}
+              onEndReached={handleInfiniteFetch}
+              ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+              onEndReachedThreshold={0.2}
+              estimatedItemSize={106}
+              renderItem={renderItem}
             />
           )}
-        />
       </View>
     </SafeAreaView>
   );
