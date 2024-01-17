@@ -8,6 +8,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
 import { Image } from 'expo-image';
+import { icons, titles } from '../../constants/assets';
 
 
 /**
@@ -64,9 +65,9 @@ export default function AppLayout() {
             headerShown: true,
             tabBarIcon: ({ focused }) => (
               focused ?
-                <Image style={{ width: 34, height: 34 }} source={require('../../assets/icons/Homepage-color.png')} />
+                <Image style={{ width: 34, height: 34 }} source={icons.homeRed} />
                 :
-                <Image style={{ width: 34, height: 34 }} source={require('../../assets/icons/Homepage.png')} />
+                <Image style={{ width: 34, height: 34 }} source={icons.home} />
             ),
             headerLeft: () => (
               <Pressable>
@@ -82,7 +83,7 @@ export default function AppLayout() {
             ),
             headerTitle() {
               return (
-                <Image style={{ height: 24, width: 110 }} source={require('../../assets/images/letters_cometa.webp')} />
+                <Image style={{ height: 24, width: 110 }} source={titles.cometa} />
               );
             },
             headerRight: () => (
@@ -90,12 +91,12 @@ export default function AppLayout() {
               <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginRight: 18, gap: 8 }}>
                 <Pressable>
                   {({ pressed }) => (
-                    <Image style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }} source={require('../../assets/icons/Notifications.png')} />
+                    <Image style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }} source={icons.notifications} />
                   )}
                 </Pressable>
                 <Pressable>
                   {({ pressed }) => (
-                    <Image style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }} source={require('../../assets/icons/Filter.png')} />
+                    <Image style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }} source={icons.filter} />
                   )}
                 </Pressable>
               </View>
@@ -108,9 +109,9 @@ export default function AppLayout() {
           options={{
             tabBarIcon: ({ focused }) => (
               focused ?
-                <Image style={{ width: 30, height: 30 }} source={require('../../assets/icons/Chat-color.png')} />
+                <Image style={{ width: 30, height: 30 }} source={icons.commentRed} />
                 :
-                <Image style={{ width: 30, height: 30 }} source={require('../../assets/icons/Chat.png')} />
+                <Image style={{ width: 30, height: 30 }} source={icons.comment} />
             ),
           }}
         />
@@ -121,19 +122,19 @@ export default function AppLayout() {
             headerShown: true,
             tabBarIcon: ({ focused }) => (
               focused ?
-                <Image style={{ width: 38, height: 38 }} source={require('../../assets/icons/Bucketlist-color.png')} />
+                <Image style={{ width: 38, height: 38 }} source={icons.bucketListRed} />
                 :
-                <Image style={{ width: 38, height: 38 }} source={require('../../assets/icons/Bucketlist.png')} />
+                <Image style={{ width: 38, height: 38 }} source={icons.bucketList} />
             ),
             headerTitle() {
               return (
-                <Image style={{ height: 70, width: 142 }} source={require('../../assets/images/bucketList.webp')} />
+                <Image style={{ height: 70, width: 142 }} source={titles.bucketList} />
               );
             },
             headerRight: () => (
               <Pressable style={{ marginRight: 18 }}>
                 {({ pressed }) => (
-                  <Image style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }} source={require('../../assets/icons/Filter.png')} />
+                  <Image style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }} source={icons.filter} />
                 )}
               </Pressable>
             )
@@ -144,9 +145,9 @@ export default function AppLayout() {
           options={{
             tabBarIcon: ({ focused }) => (
               focused ?
-                <Image style={{ width: 34, height: 34 }} source={require('../../assets/icons/Profile-color.png')} />
+                <Image style={{ width: 34, height: 34 }} source={icons.profileRed} />
                 :
-                <Image style={{ width: 34, height: 34 }} source={require('../../assets/icons/Profile.png')} />
+                <Image style={{ width: 34, height: 34 }} source={icons.profile} />
             ),
           }}
         />

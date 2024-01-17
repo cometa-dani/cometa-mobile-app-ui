@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { LikedEvent, } from '../../models/Event';
 import { StyleSheet, DimensionValue, Pressable, SafeAreaView, Dimensions } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
@@ -6,47 +6,44 @@ import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
-// import { useCometaStore } from '../../store/cometaStore';
 import { Image } from 'expo-image'; // use with thumbhash
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { gray_200, white_50 } from '../../constants/colors';
-// import { AppTransparentModal } from '../../components/modal/transparentModal';
-// import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-// import Carousel from 'react-native-reanimated-carousel';
+import { icons } from '../../constants/assets';
+
+
+const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
+const carouselEstimatedWidth = Dimensions.get('window').width - 20;
 
 
 export default function HomeScreen(): JSX.Element {
   // colors
   const { background } = useColors();
 
-  // events & function to handle fetching more events when reaching the end
-  const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteQueryGetLatestEvents();
-
-
-  const handleInfiniteFetch = useCallback(() => {
-    if (!isFetching && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [isFetching, hasNextPage, fetchNextPage]);
-
-
   // State variables to manage page and item heights
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
 
+  // events & function to handle fetching more events when reaching the end
+  const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteQueryGetLatestEvents();
+  const eventsData = useMemo(() => data?.pages.flatMap(page => page.events), [data?.pages.length]);
+
+  const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
-      <View style={styles.container}>
+      <View
+        style={styles.container}
+        onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
+      >
         <FlashList
-          onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
           refreshing={isFetching}
           showsVerticalScrollIndicator={false}
-          estimatedItemSize={Dimensions.get('window').height - 100}
+          estimatedItemSize={eventItemEstimatedHeight}
           pagingEnabled={true}
-          data={data?.pages.flatMap(page => page.events)}
+          data={eventsData}
           onEndReached={handleInfiniteFetch}
-          onEndReachedThreshold={0.5}
+          onEndReachedThreshold={0.2}
           renderItem={({ item }) => (
             <MemoizedEventItem
               key={item.id}
@@ -70,6 +67,11 @@ const styles = StyleSheet.create({
 });
 
 
+const renderCarouselItem = ({ item }: { item: LikedEvent }) => (
+  <CarouselItem key={item.id} item={item} />
+);
+
+
 // Define the props for the memoized list item
 interface ListItemProps {
   item: LikedEvent,
@@ -82,19 +84,13 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
 
   // carousel slider pagination
   const [activeSlide, setActiveSlide] = useState<number>(0);
-  // const [toggleMoreInfo, setToggleMoreInfo] = useState<boolean>(false);
-
-  // global state
-  // const { setToggleActionSheet, setLikedEvent } = useCometaStore(state => state);
-
-  // const showEventDetails = useCallback((item: LikedEvent): void => {
-  //   setLikedEvent(item);
-  //   setToggleActionSheet(true);
-  // }, [item]);
 
   // perform mutations
   const likeOrDislikeMutation = useMutationLikeOrDislikeEvent();
   const handleLikeOrDislike = () => likeOrDislikeMutation.mutate(item.id);
+
+  // expand description
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // double tap gesture
   const doubleTap = Gesture.Tap();
@@ -102,42 +98,29 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
     .numberOfTaps(2)
     .onEnd(() => likeOrDislikeMutation.mutate(item.id));
 
-
-  const [isExpanded, setIsExpanded] = useState(false);
-  // const animationValue = useSharedValue(isExpanded ? 10 : 2);
-
-  // const animatedStyles = useAnimatedStyle(() => {
-  //   return {
-  //     maxHeight: withTiming(animationValue.value * 15, { duration: 160 }), // Change 300 to your desired max height
-  //   };
-  // });
-
-
-  // const toggleExpanded = () => {
-  //   setIsExpanded(!isExpanded);
-  //   animationValue.value = isExpanded ? 10 : 2;
-  // };
+  const carouselData = [
+    { ...item, id: 100 },
+    { ...item, id: 110 },
+    { ...item, id: 210 }
+  ];
 
   return (
     <View style={{
       height: layoutHeight,
     }}>
       {/* carousel */}
-      <View style={{ flex: 1, position: 'relative' }}>
+      <View style={stylesEventItem.wrapper}>
         <GestureDetector gesture={doubleTap}>
           <Carousel
             layout='default'
             vertical={false}
             activeSlideOffset={0}
-            inactiveSlideOpacity={0.6}
             inactiveSlideScale={0.78}
-            sliderWidth={Dimensions.get('window').width - 20}
-            itemWidth={Dimensions.get('window').width - 20}
-            data={[{ ...item, id: 100 }, { ...item, id: 110 }, { ...item, id: 210 }]}
+            sliderWidth={carouselEstimatedWidth}
+            itemWidth={carouselEstimatedWidth}
+            data={carouselData}
             onSnapToItem={(index) => setActiveSlide(index)}
-            renderItem={({ item }) => (
-              <MemoizedCarouselItem key={item.id} item={item} />
-            )}
+            renderItem={renderCarouselItem}
           />
         </GestureDetector>
 
@@ -163,14 +146,12 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
           </Pressable>
           <Pressable>
             {() => (
-              <Image style={{ objectFit: 'contain', width: 42, height: 34 }} source={require('../../assets/icons/Share.png')} />
+              <Image style={{ width: 42, height: 34 }} source={icons.share} />
             )}
           </Pressable>
-          <Pressable
-          // onPressOut={() => showEventDetails(item)}
-          >
+          <Pressable>
             {() => (
-              <Image style={{ objectFit: 'contain', width: 34, height: 34 }} source={require('../../assets/icons/info.png')} />
+              <Image style={{ width: 34, height: 34 }} source={icons.info} />
             )}
           </Pressable>
         </View>
@@ -192,8 +173,6 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
             <Text style={stylesEventItem.tagText}>{item.category}</Text>
           </View>
 
-          {/* <Animated.View style={animatedStyles}>
-              </Animated.View> */}
           <Text
             lightColor='#fff'
             darkColor='#eee'
@@ -219,6 +198,24 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
   );
 };
 
+/**
+ *
+ * @description This function is used to compare the props of the list item.
+ * If false the list item will be re-rendered, otherwise it will not
+ * @returns boolean
+ */
+function arePropsEqual(prevProps: ListItemProps, nextProps: ListItemProps): boolean {
+  // Implement your custom comparison logic here
+  // Return true if the props are equal, return false if they are not
+  return (
+    // prevProps.playingVideo === nextProps.playingVideo &&
+    prevProps.item.isLiked === nextProps.item.isLiked &&
+    prevProps.layoutHeight === nextProps.layoutHeight
+  );
+}
+
+const MemoizedEventItem = React.memo(EventItem, arePropsEqual);
+
 
 const CarouselItem: FC<{ item: LikedEvent }> = ({ item }) => {
   return (
@@ -238,8 +235,6 @@ const CarouselItem: FC<{ item: LikedEvent }> = ({ item }) => {
     </View>
   );
 };
-
-const MemoizedCarouselItem = React.memo(CarouselItem, () => true);
 
 
 const stylesEventItem = StyleSheet.create({
@@ -306,28 +301,13 @@ const stylesEventItem = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 3,
   },
+
   tagText: {
     color: white_50,
     fontSize: 16,
     fontWeight: '500',
     textTransform: 'uppercase'
-  }
+  },
+
+  wrapper: { flex: 1, position: 'relative' }
 });
-
-/**
- *
- * @description This function is used to compare the props of the list item.
- * If false the list item will be re-rendered, otherwise it will not
- * @returns boolean
- */
-function arePropsEqual(prevProps: ListItemProps, nextProps: ListItemProps): boolean {
-  // Implement your custom comparison logic here
-  // Return true if the props are equal, return false if they are not
-  return (
-    // prevProps.playingVideo === nextProps.playingVideo &&
-    prevProps.item.isLiked === nextProps.item.isLiked &&
-    prevProps.layoutHeight === nextProps.layoutHeight
-  );
-}
-
-const MemoizedEventItem = React.memo(EventItem, arePropsEqual);

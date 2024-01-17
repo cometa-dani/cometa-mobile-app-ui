@@ -15,6 +15,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { EventActionSheet } from '../components/actionSheet/actionSheet';
 import { useCometaStore } from '../store/cometaStore';
 import { Image } from 'expo-image';
+import { titles } from '../constants/assets';
 
 
 // Catch any errors thrown by the Layout component.
@@ -63,12 +64,12 @@ export default function RootLayout() {
 }
 
 const animationDuration = 290;
+const screenOptions = { headerShown: false, animation: 'slide_from_right', animationDuration } as ScreenProps;
 
 function RootLayoutNav(): JSX.Element {
   const likedEvent = useCometaStore(state => state.likedEvent);
   const toggleActionSheet = useCometaStore(state => state.toggleActionSheet);
   const setToggleActionSheet = useCometaStore(state => state.setToggleActionSheet);
-  const screenOptions = { headerShown: false, animation: 'slide_from_right', animationDuration } as ScreenProps;
 
   return (
     <>
@@ -85,7 +86,7 @@ function RootLayoutNav(): JSX.Element {
             presentation: 'modal',
             headerTitleAlign: 'center',
             headerShadowVisible: true,
-            headerTitle: () => <Image style={{ height: 24, width: 110 }} source={require('../assets/images/letters_cometa.webp')} />,
+            headerTitle: () => <Image style={{ height: 24, width: 110 }} source={titles.cometa} />,
             animationDuration,
           }}
         />

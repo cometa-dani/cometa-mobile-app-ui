@@ -1,10 +1,11 @@
+/* eslint-disable no-unused-vars */
 import { useState, type FC, type ReactNode, Dispatch, SetStateAction } from 'react';
-import { Button, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  SlideInDown,
-  SlideOutDown,
+  // SlideInDown,
+  // SlideOutDown,
   // FadeIn,
   // FadeOut,
 } from 'react-native-reanimated';
