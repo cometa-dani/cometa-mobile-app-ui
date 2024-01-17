@@ -1,6 +1,7 @@
 import { FC, memo, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, StyleSheet, SafeAreaView, Image } from 'react-native';
+import { Pressable, StyleSheet, SafeAreaView } from 'react-native';
+import { Image } from 'expo-image';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -11,8 +12,8 @@ import { FlashList } from '@shopify/flash-list';
 import { View, Text } from '../../components/Themed';
 import { GetAllLikedEventsWithPagination } from '../../models/LikedEvent';
 import { QueryKeys } from '../../queries/queryKeys';
-
 import ContentLoader, { Rect } from 'react-content-loader/native';
+
 
 const SkeletonLoader = () => (
   <ContentLoader
@@ -31,19 +32,25 @@ const SkeletonLoader = () => (
   </ContentLoader>
 );
 
+
 const renderItem = ({ item }: { item: GetAllLikedEventsWithPagination['events'][0] }) => {
   return (
-    <MemoizedEventItem
-      key={item.id}
-      item={item}
-    />
+    <>
+      <MemoizedEventItem
+        key={item.id}
+        item={item}
+      />
+      <View style={{ height: 20 }} />
+    </>
   );
 };
 
 export default function BuckectListScreen(): JSX.Element {
-  const { data, isFetching, hasNextPage, fetchNextPage, isLoading } = useInfiniteQueryGetLatestLikedEvents();
+  const { data, isFetching, hasNextPage, fetchNextPage, isLoading, } = useInfiniteQueryGetLatestLikedEvents();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const eventsData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
+
+  // console.log(eventsData.length);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -58,10 +65,10 @@ export default function BuckectListScreen(): JSX.Element {
               pagingEnabled={false}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 26 }}
-              onEndReached={handleInfiniteFetch}
-              ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
-              onEndReachedThreshold={0.2}
-              estimatedItemSize={106}
+              // onEndReached={handleInfiniteFetch}
+              onMomentumScrollEnd={handleInfiniteFetch}
+              onEndReachedThreshold={1}
+              estimatedItemSize={100}
               renderItem={renderItem}
             />
           )}
@@ -87,7 +94,7 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    gap: 40,
+    // gap: 40,
   },
 
   date: {
@@ -105,7 +112,6 @@ const styles = StyleSheet.create({
   img: {
     borderRadius: 26,
     height: 108,
-    resizeMode: 'cover',
     width: '40%',
   },
 
@@ -137,7 +143,6 @@ const LikedEventItem: FC<Props> = ({ item }) => {
       }
     });
   };
-
 
   const offset = useSharedValue(0);
 
@@ -186,7 +191,7 @@ const LikedEventItem: FC<Props> = ({ item }) => {
     <Pressable key={item.id} onPress={() => router.push(`/${item.id}`)}>
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.eventContainer, animatedStyles]}>
-          <Image style={styles.img} source={{ uri: item.mediaUrl }} />
+          <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={styles.img} source={{ uri: item.mediaUrl }} />
 
           <View style={styles.textContainer}>
             <Text style={styles.title}>{item.name}</Text>
@@ -196,7 +201,7 @@ const LikedEventItem: FC<Props> = ({ item }) => {
 
           <View style={styles.bubblesContainer}>
             {item.likes.slice(0, 3).map(({ user }) => (
-              <Image key={user.id} source={{ uri: user.avatar }} style={styles.bubble} />
+              <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} key={user.id} source={{ uri: user.avatar }} style={styles.bubble} />
             ))}
           </View>
         </Animated.View>

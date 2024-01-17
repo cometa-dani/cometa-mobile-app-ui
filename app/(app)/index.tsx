@@ -26,24 +26,22 @@ export default function HomeScreen(): JSX.Element {
 
   // events & function to handle fetching more events when reaching the end
   const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteQueryGetLatestEvents();
-  const eventsData = useMemo(() => data?.pages.flatMap(page => page.events), [data?.pages]);
+  const eventsData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
-      <View
-        style={styles.container}
-        onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
-      >
+      <View style={styles.container}>
         <FlashList
+          onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
           refreshing={isFetching}
           showsVerticalScrollIndicator={false}
           estimatedItemSize={eventItemEstimatedHeight}
           pagingEnabled={true}
           data={eventsData}
           onEndReached={handleInfiniteFetch}
-          onEndReachedThreshold={0.2}
+          onEndReachedThreshold={0.4}
           renderItem={({ item }) => (
             <MemoizedEventItem
               key={item.id}
