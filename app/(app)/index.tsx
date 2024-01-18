@@ -44,9 +44,9 @@ const SkeletonLoader: FC = () => {
         backgroundColor="#e3e3e3"
         foregroundColor="#ddd"
       >
-        <Circle cx={width - 74} cy="92%" r="28" />
-        <Circle cx={width - 74} cy="82%" r="28" />
-        <Circle cx={width - 74} cy="72%" r="28" />
+        <Circle cx={width - 74} cy="84%" r="28" />
+        <Circle cx={width - 74} cy="74%" r="28" />
+        <Circle cx={width - 74} cy="64%" r="28" />
       </ContentLoader>
 
       <ContentLoader
@@ -58,11 +58,11 @@ const SkeletonLoader: FC = () => {
         backgroundColor="#e3e3e3"
         foregroundColor="#ddd"
       >
-        <Circle x="20" cx="20" cy="72%" r="24" />
-        <Rect x="20" y="78%" width="120" height="16" rx="6" ry="6" />
-        <Rect x="20" y="82%" width="140" height="16" rx="6" ry="6" />
-        <Rect x="20" y="86%" width="160" height="16" rx="6" ry="6" />
-        <Rect x="20" y="90%" width="180" height="16" rx="6" ry="6" />
+        <Circle x="20" cx="20" cy="68%" r="24" />
+        <Rect x="20" y="74%" width="120" height="16" rx="6" ry="6" />
+        <Rect x="20" y="78%" width="140" height="16" rx="6" ry="6" />
+        <Rect x="20" y="82%" width="160" height="16" rx="6" ry="6" />
+        <Rect x="20" y="86%" width="180" height="16" rx="6" ry="6" />
       </ContentLoader>
     </>
   );
@@ -205,7 +205,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
           </Pressable>
           <Pressable>
             {() => (
-              <Image style={{ width: 34, height: 34 }} source={icons.info} />
+              <Image style={{ width: 34, height: 34 }} source={icons.locationMarker} />
             )}
           </Pressable>
         </View>
@@ -230,7 +230,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
           <Text
             lightColor='#fff'
             darkColor='#eee'
-            numberOfLines={isExpanded ? 14 : 2}
+            numberOfLines={isExpanded ? 24 : 2}
             ellipsizeMode='tail'
             onPress={() => setIsExpanded(prev => !prev)}
           >
@@ -240,14 +240,6 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
         {/* collapsed */}
       </View>
       {/* carousel */}
-
-      {/* likes */}
-      {/* <View style={stylesEventItem.likesContainer}>
-        <Text style={{ fontWeight: '900', fontSize: 16 }}>
-          {item._count.likes} Likes
-        </Text>
-      </View> */}
-      {/* likes */}
     </View>
   );
 };
@@ -298,12 +290,12 @@ const stylesEventItem = StyleSheet.create({
   },
 
   eventInfoContainer: {
-    bottom: 60,
+    bottom: 70,
     gap: 12,
     // height: 300,
     left: 20,
     position: 'absolute',
-    width: '72%',
+    width: '70%',
   },
 
   eventTitle: {
@@ -336,7 +328,7 @@ const stylesEventItem = StyleSheet.create({
 
   positionedButtons: {
     alignItems: 'center',
-    bottom: 34,
+    bottom: 70,
     gap: 24,
     justifyContent: 'center',
     position: 'absolute',

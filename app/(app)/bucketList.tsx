@@ -78,19 +78,9 @@ export default function BuckectListScreen(): JSX.Element {
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const eventsData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
-  // console.log(eventsData.length);
-
   const fadeAnim = useSharedValue(1);  // Initial value for opacity: 1
   const contentOpacity = useSharedValue(0);  // Initial value for opacity: 0
 
-  // useEffect(() => {
-  //   if (!isLoading) {
-  //     fadeAnim.value = withTiming(0, { duration: 500 }, () => {
-  //       // Start fading in the content after the loader has faded out
-  //       contentOpacity.value = withTiming(1, { duration: 500 });
-  //     });
-  //   }
-  // }, [isLoading]);
   useEffect(() => {
     if (!isLoading) {
       fadeAnim.value = withTiming(0, { duration: 500 });
@@ -103,19 +93,6 @@ export default function BuckectListScreen(): JSX.Element {
       opacity: isLoading ? fadeAnim.value : contentOpacity.value,
     };
   });
-
-  // const loaderAnimatedStyles = useAnimatedStyle(() => {
-  //   return {
-  //     opacity: fadeAnim.value,
-  //   };
-  // });
-
-  // const contentAnimatedStyles = useAnimatedStyle(() => {
-  //   return {
-  //     opacity: contentOpacity.value,
-  //   };
-  // });
-
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
