@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Image } from 'react-native';
+import { Image } from 'expo-image';
 import { View, useColors, Text } from '../Themed';
 import { profileStyles } from './profileStyles';
 
@@ -15,7 +15,7 @@ export const AppProfileAvatar: FC<Props> = ({ avatar, biography, name }) => {
   return (
     <View style={profileStyles.avatarFigure}>
       {avatar ? (
-        <Image style={profileStyles.avatar} source={{ uri: avatar }} />
+        <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={profileStyles.avatar} source={{ uri: avatar }} />
       ) : (
         <View style={profileStyles.avatar} />
       )}

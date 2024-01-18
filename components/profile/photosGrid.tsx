@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { FC } from 'react';
-import { Image, Pressable, PressableProps, StyleSheet } from 'react-native';
+import { Pressable, PressableProps, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { Photo } from '../../models/User';
 import { Text, View, useColors } from '../Themed';
 import { FontAwesome } from '@expo/vector-icons';
@@ -55,7 +56,7 @@ export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDele
           <View style={{ flex: 1, position: 'relative' }}>
             {photosList[0]?.url.length ? (
               <>
-                <Image style={[gridStyles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: photosList[0]?.url }} />
+                <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={[gridStyles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: photosList[0]?.url }} />
                 <CloseButton onPress={() => onDeleteImage && onDeleteImage(photosList[0]?.uuid)} />
               </>
             ) : (
@@ -84,7 +85,7 @@ export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDele
                 style={[gridStyles.item, { position: 'relative' }]}>
                 {url?.length ? (
                   <>
-                    <Image style={gridStyles.uploadPhotoGrid} source={{ uri: url }} />
+                    <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={gridStyles.uploadPhotoGrid} source={{ uri: url }} />
                     <CloseButton
                       size='small'
                       onPress={() => onDeleteImage && onDeleteImage(uuid)}

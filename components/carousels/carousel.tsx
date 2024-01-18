@@ -1,5 +1,6 @@
 import { FC } from 'react';
-import { StyleSheet, Image } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { AppCard } from '../card/card';
 import { Text, View, useColors } from '../Themed';
 import { FontAwesome } from '@expo/vector-icons';
@@ -42,6 +43,7 @@ export const AppCarousel: FC<Props> = ({ list, title, isLocked = false }) => {
                 return (
                   item?.img ? (
                     <Image
+                      placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
                       style={styles.bucketListImage}
                       key={item.id}
                       source={{ uri: item.img }}

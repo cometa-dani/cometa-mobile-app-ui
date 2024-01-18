@@ -1,4 +1,5 @@
-import { ScrollView, Button, SafeAreaView, Image, TextInput, Pressable } from 'react-native';
+import { ScrollView, Button, SafeAreaView, TextInput, Pressable } from 'react-native';
+import { Image } from 'expo-image';
 import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
@@ -160,8 +161,8 @@ export default function UserProfileScreen(): JSX.Element {
                     ) : (
                       <View style={profileStyles.avatarFigure}>
 
-                        <Pressable onPress={async () => await handlePickAvatarImg()}>
-                          <Image style={profileStyles.avatar} source={{ uri: userProfile?.avatar }} />
+                        <Pressable onPress={handlePickAvatarImg}>
+                          <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={profileStyles.avatar} source={{ uri: userProfile?.avatar }} />
                         </Pressable>
 
                         {/* NAME */}
