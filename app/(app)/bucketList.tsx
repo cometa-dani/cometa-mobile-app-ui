@@ -1,6 +1,6 @@
-import { FC, memo, useMemo } from 'react';
+import React, { FC, Fragment, memo, useEffect, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, StyleSheet, SafeAreaView } from 'react-native';
+import { Pressable, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
@@ -15,22 +15,50 @@ import { QueryKeys } from '../../queries/queryKeys';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 
 
-const SkeletonLoader = () => (
-  <ContentLoader
-    speed={2}
-    width={400}
-    height={160}
-    viewBox="0 0 400 160"
-    backgroundColor="#f3f3f3"
-    foregroundColor="#ecebeb"
-  >
-    <Rect x="48" y="8" rx="3" ry="3" width="88" height="6" />
-    <Rect x="48" y="26" rx="3" ry="3" width="52" height="6" />
-    <Rect x="0" y="56" rx="3" ry="3" width="410" height="6" />
-    <Rect x="0" y="72" rx="3" ry="3" width="380" height="6" />
-    <Rect x="0" y="88" rx="3" ry="3" width="178" height="6" />
-  </ContentLoader>
-);
+const SkeletonLoader = () => {
+  const windowWidth = Dimensions.get('window').width;
+  const itemWidth = windowWidth - 40; // Subtract padding
+  const itemHeight = 108;
+  const gap = 20;
+  const totalHeight = 6 * (itemHeight + gap);
+
+  const rect1Width = itemWidth * 0.40; // 35% of item width
+  const rect2Width = itemWidth * 0.60; // 51% of item width
+  const rect2X = rect1Width + 20; // Start of second rect, add 20 for gap
+
+  return (
+    <ContentLoader
+      speed={2}
+      style={{ marginVertical: 26 }}
+      width={windowWidth}
+      height={totalHeight}
+      viewBox={`0 0 ${windowWidth} ${totalHeight}`}
+      backgroundColor="#f3f3f3"
+      foregroundColor="#ecebeb"
+    >
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Fragment key={i}>
+          <Rect
+            x="20"
+            y={i * (itemHeight + gap) + 6}
+            rx="26"
+            ry="26"
+            width={rect1Width}
+            height={itemHeight}
+          />
+          <Rect
+            x={rect2X + 10}
+            y={i * (itemHeight + gap) + 6}
+            rx="26"
+            ry="26"
+            width={rect2Width - 10}
+            height={itemHeight}
+          />
+        </Fragment>
+      ))}
+    </ContentLoader>
+  );
+};
 
 
 const renderItem = ({ item }: { item: GetAllLikedEventsWithPagination['events'][0] }) => {
@@ -52,27 +80,63 @@ export default function BuckectListScreen(): JSX.Element {
 
   // console.log(eventsData.length);
 
+  const fadeAnim = useSharedValue(1);  // Initial value for opacity: 1
+  const contentOpacity = useSharedValue(0);  // Initial value for opacity: 0
+
+  // useEffect(() => {
+  //   if (!isLoading) {
+  //     fadeAnim.value = withTiming(0, { duration: 500 }, () => {
+  //       // Start fading in the content after the loader has faded out
+  //       contentOpacity.value = withTiming(1, { duration: 500 });
+  //     });
+  //   }
+  // }, [isLoading]);
+  useEffect(() => {
+    if (!isLoading) {
+      fadeAnim.value = withTiming(0, { duration: 500 });
+      contentOpacity.value = withTiming(1, { duration: 500 });
+    }
+  }, [isLoading]);
+
+  const transitionStyles = useAnimatedStyle(() => {
+    return {
+      opacity: isLoading ? fadeAnim.value : contentOpacity.value,
+    };
+  });
+
+  // const loaderAnimatedStyles = useAnimatedStyle(() => {
+  //   return {
+  //     opacity: fadeAnim.value,
+  //   };
+  // });
+
+  // const contentAnimatedStyles = useAnimatedStyle(() => {
+  //   return {
+  //     opacity: contentOpacity.value,
+  //   };
+  // });
+
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <StatusBar style={'auto'} />
 
-      <View style={styles.container}>
-        {isLoading ?
+      <Animated.View style={[styles.container, transitionStyles]}>
+        {isLoading ? (
           <SkeletonLoader />
-          : (
-            <FlashList
-              data={eventsData}
-              pagingEnabled={false}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 26 }}
-              // onEndReached={handleInfiniteFetch}
-              onMomentumScrollEnd={handleInfiniteFetch}
-              onEndReachedThreshold={1}
-              estimatedItemSize={100}
-              renderItem={renderItem}
-            />
-          )}
-      </View>
+        ) : (
+          <FlashList
+            data={eventsData}
+            pagingEnabled={false}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 26 }}
+            onMomentumScrollEnd={handleInfiniteFetch}
+            onEndReachedThreshold={1}
+            estimatedItemSize={100}
+            renderItem={renderItem}
+          />
+        )}
+      </Animated.View>
     </SafeAreaView>
   );
 }
@@ -93,6 +157,7 @@ const styles = StyleSheet.create({
   },
 
   container: {
+    backgroundColor: '#fff',
     flex: 1,
     // gap: 40,
   },
