@@ -25,7 +25,7 @@ const SkeletonLoader: FC = () => {
   return (
     <>
       <ContentLoader
-        speed={2}
+        speed={1}
         width={width - 20}
         height={height - 160}
         viewBox={`0 0 ${width - 20} ${height - 160}`}
@@ -36,7 +36,7 @@ const SkeletonLoader: FC = () => {
       </ContentLoader>
 
       <ContentLoader
-        speed={2}
+        speed={1}
         style={{ position: 'absolute', top: 0, left: 0 }}
         width={width - 20}
         height={height - 160}
@@ -44,13 +44,13 @@ const SkeletonLoader: FC = () => {
         backgroundColor="#e3e3e3"
         foregroundColor="#ddd"
       >
-        <Circle cx={width - 74} cy="90%" r="34" />
-        <Circle cx={width - 74} cy="77%" r="34" />
-        <Circle cx={width - 74} cy="65%" r="34" />
+        <Circle cx={width - 74} cy="92%" r="28" />
+        <Circle cx={width - 74} cy="82%" r="28" />
+        <Circle cx={width - 74} cy="72%" r="28" />
       </ContentLoader>
 
       <ContentLoader
-        speed={2}
+        speed={1}
         style={{ position: 'absolute', top: 0, left: 0 }}
         width={width - 20}
         height={height - 160}

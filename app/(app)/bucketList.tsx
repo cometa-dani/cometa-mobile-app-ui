@@ -28,7 +28,7 @@ const SkeletonLoader = () => {
 
   return (
     <ContentLoader
-      speed={2}
+      speed={1}
       style={{ marginVertical: 26 }}
       width={windowWidth}
       height={totalHeight}
