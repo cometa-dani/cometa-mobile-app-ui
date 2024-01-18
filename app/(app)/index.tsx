@@ -9,12 +9,64 @@ import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '
 import { Image } from 'expo-image'; // use with thumbhash
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
+import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 import { gray_200, white_50 } from '../../constants/colors';
 import { icons } from '../../constants/assets';
 
 
 const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
 const carouselEstimatedWidth = Dimensions.get('window').width - 20;
+
+
+const SkeletonLoader: FC = () => {
+  const width = Dimensions.get('window').width;
+  const height = Dimensions.get('window').height;
+
+  return (
+    <>
+      <ContentLoader
+        speed={2}
+        width={width - 20}
+        height={height - 160}
+        viewBox={`0 0 ${width - 20} ${height - 160}`}
+        backgroundColor="#f3f3f3"
+        foregroundColor="#ecebeb"
+      >
+        <Rect x="0" y="0" rx="16" ry="16" width="100%" height="100%" />
+      </ContentLoader>
+
+      <ContentLoader
+        speed={2}
+        style={{ position: 'absolute', top: 0, left: 0 }}
+        width={width - 20}
+        height={height - 160}
+        viewBox={`0 0 ${width - 20} ${height - 160}`}
+        backgroundColor="#e3e3e3"
+        foregroundColor="#ddd"
+      >
+        <Circle cx={width - 74} cy="90%" r="34" />
+        <Circle cx={width - 74} cy="77%" r="34" />
+        <Circle cx={width - 74} cy="65%" r="34" />
+      </ContentLoader>
+
+      <ContentLoader
+        speed={2}
+        style={{ position: 'absolute', top: 0, left: 0 }}
+        width={width - 20}
+        height={height - 160}
+        viewBox={`0 0 ${width - 20} ${height - 160}`}
+        backgroundColor="#e3e3e3"
+        foregroundColor="#ddd"
+      >
+        <Circle x="20" cx="20" cy="72%" r="24" />
+        <Rect x="20" y="78%" width="120" height="16" rx="6" ry="6" />
+        <Rect x="20" y="82%" width="140" height="16" rx="6" ry="6" />
+        <Rect x="20" y="86%" width="160" height="16" rx="6" ry="6" />
+        <Rect x="20" y="90%" width="180" height="16" rx="6" ry="6" />
+      </ContentLoader>
+    </>
+  );
+};
 
 
 export default function HomeScreen(): JSX.Element {
@@ -25,7 +77,7 @@ export default function HomeScreen(): JSX.Element {
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
 
   // events & function to handle fetching more events when reaching the end
-  const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteQueryGetLatestEvents();
+  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetLatestEvents();
   const eventsData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
@@ -33,23 +85,27 @@ export default function HomeScreen(): JSX.Element {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <View style={styles.container}>
-        <FlashList
-          onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
-          refreshing={isFetching}
-          showsVerticalScrollIndicator={false}
-          estimatedItemSize={eventItemEstimatedHeight}
-          pagingEnabled={true}
-          data={eventsData}
-          onEndReached={handleInfiniteFetch}
-          onEndReachedThreshold={0.4}
-          renderItem={({ item }) => (
-            <MemoizedEventItem
-              key={item.id}
-              item={item}
-              layoutHeight={layoutHeight}
-            />
-          )}
-        />
+        {isLoading ?
+          <SkeletonLoader />
+          :
+          <FlashList
+            onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
+            refreshing={isFetching}
+            showsVerticalScrollIndicator={false}
+            estimatedItemSize={eventItemEstimatedHeight}
+            pagingEnabled={true}
+            data={eventsData}
+            onEndReached={handleInfiniteFetch}
+            onEndReachedThreshold={0.4}
+            renderItem={({ item }) => (
+              <MemoizedEventItem
+                key={item.id}
+                item={item}
+                layoutHeight={layoutHeight}
+              />
+            )}
+          />
+        }
       </View>
     </SafeAreaView>
   );
@@ -186,11 +242,11 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
       {/* carousel */}
 
       {/* likes */}
-      <View style={stylesEventItem.likesContainer}>
+      {/* <View style={stylesEventItem.likesContainer}>
         <Text style={{ fontWeight: '900', fontSize: 16 }}>
           {item._count.likes} Likes
         </Text>
-      </View>
+      </View> */}
       {/* likes */}
     </View>
   );
@@ -257,11 +313,11 @@ const stylesEventItem = StyleSheet.create({
 
   imgBackground: { height: '100%', width: '100%' },
 
-  likesContainer: {
-    backgroundColor: '#83C9DD',
-    paddingHorizontal: 24,
-    paddingVertical: 10
-  },
+  // likesContainer: {
+  //   backgroundColor: '#83C9DD',
+  //   paddingHorizontal: 24,
+  //   paddingVertical: 10
+  // },
 
   paginationContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0)',
