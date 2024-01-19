@@ -2,15 +2,18 @@ import React, { FC, Fragment, memo, useEffect, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { RectButton } from 'react-native-gesture-handler';
 import { useInfiniteQueryGetLatestLikedEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
 import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { View, Text } from '../../components/Themed';
 import { GetAllLikedEventsWithPagination } from '../../models/LikedEvent';
 import ContentLoader, { Rect } from 'react-content-loader/native';
+import { FontAwesome } from '@expo/vector-icons';
+import { gray_100, red_100 } from '../../constants/colors';
 
 
 const SkeletonLoader = () => {
@@ -104,7 +107,8 @@ export default function BuckectListScreen(): JSX.Element {
             data={eventsData}
             pagingEnabled={false}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 26 }}
+            contentContainerStyle={{ paddingVertical: 26 }}
+            // ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
             onMomentumScrollEnd={handleInfiniteFetch}
             onEndReachedThreshold={1}
             estimatedItemSize={100}
@@ -134,7 +138,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     flex: 1,
-    // gap: 40,
   },
 
   date: {
@@ -143,10 +146,19 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
 
+  deleteButton: {
+    backgroundColor: gray_100,
+    borderRadius: 20,
+    justifyContent: 'center',
+    marginRight: 20,
+    padding: 24
+  },
+
   eventContainer: {
     flex: 1,
     flexDirection: 'row',
-    gap: 10
+    gap: 10,
+    paddingHorizontal: 20,
   },
 
   img: {
@@ -172,77 +184,36 @@ interface Props {
   item: GetAllLikedEventsWithPagination['events'][0],
 }
 const LikedEventItem: FC<Props> = ({ item }) => {
-  // const queryClient = useQueryClient();
-
   const likeOrDislikeMutation = useMutationLikeOrDislikeEvent();
 
-  const handleDislikeMutation = (itemID: number): void => {
-    likeOrDislikeMutation.mutate(itemID);
-  };
-
-  const offset = useSharedValue(0);
-
-  const panGesture = Gesture.Pan()
-    .cancelsTouchesInView(true)
-    .onBegin(() => {
-      // pressed.value = true;
-    })
-    .onChange((event) => {
-      offset.value = event.translationX;
-    })
-    .onFinalize((event) => {
-      const currentDistance = event.translationX;
-      if (Math.abs(currentDistance) > 90) {
-        let newDistance!: number;
-        if (Math.sign(currentDistance) < 0) {
-          newDistance = offset.value - 300;
-        }
-        if (Math.sign(currentDistance) > 0) {
-          newDistance = offset.value + 300;
-        }
-
-        offset.value = withTiming(newDistance, { duration: 240 }, (finished) => {
-          if (finished)
-            runOnJS(handleDislikeMutation)(item.id);
-        });
-      }
-      else {
-        offset.value = withSpring(0);
-      }
-    });
-
-
-  const animatedStyles = useAnimatedStyle(() => {
-    return ({
-      transform: [
-        { translateX: offset.value },
-        // { scale: withTiming(pressed.value ? 1.18 : 1) },
-      ],
-      // backgroundColor: pressed.value ? '#FFE04B' : '#b58df1',
-    });
-  }, []);
-
-
   return (
-    <Pressable key={item.id} onPress={() => router.push(`/${item.id}`)}>
-      <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.eventContainer, animatedStyles]}>
-          <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={styles.img} source={{ uri: item.mediaUrl }} />
+    <Swipeable renderRightActions={
+      () => (
+        <RectButton onPress={() => likeOrDislikeMutation.mutate(item.id)} style={styles.deleteButton}>
+          <FontAwesome name='trash-o' size={32} color={red_100} />
+        </RectButton>
+      )
+    }>
+      <Pressable onPress={() => router.push(`/${item.id}`)}>
+        {({ pressed }) => (
+          <View style={[styles.eventContainer, { opacity: pressed ? 0.8 : 1 }]}>
+            <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={styles.img} source={{ uri: item.mediaUrl }} />
 
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>{item.name}</Text>
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>{item.name}</Text>
 
-            <Text style={styles.date}>{new Date(item.date).toDateString()}</Text>
+              <Text style={styles.date}>{new Date(item.date).toDateString()}</Text>
+            </View>
+
+            <View style={styles.bubblesContainer}>
+              {item.likes.slice(0, 3).map(({ user }) => (
+                <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} key={user.id} source={{ uri: user.avatar }} style={styles.bubble} />
+              ))}
+            </View>
           </View>
-
-          <View style={styles.bubblesContainer}>
-            {item.likes.slice(0, 3).map(({ user }) => (
-              <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} key={user.id} source={{ uri: user.avatar }} style={styles.bubble} />
-            ))}
-          </View>
-        </Animated.View>
-      </GestureDetector>
-    </Pressable>
+        )}
+      </Pressable>
+    </Swipeable>
   );
 };
 

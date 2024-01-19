@@ -241,16 +241,25 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
             <Text style={stylesEventItem.tagText}>{item.category}</Text>
           </View>
 
-          <Text
-            lightColor='#fff'
-            darkColor='#eee'
-            numberOfLines={isExpanded ? 24 : 2}
-            ellipsizeMode='tail'
-            style={stylesEventItem.textShadow}
-            onPress={() => setIsExpanded(prev => !prev)}
-          >
-            {item.description}
-          </Text>
+          <Pressable onPress={() => setIsExpanded(prev => !prev)}>
+            {({ pressed }) => (
+              <Text
+                lightColor='#fff'
+                darkColor='#eee'
+                numberOfLines={isExpanded ? 24 : 2}
+                ellipsizeMode='tail'
+                style={[
+                  stylesEventItem.textShadow,
+                  {
+                    opacity: pressed ? 0.84 : 1,
+                    backgroundColor: pressed ? 'rgba(255,255,255,0.05)' : 'transparent',
+                  }
+                ]}
+              >
+                {item.description}
+              </Text>
+            )}
+          </Pressable>
         </TransParentView>
         {/* collapsed */}
       </View>
@@ -357,9 +366,10 @@ const stylesEventItem = StyleSheet.create({
   },
 
   textShadow: {
+    borderRadius: 10,
     textShadowColor: 'rgba(0, 0, 0, 0.6)',
     textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10
+    textShadowRadius: 10,
   },
 
   wrapper: { flex: 1, position: 'relative' }
