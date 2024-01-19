@@ -213,3 +213,50 @@ export const useMutationLikeOrDislikeEvent = () => {
     })
   );
 };
+
+
+export const useMutationDeleteLikedEventFromBucketList = () => {
+  const accessToken = useCometaStore(state => state.accessToken);
+  const queryClient = useQueryClient();
+
+  return (
+    useMutation({
+      mutationFn: async (eventID: number): Promise<CreateEventLike | null> => {
+        const res = await eventService.createOrDeleteLikeByEventID(eventID, accessToken);
+        if (res.status === 201) {
+          return res.data?.eventLikedOrDisliked;
+        }
+        if (res.status === 204) {
+          return null;
+        }
+        else {
+          throw new Error('failed to request data');
+        }
+      },
+      onMutate: (eventID) => {
+        // Update the cache with the new liked state
+        queryClient
+          .setQueryData<InfiniteData<GetAllLikedEventsWithPagination, number>>
+          ([QueryKeys.GET_LIKED_EVENTS], (data) => ({
+            pages: data?.pages.map(
+              (page) => (
+                {
+                  ...page,
+                  events: page.events.filter(event => eventID !== event.id)
+                }
+              )) || [],
+            pageParams: data?.pageParams || []
+          }));
+      },
+      // Invalidate queries after the mutation succeeds
+      onSuccess: async () => {
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_EVENTS] }),
+          // queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS] }),
+        ]);
+      },
+      retry: 3,
+      retryDelay: 1_000 * 60 * 3
+    })
+  );
+};

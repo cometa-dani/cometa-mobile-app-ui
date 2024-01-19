@@ -6,7 +6,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-na
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 import { RectButton } from 'react-native-gesture-handler';
-import { useInfiniteQueryGetLatestLikedEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
+import { useInfiniteQueryGetLatestLikedEvents, useMutationDeleteLikedEventFromBucketList } from '../../queries/eventHooks';
 import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { View, Text } from '../../components/Themed';
@@ -184,12 +184,12 @@ interface Props {
   item: GetAllLikedEventsWithPagination['events'][0],
 }
 const LikedEventItem: FC<Props> = ({ item }) => {
-  const likeOrDislikeMutation = useMutationLikeOrDislikeEvent();
+  const deleteLikedEventMutation = useMutationDeleteLikedEventFromBucketList();
 
   return (
     <Swipeable renderRightActions={
       () => (
-        <RectButton onPress={() => likeOrDislikeMutation.mutate(item.id)} style={styles.deleteButton}>
+        <RectButton onPress={() => deleteLikedEventMutation.mutate(item.id)} style={styles.deleteButton}>
           <FontAwesome name='trash-o' size={32} color={red_100} />
         </RectButton>
       )
