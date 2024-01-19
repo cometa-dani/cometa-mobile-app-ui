@@ -7,11 +7,9 @@ import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTi
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useInfiniteQueryGetLatestLikedEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
 import { router } from 'expo-router';
-import { useQueryClient } from '@tanstack/react-query';
 import { FlashList } from '@shopify/flash-list';
 import { View, Text } from '../../components/Themed';
 import { GetAllLikedEventsWithPagination } from '../../models/LikedEvent';
-import { QueryKeys } from '../../queries/queryKeys';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 
 
@@ -174,16 +172,12 @@ interface Props {
   item: GetAllLikedEventsWithPagination['events'][0],
 }
 const LikedEventItem: FC<Props> = ({ item }) => {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
 
   const likeOrDislikeMutation = useMutationLikeOrDislikeEvent();
 
   const handleDislikeMutation = (itemID: number): void => {
-    likeOrDislikeMutation.mutate(itemID, {
-      onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS] });
-      }
-    });
+    likeOrDislikeMutation.mutate(itemID);
   };
 
   const offset = useSharedValue(0);
@@ -209,7 +203,7 @@ const LikedEventItem: FC<Props> = ({ item }) => {
 
         offset.value = withTiming(newDistance, { duration: 240 }, (finished) => {
           if (finished)
-            runOnJS(() => handleDislikeMutation(item.id))();
+            runOnJS(handleDislikeMutation)(item.id);
         });
       }
       else {
