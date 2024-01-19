@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useState } from 'react';
 import { LikedEvent, } from '../../models/Event';
-import { StyleSheet, DimensionValue, Pressable, SafeAreaView, Dimensions } from 'react-native';
+import { StyleSheet, DimensionValue, Pressable, SafeAreaView, Dimensions, View as TransParentView } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
@@ -164,6 +164,12 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
     }}>
       {/* carousel */}
       <View style={stylesEventItem.wrapper}>
+        <LinearGradient
+          colors={['rgba(0,0,0,0.4)', 'transparent']}
+          start={[0, 1]}
+          end={[0, 0.7]}
+          style={stylesEventItem.backdrop}
+        />
         <GestureDetector gesture={doubleTap}>
           <Carousel
             layout='default'
@@ -188,37 +194,45 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
         />
 
         {/* Positioned buttons */}
-        <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.positionedButtons}>
-          <Pressable onPress={handleLikeOrDislike}>
-            {({ hovered, pressed }) => (
-              (item.isLiked) ? (
-                <FontAwesome name='heart' size={34} style={{ color: (hovered && pressed) ? white50 : red100 }} />
-              ) : (
-                <FontAwesome name='heart-o' size={34} style={{ color: (hovered && pressed) ? red100 : white50 }} />
-              )
-            )}
-          </Pressable>
-          <Pressable>
-            {() => (
-              <Image style={{ width: 42, height: 34 }} source={icons.share} />
-            )}
-          </Pressable>
+        <TransParentView style={stylesEventItem.positionedButtons}>
+          <TransParentView style={{ alignItems: 'center', gap: 2 }}>
+            <Pressable onPress={handleLikeOrDislike}>
+              {({ hovered, pressed }) => (
+                (item.isLiked) ? (
+                  <FontAwesome name='heart' size={34} style={{ color: (hovered && pressed) ? white50 : red100 }} />
+                ) : (
+                  <FontAwesome name='heart-o' size={34} style={{ color: (hovered && pressed) ? red100 : white50 }} />
+                )
+              )}
+            </Pressable>
+            <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 18 }}>{item._count.likes || 0}</Text>
+          </TransParentView>
+
+          <TransParentView style={{ alignItems: 'center', gap: 2 }}>
+            <Pressable>
+              {() => (
+                <Image style={{ width: 42, height: 34 }} source={icons.share} />
+              )}
+            </Pressable>
+            <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 18 }}>{3612}</Text>
+          </TransParentView>
+
           <Pressable>
             {() => (
               <Image style={{ width: 34, height: 34 }} source={icons.locationMarker} />
             )}
           </Pressable>
-        </View>
+        </TransParentView>
         {/* Positioned buttons /*}
 
         {/* collapsed */}
-        <View lightColor='transparent' darkColor='transparent' style={stylesEventItem.eventInfoContainer}>
+        <TransParentView style={stylesEventItem.eventInfoContainer}>
           <Text
             lightColor='#fff'
             darkColor='#eee'
             numberOfLines={2}
             ellipsizeMode='tail'
-            style={stylesEventItem.eventTitle}
+            style={[stylesEventItem.eventTitle, stylesEventItem.textShadow]}
           >
             {item.name}
           </Text>
@@ -232,11 +246,12 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
             darkColor='#eee'
             numberOfLines={isExpanded ? 24 : 2}
             ellipsizeMode='tail'
+            style={stylesEventItem.textShadow}
             onPress={() => setIsExpanded(prev => !prev)}
           >
             {item.description}
           </Text>
-        </View>
+        </TransParentView>
         {/* collapsed */}
       </View>
       {/* carousel */}
@@ -265,20 +280,12 @@ const MemoizedEventItem = React.memo(EventItem, arePropsEqual);
 
 const CarouselItem: FC<{ item: LikedEvent }> = ({ item }) => {
   return (
-    <View>
-      <LinearGradient
-        colors={['rgba(0,0,0,0.8)', 'transparent']}
-        start={[0.2, 1]}
-        end={[0, 0.6]}
-        style={stylesEventItem.backdrop}
-      />
-      <Image
-        source={item.mediaUrl}
-        style={stylesEventItem.imgBackground}
-        placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
-        transition={200}
-      />
-    </View>
+    <Image
+      source={item.mediaUrl}
+      style={stylesEventItem.imgBackground}
+      placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
+      transition={200}
+    />
   );
 };
 
@@ -286,7 +293,7 @@ const CarouselItem: FC<{ item: LikedEvent }> = ({ item }) => {
 const stylesEventItem = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    zIndex: 1,
+    // zIndex: 1,
   },
 
   eventInfoContainer: {
@@ -304,12 +311,6 @@ const stylesEventItem = StyleSheet.create({
   },
 
   imgBackground: { height: '100%', width: '100%' },
-
-  // likesContainer: {
-  //   backgroundColor: '#83C9DD',
-  //   paddingHorizontal: 24,
-  //   paddingVertical: 10
-  // },
 
   paginationContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0)',
@@ -353,6 +354,12 @@ const stylesEventItem = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     textTransform: 'uppercase'
+  },
+
+  textShadow: {
+    textShadowColor: 'rgba(0, 0, 0, 0.6)',
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10
   },
 
   wrapper: { flex: 1, position: 'relative' }
