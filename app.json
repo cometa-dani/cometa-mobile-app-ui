@@ -5,7 +5,7 @@
     "slug": "cometa-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo_cometa.webp",
+    "icon": "./assets/images/cometa-logo-2.png",
     "scheme": "myapp",
     "userInterfaceStyle": "light",
     "splash": {
@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/cometa-logo.png",
+        "foregroundImage": "./assets/images/cometa-logo-2.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.cometadaniexpo.cometaapp"
