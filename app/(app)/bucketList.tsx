@@ -2,8 +2,9 @@ import React, { FC, Fragment, memo, useEffect, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { BounceOut, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { EntryExitTransition } from 'react-native-reanimated';
 
 import { RectButton } from 'react-native-gesture-handler';
 import { useInfiniteQueryGetLatestLikedEvents, useMutationDeleteLikedEventFromBucketList } from '../../queries/eventHooks';
@@ -196,21 +197,28 @@ const LikedEventItem: FC<Props> = ({ item }) => {
     }>
       <Pressable onPress={() => router.push(`/${item.id}`)}>
         {({ pressed }) => (
-          <View style={[styles.eventContainer, { opacity: pressed ? 0.8 : 1 }]}>
-            <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={styles.img} source={{ uri: item.mediaUrl }} />
+          <Animated.View
+            layout={EntryExitTransition.duration(400).delay(400).randomDelay()}
+            exiting={
+              BounceOut.delay(400).duration(400).randomDelay()
+            }
+          >
+            <View style={[styles.eventContainer, { opacity: pressed ? 0.8 : 1 }]}>
+              <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={styles.img} source={{ uri: item.mediaUrl }} />
 
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>{item.name}</Text>
+              <View style={styles.textContainer}>
+                <Text style={styles.title}>{item.name}</Text>
 
-              <Text style={styles.date}>{new Date(item.date).toDateString()}</Text>
+                <Text style={styles.date}>{new Date(item.date).toDateString()}</Text>
+              </View>
+
+              <View style={styles.bubblesContainer}>
+                {item.likes.slice(0, 3).map(({ user }) => (
+                  <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} key={user.id} source={{ uri: user.avatar }} style={styles.bubble} />
+                ))}
+              </View>
             </View>
-
-            <View style={styles.bubblesContainer}>
-              {item.likes.slice(0, 3).map(({ user }) => (
-                <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} key={user.id} source={{ uri: user.avatar }} style={styles.bubble} />
-              ))}
-            </View>
-          </View>
+          </Animated.View>
         )}
       </Pressable>
     </Swipeable>
