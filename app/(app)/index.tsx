@@ -205,7 +205,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
                 )
               )}
             </Pressable>
-            <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 18 }}>{item._count.likes || 0}</Text>
+            <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 16 }}>{item._count.likes || 0}</Text>
           </TransParentView>
 
           <TransParentView style={{ alignItems: 'center', gap: 2 }}>
@@ -214,7 +214,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
                 <Image style={{ width: 42, height: 34 }} source={icons.share} />
               )}
             </Pressable>
-            <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 18 }}>{3612}</Text>
+            <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 16 }}>{3612}</Text>
           </TransParentView>
 
           <Pressable>
