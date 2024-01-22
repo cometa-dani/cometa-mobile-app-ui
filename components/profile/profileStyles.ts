@@ -25,8 +25,7 @@ export const profileStyles = StyleSheet.create({
   container: {
     flex: 1,
     gap: 24,
-    paddingHorizontal: 20,
-    paddingVertical: 30
+    padding: 20,
   },
 
   stats: {

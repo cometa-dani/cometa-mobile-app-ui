@@ -1,4 +1,4 @@
-import { ScrollView, Button, SafeAreaView, TextInput, Pressable } from 'react-native';
+import { ScrollView, Button, SafeAreaView, TextInput, Pressable, Dimensions, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
@@ -19,7 +19,10 @@ import { AppProfileAvatar } from '../../components/profile/profileAvatar';
 import { AppPhotosGrid } from '../../components/profile/photosGrid';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
+import Carousel, { Pagination } from 'react-native-snap-carousel';
 
+// const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
+const carouselEstimatedWidth = Dimensions.get('window').width;
 
 type ProfileValues = {
   name: string,
@@ -32,6 +35,8 @@ const validationSchemma = Yup.object<ProfileValues>({
 });
 
 export default function UserProfileScreen(): JSX.Element {
+
+  const [activeSlide, setActiveSlide] = useState(0);
   const { gray500, background } = useColors();
   const uid = useCometaStore(state => state.uid); // this can be abstracted
 
@@ -131,8 +136,13 @@ export default function UserProfileScreen(): JSX.Element {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: userProfile?.username || '',
-          headerTitleAlign: 'center'
+          headerTitle: () => (
+            <View>
+              <Text>{userProfile?.name}</Text>
+              <Text>{userProfile?.occupation || 'Software Engineer'}</Text>
+            </View>
+          ),
+          headerTitleAlign: 'left'
         }}
       />
 
@@ -140,8 +150,40 @@ export default function UserProfileScreen(): JSX.Element {
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: background }}
       >
+        <View style={{ position: 'relative' }}>
+          <Carousel
+            layout='stack'
+            loop={true}
+            // slideStyle={{ paddingVertical: 20 }} // use with tinder
+            vertical={false}
+            activeSlideOffset={0}
+            inactiveSlideScale={0.78}
+            sliderWidth={carouselEstimatedWidth}
+            itemWidth={carouselEstimatedWidth}
+            data={userPhotos}
+            onSnapToItem={(index) => setActiveSlide(index)}
+            renderItem={({ item }) => (
+              <View key={item.uuid} style={{ height: 320, width: '100%' }}>
+                <Image
+                  style={{ height: '100%', width: '100%', objectFit: 'contain' }}
+                  source={item.url}
+                />
+              </View>
+            )}
+          />
+
+          <Pagination
+            dotsLength={userPhotos.length}
+            activeDotIndex={activeSlide}
+            containerStyle={carouselStyles.paginationContainer}
+            dotStyle={carouselStyles.paginationDots}
+            inactiveDotOpacity={0.5}
+            inactiveDotScale={0.8}
+          />
+        </View>
+
         <View style={profileStyles.container}>
-          <View style={profileStyles.avatarContainer}>
+          {/* <View style={profileStyles.avatarContainer}>
 
             <Formik
               enableReinitialize
@@ -165,7 +207,6 @@ export default function UserProfileScreen(): JSX.Element {
                           <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={profileStyles.avatar} source={{ uri: userProfile?.avatar }} />
                         </Pressable>
 
-                        {/* NAME */}
                         <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
                           <View style={{ width: 24 }} />
                           <TextInput
@@ -181,9 +222,7 @@ export default function UserProfileScreen(): JSX.Element {
                             name="edit"
                           />
                         </View>
-                        {/* NAME */}
 
-                        {/* DESCRIPTION */}
                         <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
                           <View style={{ width: 16 }} />
 
@@ -201,7 +240,6 @@ export default function UserProfileScreen(): JSX.Element {
                             name="edit"
                           />
                         </View>
-                        {/* DESCRIPTION */}
                       </View>
                     )
                   }
@@ -228,14 +266,19 @@ export default function UserProfileScreen(): JSX.Element {
               )}
             </Formik>
 
-
-            {/* STATISTICS */}
             <AppStats
               totalEvents={userProfile?._count.likedEvents || 0}
               totalFriends={totalFriends}
             />
-            {/* STATISTICS */}
-          </View>
+
+          </View> */}
+
+
+
+
+          <Text>
+            {userProfile?.biography}
+          </Text>
 
           {/* BUCKETLIST */}
           {!toggleEdit && (
@@ -256,8 +299,11 @@ export default function UserProfileScreen(): JSX.Element {
           )}
           {/* BUCKETLIST */}
 
+          <Button onPress={() => handleLogout()} title='log out' />
+
+
           {/* PHOTOS */}
-          {isSuccess && (
+          {/* {isSuccess && (
             !toggleEdit ? (
               <AppCard>
                 <View style={profileStyles.cardWrapper}>
@@ -285,13 +331,29 @@ export default function UserProfileScreen(): JSX.Element {
               </View>
               // UPLOAD PHOTOS
             )
-          )}
+          )} */}
           {/* PHOTOS */}
 
           {/* TODO: LOG OUT */}
-          <Button onPress={() => handleLogout()} title='log out' />
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+const carouselStyles = StyleSheet.create({
+  paginationContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+    bottom: 0,
+    position: 'absolute',
+    width: '100%'
+  },
+
+  paginationDots: {
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    borderRadius: 10,
+    height: 10,
+    marginHorizontal: -2,
+    width: 10
+  },
+});

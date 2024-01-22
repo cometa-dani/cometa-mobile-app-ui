@@ -113,8 +113,8 @@ export default function AppLayout() {
           }}
         />
         <Tabs.Screen
-          listeners={{ tabPress: (e) => e.preventDefault() }}
           name="discover"
+          listeners={{ tabPress: (e) => e.preventDefault() }}
           options={{
             tabBarIcon: ({ focused }) => (
               <TabButton>
