@@ -54,8 +54,9 @@ export const ProfileCarousel: FC<ProfileCarouselProps> = ({ userPhotos }) => {
 
 const carouselStyles = StyleSheet.create({
   container: {
-    height: 320, position: 'relative', width: '100%'
+    height: 300, position: 'relative', width: '100%'
   },
+
   paginationContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0)',
     bottom: 0,

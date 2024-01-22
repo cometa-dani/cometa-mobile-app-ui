@@ -7,18 +7,21 @@ import * as Yup from 'yup';
 import { profileStyles } from '../../components/profile/profileStyles';
 import { useQueryGetNewPeopleProfileByUid } from '../../queries/userHooks';
 import { useQueryGetMatchedEvents } from '../../queries/eventHooks';
-import { AppProfileAvatar } from '../../components/profile/profileAvatar';
+// import { AppProfileAvatar } from '../../components/profile/profileAvatar';
 import { AppButton } from '../../components/buttons/buttons';
-import { AppStats } from '../../components/stats/Stats';
+// import { AppStats } from '../../components/stats/Stats';
 import { AppCarousel } from '../../components/carousels/carousel';
-import { AppPhotosGrid } from '../../components/profile/photosGrid';
-import { AppCard } from '../../components/card/card';
+// import { AppPhotosGrid } from '../../components/profile/photosGrid';
+// import { AppCard } from '../../components/card/card';
 import { nodeEnv } from '../../constants/vars';
 import { useCometaStore } from '../../store/cometaStore';
 import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/friendshipHooks';
 import { GetDetailedUserProfile } from '../../models/User';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
+import { ProfileCarousel } from '../../components/profile/profileCarousel';
+import { Badges } from '../../components/profile/badges';
+import { ProfileHeader } from '../../components/profile/profileHeader';
 
 
 const searchParamsSchemma = Yup.object({
@@ -59,7 +62,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   const queryClient = useQueryClient();
 
   /**
-  * 
+  *
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
   * @param {GetBasicUserProfile} sender the sender of the friendship invitation
   */
@@ -75,7 +78,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   };
 
   /**
-  * 
+  *
   * @description for a receiver user, sends a friendship invitation with status 'PENDING'
   * @param {GetBasicUserProfile} receiver the receiver of the friendship invitation
   */
@@ -88,7 +91,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   };
 
   /**
-  * 
+  *
   * @description cancels a friendship invitation with status 'PENDING'
   * @param {GetBasicUserProfile} receiver the receiver of the friendship invitation
   */
@@ -110,7 +113,10 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           presentation: 'modal',
           animation: 'default',
           headerShown: true,
-          headerTitle: newPeopleProfile?.username || '',
+          headerTitle: () => (
+            <ProfileHeader userProfile={newPeopleProfile} />
+          ),
+          // headerTitle: newPeopleProfile?.username || '',
           headerTitleAlign: 'center'
         }}
       />
@@ -118,12 +124,12 @@ export default function NewPeopleProfileScreen(): JSX.Element {
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: background }}
       >
+        <ProfileCarousel userPhotos={newPeopleProfile?.photos || []} />
+
         <View style={profileStyles.container}>
-          <AppProfileAvatar
-            avatar={newPeopleProfile?.avatar}
-            name={newPeopleProfile?.name || ''}
-            biography={newPeopleProfile?.biography || 'Hi there, let\'s meet '}
-          />
+          <Text>
+            {newPeopleProfile?.biography}
+          </Text>
 
           {/* ACTION BUTTONS */}
           {isSuccess && (
@@ -163,14 +169,14 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           {/* ACTION BUTTONS */}
 
           {/* STATISTICS */}
-          <AppStats
+          {/* <AppStats
             totalEvents={newPeopleProfile?._count?.likedEvents || 0}
             totalFriends={
               (newPeopleProfile?._count?.incomingFriendships || 0)
               +
               (newPeopleProfile?._count?.outgoingFriendships || 0)
             }
-          />
+          /> */}
           {/* STATISTICS */}
 
           {/* MATCHES */}
@@ -192,15 +198,20 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           />
           {/* BUCKETLIST */}
 
+
+          <Badges title='Languages' items={['English', 'French', 'Spanish']} />
+
+          <Badges title='Location' items={['Live in Doha', 'From Mexico']} />
+
           {/* PHOTOS */}
-          <AppCard>
+          {/* <AppCard>
             <View style={profileStyles.cardWrapper}>
               <Text style={{ fontSize: 17, fontWeight: '700' }}>Photos</Text>
               <AppPhotosGrid
                 photosList={newPeopleProfile?.photos || []}
               />
             </View>
-          </AppCard>
+          </AppCard> */}
           {/* PHOTOS */}
         </View>
       </ScrollView>

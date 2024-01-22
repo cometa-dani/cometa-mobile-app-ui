@@ -6,27 +6,24 @@ import { auth } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
 import { useMutationDeleteUserPhotoByUuid, useMutationUpdateUserAvatar, useMutationUploadUserPhotos, useMutationUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
 import { AppButton } from '../../components/buttons/buttons';
-import { AppCard } from '../../components/card/card';
 import { useRef, useState } from 'react';
-import { FontAwesome } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Photo } from '../../models/User';
 import { AppCarousel } from '../../components/carousels/carousel';
 import { profileStyles } from '../../components/profile/profileStyles';
-import { AppStats } from '../../components/stats/Stats';
-import { AppProfileAvatar } from '../../components/profile/profileAvatar';
-import { AppPhotosGrid } from '../../components/profile/photosGrid';
+// import { AppStats } from '../../components/stats/Stats';
+// import { AppProfileAvatar } from '../../components/profile/profileAvatar';
+// import { AppPhotosGrid } from '../../components/profile/photosGrid';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { useQueryClient } from '@tanstack/react-query';
-import { calAge } from '../../helpers/calcAge';
 import { Badges } from '../../components/profile/badges';
 import { ProfileCarousel } from '../../components/profile/profileCarousel';
+import { ProfileHeader } from '../../components/profile/profileHeader';
 
 // const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
-const carouselEstimatedWidth = Dimensions.get('window').width;
+// const carouselEstimatedWidth = Dimensions.get('window').width;
 
 type ProfileValues = {
   name: string,
@@ -144,13 +141,7 @@ export default function UserProfileScreen(): JSX.Element {
         options={{
           headerShown: true,
           headerTitle: () => (
-            <View>
-              <Text>
-                <Text style={{ fontSize: 18, fontWeight: '800' }}>{userProfile?.name}, </Text>
-                <Text style={{ fontSize: 18, fontWeight: '800' }}>{userProfile?.birthday && calAge(userProfile?.birthday) || 26}</Text>
-              </Text>
-              <Text style={{ color: 'gray', fontWeight: '600' }}>{userProfile?.occupation || 'Software Engineer'}</Text>
-            </View>
+            <ProfileHeader userProfile={userProfile} />
           ),
           headerTitleAlign: 'left'
         }}

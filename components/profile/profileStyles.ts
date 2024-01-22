@@ -26,21 +26,7 @@ export const profileStyles = StyleSheet.create({
     flex: 1,
     gap: 24,
     padding: 20,
-  },
-
-  paginationContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0)',
-    bottom: 0,
-    position: 'absolute',
-    width: '100%'
-  },
-
-  paginationDots: {
-    backgroundColor: 'rgba(255, 255, 255, 0.92)',
-    borderRadius: 10,
-    height: 10,
-    marginHorizontal: -2,
-    width: 10
+    paddingBottom: 40
   },
 
   stats: {
