@@ -219,7 +219,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
 
           <Pressable>
             {() => (
-              <Image style={{ width: 34, height: 34 }} source={icons.locationMarker} />
+              <Image style={{ width: 36, height: 36 }} source={icons.locationMarker} />
             )}
           </Pressable>
         </TransParentView>

@@ -3,12 +3,13 @@ import { Tabs, router } from 'expo-router';
 import { Pressable } from 'react-native';
 import { View, useColors } from '../../components/Themed';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { FC, ReactNode, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
 import { Image } from 'expo-image';
 import { icons, titles } from '../../constants/assets';
+import { RectButton } from 'react-native-gesture-handler';
 
 
 /**
@@ -24,6 +25,11 @@ export function TabBarIcon(props: {
   );
 }
 
+const TabButton: FC<{ children: ReactNode }> = ({ children }) => (
+  <RectButton style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+    {children}
+  </RectButton>
+);
 
 export default function AppLayout() {
   const { red100, gray300 } = useColors();
@@ -64,10 +70,13 @@ export default function AppLayout() {
             headerTitleAlign: 'center',
             headerShown: true,
             tabBarIcon: ({ focused }) => (
-              focused ?
-                <Image style={{ width: 34, height: 34 }} source={icons.homeRed} />
-                :
-                <Image style={{ width: 34, height: 34 }} source={icons.home} />
+              <TabButton>
+                {focused ?
+                  <Image style={{ width: 34, height: 34 }} source={icons.homeRed} />
+                  :
+                  <Image style={{ width: 34, height: 34 }} source={icons.home} />
+                }
+              </TabButton>
             ),
             headerLeft: () => (
               <Pressable>
@@ -108,10 +117,13 @@ export default function AppLayout() {
           name="discover"
           options={{
             tabBarIcon: ({ focused }) => (
-              focused ?
-                <Image style={{ width: 30, height: 30 }} source={icons.commentRed} />
-                :
-                <Image style={{ width: 30, height: 30 }} source={icons.comment} />
+              <TabButton>
+                {focused ?
+                  <Image style={{ width: 30, height: 30 }} source={icons.commentRed} />
+                  :
+                  <Image style={{ width: 30, height: 30 }} source={icons.comment} />
+                }
+              </TabButton>
             ),
           }}
         />
@@ -121,10 +133,13 @@ export default function AppLayout() {
             headerTitleAlign: 'center',
             headerShown: true,
             tabBarIcon: ({ focused }) => (
-              focused ?
-                <Image style={{ width: 38, height: 38 }} source={icons.bucketListRed} />
-                :
-                <Image style={{ width: 38, height: 38 }} source={icons.bucketList} />
+              <TabButton>
+                {focused ?
+                  <Image style={{ width: 38, height: 38 }} source={icons.bucketListRed} />
+                  :
+                  <Image style={{ width: 38, height: 38 }} source={icons.bucketList} />
+                }
+              </TabButton>
             ),
             headerTitle() {
               return (
@@ -144,10 +159,13 @@ export default function AppLayout() {
           name='userProfile'
           options={{
             tabBarIcon: ({ focused }) => (
-              focused ?
-                <Image style={{ width: 34, height: 34 }} source={icons.profileRed} />
-                :
-                <Image style={{ width: 34, height: 34 }} source={icons.profile} />
+              <TabButton>
+                {focused ?
+                  <Image style={{ width: 34, height: 34 }} source={icons.profileRed} />
+                  :
+                  <Image style={{ width: 34, height: 34 }} source={icons.profile} />
+                }
+              </TabButton>
             ),
           }}
         />

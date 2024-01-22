@@ -4,7 +4,7 @@ export const icons = {
   info: require('../assets/icons/info.png'),
   notifications: require('../assets/icons/Notifications.png'),
   filter: require('../assets/icons/Filter.png'),
-  locationMarker: require('../assets/icons/Map.png'),
+  locationMarker: require('../assets/icons/location.png'),
 
   // footer nav icons
   home: require('../assets/icons/Homepage.png'),
