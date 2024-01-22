@@ -28,6 +28,21 @@ export const profileStyles = StyleSheet.create({
     padding: 20,
   },
 
+  paginationContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+    bottom: 0,
+    position: 'absolute',
+    width: '100%'
+  },
+
+  paginationDots: {
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    borderRadius: 10,
+    height: 10,
+    marginHorizontal: -2,
+    width: 10
+  },
+
   stats: {
     flexDirection: 'row',
     gap: 50,
@@ -41,7 +56,7 @@ export const profileStyles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: '700',
     marginBottom: 4,
     textTransform: 'capitalize'

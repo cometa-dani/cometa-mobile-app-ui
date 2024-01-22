@@ -20,6 +20,10 @@ import { AppPhotosGrid } from '../../components/profile/photosGrid';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
+import { useQueryClient } from '@tanstack/react-query';
+import { calAge } from '../../helpers/calcAge';
+import { Badges } from '../../components/profile/badges';
+import { ProfileCarousel } from '../../components/profile/profileCarousel';
 
 // const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
 const carouselEstimatedWidth = Dimensions.get('window').width;
@@ -36,7 +40,7 @@ const validationSchemma = Yup.object<ProfileValues>({
 
 export default function UserProfileScreen(): JSX.Element {
 
-  const [activeSlide, setActiveSlide] = useState(0);
+  const queryClient = useQueryClient();
   const { gray500, background } = useColors();
   const uid = useCometaStore(state => state.uid); // this can be abstracted
 
@@ -125,10 +129,13 @@ export default function UserProfileScreen(): JSX.Element {
 
 
   const handleLogout = (): void => {
+    queryClient.clear();
+    queryClient.removeQueries();
+    queryClient.cancelQueries();
     signOut(auth);
   };
 
-
+  // console.log(userProfile?.birthday);
   return (
     <SafeAreaView style={{ flex: 1 }}>
 
@@ -138,49 +145,21 @@ export default function UserProfileScreen(): JSX.Element {
           headerShown: true,
           headerTitle: () => (
             <View>
-              <Text>{userProfile?.name}</Text>
-              <Text>{userProfile?.occupation || 'Software Engineer'}</Text>
+              <Text>
+                <Text style={{ fontSize: 18, fontWeight: '800' }}>{userProfile?.name}, </Text>
+                <Text style={{ fontSize: 18, fontWeight: '800' }}>{userProfile?.birthday && calAge(userProfile?.birthday) || 26}</Text>
+              </Text>
+              <Text style={{ color: 'gray', fontWeight: '600' }}>{userProfile?.occupation || 'Software Engineer'}</Text>
             </View>
           ),
           headerTitleAlign: 'left'
         }}
       />
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: background }}
       >
-        <View style={{ position: 'relative' }}>
-          <Carousel
-            layout='stack'
-            loop={true}
-            // slideStyle={{ paddingVertical: 20 }} // use with tinder
-            vertical={false}
-            activeSlideOffset={0}
-            inactiveSlideScale={0.78}
-            sliderWidth={carouselEstimatedWidth}
-            itemWidth={carouselEstimatedWidth}
-            data={userPhotos}
-            onSnapToItem={(index) => setActiveSlide(index)}
-            renderItem={({ item }) => (
-              <View key={item.uuid} style={{ height: 320, width: '100%' }}>
-                <Image
-                  style={{ height: '100%', width: '100%', objectFit: 'contain' }}
-                  source={item.url}
-                />
-              </View>
-            )}
-          />
-
-          <Pagination
-            dotsLength={userPhotos.length}
-            activeDotIndex={activeSlide}
-            containerStyle={carouselStyles.paginationContainer}
-            dotStyle={carouselStyles.paginationDots}
-            inactiveDotOpacity={0.5}
-            inactiveDotScale={0.8}
-          />
-        </View>
+        <ProfileCarousel userPhotos={userPhotos} />
 
         <View style={profileStyles.container}>
           {/* <View style={profileStyles.avatarContainer}>
@@ -274,33 +253,51 @@ export default function UserProfileScreen(): JSX.Element {
           </View> */}
 
 
-
-
           <Text>
             {userProfile?.biography}
           </Text>
 
-          {/* BUCKETLIST */}
-          {!toggleEdit && (
-            <AppCarousel
-              list={
-                userProfile
-                  ?.likedEvents
-                  .map(
-                    (item) => item.event.mediaType === 'VIDEO' ?
-                      ({ id: item.id, img: '' })
-                      :
-                      ({ id: item.id, img: item.event?.mediaUrl })
-                  )
-                || []
-              }
-              title='BucketList'
+          {toggleEdit ? (
+            // submit button
+            <AppButton
+              onPress={() => {
+                // handleSubmit();
+                setToggleEdit(false);
+              }}
+              btnColor='primary'
+              text='Save Profile'
+            />
+          ) : (
+            // toggle button
+            <AppButton
+              onPress={() => setToggleEdit(true)}
+              btnColor='white'
+              text='Edit Profile'
             />
           )}
+
+          {/* BUCKETLIST */}
+          <AppCarousel
+            list={
+              userProfile
+                ?.likedEvents
+                .map(
+                  (item) => item.event.mediaType === 'VIDEO' ?
+                    ({ id: item.id, img: '' })
+                    :
+                    ({ id: item.id, img: item.event?.mediaUrl })
+                )
+              || []
+            }
+            title='BucketList'
+          />
           {/* BUCKETLIST */}
 
-          <Button onPress={() => handleLogout()} title='log out' />
+          <Badges title='Languages' items={['English', 'French', 'Spanish']} />
 
+          <Badges title='Location' items={['Live in Doha', 'From Mexico']} />
+
+          <Button onPress={() => handleLogout()} title='log out' />
 
           {/* PHOTOS */}
           {/* {isSuccess && (
@@ -340,20 +337,3 @@ export default function UserProfileScreen(): JSX.Element {
     </SafeAreaView>
   );
 }
-
-const carouselStyles = StyleSheet.create({
-  paginationContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0)',
-    bottom: 0,
-    position: 'absolute',
-    width: '100%'
-  },
-
-  paginationDots: {
-    backgroundColor: 'rgba(255, 255, 255, 0.92)',
-    borderRadius: 10,
-    height: 10,
-    marginHorizontal: -2,
-    width: 10
-  },
-});

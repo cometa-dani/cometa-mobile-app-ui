@@ -302,13 +302,11 @@ const CarouselItem: FC<{ item: LikedEvent }> = ({ item }) => {
 const stylesEventItem = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    // zIndex: 1,
   },
 
   eventInfoContainer: {
     bottom: 70,
     gap: 12,
-    // height: 300,
     left: 20,
     position: 'absolute',
     width: '70%',
