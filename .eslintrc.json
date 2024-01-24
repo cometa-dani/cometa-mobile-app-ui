@@ -31,6 +31,7 @@
     "quotes": ["error", "single"],
     "semi": ["error", "always"],
     "react-native/no-color-literals": "off",
-    "no-console": "warn"
+    "no-console": "warn",
+    "react-native/sort-styles": "off"
   }
 }

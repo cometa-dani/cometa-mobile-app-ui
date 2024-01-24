@@ -3,6 +3,7 @@ export const white_50 = '#fff';
 export const red_100 = '#EA385C';
 // export const secondary_100 = '#EA385C';
 export const blue_100 = '#5ac8fa';
+export const blue_50 = '#83C9DD';
 export const gray_50 = '#f0f0f0';
 export const gray_100 = '#e5e5e5';
 export const gray_200 = '#afafaa';

@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { TextInputProps, StyleSheet } from 'react-native';
+import { TextInputProps, StyleSheet, View as TransparentView } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { Text, View, useColors } from '../Themed';
 import { FontAwesome, } from '@expo/vector-icons';
@@ -53,31 +53,35 @@ const styles = StyleSheet.create({
   },
 
   input: {
-    borderRadius: 50,
-    elevation: 3,
     paddingHorizontal: 22,
     paddingVertical: 10,
-    shadowColor: '#171717',
-    shadowOffset: { width: 0, height: 4 },
+    elevation: 3, // add elevation to android
+    borderRadius: 50,
+    padding: 10,
+    shadowColor: '#171717', // add shadow for iOS
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 0.05,
-    shadowRadius: 3,
+    shadowRadius: 3.84,
   }
 });
 
 
 export const AppLabelFeedbackMsg: FC<{ text: string }> = ({ text }) => (
-  <View style={formFieldStyles.formLabel}>
+  <TransparentView style={formFieldStyles.formLabel}>
     <FontAwesome name='close' color={messages.error} size={20} />
-    <Text style={{ color: messages.error }}>{text}</Text>
-  </View>
+    <Text style={{ color: messages.error, fontSize: 14 }}>{text}</Text>
+  </TransparentView>
 );
 
 
 export const AppLabelMsgOk: FC<{ text: string }> = ({ text }) => (
-  <View style={formFieldStyles.formLabel}>
+  <TransparentView style={formFieldStyles.formLabel}>
     <FontAwesome name='check-circle-o' color={messages.ok} size={20} />
-    <Text style={{ color: messages.ok }}>{text} is available</Text>
-  </View>
+    <Text style={{ color: messages.ok, fontSize: 14 }}>{text} is available</Text>
+  </TransparentView>
 );
 
 const formFieldStyles = StyleSheet.create({

@@ -5,6 +5,7 @@ import { Image } from 'expo-image';
 import { Photo } from '../../models/User';
 import { Text, View, useColors } from '../Themed';
 import { FontAwesome } from '@expo/vector-icons';
+import { blue_50 } from '../../constants/colors';
 
 
 interface CloseBtnProps extends PressableProps {
@@ -15,9 +16,10 @@ interface AppPhotoGridProps {
   onHandlePickImage?: () => void,
   onDeleteImage?: (uuid: string) => void,
   photosList: Photo[],
-  placeholders?: number
+  placeholders?: number,
+  height?: number
 }
-export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDeleteImage, photosList, placeholders = 0 }) => {
+export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDeleteImage, photosList, placeholders = 0, height = 190 }) => {
   const editorMode: boolean = onHandlePickImage || onDeleteImage ? true : false;
   const { gray500, gray900, white50 } = useColors();
 
@@ -46,7 +48,7 @@ export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDele
   };
 
   return (
-    <View style={{ height: 150, flexDirection: 'row', gap: 12 }}>
+    <View style={{ height: height, flexDirection: 'row', gap: 12, marginTop: 7 }}>
 
       {!editorMode && photosList.length === 0 ? (
         <Text>No photos available</Text>
@@ -128,16 +130,14 @@ const gridStyles = StyleSheet.create({
 
   uploadPhoto1: {
     alignItems: 'center',
-    backgroundColor: '#ead4fa',
-    borderRadius: 26,
+    backgroundColor: blue_50,
     flex: 1,
     justifyContent: 'center'
   },
 
   uploadPhotoGrid: {
     alignItems: 'center',
-    backgroundColor: '#ead4fa',
-    borderRadius: 26,
+    backgroundColor: blue_50,
     flex: 1,
     justifyContent: 'center',
   }

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/sort-styles */
 import { StyleSheet } from 'react-native';
 
 
@@ -14,8 +15,8 @@ export const profileStyles = StyleSheet.create({
     gap: 20
   },
 
-  avatarFigure: {
-    alignItems: 'center',
+  porfileContent: {
+    gap: 30
   },
 
   cardWrapper: {
@@ -24,7 +25,7 @@ export const profileStyles = StyleSheet.create({
 
   container: {
     flex: 1,
-    gap: 24,
+    gap: 20,
     padding: 20,
     paddingBottom: 40
   },

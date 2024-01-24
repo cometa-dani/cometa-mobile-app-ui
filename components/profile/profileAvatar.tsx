@@ -13,7 +13,7 @@ interface Props {
 export const AppProfileAvatar: FC<Props> = ({ avatar, biography, name }) => {
   const { gray500 } = useColors();
   return (
-    <View style={profileStyles.avatarFigure}>
+    <View style={profileStyles.porfileContent}>
       {avatar ? (
         <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={profileStyles.avatar} source={{ uri: avatar }} />
       ) : (
