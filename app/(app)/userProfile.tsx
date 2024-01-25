@@ -30,17 +30,13 @@ import { gray_100, gray_200, gray_300, gray_500 } from '../../constants/colors';
 // const carouselEstimatedWidth = Dimensions.get('window').width;
 
 type ProfileValues = {
-  name: string,
   occupation: string,
   biography: string,
-  birthday: Date,
 }
 
 const validationSchemma = Yup.object<ProfileValues>({
-  name: Yup.string().min(3).max(26).required(),
   occupation: Yup.string().min(5).max(32).required(),
-  biography: Yup.string().min(5).max(32).required(),
-  birthday: Yup.date().required(),
+  biography: Yup.string().min(5).max(120).required(),
 });
 
 export default function UserProfileScreen(): JSX.Element {
@@ -214,9 +210,7 @@ export default function UserProfileScreen(): JSX.Element {
                 enableReinitialize
                 validationSchema={validationSchemma}
                 initialValues={{
-                  name: userProfile?.name || '',
                   biography: userProfile?.biography || '',
-                  birthday: userProfile?.birthday || new Date(),
                   occupation: userProfile?.occupation || 'Software Engineer',
                 }}
                 onSubmit={handleSumitUserInfo}
