@@ -24,6 +24,7 @@ import { ProfileHeader } from '../../components/profile/profileHeader';
 import { AppPhotosGrid } from '../../components/profile/photosGrid';
 import { FontAwesome } from '@expo/vector-icons';
 import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
+import { gray_100, gray_200, gray_300, gray_500 } from '../../constants/colors';
 
 // const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
 // const carouselEstimatedWidth = Dimensions.get('window').width;
@@ -208,17 +209,7 @@ export default function UserProfileScreen(): JSX.Element {
               onDeleteImage={handleDeleteImage}
               placeholders={selectionLimit}
             />
-
             <View style={profileStyles.container}>
-              <AppButton
-                onPress={() => {
-                  // handleSubmit();
-                  setToggleEdit(true);
-                }}
-                btnColor='blue'
-                text='SAVE PROFILE'
-              />
-
               <Formik
                 enableReinitialize
                 validationSchema={validationSchemma}
@@ -232,16 +223,24 @@ export default function UserProfileScreen(): JSX.Element {
               >
                 {({ handleBlur, handleChange, handleSubmit, values, touched, errors }) => (
                   <View style={profileStyles.porfileContent}>
+                    <AppButton
+                      onPress={() => {
+                        // handleSubmit();
+                        setToggleEdit(true);
+                      }}
+                      btnColor='blue'
+                      text='SAVE PROFILE'
+                    />
 
                     <View style={{ gap: 8 }}>
-                      <View>
-                        <Text style={profileStyles.title}>Occupation</Text>
-                        <Text>Something fun about yourself and who you are</Text>
+                      <View style={{ gap: -4 }}>
+                        <Text style={profileStyles.title}>Bio</Text>
+                        <Text style={{ color: gray_300 }}>Write your usual or principal job or profession </Text>
                       </View>
 
-                      <View style={{ position: 'relative' }}>
+                      <View style={{ position: 'relative', justifyContent: 'center' }}>
                         {touched.occupation && errors.occupation && (
-                          <AppLabelFeedbackMsg text={errors.occupation} />
+                          <AppLabelFeedbackMsg position='bottom' text={errors.occupation} />
                         )}
                         <AppTextInput
                           iconName='briefcase'
@@ -254,14 +253,14 @@ export default function UserProfileScreen(): JSX.Element {
                     </View>
 
                     <View style={{ gap: 8 }}>
-                      <View>
+                      <View style={{ gap: -4 }}>
                         <Text style={profileStyles.title}>Bio</Text>
-                        <Text>Write your usual or principal job or profession </Text>
+                        <Text style={{ color: gray_300 }}>Something fun about yourself and who you are </Text>
                       </View>
 
                       <View style={{ position: 'relative' }}>
                         {touched.biography && errors.biography && (
-                          <AppLabelFeedbackMsg text={errors.biography} />
+                          <AppLabelFeedbackMsg position='bottom' text={errors.biography} />
                         )}
                         <AppTextInput
                           iconName='user'
@@ -345,25 +344,6 @@ export default function UserProfileScreen(): JSX.Element {
                       </View>
                     )
                   }
-
-                  {toggleEdit ? (
-                    // submit button
-                    <AppButton
-                      onPress={() => {
-                        handleSubmit();
-                        setToggleEdit(false);
-                      }}
-                      btnColor='primary'
-                      text='Save Profile'
-                    />
-                  ) : (
-                    // toggle button
-                    <AppButton
-                      onPress={() => setToggleEdit(true)}
-                      btnColor='white'
-                      text='Edit Profile'
-                    />
-                  )}
                 </>
               )}
             </Formik>

@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import { TextInputProps, StyleSheet, View as TransparentView } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { Text, View, useColors } from '../Themed';
@@ -16,25 +16,25 @@ export const AppTextInput: FC<AppTextInputProps> = ({ iconName, ...props }) => {
   return (
     iconName ? (
       <View>
-        <View style={styles.formFieldIconContainer}>
+        <View style={textInputStyles.formFieldIconContainer}>
           <FontAwesome
-            style={[styles.formFieldIcon, { color: altText }]}
+            style={[textInputStyles.formFieldIcon, { color: altText }]}
             name={iconName}
             size={20}
           />
         </View>
 
-        <TextInput {...otherProps} style={[styles.input, { backgroundColor, paddingLeft: 48 }, style]} />
+        <TextInput {...otherProps} style={[textInputStyles.input, { backgroundColor, paddingLeft: 48 }, style]} />
       </View>
     )
       : (
-        <TextInput {...otherProps} style={[styles.input, { backgroundColor }, style]} />
+        <TextInput {...otherProps} style={[textInputStyles.input, { backgroundColor }, style]} />
       )
   );
 };
 
 
-const styles = StyleSheet.create({
+export const textInputStyles = StyleSheet.create({
 
   formFieldIcon: {
     fontWeight: '700',
@@ -69,23 +69,39 @@ const styles = StyleSheet.create({
 });
 
 
-export const AppLabelFeedbackMsg: FC<{ text: string }> = ({ text }) => (
-  <TransparentView style={formFieldStyles.formLabel}>
-    <FontAwesome name='close' color={messages.error} size={20} />
-    <Text style={{ color: messages.error, fontSize: 14 }}>{text}</Text>
-  </TransparentView>
-);
+interface AppLabelProps {
+  text: ReactNode,
+  position?: 'top' | 'bottom'
+}
+
+export const AppLabelFeedbackMsg: FC<AppLabelProps> = ({ text, position = 'top' }) => {
+  return (
+    position === 'top' ? (
+      <TransparentView style={formFieldStyles.formLabelTop}>
+        <FontAwesome name='close' color={messages.error} size={20} />
+        <Text style={{ color: messages.error, fontSize: 14 }}>{text}</Text>
+      </TransparentView>
+    ) : (
+      <>
+        <FontAwesome style={formFieldStyles.iconBottom} name='close' color={messages.error} size={20} />
+
+        <Text style={{ color: messages.error, ...formFieldStyles.textBottom }}>{text}</Text>
+      </>
+    )
+  );
+};
 
 
 export const AppLabelMsgOk: FC<{ text: string }> = ({ text }) => (
-  <TransparentView style={formFieldStyles.formLabel}>
+  <TransparentView style={formFieldStyles.formLabelTop}>
     <FontAwesome name='check-circle-o' color={messages.ok} size={20} />
     <Text style={{ color: messages.ok, fontSize: 14 }}>{text} is available</Text>
   </TransparentView>
 );
 
 const formFieldStyles = StyleSheet.create({
-  formLabel: {
+  formLabelTop: {
+    zIndex: 10,
     alignItems: 'center',
     flexDirection: 'row',
     gap: 5,
@@ -93,4 +109,20 @@ const formFieldStyles = StyleSheet.create({
     position: 'absolute',
     top: -24
   },
+
+  iconBottom: {
+    zIndex: 100,
+    paddingLeft: 20,
+    position: 'absolute',
+    right: 20,
+  },
+
+  textBottom: {
+    zIndex: 100,
+    paddingLeft: 20,
+    position: 'absolute',
+    fontWeight: '500',
+    fontSize: 12,
+    bottom: -18,
+  }
 });
