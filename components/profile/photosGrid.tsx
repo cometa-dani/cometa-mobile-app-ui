@@ -5,7 +5,7 @@ import { Image } from 'expo-image';
 import { Photo } from '../../models/User';
 import { Text, View, useColors } from '../Themed';
 import { FontAwesome } from '@expo/vector-icons';
-import { blue_50 } from '../../constants/colors';
+import { blue_50, gray_50 } from '../../constants/colors';
 
 
 interface CloseBtnProps extends PressableProps {
@@ -130,14 +130,14 @@ const gridStyles = StyleSheet.create({
 
   uploadPhoto1: {
     alignItems: 'center',
-    backgroundColor: blue_50,
+    backgroundColor: gray_50,
     flex: 1,
     justifyContent: 'center'
   },
 
   uploadPhotoGrid: {
     alignItems: 'center',
-    backgroundColor: blue_50,
+    backgroundColor: gray_50,
     flex: 1,
     justifyContent: 'center',
   }

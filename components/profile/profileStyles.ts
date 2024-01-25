@@ -16,7 +16,7 @@ export const profileStyles = StyleSheet.create({
   },
 
   porfileContent: {
-    gap: 30
+    gap: 20
   },
 
   cardWrapper: {

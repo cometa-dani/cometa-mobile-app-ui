@@ -159,7 +159,133 @@ export default function UserProfileScreen(): JSX.Element {
           <>
             <ProfileCarousel userPhotos={userPhotos} />
             <View style={profileStyles.container}>
-              {/* <View style={profileStyles.avatarContainer}>
+
+              <ProfileHeader userProfile={userProfile} />
+
+              <AppButton
+                onPress={() => setToggleEdit(false)}
+                btnColor='white'
+                text='EDIT PROFILE'
+              />
+
+              <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                <FontAwesome size={16} name='user' />
+                <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                  {userProfile?.biography}
+                </Text>
+              </View>
+
+              {/* BUCKETLIST */}
+              <AppCarousel
+                list={
+                  userProfile
+                    ?.likedEvents
+                    .map(
+                      (item) => item.event.mediaType === 'VIDEO' ?
+                        ({ id: item.id, img: '' })
+                        :
+                        ({ id: item.id, img: item.event?.mediaUrl })
+                    )
+                  || []
+                }
+                title='BucketList'
+              />
+              {/* BUCKETLIST */}
+
+              <Badges iconName='comment' title='Languages' items={['English', 'French', 'Spanish']} />
+
+              <Badges iconName='map-marker' title='Location' items={['Live in Doha', 'From Mexico']} />
+            </View>
+          </>
+        )}
+
+        {!toggleEdit && (
+          <>
+            <AppPhotosGrid
+              height={Dimensions.get('window').height * 0.25}
+              photosList={userPhotos}
+              onHandlePickImage={handlePickMultipleImages}
+              onDeleteImage={handleDeleteImage}
+              placeholders={selectionLimit}
+            />
+
+            <View style={profileStyles.container}>
+              <AppButton
+                onPress={() => {
+                  // handleSubmit();
+                  setToggleEdit(true);
+                }}
+                btnColor='blue'
+                text='SAVE PROFILE'
+              />
+
+              <Formik
+                enableReinitialize
+                validationSchema={validationSchemma}
+                initialValues={{
+                  name: userProfile?.name || '',
+                  biography: userProfile?.biography || '',
+                  birthday: userProfile?.birthday || new Date(),
+                  occupation: userProfile?.occupation || 'Software Engineer',
+                }}
+                onSubmit={handleSumitUserInfo}
+              >
+                {({ handleBlur, handleChange, handleSubmit, values, touched, errors }) => (
+                  <View style={profileStyles.porfileContent}>
+
+                    <View style={{ gap: 8 }}>
+                      <View>
+                        <Text style={profileStyles.title}>Occupation</Text>
+                        <Text>Something fun about yourself and who you are</Text>
+                      </View>
+
+                      <View style={{ position: 'relative' }}>
+                        {touched.occupation && errors.occupation && (
+                          <AppLabelFeedbackMsg text={errors.occupation} />
+                        )}
+                        <AppTextInput
+                          iconName='briefcase'
+                          keyboardType="ascii-capable"
+                          onChangeText={handleChange('occupation')}
+                          onBlur={handleBlur('occupation')}
+                          value={values.occupation}
+                        />
+                      </View>
+                    </View>
+
+                    <View style={{ gap: 8 }}>
+                      <View>
+                        <Text style={profileStyles.title}>Bio</Text>
+                        <Text>Write your usual or principal job or profession </Text>
+                      </View>
+
+                      <View style={{ position: 'relative' }}>
+                        {touched.biography && errors.biography && (
+                          <AppLabelFeedbackMsg text={errors.biography} />
+                        )}
+                        <AppTextInput
+                          iconName='user'
+                          keyboardType="ascii-capable"
+                          onChangeText={handleChange('biography')}
+                          onBlur={handleBlur('biography')}
+                          value={values.biography}
+                        />
+                      </View>
+                    </View>
+                  </View>
+                )}
+              </Formik>
+            </View>
+          </>
+        )}
+
+        {/* <Button onPress={() => handleLogout()} title='log out' /> */}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+{/* <View style={profileStyles.avatarContainer}>
 
             <Formik
               enableReinitialize
@@ -243,133 +369,3 @@ export default function UserProfileScreen(): JSX.Element {
             </Formik>
 
           </View> */}
-
-              <ProfileHeader userProfile={userProfile} />
-
-              <AppButton
-                onPress={() => setToggleEdit(false)}
-                btnColor='white'
-                text='EDIT PROFILE'
-              />
-
-              <Text>
-                {userProfile?.biography}
-              </Text>
-
-              {/* BUCKETLIST */}
-              <AppCarousel
-                list={
-                  userProfile
-                    ?.likedEvents
-                    .map(
-                      (item) => item.event.mediaType === 'VIDEO' ?
-                        ({ id: item.id, img: '' })
-                        :
-                        ({ id: item.id, img: item.event?.mediaUrl })
-                    )
-                  || []
-                }
-                title='BucketList'
-              />
-              {/* BUCKETLIST */}
-
-              <Badges title='Languages' items={['English', 'French', 'Spanish']} />
-
-              <Badges title='Location' items={['Live in Doha', 'From Mexico']} />
-            </View>
-          </>
-        )}
-
-        {!toggleEdit && (
-          <>
-            <AppPhotosGrid
-              height={Dimensions.get('window').height * 0.25}
-              photosList={userPhotos}
-              onHandlePickImage={handlePickMultipleImages}
-              onDeleteImage={handleDeleteImage}
-              placeholders={selectionLimit}
-            />
-
-            <View style={profileStyles.container}>
-              <AppButton
-                onPress={() => {
-                  // handleSubmit();
-                  setToggleEdit(true);
-                }}
-                btnColor='blue'
-                text='SAVE PROFILE'
-              />
-
-              <Formik
-                enableReinitialize
-                validationSchema={validationSchemma}
-                initialValues={{
-                  name: userProfile?.name || '',
-                  biography: userProfile?.biography || '',
-                  birthday: userProfile?.birthday || new Date(),
-                  occupation: userProfile?.occupation || 'Software Engineer',
-                }}
-                onSubmit={handleSumitUserInfo}
-              >
-                {({ handleBlur, handleChange, handleSubmit, values, touched, errors }) => (
-                  <View style={profileStyles.porfileContent}>
-
-                    <View style={{ gap: 26 }}>
-                      <Text style={profileStyles.title}>Name</Text>
-
-                      <View style={{ position: 'relative' }}>
-                        {touched.name && errors.name && (
-                          <AppLabelFeedbackMsg text={errors.name} />
-                        )}
-                        <AppTextInput
-                          keyboardType="ascii-capable"
-                          onChangeText={handleChange('name')}
-                          onBlur={handleBlur('name')}
-                          value={values.name}
-                        />
-                      </View>
-                    </View>
-
-                    <View style={{ gap: 26 }}>
-                      <Text style={profileStyles.title}>Occupation</Text>
-
-                      <View style={{ position: 'relative' }}>
-                        {touched.occupation && errors.occupation && (
-                          <AppLabelFeedbackMsg text={errors.occupation} />
-                        )}
-                        <AppTextInput
-                          keyboardType="ascii-capable"
-                          onChangeText={handleChange('occupation')}
-                          onBlur={handleBlur('occupation')}
-                          value={values.occupation}
-                        />
-                      </View>
-                    </View>
-
-                    <View style={{ gap: 26 }}>
-                      <Text style={profileStyles.title}>Bio</Text>
-
-                      <View style={{ position: 'relative' }}>
-                        {touched.biography && errors.biography && (
-                          <AppLabelFeedbackMsg text={errors.biography} />
-                        )}
-                        <AppTextInput
-                          keyboardType="ascii-capable"
-                          onChangeText={handleChange('biography')}
-                          onBlur={handleBlur('biography')}
-                          value={values.biography}
-                        />
-                      </View>
-                    </View>
-                  </View>
-                )}
-              </Formik>
-            </View>
-          </>
-        )}
-
-        {/* <Button onPress={() => handleLogout()} title='log out' /> */}
-      </ScrollView>
-    </SafeAreaView>
-  );
-}

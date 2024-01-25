@@ -3,17 +3,22 @@ import { Text, View } from 'react-native';
 import { AppButton } from '../buttons/buttons';
 import { profileStyles } from './profileStyles';
 import { StyleSheet } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 
 interface BadgesProps {
   items: ReactNode[],
-  title: string
+  title: string,
+  iconName: React.ComponentProps<typeof FontAwesome>['name'];
 }
 
-export const Badges: FC<BadgesProps> = ({ items, title }) => {
+export const Badges: FC<BadgesProps> = ({ items, title, iconName }) => {
   return (
     <View>
-      <Text style={profileStyles.title}>{title}:</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        {iconName && <FontAwesome name={iconName} size={20} />}
+        <Text style={profileStyles.title}>{title}:</Text>
+      </View>
 
       <View style={{ flexWrap: 'wrap', flexDirection: 'row', gap: 16 }}>
         {items.map((item, index) => (
