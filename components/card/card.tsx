@@ -21,13 +21,16 @@ export const AppCard: FC<CoProps> = ({ children, ...props }) => {
 const styles = StyleSheet.create({
   cardWrapper: {
     borderRadius: 18,
-    elevation: 4,
+    elevation: 3,
     padding: 20,
     // paddingHorizontal: 24,
     // paddingVertical: 12,
-    shadowColor: '#171717',
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#171717', // add shadow for iOS
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 0.05,
-    shadowRadius: 3,
+    shadowRadius: 3.84,
   }
 });

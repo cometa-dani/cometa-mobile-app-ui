@@ -47,5 +47,22 @@ export const profileStyles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 4,
     textTransform: 'capitalize'
+  },
+
+  wrapper: {
+    gap: 10,
+    flexDirection: 'row',
+    elevation: 3,
+    borderRadius: 50,
+    shadowColor: '#171717', // add shadow for iOS
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 3.84,
+    width: '100%',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
   }
 });

@@ -18,13 +18,14 @@ import { profileStyles } from '../../components/profile/profileStyles';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { useQueryClient } from '@tanstack/react-query';
-import { Badges } from '../../components/profile/badges';
+import { Badges, badgesStyles } from '../../components/profile/badges';
 import { ProfileCarousel } from '../../components/profile/profileCarousel';
 import { ProfileHeader } from '../../components/profile/profileHeader';
 import { AppPhotosGrid } from '../../components/profile/photosGrid';
 import { FontAwesome } from '@expo/vector-icons';
 import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
 import { gray_100, gray_200, gray_300, gray_500 } from '../../constants/colors';
+import { AppCard } from '../../components/card/card';
 
 // const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
 // const carouselEstimatedWidth = Dimensions.get('window').width;
@@ -32,11 +33,15 @@ import { gray_100, gray_200, gray_300, gray_500 } from '../../constants/colors';
 type ProfileValues = {
   occupation: string,
   biography: string,
+  location: string,
+  homeTown: string
 }
 
 const validationSchemma = Yup.object<ProfileValues>({
   occupation: Yup.string().min(5).max(32).required(),
   biography: Yup.string().min(5).max(120).required(),
+  location: Yup.string().optional(),
+  homeTown: Yup.string().optional()
 });
 
 export default function UserProfileScreen(): JSX.Element {
@@ -212,6 +217,8 @@ export default function UserProfileScreen(): JSX.Element {
                 initialValues={{
                   biography: userProfile?.biography || '',
                   occupation: userProfile?.occupation || 'Software Engineer',
+                  location: '',
+                  homeTown: ''
                 }}
                 onSubmit={handleSumitUserInfo}
               >
@@ -263,6 +270,41 @@ export default function UserProfileScreen(): JSX.Element {
                           onBlur={handleBlur('biography')}
                           value={values.biography}
                         />
+                      </View>
+                    </View>
+
+                    <View style={{ gap: 8 }}>
+                      <View style={{ gap: -4 }}>
+                        <Text style={profileStyles.title}>Languages</Text>
+                        <Text style={{ color: gray_300 }}>Where you are currently</Text>
+                      </View>
+
+                      <View style={profileStyles.wrapper}>
+                        <AppButton btnColor='white' text='English' style={badgesStyles.badge} />
+                        <AppButton btnColor='white' text='Spanish' style={badgesStyles.badge} />
+                        <AppButton btnColor='white' text='French' style={badgesStyles.badge} />
+                      </View>
+                    </View>
+
+                    <View style={{ gap: 8 }}>
+                      <View style={{ gap: -4 }}>
+                        <Text style={profileStyles.title}>Home city</Text>
+                        <Text style={{ color: gray_300 }}>Where you are currently</Text>
+                      </View>
+
+                      <View style={profileStyles.wrapper}>
+                        <AppButton btnColor='white' text='Select' style={badgesStyles.badge} />
+                      </View>
+                    </View>
+
+                    <View style={{ gap: 8 }}>
+                      <View style={{ gap: -4 }}>
+                        <Text style={profileStyles.title}>Location</Text>
+                        <Text style={{ color: gray_300 }}>Where you are currently</Text>
+                      </View>
+
+                      <View style={profileStyles.wrapper}>
+                        <AppButton btnColor='white' text='Select' style={badgesStyles.badge} />
                       </View>
                     </View>
                   </View>

@@ -35,8 +35,12 @@ export const Badges: FC<BadgesProps> = ({ items, title, iconName }) => {
   );
 };
 
-const badgesStyles = StyleSheet.create({
+export const badgesStyles = StyleSheet.create({
   badge: {
-    alignItems: 'center', justifyContent: 'center', minWidth: 'auto'
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 'auto'
   }
 });
