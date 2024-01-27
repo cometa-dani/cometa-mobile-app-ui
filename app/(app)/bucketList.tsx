@@ -14,7 +14,7 @@ import { View, Text } from '../../components/Themed';
 import { GetAllLikedEventsWithPagination } from '../../models/LikedEvent';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import { FontAwesome } from '@expo/vector-icons';
-import { gray_100, red_100 } from '../../constants/colors';
+import { gray_100, gray_50, red_100 } from '../../constants/colors';
 
 
 const SkeletonLoader = () => {
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   },
 
   deleteButton: {
-    backgroundColor: gray_100,
+    backgroundColor: gray_50,
     borderRadius: 20,
     justifyContent: 'center',
     marginRight: 20,

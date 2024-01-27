@@ -135,6 +135,10 @@ export default function UserProfileScreen(): JSX.Element {
   };
 
 
+  const navigateToEditProfileAuxScreen = (field: string): void => {
+    router.push(`/editProfile/${field}`);
+  };
+
   const handleLogout = (): void => {
     queryClient.clear();
     queryClient.removeQueries();
@@ -285,7 +289,9 @@ export default function UserProfileScreen(): JSX.Element {
                         <AppButton btnColor='white' text='Spanish' style={badgesStyles.badge} />
                         <AppButton btnColor='white' text='French' style={badgesStyles.badge} />
 
-                        <BaseButton style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
+                        <BaseButton
+                          onPress={() => navigateToEditProfileAuxScreen('languages')}
+                          style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
                           <FontAwesome name='chevron-right' size={18} />
                         </BaseButton>
                       </View>
@@ -299,10 +305,12 @@ export default function UserProfileScreen(): JSX.Element {
 
                       <View style={profileStyles.wrapper}>
                         <AppButton
-                          onPress={() => router.push('/editProfile/homeTown')}
+                          onPress={() => navigateToEditProfileAuxScreen('location')}
                           btnColor='white' text='Select' style={badgesStyles.badge}
                         />
-                        <BaseButton style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
+                        <BaseButton
+                          onPress={() => navigateToEditProfileAuxScreen('location')}
+                          style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
                           <FontAwesome name='chevron-right' size={18} />
                         </BaseButton>
                       </View>
@@ -316,11 +324,13 @@ export default function UserProfileScreen(): JSX.Element {
 
                       <View style={profileStyles.wrapper}>
                         <AppButton
-                          onPress={() => router.push('/editProfile/homeTown')}
+                          onPress={() => navigateToEditProfileAuxScreen('homeTown')}
                           btnColor='white' text='Select' style={badgesStyles.badge}
                         />
 
-                        <BaseButton style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
+                        <BaseButton
+                          onPress={() => navigateToEditProfileAuxScreen('homeTown')}
+                          style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
                           <FontAwesome name='chevron-right' size={18} />
                         </BaseButton>
                       </View>
