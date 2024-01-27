@@ -50,8 +50,10 @@ export const profileStyles = StyleSheet.create({
   },
 
   wrapper: {
+    position: 'relative',
     gap: 10,
     flexDirection: 'row',
+    alignItems: 'center',
     elevation: 3,
     borderRadius: 50,
     shadowColor: '#171717', // add shadow for iOS
@@ -62,6 +64,7 @@ export const profileStyles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 3.84,
     width: '100%',
+    flex: 1,
     paddingVertical: 16,
     paddingHorizontal: 20,
   }

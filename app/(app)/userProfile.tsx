@@ -7,7 +7,7 @@ import { useCometaStore } from '../../store/cometaStore';
 import { useMutationDeleteUserPhotoByUuid, useMutationUpdateUserAvatar, useMutationUploadUserPhotos, useMutationUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { useRef, useState } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Photo } from '../../models/User';
 import { AppCarousel } from '../../components/carousels/carousel';
@@ -26,6 +26,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
 import { gray_100, gray_200, gray_300, gray_500 } from '../../constants/colors';
 import { AppCard } from '../../components/card/card';
+import { BaseButton } from 'react-native-gesture-handler';
 
 // const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
 // const carouselEstimatedWidth = Dimensions.get('window').width;
@@ -222,7 +223,7 @@ export default function UserProfileScreen(): JSX.Element {
                 }}
                 onSubmit={handleSumitUserInfo}
               >
-                {({ handleBlur, handleChange, handleSubmit, values, touched, errors }) => (
+                {({ handleBlur, handleChange, handleSubmit, values, touched, errors, setFieldValue }) => (
                   <View style={profileStyles.porfileContent}>
                     <AppButton
                       onPress={() => {
@@ -283,6 +284,10 @@ export default function UserProfileScreen(): JSX.Element {
                         <AppButton btnColor='white' text='English' style={badgesStyles.badge} />
                         <AppButton btnColor='white' text='Spanish' style={badgesStyles.badge} />
                         <AppButton btnColor='white' text='French' style={badgesStyles.badge} />
+
+                        <BaseButton style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
+                          <FontAwesome name='chevron-right' size={18} />
+                        </BaseButton>
                       </View>
                     </View>
 
@@ -293,7 +298,13 @@ export default function UserProfileScreen(): JSX.Element {
                       </View>
 
                       <View style={profileStyles.wrapper}>
-                        <AppButton btnColor='white' text='Select' style={badgesStyles.badge} />
+                        <AppButton
+                          onPress={() => router.push('/editProfile/homeTown')}
+                          btnColor='white' text='Select' style={badgesStyles.badge}
+                        />
+                        <BaseButton style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
+                          <FontAwesome name='chevron-right' size={18} />
+                        </BaseButton>
                       </View>
                     </View>
 
@@ -304,7 +315,14 @@ export default function UserProfileScreen(): JSX.Element {
                       </View>
 
                       <View style={profileStyles.wrapper}>
-                        <AppButton btnColor='white' text='Select' style={badgesStyles.badge} />
+                        <AppButton
+                          onPress={() => router.push('/editProfile/homeTown')}
+                          btnColor='white' text='Select' style={badgesStyles.badge}
+                        />
+
+                        <BaseButton style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
+                          <FontAwesome name='chevron-right' size={18} />
+                        </BaseButton>
                       </View>
                     </View>
                   </View>
@@ -319,69 +337,3 @@ export default function UserProfileScreen(): JSX.Element {
     </SafeAreaView>
   );
 }
-
-{/* <View style={profileStyles.avatarContainer}>
-
-            <Formik
-              enableReinitialize
-              validationSchema={validationSchemma}
-              initialValues={{ name: userProfile?.name || '', biography: userProfile?.biography || '' }}
-              onSubmit={handleSumitUserInfo}
-            >
-              {({ handleBlur, handleChange, handleSubmit, values }) => (
-                <>
-                  {
-                    !toggleEdit ? (
-                      <AppProfileAvatar
-                        avatar={userProfile?.avatar}
-                        biography={values.biography}
-                        name={values.name}
-                      />
-                    ) : (
-                      <View style={profileStyles.avatarFigure}>
-
-                        <Pressable onPress={handlePickAvatarImg}>
-                          <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={profileStyles.avatar} source={{ uri: userProfile?.avatar }} />
-                        </Pressable>
-
-                        <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
-                          <View style={{ width: 24 }} />
-                          <TextInput
-                            style={profileStyles.title}
-                            onChangeText={handleChange('name')}
-                            onBlur={handleBlur('name')}
-                            ref={usernameRef}
-                            value={values.name}
-                          />
-                          <FontAwesome
-                            onPress={() => usernameRef.current?.focus()}
-                            style={{ fontSize: 24, top: 10 }}
-                            name="edit"
-                          />
-                        </View>
-
-                        <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
-                          <View style={{ width: 16 }} />
-
-                          <TextInput
-                            style={{ color: gray500, padding: 0 }}
-                            onChangeText={handleChange('biography')}
-                            onBlur={handleBlur('biography')}
-                            ref={descriptionRef}
-                            value={values.biography}
-                          />
-
-                          <FontAwesome
-                            onPress={() => descriptionRef.current?.focus()}
-                            style={{ fontSize: 18, top: 5 }}
-                            name="edit"
-                          />
-                        </View>
-                      </View>
-                    )
-                  }
-                </>
-              )}
-            </Formik>
-
-          </View> */}
