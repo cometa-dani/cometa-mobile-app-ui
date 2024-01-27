@@ -235,7 +235,7 @@ export default function UserProfileScreen(): JSX.Element {
 
                     <View style={{ gap: 8 }}>
                       <View style={{ gap: -4 }}>
-                        <Text style={profileStyles.title}>Bio</Text>
+                        <Text style={profileStyles.title}>Occupation</Text>
                         <Text style={{ color: gray_300 }}>Write your usual or principal job or profession </Text>
                       </View>
 
@@ -276,7 +276,7 @@ export default function UserProfileScreen(): JSX.Element {
                     <View style={{ gap: 8 }}>
                       <View style={{ gap: -4 }}>
                         <Text style={profileStyles.title}>Languages</Text>
-                        <Text style={{ color: gray_300 }}>Where you are currently</Text>
+                        <Text style={{ color: gray_300 }}>How many languages you speak</Text>
                       </View>
 
                       <View style={profileStyles.wrapper}>
@@ -288,7 +288,7 @@ export default function UserProfileScreen(): JSX.Element {
 
                     <View style={{ gap: 8 }}>
                       <View style={{ gap: -4 }}>
-                        <Text style={profileStyles.title}>Home city</Text>
+                        <Text style={profileStyles.title}>Location</Text>
                         <Text style={{ color: gray_300 }}>Where you are currently</Text>
                       </View>
 
@@ -299,8 +299,8 @@ export default function UserProfileScreen(): JSX.Element {
 
                     <View style={{ gap: 8 }}>
                       <View style={{ gap: -4 }}>
-                        <Text style={profileStyles.title}>Location</Text>
-                        <Text style={{ color: gray_300 }}>Where you are currently</Text>
+                        <Text style={profileStyles.title}>Home city</Text>
+                        <Text style={{ color: gray_300 }}>Where you come from</Text>
                       </View>
 
                       <View style={profileStyles.wrapper}>
