@@ -15,7 +15,7 @@ interface BadgesProps {
 export const Badges: FC<BadgesProps> = ({ items, title, iconName }) => {
   return (
     <View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 }}>
         {iconName && <FontAwesome name={iconName} size={20} />}
         <Text style={profileStyles.title}>{title}:</Text>
       </View>

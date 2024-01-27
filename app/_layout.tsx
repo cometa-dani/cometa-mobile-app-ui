@@ -86,7 +86,7 @@ function RootLayoutNav(): JSX.Element {
             presentation: 'modal',
             headerTitleAlign: 'center',
             headerShadowVisible: true,
-            headerTitle: () => <Image style={{ height: 24, width: 110 }} source={titles.cometa} />,
+            headerTitle: () => <Image style={{ height: 24, width: 110 }} source={titles.matches} />,
             animationDuration,
           }}
         />
