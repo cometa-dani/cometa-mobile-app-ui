@@ -56,13 +56,23 @@ export default function AppLayout() {
       <StatusBar style={'auto'} />
 
       <Tabs
-        screenOptions={{
-          tabBarStyle: { height: 60, shadowColor: 'transparent', elevation: 0, borderTopWidth: 0 },
-          headerStyle: { elevation: 0, shadowColor: 'transparent' },
-          headerShown: false,
-          tabBarInactiveTintColor: gray300,
-          tabBarShowLabel: false,
-          tabBarActiveTintColor: red100,
+        screenOptions={() => {
+          // TODO: rewrite this to React Navigation v7
+          return ({
+            tabBarStyle: {
+              height: 60,
+              shadowColor: 'transparent',
+              elevation: 0,
+              borderTopWidth: 0,
+              // display: 'none'
+            },
+            headerStyle: { elevation: 0, shadowColor: 'transparent' },
+            headerShown: false,
+            tabBarInactiveTintColor: gray300,
+            tabBarShowLabel: false,
+            tabBarActiveTintColor: red100,
+            tabBarActiveBackgroundColor: '#eee',
+          });
         }}>
         <Tabs.Screen
           name="index"

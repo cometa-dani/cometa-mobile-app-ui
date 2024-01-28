@@ -77,7 +77,11 @@ function RootLayoutNav(): JSX.Element {
           presentation: 'fullScreenModal',
           headerTitleAlign: 'center',
           headerShadowVisible: true,
-          headerTitle: () => <Image style={{ height: 24, width: 110 }} source={titles.matches} />,
+          headerTitle: () => (
+            <Image
+              style={{ height: 24, width: 110 }}
+              source={titles.matches} />
+          ),
           animationDuration: animationDuration,
         }}
       />

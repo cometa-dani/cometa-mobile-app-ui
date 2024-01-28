@@ -1,5 +1,5 @@
-import { StyleSheet, SafeAreaView, TextInput } from 'react-native';
-import { BaseButton, ScrollView } from 'react-native-gesture-handler';
+import { StyleSheet, SafeAreaView, TextInput, Pressable } from 'react-native';
+import { BaseButton } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, useColors } from '../../components/Themed';
 import { Stack, useLocalSearchParams } from 'expo-router';
@@ -11,6 +11,7 @@ import { useInfiniteQueryGetCities } from '../../queries/citiesHooks';
 import { gray_50 } from '../../constants/colors';
 import React from 'react';
 import ContentLoader, { Rect } from 'react-content-loader/native';
+import ReactNativeModal from 'react-native-modal';
 
 
 const FadingLoader = () => {
@@ -105,6 +106,7 @@ export default function EditProfileOptionsScreen(): JSX.Element {
   const { background } = useColors();
   const userProfileField = useLocalSearchParams()['field'] as string;
 
+  const [toggleModal, setToggleModal] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [triggerFetch, setTriggerFetch] = useState('');
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetCities(triggerFetch);
@@ -132,6 +134,14 @@ export default function EditProfileOptionsScreen(): JSX.Element {
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <StatusBar style={'auto'} />
 
+      <ReactNativeModal isVisible={toggleModal}>
+        <View>
+          <Pressable onPress={() => setToggleModal(false)}>
+            <Text>Modal content</Text>
+          </Pressable>
+        </View>
+      </ReactNativeModal>
+
       <Stack.Screen
         options={{
           presentation: 'fullScreenModal',
@@ -156,6 +166,7 @@ export default function EditProfileOptionsScreen(): JSX.Element {
           animationDuration: animationDuration,
         }}
       />
+
       {isLoading ?
         <FadingLoader />
         :
@@ -167,7 +178,7 @@ export default function EditProfileOptionsScreen(): JSX.Element {
           contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 14 }}
           ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: gray_50 }} />}
           renderItem={({ item }) => (
-            <View key={item.id} style={cityStyles.city}>
+            <Pressable onPress={() => setToggleModal(true)} key={item.id} style={cityStyles.city}>
               <View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <Text style={{ fontWeight: '700' }}>{item.name}</Text>
@@ -177,7 +188,7 @@ export default function EditProfileOptionsScreen(): JSX.Element {
               </View>
 
               <Text>{item.countryCode}</Text>
-            </View>
+            </Pressable>
           )}
         />
       }
