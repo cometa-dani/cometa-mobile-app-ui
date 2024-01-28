@@ -27,8 +27,8 @@ const SkeletonLoader: FC = () => {
       <ContentLoader
         speed={1}
         width={width - 20}
-        height={height - 160}
-        viewBox={`0 0 ${width - 20} ${height - 160}`}
+        height={height - 140}
+        viewBox={`0 0 ${width - 20} ${height - 140}`}
         backgroundColor="#f3f3f3"
         foregroundColor="#ecebeb"
       >
@@ -39,8 +39,8 @@ const SkeletonLoader: FC = () => {
         speed={1}
         style={{ position: 'absolute', top: 0, left: 0 }}
         width={width - 20}
-        height={height - 160}
-        viewBox={`0 0 ${width - 20} ${height - 160}`}
+        height={height - 140}
+        viewBox={`0 0 ${width - 20} ${height - 140}`}
         backgroundColor="#e3e3e3"
         foregroundColor="#ddd"
       >
@@ -53,8 +53,8 @@ const SkeletonLoader: FC = () => {
         speed={1}
         style={{ position: 'absolute', top: 0, left: 0 }}
         width={width - 20}
-        height={height - 160}
-        viewBox={`0 0 ${width - 20} ${height - 160}`}
+        height={height - 140}
+        viewBox={`0 0 ${width - 20} ${height - 140}`}
         backgroundColor="#e3e3e3"
         foregroundColor="#ddd"
       >

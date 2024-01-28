@@ -7,12 +7,8 @@ import * as Yup from 'yup';
 import { profileStyles } from '../../components/profile/profileStyles';
 import { useQueryGetNewPeopleProfileByUid } from '../../queries/userHooks';
 import { useQueryGetMatchedEvents } from '../../queries/eventHooks';
-// import { AppProfileAvatar } from '../../components/profile/profileAvatar';
 import { AppButton } from '../../components/buttons/buttons';
-// import { AppStats } from '../../components/stats/Stats';
 import { AppCarousel } from '../../components/carousels/carousel';
-// import { AppPhotosGrid } from '../../components/profile/photosGrid';
-// import { AppCard } from '../../components/card/card';
 import { nodeEnv } from '../../constants/vars';
 import { useCometaStore } from '../../store/cometaStore';
 import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/friendshipHooks';
@@ -168,17 +164,6 @@ export default function NewPeopleProfileScreen(): JSX.Element {
 
           {/* ACTION BUTTONS */}
 
-          {/* STATISTICS */}
-          {/* <AppStats
-            totalEvents={newPeopleProfile?._count?.likedEvents || 0}
-            totalFriends={
-              (newPeopleProfile?._count?.incomingFriendships || 0)
-              +
-              (newPeopleProfile?._count?.outgoingFriendships || 0)
-            }
-          /> */}
-          {/* STATISTICS */}
-
           {/* MATCHES */}
           <AppCarousel
             title='Matches'
@@ -199,20 +184,10 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           {/* BUCKETLIST */}
 
 
-          <Badges title='Languages' items={['English', 'French', 'Spanish']} />
+          <Badges iconName='comment' title='Languages' items={['English', 'French', 'Spanish']} />
 
-          <Badges title='Location' items={['Live in Doha', 'From Mexico']} />
+          <Badges iconName='map-marker' title='Location' items={['Live in Doha', 'From Mexico']} />
 
-          {/* PHOTOS */}
-          {/* <AppCard>
-            <View style={profileStyles.cardWrapper}>
-              <Text style={{ fontSize: 17, fontWeight: '700' }}>Photos</Text>
-              <AppPhotosGrid
-                photosList={newPeopleProfile?.photos || []}
-              />
-            </View>
-          </AppCard> */}
-          {/* PHOTOS */}
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -7,7 +7,7 @@ import { useCometaStore } from '../../store/cometaStore';
 import { useMutationDeleteUserPhotoByUuid, useMutationUpdateUserAvatar, useMutationUploadUserPhotos, useMutationUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { useRef, useState } from 'react';
-import { Stack, router } from 'expo-router';
+import { Stack, router, useNavigation } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Photo } from '../../models/User';
 import { AppCarousel } from '../../components/carousels/carousel';
@@ -46,6 +46,8 @@ const validationSchemma = Yup.object<ProfileValues>({
 });
 
 export default function UserProfileScreen(): JSX.Element {
+
+  const navigation = useNavigation();
 
   const queryClient = useQueryClient();
   const { gray500, background } = useColors();
@@ -136,6 +138,8 @@ export default function UserProfileScreen(): JSX.Element {
 
 
   const navigateToEditProfileAuxScreen = (field: string): void => {
+    // navigation.navigate('/editProfile/', { field: field });
+    // navigation.addListener('beforeRemove', () => {})
     router.push(`/editProfile/${field}`);
   };
 

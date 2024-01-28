@@ -12,8 +12,6 @@ import { useColorScheme, } from 'react-native';
 // query client for server state
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { EventActionSheet } from '../components/actionSheet/actionSheet';
-import { useCometaStore } from '../store/cometaStore';
 import { Image } from 'expo-image';
 import { titles } from '../constants/assets';
 
@@ -21,10 +19,10 @@ import { titles } from '../constants/assets';
 // Catch any errors thrown by the Layout component.
 export { ErrorBoundary } from 'expo-router';
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '/index',
-};
+// export const unstable_settings = {
+//   // Ensure that reloading on `/modal` keeps a back button present.
+//   initialRouteName: '/index',
+// };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -65,36 +63,24 @@ export default function RootLayout() {
 
 
 function RootLayoutNav(): JSX.Element {
-  const likedEvent = useCometaStore(state => state.likedEvent);
-  const toggleActionSheet = useCometaStore(state => state.toggleActionSheet);
-  const setToggleActionSheet = useCometaStore(state => state.setToggleActionSheet);
-
   return (
-    <>
-      <Stack>
-        <Stack.Screen name='index' options={screenOptions} />
+    <Stack>
+      <Stack.Screen name='index' options={screenOptions} />
 
-        <Stack.Screen name="(onboarding)" options={{ ...screenOptions }} />
+      <Stack.Screen name="(onboarding)" options={{ ...screenOptions }} />
 
-        <Stack.Screen name="(app)" options={screenOptions} />
+      <Stack.Screen name="(app)" options={screenOptions} />
 
-        <Stack.Screen
-          name="[connectWithPeople]"
-          options={{
-            presentation: 'fullScreenModal',
-            headerTitleAlign: 'center',
-            headerShadowVisible: true,
-            headerTitle: () => <Image style={{ height: 24, width: 110 }} source={titles.matches} />,
-            animationDuration: animationDuration,
-          }}
-        />
-      </Stack>
-
-      <EventActionSheet
-        eventItem={likedEvent}
-        isOpen={toggleActionSheet}
-        setIsOpen={setToggleActionSheet}
+      <Stack.Screen
+        name="[connectWithPeople]"
+        options={{
+          presentation: 'fullScreenModal',
+          headerTitleAlign: 'center',
+          headerShadowVisible: true,
+          headerTitle: () => <Image style={{ height: 24, width: 110 }} source={titles.matches} />,
+          animationDuration: animationDuration,
+        }}
       />
-    </>
+    </Stack>
   );
 }
