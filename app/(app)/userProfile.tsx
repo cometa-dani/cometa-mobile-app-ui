@@ -306,11 +306,11 @@ export default function UserProfileScreen(): JSX.Element {
 
                       <View style={profileStyles.wrapper}>
                         <AppButton
-                          onPress={() => navigateToEditProfileAuxScreen('location')}
+                          onPress={() => navigateToEditProfileAuxScreen('currentLocation')}
                           btnColor='white' text='Add' style={badgesStyles.badge}
                         />
                         <BaseButton
-                          onPress={() => navigateToEditProfileAuxScreen('location')}
+                          onPress={() => navigateToEditProfileAuxScreen('currentLocation')}
                           style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
                           <FontAwesome name='chevron-right' size={18} />
                         </BaseButton>
