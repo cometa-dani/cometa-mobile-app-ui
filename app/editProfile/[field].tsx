@@ -138,6 +138,7 @@ export default function EditProfileOptionsScreen(): JSX.Element {
           headerTitleAlign: 'left',
           headerTitle: () => (
             <TextInput
+              ref={input => input?.focus()}
               style={{ fontSize: 16 }}
               placeholder='Find your current city'
               value={inputValue}
@@ -168,9 +169,13 @@ export default function EditProfileOptionsScreen(): JSX.Element {
           renderItem={({ item }) => (
             <View key={item.id} style={cityStyles.city}>
               <View>
-                <Text style={{ fontWeight: '700' }}>{item.name}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <Text style={{ fontWeight: '700' }}>{item.name}</Text>
+                  <FontAwesome name='flag-o' size={20} />
+                </View>
                 <Text>{item.country}</Text>
               </View>
+
               <Text>{item.countryCode}</Text>
             </View>
           )}
