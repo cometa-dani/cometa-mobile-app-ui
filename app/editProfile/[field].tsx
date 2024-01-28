@@ -5,17 +5,39 @@ import { Text, View, useColors } from '../../components/Themed';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { animationDuration } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
+import { useInfiniteQueryGetCities } from '../../queries/citiesHooks';
+import { gray_50 } from '../../constants/colors';
 
 
 export default function EditProfileOptionsScreen(): JSX.Element {
   const { background } = useColors();
   const userProfileField = useLocalSearchParams()['field'] as string;
 
-  const [value, setValue] = useState('Useless Placeholder');
+  const [inputValue, setInputValue] = useState('');
+  const [triggerFetch, setTriggerFetch] = useState('');
+  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetCities(triggerFetch);
+
+  const citiesData = useMemo(() => data?.pages.flatMap(page => page.data) || [], [data?.pages]);
+
+  const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
   // const placeholder= userProfileField === 'location' ? 'Find your current city'
+  const handleTextChange = (text: string) => {
+    setInputValue(text);
+  };
+
+
+  // controls the debounce of the input
+  useEffect(() => {
+    const timeOutId = setTimeout(() => {
+      setTriggerFetch(inputValue);
+    }, 5_000);
+
+    return () => clearTimeout(timeOutId);
+  }, [inputValue]);
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
@@ -29,13 +51,15 @@ export default function EditProfileOptionsScreen(): JSX.Element {
           headerTitle: () => (
             <TextInput
               placeholder='Find your current city'
-              value={value}
-              onChangeText={setValue}
+              value={inputValue}
+              onChangeText={handleTextChange}
             />
           ),
           headerRight: () => (
-            value.length > 0 &&
-            <FontAwesome name='close' size={20} />
+            inputValue.length ?
+              <FontAwesome name='close' size={20} />
+              :
+              null
           ),
           // headerShadowVisible: false,
           animationDuration: animationDuration,
@@ -43,18 +67,18 @@ export default function EditProfileOptionsScreen(): JSX.Element {
       />
       {/* <View style={{ flex: 1 }}> */}
       <FlashList
-        estimatedItemSize={20}
-        data={['one', 'two', 'three']}
-        renderItem={({ item }) => <Text>{item}</Text>}
+        estimatedItemSize={50}
+        data={citiesData}
+        onEndReached={handleInfiniteFetch}
+        onEndReachedThreshold={0.5}
+        ItemSeparatorComponent={() => <View style={{ height: 10, backgroundColor: gray_50 }} />}
+        renderItem={({ item }) => (
+          <View key={item.id} style={{ height: 50 }}>
+            <Text>{item.name}</Text>
+          </View>
+        )}
       />
       {/* </View> */}
     </SafeAreaView>
   );
 }
-
-// const styles = StyleSheet.create({
-//   title: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//   },
-// });
