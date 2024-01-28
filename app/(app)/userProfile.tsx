@@ -30,15 +30,15 @@ import { BaseButton } from 'react-native-gesture-handler';
 type ProfileValues = {
   occupation: string,
   biography: string,
-  location: string,
-  homeTown: string
+  // location: string,
+  // homeTown: string
 }
 
 const validationSchemma = Yup.object<ProfileValues>({
   occupation: Yup.string().min(5).max(32).required(),
   biography: Yup.string().min(5).max(120).required(),
-  location: Yup.string().optional(),
-  homeTown: Yup.string().optional()
+  // location: Yup.string().optional(),
+  // homeTown: Yup.string().optional()
 });
 
 export default function UserProfileScreen(): JSX.Element {
@@ -223,8 +223,8 @@ export default function UserProfileScreen(): JSX.Element {
                 initialValues={{
                   biography: userProfile?.biography || '',
                   occupation: userProfile?.occupation || 'Software Engineer',
-                  location: '',
-                  homeTown: ''
+                  // location: '',
+                  // homeTown: ''
                 }}
                 onSubmit={handleSumitUserInfo}
               >
