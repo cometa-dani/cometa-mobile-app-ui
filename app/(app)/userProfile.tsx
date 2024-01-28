@@ -12,9 +12,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { Photo } from '../../models/User';
 import { AppCarousel } from '../../components/carousels/carousel';
 import { profileStyles } from '../../components/profile/profileStyles';
-// import { AppStats } from '../../components/stats/Stats';
-// import { AppProfileAvatar } from '../../components/profile/profileAvatar';
-// import { AppPhotosGrid } from '../../components/profile/photosGrid';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { useQueryClient } from '@tanstack/react-query';
@@ -24,8 +21,7 @@ import { ProfileHeader } from '../../components/profile/profileHeader';
 import { AppPhotosGrid } from '../../components/profile/photosGrid';
 import { FontAwesome } from '@expo/vector-icons';
 import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
-import { gray_100, gray_200, gray_300, gray_500 } from '../../constants/colors';
-import { AppCard } from '../../components/card/card';
+import { gray_300 } from '../../constants/colors';
 import { BaseButton } from 'react-native-gesture-handler';
 
 // const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
@@ -73,6 +69,17 @@ export default function UserProfileScreen(): JSX.Element {
   const [toggleEdit, setToggleEdit] = useState(true);
   const usernameRef = useRef<TextInput>(null);
   const descriptionRef = useRef<TextInput>(null);
+
+  // bucketlist
+  const bucketlistLikedEvents = userProfile
+    ?.likedEvents
+    .map(
+      (item) => item.event.mediaType === 'VIDEO' ?
+        ({ id: item.id, img: '' })
+        :
+        ({ id: item.id, img: item.event?.mediaUrl })
+    )
+    || [];
 
   /**
    *
@@ -188,17 +195,7 @@ export default function UserProfileScreen(): JSX.Element {
 
               {/* BUCKETLIST */}
               <AppCarousel
-                list={
-                  userProfile
-                    ?.likedEvents
-                    .map(
-                      (item) => item.event.mediaType === 'VIDEO' ?
-                        ({ id: item.id, img: '' })
-                        :
-                        ({ id: item.id, img: item.event?.mediaUrl })
-                    )
-                  || []
-                }
+                list={bucketlistLikedEvents}
                 title='BucketList'
               />
               {/* BUCKETLIST */}
@@ -310,7 +307,7 @@ export default function UserProfileScreen(): JSX.Element {
                       <View style={profileStyles.wrapper}>
                         <AppButton
                           onPress={() => navigateToEditProfileAuxScreen('location')}
-                          btnColor='white' text='Select' style={badgesStyles.badge}
+                          btnColor='white' text='Add' style={badgesStyles.badge}
                         />
                         <BaseButton
                           onPress={() => navigateToEditProfileAuxScreen('location')}
@@ -329,7 +326,7 @@ export default function UserProfileScreen(): JSX.Element {
                       <View style={profileStyles.wrapper}>
                         <AppButton
                           onPress={() => navigateToEditProfileAuxScreen('homeTown')}
-                          btnColor='white' text='Select' style={badgesStyles.badge}
+                          btnColor='white' text='Add' style={badgesStyles.badge}
                         />
 
                         <BaseButton
