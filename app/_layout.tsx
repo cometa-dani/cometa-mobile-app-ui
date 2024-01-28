@@ -1,8 +1,8 @@
 // components
+import { animationDuration, screenOptions } from '../constants/vars';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack, } from 'expo-router';
-import { ScreenProps } from 'react-native-screens';
 
 // hooks
 import { useFonts } from 'expo-font';
@@ -63,8 +63,6 @@ export default function RootLayout() {
   );
 }
 
-const animationDuration = 290;
-const screenOptions = { headerShown: false, animation: 'slide_from_right', animationDuration } as ScreenProps;
 
 function RootLayoutNav(): JSX.Element {
   const likedEvent = useCometaStore(state => state.likedEvent);
@@ -83,11 +81,11 @@ function RootLayoutNav(): JSX.Element {
         <Stack.Screen
           name="[connectWithPeople]"
           options={{
-            presentation: 'modal',
+            presentation: 'fullScreenModal',
             headerTitleAlign: 'center',
             headerShadowVisible: true,
             headerTitle: () => <Image style={{ height: 24, width: 110 }} source={titles.matches} />,
-            animationDuration,
+            animationDuration: animationDuration,
           }}
         />
       </Stack>
