@@ -2,16 +2,16 @@ import { StyleSheet, SafeAreaView, TextInput, Pressable } from 'react-native';
 import { BaseButton } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, useColors } from '../../components/Themed';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { animationDuration } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { useInfiniteQueryGetCities } from '../../queries/citiesHooks';
 import { gray_50 } from '../../constants/colors';
 import React from 'react';
 import ContentLoader, { Rect } from 'react-content-loader/native';
-import ReactNativeModal from 'react-native-modal';
+// import ReactNativeModal from 'react-native-modal';
 
 
 const FadingLoader = () => {
@@ -106,8 +106,9 @@ export default function EditProfileOptionsScreen(): JSX.Element {
   const { background } = useColors();
   const userProfileField = useLocalSearchParams()['field'] as string;
 
-  const [toggleModal, setToggleModal] = useState(false);
+  // const [toggleModal, setToggleModal] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const inputRef = useRef<TextInput>(null);
   const [triggerFetch, setTriggerFetch] = useState('');
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetCities(triggerFetch);
 
@@ -115,9 +116,9 @@ export default function EditProfileOptionsScreen(): JSX.Element {
 
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
-  // const placeholder= userProfileField === 'location' ? 'Find your current city'
-  const handleTextChange = (text: string) => {
-    setInputValue(text);
+  const handleMutation = (_selectedCity: string): void => {
+    // console.log(selectedCity);
+    router.back();
   };
 
   // controls the debounce of the input
@@ -130,17 +131,24 @@ export default function EditProfileOptionsScreen(): JSX.Element {
   }, [inputValue]);
 
 
+  useEffect(() => {
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 600);
+  }, []);
+
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <StatusBar style={'auto'} />
 
-      <ReactNativeModal isVisible={toggleModal}>
+      {/* <ReactNativeModal isVisible={toggleModal}>
         <View>
           <Pressable onPress={() => setToggleModal(false)}>
             <Text>Modal content</Text>
           </Pressable>
         </View>
-      </ReactNativeModal>
+      </ReactNativeModal> */}
 
       <Stack.Screen
         options={{
@@ -148,11 +156,11 @@ export default function EditProfileOptionsScreen(): JSX.Element {
           headerTitleAlign: 'left',
           headerTitle: () => (
             <TextInput
-              ref={input => input && setTimeout(() => input?.focus(), 600)}
+              ref={inputRef}
               style={{ fontSize: 16 }}
               placeholder='Find your current city'
               value={inputValue}
-              onChangeText={handleTextChange}
+              onChangeText={setInputValue}
             />
           ),
           headerRight: () => (
@@ -171,23 +179,31 @@ export default function EditProfileOptionsScreen(): JSX.Element {
         <FadingLoader />
         :
         <FlashList
-          estimatedItemSize={50}
+          estimatedItemSize={70}
           data={citiesData}
           onEndReached={handleInfiniteFetch}
           onEndReachedThreshold={0.5}
           contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 14 }}
           ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: gray_50 }} />}
           renderItem={({ item }) => (
-            <Pressable onPress={() => setToggleModal(true)} key={item.id} style={cityStyles.city}>
-              <View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Text style={{ fontWeight: '700' }}>{item.name}</Text>
-                  <FontAwesome name='flag-o' size={20} />
-                </View>
-                <Text>{item.country}</Text>
-              </View>
+            <Pressable
+              onPress={() => handleMutation(item.name)}
+              key={item.id}
+              style={cityStyles.city}
+            >
+              {({ pressed }) => (
+                <>
+                  <View style={{ opacity: pressed ? 0.6 : 1 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <Text style={{ fontWeight: '700' }}>{item.name}</Text>
+                      <FontAwesome name='flag-o' size={20} />
+                    </View>
+                    <Text>{item.country}</Text>
+                  </View>
 
-              <Text>{item.countryCode}</Text>
+                  <Text style={{ opacity: pressed ? 0.6 : 1 }}>{item.countryCode}</Text>
+                </>
+              )}
             </Pressable>
           )}
         />

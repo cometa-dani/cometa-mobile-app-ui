@@ -10,7 +10,6 @@ export const useInfiniteQueryGetCities = (prefixName: string) => {
 
     queryKey: [QueryKeys.GET_CURRENT_LOCATION_CITIES, prefixName],
     queryFn: async ({ pageParam = 0 }) => {
-      console.log('pageParam', pageParam);
       const response = await citiesService.searchCitiesByPrefix(pageParam, prefixName);
       if (response.status === 200) {
         return response.data;
