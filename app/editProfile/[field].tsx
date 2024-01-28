@@ -138,7 +138,7 @@ export default function EditProfileOptionsScreen(): JSX.Element {
           headerTitleAlign: 'left',
           headerTitle: () => (
             <TextInput
-              ref={input => input?.focus()}
+              ref={input => input && setTimeout(() => input?.focus(), 600)}
               style={{ fontSize: 16 }}
               placeholder='Find your current city'
               value={inputValue}
