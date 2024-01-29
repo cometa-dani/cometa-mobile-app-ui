@@ -128,6 +128,7 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
           <FadingLoader />
           :
           <FlashList
+            stickyHeaderHiddenOnScroll={true}
             stickyHeaderIndices={[0]}
             estimatedItemSize={70}
             data={[''].concat(data || [])}
