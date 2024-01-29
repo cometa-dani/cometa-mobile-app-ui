@@ -6,9 +6,8 @@ import { animationDuration } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { useInfiniteQueryGetCities } from '../../queries/citiesHooks';
+import { useInfiniteQueryGetCities } from '../../queries/editProfileHooks';
 import { gray_50 } from '../../constants/colors';
-import React from 'react';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 
 
@@ -130,8 +129,8 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
   useEffect(() => {
     setTimeout(() => {
       inputRef.current?.focus();
-    }, 600);
-  }, []);
+    }, 400);
+  }, [data]);
 
 
   return (

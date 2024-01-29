@@ -1,8 +1,9 @@
 import { SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, useColors } from '../../components/Themed';
+import { useColors } from '../../components/Themed';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SearchCityByName } from './searchCityByName';
+import { SelectLanguages } from './selectLanguages';
 
 
 type UserProfileFields = 'homeTown' | 'currentLocation' | 'languages';
@@ -36,9 +37,7 @@ export default function EditProfileOptionsScreen(): JSX.Element {
       )}
 
       {userProfileField === 'languages' && (
-        <View>
-          <Text>Languages</Text>
-        </View>
+        <SelectLanguages onSelectLanguages={() => null} />
       )}
 
     </SafeAreaView>

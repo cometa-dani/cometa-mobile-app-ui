@@ -13,4 +13,6 @@ export enum QueryKeys {
 
   GET_CURRENT_LOCATION_CITIES,
   GET_HOME_TOWN_CITIES,
+
+  GET_ALL_LANGUAGES,
 }
