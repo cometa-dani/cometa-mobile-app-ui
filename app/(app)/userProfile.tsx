@@ -229,9 +229,12 @@ export default function UserProfileScreen(): JSX.Element {
                         </View>
 
                         <View style={{ position: 'relative', justifyContent: 'center' }}>
-                          {touched.occupation && errors.occupation && (
-                            <AppLabelFeedbackMsg position='bottom' text={errors.occupation} />
-                          )}
+                          <If
+                            condition={touched.occupation && errors.occupation}
+                            render={(
+                              <AppLabelFeedbackMsg position='bottom' text={errors.occupation} />
+                            )}
+                          />
                           <AppTextInput
                             iconName='briefcase'
                             keyboardType="ascii-capable"

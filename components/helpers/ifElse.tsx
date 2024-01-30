@@ -1,14 +1,14 @@
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 
-interface IfElseProps {
+interface IfElseProps<T> {
   children?: ReactNode,
-  condition: boolean,
+  condition: boolean | T,
   render?: ReactNode,
   elseRender?: ReactNode
 }
 
-export const If: FC<IfElseProps> = ({ children, condition, render, elseRender }) => {
+export function If<T>({ children, condition, render, elseRender }: IfElseProps<T>) {
   if (condition && children) {
     return children;
   }
@@ -20,4 +20,4 @@ export const If: FC<IfElseProps> = ({ children, condition, render, elseRender })
   }
 
   return null;
-};
+}

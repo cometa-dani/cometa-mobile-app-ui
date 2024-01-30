@@ -151,56 +151,56 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
           animationDuration: animationDuration,
         }}
       />
-
       <View style={{ flex: 1 }}>
-        {isLoading ?
-          <FadingLoader />
-          :
-          <FlashList
-            stickyHeaderHiddenOnScroll={true}
-            stickyHeaderIndices={[0]}
-            estimatedItemSize={70}
-            data={[''].concat(filteredLanguagesData)}
-            ListHeaderComponent={() => (
-              <View style={{ gap: 12, paddingTop: 20, paddingHorizontal: 20 }}>
-                <Text style={{ fontSize: 22, fontWeight: '700' }}>What Languages do you know?</Text>
-                <Text>
-                  We&apos;ll show these on your profile
-                  and use them to connect you with great
-                  matches who know your language.
-                </Text>
-              </View>
-            )}
-            renderItem={({ item, index }) => (
-              <View key={index}>
-                <If
-                  condition={index === 0}
-                  render={(
-                    <View style={{ padding: 20, zIndex: 1 }}>
-                      <AppTextInput
-                        iconName='search'
-                        onChangeText={setInputValue}
-                        value={inputValue}
-                        placeholder='Search for a language'
-                      />
-                    </View>
-                  )}
-                  elseRender={(
-                    <>
-                      <LanguageItem
-                        onCheck={handleLanguageSelection}
-                        isChecked={selectedLanguages.includes(item)}
-                        language={item}
-                      />
-                      <View style={{ height: 0.6, backgroundColor: gray_50, marginHorizontal: 20 }} />
-                    </>
-                  )}
-                />
-              </View>
-            )}
-          />
-        }
-
+        <If
+          condition={isLoading}
+          render={<FadingLoader />}
+          elseRender={(
+            <FlashList
+              stickyHeaderHiddenOnScroll={true}
+              stickyHeaderIndices={[0]}
+              estimatedItemSize={70}
+              data={[''].concat(filteredLanguagesData)}
+              ListHeaderComponent={() => (
+                <View style={{ gap: 12, paddingTop: 20, paddingHorizontal: 20 }}>
+                  <Text style={{ fontSize: 22, fontWeight: '700' }}>What Languages do you know?</Text>
+                  <Text>
+                    We&apos;ll show these on your profile
+                    and use them to connect you with great
+                    matches who know your language.
+                  </Text>
+                </View>
+              )}
+              renderItem={({ item, index }) => (
+                <View key={index}>
+                  <If
+                    condition={index === 0}
+                    render={(
+                      <View style={{ padding: 20, zIndex: 1 }}>
+                        <AppTextInput
+                          iconName='search'
+                          onChangeText={setInputValue}
+                          value={inputValue}
+                          placeholder='Search for a language'
+                        />
+                      </View>
+                    )}
+                    elseRender={(
+                      <>
+                        <LanguageItem
+                          onCheck={handleLanguageSelection}
+                          isChecked={selectedLanguages.includes(item)}
+                          language={item}
+                        />
+                        <View style={{ height: 0.6, backgroundColor: gray_50, marginHorizontal: 20 }} />
+                      </>
+                    )}
+                  />
+                </View>
+              )}
+            />
+          )}
+        />
         <View style={styles.buttonContainer}>
           <AppButton
             onPress={() => onSelectLanguages(selectedLanguages)}

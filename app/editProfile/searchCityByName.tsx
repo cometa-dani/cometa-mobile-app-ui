@@ -151,49 +151,54 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
             />
           ),
           headerRight: () => (
-            <If condition={inputValue.length > 0}>
-              <BaseButton onPress={() => setInputValue('')}>
-                <FontAwesome name='close' size={20} />
-              </BaseButton>
-            </If>
+            <If
+              condition={inputValue.length > 0}
+              render={(
+                <BaseButton onPress={() => setInputValue('')}>
+                  <FontAwesome name='close' size={20} />
+                </BaseButton>
+              )}
+            />
           ),
           animationDuration: animationDuration,
         }}
       />
 
-      {isLoading ?
-        <FadingLoader />
-        :
-        <FlashList
-          estimatedItemSize={70}
-          data={citiesData}
-          onEndReached={handleInfiniteFetch}
-          onEndReachedThreshold={0.5}
-          contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 14 }}
-          ItemSeparatorComponent={() => <View style={{ height: 0.6, backgroundColor: gray_50 }} />}
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() => onSaveCity(item.name)}
-              key={item.id}
-              style={cityStyles.city}
-            >
-              {({ pressed }) => (
-                <>
-                  <View style={{ opacity: pressed ? 0.6 : 1 }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                      <Text style={{ fontWeight: '700' }}>{item.name}</Text>
-                      <FontAwesome name='flag-o' size={20} />
+      <If
+        condition={isLoading}
+        render={<FadingLoader />}
+        elseRender={(
+          <FlashList
+            estimatedItemSize={70}
+            data={citiesData}
+            onEndReached={handleInfiniteFetch}
+            onEndReachedThreshold={0.5}
+            contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 14 }}
+            ItemSeparatorComponent={() => <View style={{ height: 0.6, backgroundColor: gray_50 }} />}
+            renderItem={({ item }) => (
+              <Pressable
+                onPress={() => onSaveCity(item.name)}
+                key={item.id}
+                style={cityStyles.city}
+              >
+                {({ pressed }) => (
+                  <>
+                    <View style={{ opacity: pressed ? 0.6 : 1 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <Text style={{ fontWeight: '700' }}>{item.name}</Text>
+                        <FontAwesome name='flag-o' size={20} />
+                      </View>
+                      <Text>{item.country}</Text>
                     </View>
-                    <Text>{item.country}</Text>
-                  </View>
 
-                  <Text style={{ opacity: pressed ? 0.6 : 1 }}>{item.countryCode}</Text>
-                </>
-              )}
-            </Pressable>
-          )}
-        />
-      }
+                    <Text style={{ opacity: pressed ? 0.6 : 1 }}>{item.countryCode}</Text>
+                  </>
+                )}
+              </Pressable>
+            )}
+          />
+        )}
+      />
     </>
   );
 }
