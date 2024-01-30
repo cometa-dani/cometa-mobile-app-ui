@@ -100,7 +100,6 @@ const FadingLoaderCard5 = () => {
 
 interface Props {
   userProfileField: 'homeTown' | 'currentLocation';
-  // eslint-disable-next-line no-unused-vars
   onSaveCity: (city: string) => void;
 }
 
@@ -119,8 +118,6 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
   // controls the debounce of the input
   useEffect(() => {
     const timeOutId = setTimeout(() => {
-      if (inputValue === '') return;
-
       setTriggerFetch(inputValue);
     }, 1_400);
 
@@ -129,9 +126,11 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
 
 
   useEffect(() => {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       inputRef.current?.focus();
     }, 400);
+
+    return () => clearTimeout(timeout);
   }, [data]);
 
 

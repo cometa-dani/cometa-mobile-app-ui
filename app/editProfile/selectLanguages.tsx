@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars */
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text as TransparentText, View as TransparentView } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { Stack } from 'expo-router';
 import { animationDuration } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { useQueryGetAllLanguages } from '../../queries/editProfileHooks';
 import { gray_50, gray_900 } from '../../constants/colors';
@@ -12,6 +11,7 @@ import ContentLoader, { Rect } from 'react-content-loader/native';
 import Checkbox from 'expo-checkbox';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppTextInput } from '../../components/textInput/AppTextInput';
+import { RectButton } from 'react-native-gesture-handler';
 
 
 const FadingLoader = () => {
@@ -103,6 +103,7 @@ const FadingLoaderCard5 = () => {
 
 const MAXIMUN_LANGUAGES = 5;
 
+
 interface Props {
   onSelectLanguages: (languages: string[]) => void;
 }
@@ -118,22 +119,26 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
   const handleLanguageSelection = (language: string) => {
     setSelectLanguages(removeOrAddLanguage);
 
+    /**
+     *
+     * @param {string[]} selectedLanguages  maximum 5 languages
+     * @returns
+     */
     function removeOrAddLanguage(selectedLanguages: string[]) {
       const isIncluded = selectedLanguages.includes(language);
       const isExceeding = selectedLanguages.length === MAXIMUN_LANGUAGES;
 
       if (isIncluded) {
-        return selectedLanguages.filter(lang => lang !== language);
+        return selectedLanguages.filter(lang => lang !== language); // remove
       }
       else if (!isIncluded && isExceeding) {
-        return selectedLanguages;
+        return selectedLanguages; // do nothing
       }
       else {
-        return selectedLanguages.concat(language);
+        return selectedLanguages.concat(language); // add
       }
     }
   };
-
 
   return (
     <>
@@ -205,17 +210,23 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
 
 const styles = StyleSheet.create({
   language: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     height: 70,
+    width: '100%',
     paddingVertical: 24,
     paddingHorizontal: 20,
   },
-  checkbox: {
-    margin: 8,
-    borderRadius: 5,
+
+  languageContainer: {
+    justifyContent: 'center',
   },
+
+  checkbox: {
+    borderRadius: 5,
+    zIndex: 10,
+    position: 'absolute',
+    right: 20,
+  },
+
   buttonContainer: {
     position: 'absolute',
     bottom: 0,
@@ -224,6 +235,12 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopWidth: 1,
     borderTopColor: gray_50
+  },
+
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8
   }
 });
 
@@ -236,25 +253,25 @@ interface LanguageItemProps {
 
 const LanguageItem: FC<LanguageItemProps> = ({ language, onCheck, isChecked }) => {
   return (
-    <View
-      style={styles.language}
-    >
-      <View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+    <TransparentView style={styles.languageContainer}>
+      <RectButton
+        onPress={() => onCheck(language)}
+        style={styles.language}
+      >
+        <TransparentView style={styles.titleContainer}>
           <FontAwesome name='language' size={20} />
-          <Text style={{ fontWeight: '700' }}>
+          <TransparentText style={{ fontWeight: '700' }}>
             {language}
-          </Text>
-        </View>
-      </View>
-      <View>
-        <Checkbox
-          style={styles.checkbox}
-          value={isChecked}
-          onValueChange={() => onCheck(language)}
-          color={isChecked ? gray_900 : undefined}
-        />
-      </View>
-    </View>
+          </TransparentText>
+        </TransparentView>
+      </RectButton>
+
+      <Checkbox
+        style={styles.checkbox}
+        value={isChecked}
+        onValueChange={() => onCheck(language)}
+        color={isChecked ? gray_900 : undefined}
+      />
+    </TransparentView>
   );
 };

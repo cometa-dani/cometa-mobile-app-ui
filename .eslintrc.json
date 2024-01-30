@@ -26,7 +26,10 @@
   "rules": {
     "react-native/no-inline-styles": "off",
     "@typescript-eslint/no-unused-vars": "off",
-    "no-unused-vars": "warn",
+    "no-unused-vars": [
+      "warn",
+      { "vars": "all", "args": "none", "ignoreRestSiblings": true }
+    ],
     "react/react-in-jsx-scope": "off",
     "quotes": ["error", "single"],
     "semi": ["error", "always"],
