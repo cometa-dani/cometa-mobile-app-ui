@@ -1,13 +1,12 @@
-import { ScrollView, Button, SafeAreaView, TextInput, Pressable, Dimensions, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
+import { ScrollView, SafeAreaView, Dimensions, Button } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
-import { useMutationDeleteUserPhotoByUuid, useMutationUpdateUserAvatar, useMutationUploadUserPhotos, useMutationUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
+import { useMutationDeleteUserPhotoByUuid, useMutationUploadUserPhotos, useMutationUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
 import { AppButton } from '../../components/buttons/buttons';
-import { useRef, useState } from 'react';
-import { Stack, router, useNavigation } from 'expo-router';
+import { useState } from 'react';
+import { Stack, router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Photo } from '../../models/User';
 import { AppCarousel } from '../../components/carousels/carousel';
@@ -24,51 +23,42 @@ import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/Ap
 import { gray_300 } from '../../constants/colors';
 import { BaseButton } from 'react-native-gesture-handler';
 
-// const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
-// const carouselEstimatedWidth = Dimensions.get('window').width;
 
 type ProfileValues = {
   occupation: string,
   biography: string,
-  // location: string,
-  // homeTown: string
 }
 
 const validationSchemma = Yup.object<ProfileValues>({
   occupation: Yup.string().min(5).max(32).required(),
   biography: Yup.string().min(5).max(120).required(),
-  // location: Yup.string().optional(),
-  // homeTown: Yup.string().optional()
 });
 
 export default function UserProfileScreen(): JSX.Element {
 
-  const navigation = useNavigation();
-
   const queryClient = useQueryClient();
-  const { gray500, background } = useColors();
+  const { background } = useColors();
   const uid = useCometaStore(state => state.uid); // this can be abstracted
 
   // mutations
   const mutateUserPhotosUpload = useMutationUploadUserPhotos(uid);
   const mutateUserPhotosDelete = useMutationDeleteUserPhotoByUuid(uid);
-  const mutateUserAvatarImg = useMutationUpdateUserAvatar(uid);
   const mutateUserProfileById = useMutationUserProfileById();
 
   // queries
-  const { data: userProfile, isSuccess } = useQueryGetUserProfileByUid(uid);
+  const { data: userProfile } = useQueryGetUserProfileByUid(uid);
   const userPhotos: Photo[] = userProfile?.photos ?? [];
   const selectionLimit: number = (userProfile?.maxNumPhotos || 5) - (userPhotos?.length || 0);
 
-  const totalFriends =
-    (userProfile?._count.incomingFriendships || 0)
-    +
-    (userProfile?._count.outgoingFriendships || 0);
+  // const totalFriends =
+  //   (userProfile?._count.incomingFriendships || 0)
+  //   +
+  //   (userProfile?._count.outgoingFriendships || 0);
 
   // toggle edit mode
   const [toggleEdit, setToggleEdit] = useState(true);
-  const usernameRef = useRef<TextInput>(null);
-  const descriptionRef = useRef<TextInput>(null);
+  // const usernameRef = useRef<TextInput>(null);
+  // const descriptionRef = useRef<TextInput>(null);
 
   // bucketlist
   const bucketlistLikedEvents = userProfile
@@ -81,36 +71,35 @@ export default function UserProfileScreen(): JSX.Element {
     )
     || [];
 
-  /**
-   *
-   * @description upload avatar image
-   */
-  const handlePickAvatarImg = async () => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 4],
-        quality: 1,
-      });
-      if (!result.canceled && userProfile?.id) {
-        mutateUserAvatarImg.mutate({
-          userID: userProfile?.id,
-          pickedImgFile: result.assets[0]
-        });
-      }
-    }
-    catch (error) {
-      // console.log(error);
-    }
-  };
+  // /**
+  //  *
+  //  * @description upload avatar image
+  //  */
+  // const handlePickAvatarImg = async () => {
+  //   try {
+  //     const result = await ImagePicker.launchImageLibraryAsync({
+  //       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //       allowsEditing: true,
+  //       aspect: [4, 4],
+  //       quality: 1,
+  //     });
+  //     if (!result.canceled && userProfile?.id) {
+  //       mutateUserAvatarImg.mutate({
+  //         userID: userProfile?.id,
+  //         pickedImgFile: result.assets[0]
+  //       });
+  //     }
+  //   }
+  //   catch (error) {
+  //     // console.log(error);
+  //   }
+  // };
 
   const handleSumitUserInfo =
     async (values: ProfileValues, actions: FormikHelpers<ProfileValues>): Promise<void> => {
       mutateUserProfileById.mutate({ userId: userProfile?.id as number, payload: values });
       actions.setSubmitting(false);
     };
-
 
   const handlePickMultipleImages = async () => {
     if (selectionLimit == 0) {
@@ -138,15 +127,11 @@ export default function UserProfileScreen(): JSX.Element {
     }
   };
 
-
   const handleDeleteImage = async (photoUuid: string) => {
     mutateUserPhotosDelete.mutate({ userID: userProfile?.id as number, photoUuid });
   };
 
-
-  const navigateToEditProfileAuxScreen = (field: string): void => {
-    // navigation.navigate('/editProfile/', { field: field });
-    // navigation.addListener('beforeRemove', () => {})
+  const navigateToEditProfilePushedScreen = (field: string): void => {
     router.push(`/editProfile/${field}`);
   };
 
@@ -157,11 +142,9 @@ export default function UserProfileScreen(): JSX.Element {
     signOut(auth);
   };
 
-  // console.log(userProfile?.birthday);
   return (
     <SafeAreaView style={{ flex: 1 }}>
 
-      {/* TODO: EDIT USER_NAME */}
       <Stack.Screen
         options={{
           headerShown: true,
@@ -223,8 +206,6 @@ export default function UserProfileScreen(): JSX.Element {
                 initialValues={{
                   biography: userProfile?.biography || '',
                   occupation: userProfile?.occupation || 'Software Engineer',
-                  // location: '',
-                  // homeTown: ''
                 }}
                 onSubmit={handleSumitUserInfo}
               >
@@ -291,7 +272,7 @@ export default function UserProfileScreen(): JSX.Element {
                         <AppButton btnColor='white' text='French' style={badgesStyles.badge} />
 
                         <BaseButton
-                          onPress={() => navigateToEditProfileAuxScreen('languages')}
+                          onPress={() => navigateToEditProfilePushedScreen('languages')}
                           style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
                           <FontAwesome name='chevron-right' size={18} />
                         </BaseButton>
@@ -306,11 +287,11 @@ export default function UserProfileScreen(): JSX.Element {
 
                       <View style={profileStyles.wrapper}>
                         <AppButton
-                          onPress={() => navigateToEditProfileAuxScreen('currentLocation')}
+                          onPress={() => navigateToEditProfilePushedScreen('currentLocation')}
                           btnColor='white' text='Add' style={badgesStyles.badge}
                         />
                         <BaseButton
-                          onPress={() => navigateToEditProfileAuxScreen('currentLocation')}
+                          onPress={() => navigateToEditProfilePushedScreen('currentLocation')}
                           style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
                           <FontAwesome name='chevron-right' size={18} />
                         </BaseButton>
@@ -325,12 +306,12 @@ export default function UserProfileScreen(): JSX.Element {
 
                       <View style={profileStyles.wrapper}>
                         <AppButton
-                          onPress={() => navigateToEditProfileAuxScreen('homeTown')}
+                          onPress={() => navigateToEditProfilePushedScreen('homeTown')}
                           btnColor='white' text='Add' style={badgesStyles.badge}
                         />
 
                         <BaseButton
-                          onPress={() => navigateToEditProfileAuxScreen('homeTown')}
+                          onPress={() => navigateToEditProfilePushedScreen('homeTown')}
                           style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
                           <FontAwesome name='chevron-right' size={18} />
                         </BaseButton>
@@ -343,7 +324,9 @@ export default function UserProfileScreen(): JSX.Element {
           </>
         )}
 
-        {/* <Button onPress={() => handleLogout()} title='log out' /> */}
+        <View style={{ padding: 20 }}>
+          <Button onPress={() => handleLogout()} title='log out' />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

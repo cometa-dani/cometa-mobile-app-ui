@@ -33,7 +33,7 @@ const TabButton: FC<{ children: ReactNode }> = ({ children }) => (
 );
 
 export default function AppLayout() {
-  const { red100, gray300 } = useColors();
+  const { gray300 } = useColors();
   const isAuthenticated = useCometaStore(state => state.isAuthenticated);
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
 
