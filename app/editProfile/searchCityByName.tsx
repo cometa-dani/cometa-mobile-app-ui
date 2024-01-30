@@ -119,6 +119,8 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
   // controls the debounce of the input
   useEffect(() => {
     const timeOutId = setTimeout(() => {
+      if (inputValue === '') return;
+
       setTriggerFetch(inputValue);
     }, 1_400);
 

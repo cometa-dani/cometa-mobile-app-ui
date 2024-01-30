@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
-import { StyleSheet, TextInput } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { Stack } from 'expo-router';
 import { animationDuration } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { useQueryGetAllLanguages } from '../../queries/editProfileHooks';
 import { gray_50, gray_900 } from '../../constants/colors';
@@ -101,6 +101,7 @@ const FadingLoaderCard5 = () => {
   );
 };
 
+const MAXIMUN_LANGUAGES = 5;
 
 interface Props {
   onSelectLanguages: (languages: string[]) => void;
@@ -110,25 +111,29 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
   const [inputValue, setInputValue] = useState('');
   const [selectedLanguages, setSelectLanguages] = useState<string[]>([]);
   const { data = [], isLoading } = useQueryGetAllLanguages();
-  const languagesData = (
-    data.filter(
-      lang => lang.toLowerCase().includes(inputValue.toLowerCase())
-    )
+  const filteredLanguagesData = data.filter(
+    lang => lang?.toLowerCase().includes(inputValue?.toLowerCase())
   );
 
   const handleLanguageSelection = (language: string) => {
-    setSelectLanguages(addOrremoveLanguage);
+    setSelectLanguages(removeOrAddLanguage);
 
-    function addOrremoveLanguage(selectedLanguages: string[]) {
+    function removeOrAddLanguage(selectedLanguages: string[]) {
       const isIncluded = selectedLanguages.includes(language);
+      const isExceeding = selectedLanguages.length === MAXIMUN_LANGUAGES;
+
       if (isIncluded) {
         return selectedLanguages.filter(lang => lang !== language);
+      }
+      else if (!isIncluded && isExceeding) {
+        return selectedLanguages;
       }
       else {
         return selectedLanguages.concat(language);
       }
     }
   };
+
 
   return (
     <>
@@ -149,7 +154,7 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
             stickyHeaderHiddenOnScroll={true}
             stickyHeaderIndices={[0]}
             estimatedItemSize={70}
-            data={[''].concat(languagesData)}
+            data={[''].concat(filteredLanguagesData)}
             ListHeaderComponent={() => (
               <View style={{ gap: 12, paddingTop: 20, paddingHorizontal: 20 }}>
                 <Text style={{ fontSize: 22, fontWeight: '700' }}>What Languages do you know?</Text>
@@ -187,7 +192,11 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
         }
 
         <View style={styles.buttonContainer}>
-          <AppButton onPress={() => onSelectLanguages(selectedLanguages)} btnColor='black' text='Save' />
+          <AppButton
+            onPress={() => onSelectLanguages(selectedLanguages)}
+            btnColor='black'
+            text={`Save (${selectedLanguages.length}/5)`}
+          />
         </View>
       </View>
     </>

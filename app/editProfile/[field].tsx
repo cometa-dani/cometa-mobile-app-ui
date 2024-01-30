@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useColors } from '../../components/Themed';
