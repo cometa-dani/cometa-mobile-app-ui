@@ -10,6 +10,7 @@ import { useCometaStore } from '../../store/cometaStore';
 import { Image } from 'expo-image';
 import { icons, titles } from '../../constants/assets';
 import { RectButton } from 'react-native-gesture-handler';
+import { gray_900 } from '../../constants/colors';
 
 
 /**
@@ -70,7 +71,7 @@ export default function AppLayout() {
             headerShown: false,
             tabBarInactiveTintColor: gray300,
             tabBarShowLabel: false,
-            tabBarActiveTintColor: red100,
+            tabBarActiveTintColor: gray_900,
             tabBarActiveBackgroundColor: '#eee',
           });
         }}>
