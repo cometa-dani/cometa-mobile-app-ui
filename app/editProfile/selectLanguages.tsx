@@ -1,5 +1,5 @@
-import { StyleSheet, TextInput, Pressable } from 'react-native';
-import { BaseButton, ScrollView } from 'react-native-gesture-handler';
+/* eslint-disable no-unused-vars */
+import { StyleSheet, TextInput } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { Stack } from 'expo-router';
 import { animationDuration } from '../../constants/vars';
@@ -7,9 +7,8 @@ import { FlashList } from '@shopify/flash-list';
 import { FC, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { useQueryGetAllLanguages } from '../../queries/editProfileHooks';
-import { gray_50, gray_900, red_100 } from '../../constants/colors';
+import { gray_50, gray_900 } from '../../constants/colors';
 import ContentLoader, { Rect } from 'react-content-loader/native';
-import ExpoCheckbox from 'expo-checkbox/build/ExpoCheckbox';
 import Checkbox from 'expo-checkbox';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppTextInput } from '../../components/textInput/AppTextInput';
@@ -102,15 +101,34 @@ const FadingLoaderCard5 = () => {
   );
 };
 
+
 interface Props {
-  // eslint-disable-next-line no-unused-vars
-  onSelectLanguages: (language: string) => void;
+  onSelectLanguages: (languages: string[]) => void;
 }
 
 export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
   const [inputValue, setInputValue] = useState('');
-  const inputRef = useRef<TextInput>(null);
-  const { data, isFetching, isLoading } = useQueryGetAllLanguages();
+  const [selectedLanguages, setSelectLanguages] = useState<string[]>([]);
+  const { data = [], isLoading } = useQueryGetAllLanguages();
+  const languagesData = (
+    data.filter(
+      lang => lang.toLowerCase().includes(inputValue.toLowerCase())
+    )
+  );
+
+  const handleLanguageSelection = (language: string) => {
+    setSelectLanguages(addOrremoveLanguage);
+
+    function addOrremoveLanguage(selectedLanguages: string[]) {
+      const isIncluded = selectedLanguages.includes(language);
+      if (isIncluded) {
+        return selectedLanguages.filter(lang => lang !== language);
+      }
+      else {
+        return selectedLanguages.concat(language);
+      }
+    }
+  };
 
   return (
     <>
@@ -131,7 +149,7 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
             stickyHeaderHiddenOnScroll={true}
             stickyHeaderIndices={[0]}
             estimatedItemSize={70}
-            data={[''].concat(data || [])}
+            data={[''].concat(languagesData)}
             ListHeaderComponent={() => (
               <View style={{ gap: 12, paddingTop: 20, paddingHorizontal: 20 }}>
                 <Text style={{ fontSize: 22, fontWeight: '700' }}>What Languages do you know?</Text>
@@ -155,7 +173,11 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
                   </View>
                   :
                   <>
-                    <LanguageItem language={item} />
+                    <LanguageItem
+                      onCheck={handleLanguageSelection}
+                      isChecked={selectedLanguages.includes(item)}
+                      language={item}
+                    />
                     <View style={{ height: 0.6, backgroundColor: gray_50, marginHorizontal: 20 }} />
                   </>
                 }
@@ -164,8 +186,8 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
           />
         }
 
-        <View style={{ justifyContent: 'center', padding: 20, borderTopWidth: 1, borderTopColor: gray_50 }}>
-          <AppButton btnColor='black' text='Save' />
+        <View style={styles.buttonContainer}>
+          <AppButton onPress={() => onSelectLanguages(selectedLanguages)} btnColor='black' text='Save' />
         </View>
       </View>
     </>
@@ -185,33 +207,42 @@ const styles = StyleSheet.create({
     margin: 8,
     borderRadius: 5,
   },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    justifyContent: 'center',
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: gray_50
+  }
 });
 
 
 interface LanguageItemProps {
   language: string;
+  isChecked: boolean;
+  onCheck: (language: string) => void;
 }
 
-const LanguageItem: FC<LanguageItemProps> = ({ language }) => {
-  const [isChecked, setChecked] = useState(false);
-
+const LanguageItem: FC<LanguageItemProps> = ({ language, onCheck, isChecked }) => {
   return (
     <View
       style={styles.language}
     >
       <View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <FontAwesome name='language' size={20} />
           <Text style={{ fontWeight: '700' }}>
             {language}
           </Text>
-          <FontAwesome name='language' size={20} />
         </View>
       </View>
       <View>
         <Checkbox
           style={styles.checkbox}
           value={isChecked}
-          onValueChange={setChecked}
+          onValueChange={() => onCheck(language)}
           color={isChecked ? gray_900 : undefined}
         />
       </View>

@@ -12,8 +12,7 @@ export default function EditProfileOptionsScreen(): JSX.Element {
   const { background } = useColors();
   const userProfileField = useLocalSearchParams<{ field: UserProfileFields }>()['field'];
 
-  // eslint-disable-next-line no-unused-vars
-  const handleMutation = (selectedCity: string): void => {
+  const handleCitySelection = (selectedCity: string): void => {
     // mutation logic
     // if (userProfileField === 'homeTown') {
     //   console.log('homeTown');
@@ -25,19 +24,25 @@ export default function EditProfileOptionsScreen(): JSX.Element {
     router.back();
   };
 
+  const handleLanguageSelection = (selectedLanguages: string[]): void => {
+    console.log('selectedLanguages', selectedLanguages);
+    router.back();
+  };
+
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <StatusBar style={'auto'} />
 
       {userProfileField !== 'languages' && (
         <SearchCityByName
-          onSaveCity={handleMutation}
+          onSaveCity={handleCitySelection}
           userProfileField={userProfileField}
         />
       )}
 
       {userProfileField === 'languages' && (
-        <SelectLanguages onSelectLanguages={() => null} />
+        <SelectLanguages onSelectLanguages={handleLanguageSelection} />
       )}
 
     </SafeAreaView>

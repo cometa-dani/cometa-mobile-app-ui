@@ -141,7 +141,7 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
           headerTitleAlign: 'left',
           headerTitle: () => (
             <TextInput
-              ref={inputRef}
+              // ref={(input) => !input?.isFocused() && setTimeout(() => input?.focus(), 400)}
               style={{ fontSize: 16 }}
               placeholder={placeholder}
               value={inputValue}
