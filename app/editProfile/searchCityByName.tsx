@@ -151,14 +151,11 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
             />
           ),
           headerRight: () => (
-            <If
-              condition={inputValue.length > 0}
-              render={(
-                <BaseButton onPress={() => setInputValue('')}>
-                  <FontAwesome name='close' size={20} />
-                </BaseButton>
-              )}
-            />
+            <If condition={inputValue.length > 0}>
+              <BaseButton onPress={() => setInputValue('')}>
+                <FontAwesome name='close' size={20} />
+              </BaseButton>
+            </If>
           ),
           animationDuration: animationDuration,
         }}
