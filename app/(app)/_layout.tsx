@@ -11,7 +11,7 @@ import { Image } from 'expo-image';
 import { icons, titles } from '../../constants/assets';
 import { RectButton } from 'react-native-gesture-handler';
 import { gray_900 } from '../../constants/colors';
-import { If } from '../../components/helpers/ifElse';
+import { If } from '../../components/utils/ifElse';
 
 
 /**

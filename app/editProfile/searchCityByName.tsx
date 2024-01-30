@@ -9,7 +9,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useInfiniteQueryGetCities } from '../../queries/editProfileHooks';
 import { gray_50 } from '../../constants/colors';
 import ContentLoader, { Rect } from 'react-content-loader/native';
-import { If } from '../../components/helpers/ifElse';
+import { If } from '../../components/utils/ifElse';
 
 
 const FadingLoader = () => {

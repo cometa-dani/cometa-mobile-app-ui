@@ -22,7 +22,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
 import { gray_300 } from '../../constants/colors';
 import { BaseButton } from 'react-native-gesture-handler';
-import { If } from '../../components/helpers/ifElse';
+import { If } from '../../components/utils/ifElse';
 
 
 type ProfileValues = {

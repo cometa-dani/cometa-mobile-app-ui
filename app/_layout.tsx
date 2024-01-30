@@ -80,7 +80,8 @@ function RootLayoutNav(): JSX.Element {
           headerTitle: () => (
             <Image
               style={{ height: 24, width: 110 }}
-              source={titles.matches} />
+              source={titles.matches}
+            />
           ),
           animationDuration: animationDuration,
         }}

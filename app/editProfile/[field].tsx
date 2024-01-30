@@ -4,7 +4,7 @@ import { useColors } from '../../components/Themed';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SearchCityByName } from './searchCityByName';
 import { SelectLanguages } from './selectLanguages';
-import { If } from '../../components/helpers/ifElse';
+import { If } from '../../components/utils/ifElse';
 
 
 type UserProfileFields = 'homeTown' | 'currentLocation' | 'languages';

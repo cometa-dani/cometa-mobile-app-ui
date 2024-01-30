@@ -12,7 +12,7 @@ import Checkbox from 'expo-checkbox';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppTextInput } from '../../components/textInput/AppTextInput';
 import { RectButton } from 'react-native-gesture-handler';
-import { If } from '../../components/helpers/ifElse';
+import { If } from '../../components/utils/ifElse';
 
 
 const FadingLoader = () => {
@@ -111,14 +111,14 @@ interface Props {
 
 export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
   const [inputValue, setInputValue] = useState('');
-  const [selectedLanguages, setSelectLanguages] = useState<string[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const { data = [], isLoading } = useQueryGetAllLanguages();
   const filteredLanguagesData = data.filter(
     lang => lang?.toLowerCase().includes(inputValue?.toLowerCase())
   );
 
   const handleLanguageSelection = (language: string) => {
-    setSelectLanguages(removeOrAddLanguage);
+    setSelectedLanguages(removeOrAddLanguage);
 
     /**
      *

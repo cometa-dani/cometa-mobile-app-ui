@@ -15,7 +15,7 @@ import { GetAllLikedEventsWithPagination } from '../../models/LikedEvent';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { gray_50, red_100 } from '../../constants/colors';
-import { If } from '../../components/helpers/ifElse';
+import { If } from '../../components/utils/ifElse';
 
 
 const SkeletonLoader = () => {
