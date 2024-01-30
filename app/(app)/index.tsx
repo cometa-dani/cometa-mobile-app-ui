@@ -12,6 +12,7 @@ import Carousel, { Pagination } from 'react-native-snap-carousel';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 import { gray_200, white_50 } from '../../constants/colors';
 import { icons } from '../../constants/assets';
+import { If } from '../../components/helpers/ifElse';
 
 
 const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
@@ -85,27 +86,29 @@ export default function HomeScreen(): JSX.Element {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <View style={styles.container}>
-        {isLoading ?
-          <SkeletonLoader />
-          :
-          <FlashList
-            onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
-            refreshing={isFetching}
-            showsVerticalScrollIndicator={false}
-            estimatedItemSize={eventItemEstimatedHeight}
-            pagingEnabled={true}
-            data={eventsData}
-            onEndReached={handleInfiniteFetch}
-            onEndReachedThreshold={0.4}
-            renderItem={({ item }) => (
-              <MemoizedEventItem
-                key={item.id}
-                item={item}
-                layoutHeight={layoutHeight}
-              />
-            )}
-          />
-        }
+        <If
+          condition={!isLoading}
+          elseRender={<SkeletonLoader />}
+          render={(
+            <FlashList
+              onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
+              refreshing={isFetching}
+              showsVerticalScrollIndicator={false}
+              estimatedItemSize={eventItemEstimatedHeight}
+              pagingEnabled={true}
+              data={eventsData}
+              onEndReached={handleInfiniteFetch}
+              onEndReachedThreshold={0.4}
+              renderItem={({ item }) => (
+                <MemoizedEventItem
+                  key={item.id}
+                  item={item}
+                  layoutHeight={layoutHeight}
+                />
+              )}
+            />
+          )}
+        />
       </View>
     </SafeAreaView>
   );

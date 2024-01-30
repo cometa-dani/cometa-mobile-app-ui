@@ -4,6 +4,7 @@ import { useColors } from '../../components/Themed';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SearchCityByName } from './searchCityByName';
 import { SelectLanguages } from './selectLanguages';
+import { If } from '../../components/helpers/ifElse';
 
 
 type UserProfileFields = 'homeTown' | 'currentLocation' | 'languages';
@@ -33,18 +34,22 @@ export default function EditProfileOptionsScreen(): JSX.Element {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <StatusBar style={'auto'} />
+      <If
+        condition={userProfileField !== 'languages'}
+        render={(
+          <SearchCityByName
+            onSaveCity={handleCitySelection}
+            userProfileField={userProfileField}
+          />
+        )}
+      />
 
-      {userProfileField !== 'languages' && (
-        <SearchCityByName
-          onSaveCity={handleCitySelection}
-          userProfileField={userProfileField}
-        />
-      )}
-
-      {userProfileField === 'languages' && (
-        <SelectLanguages onSelectLanguages={handleLanguageSelection} />
-      )}
-
+      <If
+        condition={userProfileField === 'languages'}
+        render={(
+          <SelectLanguages onSelectLanguages={handleLanguageSelection} />
+        )}
+      />
     </SafeAreaView>
   );
 }

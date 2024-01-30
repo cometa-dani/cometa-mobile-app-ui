@@ -12,6 +12,7 @@ import Checkbox from 'expo-checkbox';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppTextInput } from '../../components/textInput/AppTextInput';
 import { RectButton } from 'react-native-gesture-handler';
+import { If } from '../../components/helpers/ifElse';
 
 
 const FadingLoader = () => {
@@ -172,25 +173,29 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
             )}
             renderItem={({ item, index }) => (
               <View key={index}>
-                {index === 0 ?
-                  <View style={{ padding: 20, zIndex: 1 }}>
-                    <AppTextInput
-                      iconName='search'
-                      onChangeText={setInputValue}
-                      value={inputValue}
-                      placeholder='Search for a language'
-                    />
-                  </View>
-                  :
-                  <>
-                    <LanguageItem
-                      onCheck={handleLanguageSelection}
-                      isChecked={selectedLanguages.includes(item)}
-                      language={item}
-                    />
-                    <View style={{ height: 0.6, backgroundColor: gray_50, marginHorizontal: 20 }} />
-                  </>
-                }
+                <If
+                  condition={index === 0}
+                  render={(
+                    <View style={{ padding: 20, zIndex: 1 }}>
+                      <AppTextInput
+                        iconName='search'
+                        onChangeText={setInputValue}
+                        value={inputValue}
+                        placeholder='Search for a language'
+                      />
+                    </View>
+                  )}
+                  elseRender={(
+                    <>
+                      <LanguageItem
+                        onCheck={handleLanguageSelection}
+                        isChecked={selectedLanguages.includes(item)}
+                        language={item}
+                      />
+                      <View style={{ height: 0.6, backgroundColor: gray_50, marginHorizontal: 20 }} />
+                    </>
+                  )}
+                />
               </View>
             )}
           />

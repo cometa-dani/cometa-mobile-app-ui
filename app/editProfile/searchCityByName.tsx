@@ -9,6 +9,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useInfiniteQueryGetCities } from '../../queries/editProfileHooks';
 import { gray_50 } from '../../constants/colors';
 import ContentLoader, { Rect } from 'react-content-loader/native';
+import { If } from '../../components/helpers/ifElse';
 
 
 const FadingLoader = () => {
@@ -99,7 +100,7 @@ const FadingLoaderCard5 = () => {
 };
 
 interface Props {
-  userProfileField: 'homeTown' | 'currentLocation';
+  userProfileField: 'homeTown' | 'currentLocation' | 'languages';
   onSaveCity: (city: string) => void;
 }
 
@@ -150,12 +151,11 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
             />
           ),
           headerRight: () => (
-            inputValue.length ?
+            <If condition={inputValue.length > 0}>
               <BaseButton onPress={() => setInputValue('')}>
                 <FontAwesome name='close' size={20} />
               </BaseButton>
-              :
-              null
+            </If>
           ),
           animationDuration: animationDuration,
         }}

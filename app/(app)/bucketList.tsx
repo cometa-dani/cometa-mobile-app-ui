@@ -14,7 +14,7 @@ import { View, Text } from '../../components/Themed';
 import { GetAllLikedEventsWithPagination } from '../../models/LikedEvent';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import { FontAwesome } from '@expo/vector-icons';
-import { gray_100, gray_50, red_100 } from '../../constants/colors';
+import { gray_50, red_100 } from '../../constants/colors';
 
 
 const SkeletonLoader = () => {
@@ -109,7 +109,6 @@ export default function BuckectListScreen(): JSX.Element {
             pagingEnabled={false}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingVertical: 26 }}
-            // ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
             onMomentumScrollEnd={handleInfiniteFetch}
             onEndReachedThreshold={1}
             estimatedItemSize={100}
