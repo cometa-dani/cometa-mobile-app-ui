@@ -22,6 +22,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
 import { gray_300 } from '../../constants/colors';
 import { BaseButton } from 'react-native-gesture-handler';
+import { If } from '../../components/helpers/ifElse';
 
 
 type ProfileValues = {
@@ -156,174 +157,175 @@ export default function UserProfileScreen(): JSX.Element {
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: background }}
       >
-        {toggleEdit && (
-          <>
-            <ProfileCarousel userPhotos={userPhotos} />
-            <View style={profileStyles.container}>
+        <If
+          condition={toggleEdit}
+          render={(
+            <>
+              <ProfileCarousel userPhotos={userPhotos} />
+              <View style={profileStyles.container}>
 
-              <ProfileHeader userProfile={userProfile} />
+                <ProfileHeader userProfile={userProfile} />
 
-              <AppButton
-                onPress={() => setToggleEdit(false)}
-                btnColor='white'
-                text='EDIT PROFILE'
-              />
+                <AppButton
+                  onPress={() => setToggleEdit(false)}
+                  btnColor='white'
+                  text='EDIT PROFILE'
+                />
 
-              <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                <FontAwesome size={16} name='user' />
-                <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                  {userProfile?.biography}
-                </Text>
+                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                  <FontAwesome size={16} name='user' />
+                  <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                    {userProfile?.biography}
+                  </Text>
+                </View>
+
+                {/* BUCKETLIST */}
+                <AppCarousel
+                  list={bucketlistLikedEvents}
+                  title='BucketList'
+                />
+                {/* BUCKETLIST */}
+
+                <Badges iconName='comment' title='Languages' items={['English', 'French', 'Spanish']} />
+
+                <Badges iconName='map-marker' title='Location' items={['Live in Doha', 'From Mexico']} />
               </View>
-
-              {/* BUCKETLIST */}
-              <AppCarousel
-                list={bucketlistLikedEvents}
-                title='BucketList'
+            </>
+          )}
+          elseRender={(
+            <>
+              <AppPhotosGrid
+                height={Dimensions.get('window').height * 0.25}
+                photosList={userPhotos}
+                onHandlePickImage={handlePickMultipleImages}
+                onDeleteImage={handleDeleteImage}
+                placeholders={selectionLimit}
               />
-              {/* BUCKETLIST */}
+              <View style={profileStyles.container}>
+                <Formik
+                  enableReinitialize
+                  validationSchema={validationSchemma}
+                  initialValues={{
+                    biography: userProfile?.biography || '',
+                    occupation: userProfile?.occupation || 'Software Engineer',
+                  }}
+                  onSubmit={handleSumitUserInfo}
+                >
+                  {({ handleBlur, handleChange, handleSubmit, values, touched, errors, setFieldValue }) => (
+                    <View style={profileStyles.porfileContent}>
+                      <AppButton
+                        onPress={() => {
+                          // handleSubmit();
+                          setToggleEdit(true);
+                        }}
+                        btnColor='blue'
+                        text='SAVE PROFILE'
+                      />
 
-              <Badges iconName='comment' title='Languages' items={['English', 'French', 'Spanish']} />
+                      <View style={{ gap: 8 }}>
+                        <View style={{ gap: -4 }}>
+                          <Text style={profileStyles.title}>Occupation</Text>
+                          <Text style={{ color: gray_300 }}>Write your usual or principal job or profession </Text>
+                        </View>
 
-              <Badges iconName='map-marker' title='Location' items={['Live in Doha', 'From Mexico']} />
-            </View>
-          </>
-        )}
-
-        {!toggleEdit && (
-          <>
-            <AppPhotosGrid
-              height={Dimensions.get('window').height * 0.25}
-              photosList={userPhotos}
-              onHandlePickImage={handlePickMultipleImages}
-              onDeleteImage={handleDeleteImage}
-              placeholders={selectionLimit}
-            />
-            <View style={profileStyles.container}>
-              <Formik
-                enableReinitialize
-                validationSchema={validationSchemma}
-                initialValues={{
-                  biography: userProfile?.biography || '',
-                  occupation: userProfile?.occupation || 'Software Engineer',
-                }}
-                onSubmit={handleSumitUserInfo}
-              >
-                {({ handleBlur, handleChange, handleSubmit, values, touched, errors, setFieldValue }) => (
-                  <View style={profileStyles.porfileContent}>
-                    <AppButton
-                      onPress={() => {
-                        // handleSubmit();
-                        setToggleEdit(true);
-                      }}
-                      btnColor='blue'
-                      text='SAVE PROFILE'
-                    />
-
-                    <View style={{ gap: 8 }}>
-                      <View style={{ gap: -4 }}>
-                        <Text style={profileStyles.title}>Occupation</Text>
-                        <Text style={{ color: gray_300 }}>Write your usual or principal job or profession </Text>
+                        <View style={{ position: 'relative', justifyContent: 'center' }}>
+                          {touched.occupation && errors.occupation && (
+                            <AppLabelFeedbackMsg position='bottom' text={errors.occupation} />
+                          )}
+                          <AppTextInput
+                            iconName='briefcase'
+                            keyboardType="ascii-capable"
+                            onChangeText={handleChange('occupation')}
+                            onBlur={handleBlur('occupation')}
+                            value={values.occupation}
+                          />
+                        </View>
                       </View>
 
-                      <View style={{ position: 'relative', justifyContent: 'center' }}>
-                        {touched.occupation && errors.occupation && (
-                          <AppLabelFeedbackMsg position='bottom' text={errors.occupation} />
-                        )}
-                        <AppTextInput
-                          iconName='briefcase'
-                          keyboardType="ascii-capable"
-                          onChangeText={handleChange('occupation')}
-                          onBlur={handleBlur('occupation')}
-                          value={values.occupation}
-                        />
-                      </View>
-                    </View>
+                      <View style={{ gap: 8 }}>
+                        <View style={{ gap: -4 }}>
+                          <Text style={profileStyles.title}>Bio</Text>
+                          <Text style={{ color: gray_300 }}>Something fun about yourself and who you are </Text>
+                        </View>
 
-                    <View style={{ gap: 8 }}>
-                      <View style={{ gap: -4 }}>
-                        <Text style={profileStyles.title}>Bio</Text>
-                        <Text style={{ color: gray_300 }}>Something fun about yourself and who you are </Text>
-                      </View>
-
-                      <View style={{ position: 'relative' }}>
-                        {touched.biography && errors.biography && (
-                          <AppLabelFeedbackMsg position='bottom' text={errors.biography} />
-                        )}
-                        <AppTextInput
-                          iconName='user'
-                          keyboardType="ascii-capable"
-                          onChangeText={handleChange('biography')}
-                          onBlur={handleBlur('biography')}
-                          value={values.biography}
-                        />
-                      </View>
-                    </View>
-
-                    <View style={{ gap: 8 }}>
-                      <View style={{ gap: -4 }}>
-                        <Text style={profileStyles.title}>Languages</Text>
-                        <Text style={{ color: gray_300 }}>How many languages you speak</Text>
+                        <View style={{ position: 'relative' }}>
+                          {touched.biography && errors.biography && (
+                            <AppLabelFeedbackMsg position='bottom' text={errors.biography} />
+                          )}
+                          <AppTextInput
+                            iconName='user'
+                            keyboardType="ascii-capable"
+                            onChangeText={handleChange('biography')}
+                            onBlur={handleBlur('biography')}
+                            value={values.biography}
+                          />
+                        </View>
                       </View>
 
-                      <View style={profileStyles.wrapper}>
-                        <AppButton btnColor='white' text='English' style={badgesStyles.badge} />
-                        <AppButton btnColor='white' text='Spanish' style={badgesStyles.badge} />
-                        <AppButton btnColor='white' text='French' style={badgesStyles.badge} />
+                      <View style={{ gap: 8 }}>
+                        <View style={{ gap: -4 }}>
+                          <Text style={profileStyles.title}>Languages</Text>
+                          <Text style={{ color: gray_300 }}>How many languages you speak</Text>
+                        </View>
 
-                        <BaseButton
-                          onPress={() => navigateToEditProfilePushedScreen('languages')}
-                          style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
-                          <FontAwesome name='chevron-right' size={18} />
-                        </BaseButton>
-                      </View>
-                    </View>
+                        <View style={profileStyles.wrapper}>
+                          <AppButton btnColor='white' text='English' style={badgesStyles.badge} />
+                          <AppButton btnColor='white' text='Spanish' style={badgesStyles.badge} />
+                          <AppButton btnColor='white' text='French' style={badgesStyles.badge} />
 
-                    <View style={{ gap: 8 }}>
-                      <View style={{ gap: -4 }}>
-                        <Text style={profileStyles.title}>Location</Text>
-                        <Text style={{ color: gray_300 }}>Where you are currently</Text>
-                      </View>
-
-                      <View style={profileStyles.wrapper}>
-                        <AppButton
-                          onPress={() => navigateToEditProfilePushedScreen('currentLocation')}
-                          btnColor='white' text='Add' style={badgesStyles.badge}
-                        />
-                        <BaseButton
-                          onPress={() => navigateToEditProfilePushedScreen('currentLocation')}
-                          style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
-                          <FontAwesome name='chevron-right' size={18} />
-                        </BaseButton>
-                      </View>
-                    </View>
-
-                    <View style={{ gap: 8 }}>
-                      <View style={{ gap: -4 }}>
-                        <Text style={profileStyles.title}>Home city</Text>
-                        <Text style={{ color: gray_300 }}>Where you come from</Text>
+                          <BaseButton
+                            onPress={() => navigateToEditProfilePushedScreen('languages')}
+                            style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
+                            <FontAwesome name='chevron-right' size={18} />
+                          </BaseButton>
+                        </View>
                       </View>
 
-                      <View style={profileStyles.wrapper}>
-                        <AppButton
-                          onPress={() => navigateToEditProfilePushedScreen('homeTown')}
-                          btnColor='white' text='Add' style={badgesStyles.badge}
-                        />
+                      <View style={{ gap: 8 }}>
+                        <View style={{ gap: -4 }}>
+                          <Text style={profileStyles.title}>Location</Text>
+                          <Text style={{ color: gray_300 }}>Where you are currently</Text>
+                        </View>
 
-                        <BaseButton
-                          onPress={() => navigateToEditProfilePushedScreen('homeTown')}
-                          style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
-                          <FontAwesome name='chevron-right' size={18} />
-                        </BaseButton>
+                        <View style={profileStyles.wrapper}>
+                          <AppButton
+                            onPress={() => navigateToEditProfilePushedScreen('currentLocation')}
+                            btnColor='white' text='Add' style={badgesStyles.badge}
+                          />
+                          <BaseButton
+                            onPress={() => navigateToEditProfilePushedScreen('currentLocation')}
+                            style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
+                            <FontAwesome name='chevron-right' size={18} />
+                          </BaseButton>
+                        </View>
+                      </View>
+
+                      <View style={{ gap: 8 }}>
+                        <View style={{ gap: -4 }}>
+                          <Text style={profileStyles.title}>Home city</Text>
+                          <Text style={{ color: gray_300 }}>Where you come from</Text>
+                        </View>
+
+                        <View style={profileStyles.wrapper}>
+                          <AppButton
+                            onPress={() => navigateToEditProfilePushedScreen('homeTown')}
+                            btnColor='white' text='Add' style={badgesStyles.badge}
+                          />
+
+                          <BaseButton
+                            onPress={() => navigateToEditProfilePushedScreen('homeTown')}
+                            style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
+                            <FontAwesome name='chevron-right' size={18} />
+                          </BaseButton>
+                        </View>
                       </View>
                     </View>
-                  </View>
-                )}
-              </Formik>
-            </View>
-          </>
-        )}
-
+                  )}
+                </Formik>
+              </View>
+            </>
+          )}
+        />
         <View style={{ padding: 20 }}>
           <Button onPress={() => handleLogout()} title='log out' />
         </View>

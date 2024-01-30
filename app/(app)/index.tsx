@@ -87,9 +87,9 @@ export default function HomeScreen(): JSX.Element {
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <View style={styles.container}>
         <If
-          condition={!isLoading}
-          elseRender={<SkeletonLoader />}
-          render={(
+          condition={isLoading}
+          render={<SkeletonLoader />}
+          elseRender={(
             <FlashList
               onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
               refreshing={isFetching}

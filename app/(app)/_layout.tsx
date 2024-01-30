@@ -11,6 +11,7 @@ import { Image } from 'expo-image';
 import { icons, titles } from '../../constants/assets';
 import { RectButton } from 'react-native-gesture-handler';
 import { gray_900 } from '../../constants/colors';
+import { If } from '../../components/helpers/ifElse';
 
 
 /**
@@ -82,11 +83,14 @@ export default function AppLayout() {
             headerShown: true,
             tabBarIcon: ({ focused }) => (
               <TabButton>
-                {focused ?
-                  <Image style={{ width: 34, height: 34 }} source={icons.homeRed} />
-                  :
-                  <Image style={{ width: 34, height: 34 }} source={icons.home} />
-                }
+                <If condition={focused}
+                  render={(
+                    <Image style={{ width: 34, height: 34 }} source={icons.homeRed} />
+                  )}
+                  elseRender={(
+                    <Image style={{ width: 34, height: 34 }} source={icons.home} />
+                  )}
+                />
               </TabButton>
             ),
             headerLeft: () => (
@@ -129,11 +133,14 @@ export default function AppLayout() {
           options={{
             tabBarIcon: ({ focused }) => (
               <TabButton>
-                {focused ?
-                  <Image style={{ width: 30, height: 30 }} source={icons.commentRed} />
-                  :
-                  <Image style={{ width: 30, height: 30 }} source={icons.comment} />
-                }
+                <If condition={focused}
+                  render={(
+                    <Image style={{ width: 30, height: 30 }} source={icons.commentRed} />
+                  )}
+                  elseRender={(
+                    <Image style={{ width: 30, height: 30 }} source={icons.comment} />
+                  )}
+                />
               </TabButton>
             ),
           }}
@@ -145,11 +152,14 @@ export default function AppLayout() {
             headerShown: true,
             tabBarIcon: ({ focused }) => (
               <TabButton>
-                {focused ?
-                  <Image style={{ width: 38, height: 38 }} source={icons.bucketListRed} />
-                  :
-                  <Image style={{ width: 38, height: 38 }} source={icons.bucketList} />
-                }
+                <If condition={focused}
+                  render={(
+                    <Image style={{ width: 38, height: 38 }} source={icons.bucketListRed} />
+                  )}
+                  elseRender={(
+                    <Image style={{ width: 38, height: 38 }} source={icons.bucketList} />
+                  )}
+                />
               </TabButton>
             ),
             headerTitle() {
@@ -171,11 +181,14 @@ export default function AppLayout() {
           options={{
             tabBarIcon: ({ focused }) => (
               <TabButton>
-                {focused ?
-                  <Image style={{ width: 34, height: 34 }} source={icons.profileRed} />
-                  :
-                  <Image style={{ width: 34, height: 34 }} source={icons.profile} />
-                }
+                <If condition={focused}
+                  render={(
+                    <Image style={{ width: 34, height: 34 }} source={icons.profileRed} />
+                  )}
+                  elseRender={(
+                    <Image style={{ width: 34, height: 34 }} source={icons.profile} />
+                  )}
+                />
               </TabButton>
             ),
           }}

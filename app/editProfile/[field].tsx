@@ -34,8 +34,8 @@ export default function EditProfileOptionsScreen(): JSX.Element {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <StatusBar style={'auto'} />
-      <If
-        condition={userProfileField !== 'languages'}
+
+      <If condition={userProfileField !== 'languages'}
         render={(
           <SearchCityByName
             onSaveCity={handleCitySelection}
@@ -44,8 +44,7 @@ export default function EditProfileOptionsScreen(): JSX.Element {
         )}
       />
 
-      <If
-        condition={userProfileField === 'languages'}
+      <If condition={userProfileField === 'languages'}
         render={(
           <SelectLanguages onSelectLanguages={handleLanguageSelection} />
         )}

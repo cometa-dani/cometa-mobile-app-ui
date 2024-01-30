@@ -15,6 +15,7 @@ import { GetAllLikedEventsWithPagination } from '../../models/LikedEvent';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { gray_50, red_100 } from '../../constants/colors';
+import { If } from '../../components/helpers/ifElse';
 
 
 const SkeletonLoader = () => {
@@ -101,20 +102,22 @@ export default function BuckectListScreen(): JSX.Element {
       <StatusBar style={'auto'} />
 
       <Animated.View style={[styles.container, transitionStyles]}>
-        {isLoading ? (
-          <SkeletonLoader />
-        ) : (
-          <FlashList
-            data={eventsData}
-            pagingEnabled={false}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingVertical: 26 }}
-            onMomentumScrollEnd={handleInfiniteFetch}
-            onEndReachedThreshold={1}
-            estimatedItemSize={100}
-            renderItem={renderItem}
-          />
-        )}
+        <If
+          condition={isLoading}
+          render={<SkeletonLoader />}
+          elseRender={(
+            <FlashList
+              data={eventsData}
+              pagingEnabled={false}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingVertical: 26 }}
+              onMomentumScrollEnd={handleInfiniteFetch}
+              onEndReachedThreshold={1}
+              estimatedItemSize={100}
+              renderItem={renderItem}
+            />
+          )}
+        />
       </Animated.View>
     </SafeAreaView>
   );
