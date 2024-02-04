@@ -21,7 +21,6 @@ export const ProfileCarousel: FC<ProfileCarouselProps> = ({ userPhotos }) => {
       <Carousel
         layout='stack'
         loop={true}
-        // slideStyle={{ paddingVertical: 20 }} // use with tinder
         vertical={false}
         activeSlideOffset={0}
         inactiveSlideScale={0.78}
