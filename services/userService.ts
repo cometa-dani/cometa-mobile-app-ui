@@ -60,6 +60,8 @@ class UserService extends RestApiService {
         type: `${pickedImgFile.type}/${fileExtension}`,
         name: uuid.v4(),
       });
+      // Include the order in the field name
+      // formData.append(`files[${order}]`, imgFile);
 
       formData.append('files', imgFile);
     });

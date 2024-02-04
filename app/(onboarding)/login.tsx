@@ -38,6 +38,7 @@ export default function LoginScreen(): JSX.Element {
         // actions.resetForm();
         const { user } = await signInWithEmailAndPassword(auth, values.email, values.password);
         actions.setSubmitting(false);
+        // console.log(await user.getIdToken());
         setAccessToken(await user.getIdToken());
         setUserUid(user.uid);
         setIsAuthenticated(true);

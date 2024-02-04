@@ -33,7 +33,7 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
       try {
         const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsMultipleSelection: true,
+          allowsMultipleSelection: true, // picks multiple images
           selectionLimit, // only allows to select a number below the limit
           aspect: [4, 3],
           quality: 1,

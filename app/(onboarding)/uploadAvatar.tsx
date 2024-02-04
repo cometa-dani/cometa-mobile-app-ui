@@ -78,8 +78,8 @@ export default function UploadAvatarScreen(): JSX.Element {
           try {
             const [{ user: userCrendentials }] = (
               await Promise.all([
-                createUserWithEmailAndPassword(auth, email, password),
-                usersService.uploadOrUpdateAvatarImgByUserID(newCreatedUser.id, onboarding.user.imageRef),
+                createUserWithEmailAndPassword(auth, email, password), // firebase
+                // usersService.uploadOrUpdateAvatarImgByUserID(newCreatedUser.id, onboarding.user.imageRef),
               ])
             );
             await usersService.updateById(

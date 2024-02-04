@@ -1,18 +1,35 @@
 /* eslint-disable no-unused-vars */
 import { Location } from './Localization';
 import { Organization } from './Organization';
+import { Photo } from './Photo';
 
 
 export enum EventCategory {
-  PARTY,
+  RESTAURANT,
+  BAR,
+  CLUB,
+  CAFE,
   CONCERT,
-  FOOTBALL,
+  FESTIVAL,
+  THEATRE,
   MUSEUM,
+  EXHIBITION,
+  PARK,
+  BRUNCH,
+  SHOWS,
+  SPORTS,
   GALLERY,
-  COMEDY
+  PARTY,
+  CINEMA,
+  CONFERENCE,
+  FOOD_AND_DRINK,
+  SEMINAR,
+  WORKSHOP,
+  EDUCATIONAL,
+  CULTURAL
 }
 
-export type MediaType = 'IMAGE' | 'VIDEO'
+// type MediaType = 'IMAGE' | 'VIDEO'
 
 export interface CreateEventLike {
   id: number,
@@ -31,11 +48,12 @@ export interface GetBasicEvent {
   date: string;
   name: string;
   description: string;
-  mediaUrl: string;
-  mediaType: MediaType;
+  photos: Array<Photo>;
+  // mediaUrl: string;
+  // mediaType: MediaType;
   locationId: number;
   organizationId: number;
-  category: EventCategory;
+  categories: EventCategory[];
 }
 
 export interface GetLatestEventsWithPagination {
@@ -52,11 +70,12 @@ export interface LikedEvent {
   date: string;
   name: string;
   description: string;
-  mediaUrl: string;
-  mediaType: MediaType;
+  photos: Array<Photo>;
+  // mediaUrl: string;
+  // mediaType: MediaType;
   locationId: number;
   organizationId: number;
-  category: string;
+  categories: EventCategory[];
   organization: Organization;
   location: Location;
   likes: Array<Like>
@@ -66,6 +85,7 @@ export interface LikedEvent {
 
 export interface Count {
   likes: number;
+  shares: number
 }
 
 interface Like {

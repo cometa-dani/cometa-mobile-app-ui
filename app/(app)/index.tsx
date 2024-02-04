@@ -6,13 +6,15 @@ import { Text, View, useColors } from '../../components/Themed';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { useInfiniteQueryGetLatestEvents, useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
-import { Image } from 'expo-image'; // use with thumbhash
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 import { gray_200, white_50 } from '../../constants/colors';
 import { icons } from '../../constants/assets';
 import { If } from '../../components/utils/ifElse';
+import { Photo } from '../../models/Photo';
+import { ForEach } from '../../components/utils/ForEach';
 
 
 const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
@@ -124,7 +126,7 @@ const styles = StyleSheet.create({
 });
 
 
-const renderCarouselItem = ({ item }: { item: LikedEvent }) => (
+const renderCarouselItem = ({ item }: { item: Photo }) => (
   <CarouselItem key={item.id} item={item} />
 );
 
@@ -155,12 +157,6 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
     .numberOfTaps(2)
     .onEnd(() => likeOrDislikeMutation.mutate(item.id));
 
-  const carouselData = [
-    { ...item, id: 100 },
-    { ...item, id: 110 },
-    { ...item, id: 210 }
-  ];
-
   return (
     <View style={{
       height: layoutHeight,
@@ -181,7 +177,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
             inactiveSlideScale={0.78}
             sliderWidth={carouselEstimatedWidth}
             itemWidth={carouselEstimatedWidth}
-            data={carouselData}
+            data={item?.photos ?? []}
             onSnapToItem={(index) => setActiveSlide(index)}
             renderItem={renderCarouselItem}
           />
@@ -240,9 +236,15 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
             {item.name}
           </Text>
 
-          <View style={stylesEventItem.tagContainer}>
-            <Text style={stylesEventItem.tagText}>{item.category}</Text>
-          </View>
+          <TransParentView style={{ flexDirection: 'row', gap: 10 }}>
+            <ForEach items={item.categories}>
+              {(cat, index) => (
+                <View key={index} style={stylesEventItem.tagContainer}>
+                  <Text style={stylesEventItem.tagText}>{cat}</Text>
+                </View>
+              )}
+            </ForEach>
+          </TransParentView>
 
           <Pressable onPress={() => setIsExpanded(prev => !prev)}>
             {({ pressed }) => (
@@ -290,13 +292,14 @@ function arePropsEqual(prevProps: ListItemProps, nextProps: ListItemProps): bool
 const MemoizedEventItem = React.memo(EventItem, arePropsEqual);
 
 
-const CarouselItem: FC<{ item: LikedEvent }> = ({ item }) => {
+const CarouselItem: FC<{ item: Photo }> = ({ item }) => {
+
+  // console.log('item', item.placeholder);r
   return (
     <Image
-      source={item.mediaUrl}
+      source={item.url}
       style={stylesEventItem.imgBackground}
-      placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
-      transition={200}
+      placeholder={{ thumbhash: item.placeholder }}
     />
   );
 };

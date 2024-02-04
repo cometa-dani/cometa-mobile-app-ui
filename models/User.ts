@@ -2,6 +2,7 @@
 import { ImagePickerAsset } from 'expo-image-picker';
 import { EventCategory } from './Event';
 import { Friendship, Status } from './Friendship';
+import { Photo } from './Photo';
 
 
 // used in zustand store for global CLIENT STATE
@@ -10,10 +11,10 @@ export interface UserClientState extends GetBasicUserProfile {
   imageRef: ImagePickerAsset;
 }
 
-export interface Photo {
-  url: string,
-  uuid: string
-}
+// export interface Photo {
+//   url: string,
+//   uuid: string
+// }
 
 export interface GetUsersWhoLikedEventWithPagination {
   usersWhoLikedEvent: UsersWhoLikedEvent[];
@@ -31,22 +32,113 @@ export interface UsersWhoLikedEvent {
   user: GetBasicUserProfile;
 }
 
+// enum LookingFor {
+//   MEET_NEW_PEOPLE,
+//   DISCOVER_NEW_EVENTS
+// }
+
+// enum Education {
+//   SECONDARY,
+//   UNIVERSITY,
+//   POST_GRADUATE,
+//   NONE
+// }
+
+
+// enum MediaType {
+//   IMAGE,
+//   VIDEO
+// }
+
+enum FriendshipStatus {
+  PENDING,
+  ACCEPTED,
+  BLOCKED,
+}
+
+enum Gender {
+  MALE,
+  FEMALE,
+  BINARY,
+  GAY,
+  BISEXUAL,
+  LESBIAN,
+  OTHER,
+}
+
+enum RelationshipStatus {
+  SINGLE,
+  IN_A_RELATIONSHIP,
+  MARRIED,
+  DIVORCED,
+  WIDOWED,
+  OTHER,
+}
+
+enum Diet {
+  OMNIVORE,
+  VEGETARIAN,
+  VEGAN,
+  PESCATARIAN,
+}
+
+enum Religion {
+  CHRISTIANITY,
+  ISLAM,
+  HINDUISM,
+  BUDDHISM,
+  SIKHISM,
+  JUDAISM,
+  ATHEISM,
+  AGNOSTICISM,
+  OTHER
+}
+
+enum Ethnicity {
+  WHITE,
+  HISPANIC,
+  LATINO,
+  BLACK,
+  ASIAN,
+  MIDDLE_EASTERN,
+  NATIVE_AMERICAN,
+  PACIFIC_ISLANDER,
+  MIXED,
+  OTHER,
+}
+
+enum ExerciseFrequency {
+  NEVER,
+  RARELY,
+  SOMETIMES,
+  OFTEN,
+  DAILY
+}
+
 enum LookingFor {
   MEET_NEW_PEOPLE,
-  DISCOVER_NEW_EVENTS
+  DISCOVER_NEW_EVENTS,
+  FIND_NEW_PLACES,
+  FRIENDSHIP,
+  RELATIONSHIP,
+  NETWORKING,
 }
 
 enum Education {
   SECONDARY,
   UNIVERSITY,
-  POST_GRADUATE,
-  NONE
+  HIGH_SCHOOL,
+  SOME_COLLEGE,
+  BACHELORS,
+  MASTERS,
+  DOCTORATE,
+  OTHER
 }
 
 // used in react query for SERVER STATE
 export interface GetBasicUserProfile {
   id: number;
-  avatar: string;
+  // avatar: string;
   photos: Photo[];
   username: string;
   name: string
@@ -60,7 +152,7 @@ export interface GetBasicUserProfile {
   activateNotifications: boolean;
   lookingFor?: LookingFor;
   occupation?: string;
-  education?: Education
+  educationLevel?: Education
 
   uid: string;
   outgoingFriendships: Friendship[];
@@ -70,7 +162,7 @@ export interface GetBasicUserProfile {
 
 export interface GetDetailedUserProfile {
   id: number;
-  avatar: string;
+  // avatar: string;
   photos: Photo[];
   maxNumPhotos: number;
   username: string;
@@ -79,16 +171,62 @@ export interface GetDetailedUserProfile {
   email: string;
   phone?: string;
 
-  birthday?: Date;
-  address?: string;
-  interests?: EventCategory[];
-  activateNotifications: boolean;
+  //  currentLocation String ? @map("current_location")
+  // homeTown        String ? @map("home_town")
+  // languages       String[]    @default ([])
+  // height          Int ?
+  // weight          Int ?
+  //   favoriteSports  String[]    @default ([]) @map("favorite_sports")
+  // music           String[]    @default ([])
+
+  // lookingFor         LookingFor ? @map("looking_for")
+  // occupation         String ?
+  // educationLevel     Education ? @map("education_level")
+  // relationshipStatus RelationshipStatus ? @map("relationship_status")
+  // pets               String[]            @default ([])
+  // smoking            Boolean ?
+  // drinking           Boolean ?
+  //   religion           Religion ?
+  //     ethnicity          Ethnicity ?
+  //       children           Boolean ?
+  //         company            String ?
+  //           verified           Boolean ? @default (false)
+  // gender             Gender ?
+  // diet               Diet ?
+  //   exerciseFrequency  ExerciseFrequency ? @map("exercise_frequency")
+
+  // address?: string;
+  currentLocation?: string;
+  homeTown?: string;
+  languages?: string[];
+  height?: number;
+  weight?: number;
+  favoriteSports?: string[];
+  music?: string[];
   lookingFor?: LookingFor;
   occupation?: string;
-  education?: Education
+  // education?: Education
+  educationLevel?: Education;
+  relationshipStatus?: RelationshipStatus;
+  pets?: string[];
+  smoking?: boolean;
+  drinking?: boolean;
+  religion?: Religion;
+  ethnicity?: Ethnicity
+  children?: boolean;
+  company?: string;
+  verified?: boolean;
+  gender?: Gender
+  diet?: Diet
+  exerciseFrequency?: ExerciseFrequency
+  birthday?: Date;
+  interests?: EventCategory[];
+  activateNotifications: boolean;
 
   uid: string;
   likedEvents: LikedEvent[];
+  // sharedEvents: sharedEvent[];
+
   incomingFriendships: OutgoingFriendship[];
   outgoingFriendships: OutgoingFriendship[];
   _count: Count;
