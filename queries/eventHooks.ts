@@ -188,6 +188,7 @@ export const useMutationLikeOrDislikeEvent = () => {
                         ...event,
                         isLiked: !event.isLiked,
                         _count: {
+                          ...event._count,
                           likes: !event.isLiked ?
                             event._count.likes + 1
                             : event._count.likes - 1

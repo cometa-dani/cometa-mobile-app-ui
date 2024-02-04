@@ -50,11 +50,11 @@ export interface UsersWhoLikedEvent {
 //   VIDEO
 // }
 
-enum FriendshipStatus {
-  PENDING,
-  ACCEPTED,
-  BLOCKED,
-}
+// enum FriendshipStatus {
+//   PENDING,
+//   ACCEPTED,
+//   BLOCKED,
+// }
 
 enum Gender {
   MALE,
@@ -248,9 +248,10 @@ export interface LikedEvent {
 }
 
 export interface Event {
-  mediaUrl: string;
+  photos: Photo[];
+  // mediaUrl: string;
   name: string;
-  mediaType: 'IMAGE' | 'VIDEO';
+  // mediaType: 'IMAGE' | 'VIDEO';
 }
 
 export interface OutgoingFriendship {

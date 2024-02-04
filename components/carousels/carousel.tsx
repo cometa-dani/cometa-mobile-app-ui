@@ -9,7 +9,7 @@ import { FlashList } from '@shopify/flash-list';
 
 interface Props {
   title: string,
-  list: Array<{ id: string | number, img: string }>
+  list: Array<{ id: string | number, img: string, placeholder?: string }>
   isLocked?: boolean
 }
 
@@ -43,7 +43,7 @@ export const AppCarousel: FC<Props> = ({ list, title, isLocked = false }) => {
                 return (
                   item?.img ? (
                     <Image
-                      placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
+                      placeholder={{ thumbhash: item.placeholder }}
                       style={styles.bucketListImage}
                       key={item.id}
                       source={{ uri: item.img }}

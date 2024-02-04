@@ -1,4 +1,6 @@
+import { EventCategory } from './Event';
 import { EventLike } from './EventLike';
+import { Photo } from './Photo';
 
 export interface GetAllLikedEventsWithPagination {
   events: LikedEvent[];
@@ -14,11 +16,12 @@ interface LikedEvent {
   date: string;
   name: string;
   description: string;
-  mediaUrl: string;
-  mediaType: string;
+  photos: Photo[]
+  // mediaUrl: string;
+  // mediaType: string;
   locationId: number;
   organizationId: number;
-  category: string;
+  categories: EventCategory[];
   // matches: object[];
   likes: EventLike[];
 }

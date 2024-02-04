@@ -293,8 +293,6 @@ const MemoizedEventItem = React.memo(EventItem, arePropsEqual);
 
 
 const CarouselItem: FC<{ item: Photo }> = ({ item }) => {
-
-  // console.log('item', item.placeholder);r
   return (
     <Image
       source={item.url}

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import userService from '../services/userService';
-import { GetBasicUserProfile, GetDetailedUserProfile, Photo, UserClientState } from '../models/User';
+import { GetBasicUserProfile, GetDetailedUserProfile, UserClientState } from '../models/User';
+import { Photo } from '../models/Photo';
 import { QueryKeys } from './queryKeys';
 import { useCometaStore } from '../store/cometaStore';
 import { ImagePickerAsset } from 'expo-image-picker';
@@ -101,7 +102,7 @@ export const useMutationUploadUserPhotos = (dynamicParam: string) => {
         queryClient
           .setQueryData<GetDetailedUserProfile>
           ([QueryKeys.GET_USER_INFO, dynamicParam], (oldState): GetDetailedUserProfile => {
-            const newPhotos: Photo[] = pickedImgFiles.map(img => ({ url: img.uri, uuid: uuid.v4() as string })) || [];
+            const newPhotos: Partial<Photo>[] = pickedImgFiles.map(img => ({ url: img.uri, uuid: uuid.v4() as string })) || [];
 
             const optimisticState = {
               ...oldState,

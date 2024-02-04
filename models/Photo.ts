@@ -4,6 +4,6 @@ export interface Photo {
   updatedAt: string;
   url: string;
   uuid: string;
-  placeholder: string;
+  placeholder?: string;
   order: number;
 }

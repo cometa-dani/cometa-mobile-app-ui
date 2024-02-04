@@ -188,7 +188,7 @@ interface Props {
 }
 const LikedEventItem: FC<Props> = ({ item }) => {
   const deleteLikedEventMutation = useMutationDeleteLikedEventFromBucketList();
-
+  // console.log(item.likes[0]?., 'item.id');
   return (
     <Swipeable renderRightActions={
       () => (
@@ -200,7 +200,11 @@ const LikedEventItem: FC<Props> = ({ item }) => {
       <Pressable onPress={() => router.push(`/${item.id}`)}>
         {({ pressed }) => (
           <View style={[styles.eventContainer, { opacity: pressed ? 0.8 : 1 }]}>
-            <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={styles.img} source={{ uri: item.mediaUrl }} />
+            <Image
+              source={{ uri: item.photos[0].url ?? '' }}
+              placeholder={{ thumbhash: item.photos[0].placeholder }}
+              style={styles.img}
+            />
 
             <View style={styles.textContainer}>
               <Text style={styles.title}>{item.name}</Text>
@@ -209,8 +213,13 @@ const LikedEventItem: FC<Props> = ({ item }) => {
             </View>
 
             <View style={styles.bubblesContainer}>
-              {item.likes.slice(0, 3).map(({ user }) => (
-                <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} key={user.id} source={{ uri: user.avatar }} style={styles.bubble} />
+              {item.likes.slice(0, 3).map(({ user, userId }) => (
+                <Image
+                  key={userId}
+                  source={{ uri: user.photos[0].url }}
+                  placeholder={{ thumbhash: user?.photos[0].placeholder }}
+                  style={styles.bubble}
+                />
               ))}
             </View>
           </View>

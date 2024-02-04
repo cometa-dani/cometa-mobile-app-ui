@@ -1,12 +1,14 @@
+import { EventCategory } from './Event';
 import { Location } from './Localization';
-import { UserClientState } from './User';
+import { Photo } from './Photo';
+import { GetBasicUserProfile } from './User';
 
 
 export interface EventLike {
   id: number;
   eventId: number;
   userId: number;
-  user: UserClientState;
+  user: Pick<GetBasicUserProfile, 'photos'>;
 }
 
 export interface GetLikedEventByID {
@@ -16,10 +18,9 @@ export interface GetLikedEventByID {
   date: string;
   name: string;
   description: string;
-  mediaUrl: string;
-  mediaType: string;
+  photos: Photo[];
   locationId: number;
   organizationId: number;
-  category: string;
+  categories: EventCategory[];
   location: Location;
 }

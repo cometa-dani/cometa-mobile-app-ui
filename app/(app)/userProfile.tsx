@@ -8,7 +8,6 @@ import { AppButton } from '../../components/buttons/buttons';
 import { useState } from 'react';
 import { Stack, router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import { Photo } from '../../models/User';
 import { AppCarousel } from '../../components/carousels/carousel';
 import { profileStyles } from '../../components/profile/profileStyles';
 import { Formik, FormikHelpers } from 'formik';
@@ -23,6 +22,7 @@ import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/Ap
 import { gray_300 } from '../../constants/colors';
 import { BaseButton } from 'react-native-gesture-handler';
 import { If } from '../../components/utils/ifElse';
+import { Photo } from '../../models/Photo';
 
 
 type ProfileValues = {
@@ -65,10 +65,11 @@ export default function UserProfileScreen(): JSX.Element {
   const bucketlistLikedEvents = userProfile
     ?.likedEvents
     .map(
-      (item) => item.event.mediaType === 'VIDEO' ?
-        ({ id: item.id, img: '' })
-        :
-        ({ id: item.id, img: item.event?.mediaUrl })
+      (item) => ({
+        id: item.event.photos[0].id,
+        img: item.event.photos[0].url,
+        placeholder: item.event.photos[0].placeholder
+      })
     )
     || [];
 
