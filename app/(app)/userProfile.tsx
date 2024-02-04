@@ -173,12 +173,14 @@ export default function UserProfileScreen(): JSX.Element {
                   text='EDIT PROFILE'
                 />
 
-                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                  <FontAwesome size={16} name='user' />
-                  <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                    {userProfile?.biography}
-                  </Text>
-                </View>
+                <If condition={userProfile?.biography}>
+                  <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                    <FontAwesome size={16} name='user' />
+                    <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                      {userProfile?.biography}
+                    </Text>
+                  </View>
+                </If>
 
                 {/* BUCKETLIST */}
                 <AppCarousel

@@ -3,7 +3,7 @@ import { Dimensions, StyleSheet } from 'react-native';
 import { View } from '../Themed';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { Image } from 'expo-image';
-import { Photo } from '../../models/User';
+import { Photo } from '../../models/Photo';
 
 
 const carouselEstimatedWidth = Dimensions.get('window').width;
@@ -32,7 +32,7 @@ export const ProfileCarousel: FC<ProfileCarouselProps> = ({ userPhotos }) => {
         renderItem={({ item }) => (
           <Image
             key={item.uuid}
-            placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'}
+            placeholder={{ thumbhash: item.placeholder }}
             style={{ height: '100%', width: '100%', objectFit: 'cover' }}
             source={item.url}
           />
