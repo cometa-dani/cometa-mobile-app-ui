@@ -169,7 +169,7 @@ export default function UserProfileScreen(): JSX.Element {
             <Badges
               iconName='map-marker'
               title='Location'
-              items={[userProfile?.homeTown, userProfile?.currentLocation]}
+              items={[`from ${userProfile?.homeTown}`, `live in ${userProfile?.currentLocation}`]}
             />
           )}
         />
@@ -280,6 +280,7 @@ export default function UserProfileScreen(): JSX.Element {
                             key={index}
                             btnColor='white'
                             text={language}
+                            onPress={() => navigateToEditProfilePushedScreen('languages')}
                             style={badgesStyles.badge}
                           />
                         )}

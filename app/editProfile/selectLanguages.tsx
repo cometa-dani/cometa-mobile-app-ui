@@ -117,6 +117,7 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
     lang => lang?.toLowerCase().includes(inputValue?.toLowerCase())
   );
 
+
   const handleLanguageSelection = (language: string) => {
     setSelectedLanguages(removeOrAddLanguage);
 
@@ -140,6 +141,7 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
       }
     }
   };
+
 
   return (
     <>
