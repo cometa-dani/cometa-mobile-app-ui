@@ -17,7 +17,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
 import { ProfileCarousel } from '../../components/profile/profileCarousel';
 import { Badges } from '../../components/profile/badges';
-import { ProfileHeader } from '../../components/profile/profileHeader';
+import { ProfileTitle } from '../../components/profile/profileTitle';
 
 
 const searchParamsSchemma = Yup.object({
@@ -110,7 +110,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           animation: 'default',
           headerShown: true,
           headerTitle: () => (
-            <ProfileHeader userProfile={newPeopleProfile} />
+            <ProfileTitle userProfile={newPeopleProfile} />
           ),
           // headerTitle: newPeopleProfile?.username || '',
           headerTitleAlign: 'center'

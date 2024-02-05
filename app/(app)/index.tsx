@@ -192,7 +192,8 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
           inactiveDotScale={0.8}
         />
 
-        {/* Positioned buttons */}
+
+        {/* positioned buttons */}
         <TransParentView style={stylesEventItem.positionedButtons}>
           <TransParentView style={{ alignItems: 'center', gap: 2 }}>
             <Pressable onPress={handleLikeOrDislike}>
@@ -222,9 +223,10 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
             )}
           </Pressable>
         </TransParentView>
-        {/* Positioned buttons /*}
+        {/* positioned buttons */}
 
-        {/* collapsed */}
+
+        {/* event info */}
         <TransParentView style={stylesEventItem.eventInfoContainer}>
           <Text
             lightColor='#fff'
@@ -266,9 +268,8 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
             )}
           </Pressable>
         </TransParentView>
-        {/* collapsed */}
+        {/* event info */}
       </View>
-      {/* carousel */}
     </View>
   );
 };

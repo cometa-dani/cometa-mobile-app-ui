@@ -15,16 +15,15 @@ import * as Yup from 'yup';
 import { useQueryClient } from '@tanstack/react-query';
 import { Badges, badgesStyles } from '../../components/profile/badges';
 import { ProfileCarousel } from '../../components/profile/profileCarousel';
-import { ProfileHeader } from '../../components/profile/profileHeader';
+import { ProfileTitle } from '../../components/profile/profileTitle';
 import { AppPhotosGrid } from '../../components/profile/photosGrid';
 import { FontAwesome } from '@expo/vector-icons';
 import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
 import { gray_300 } from '../../constants/colors';
 import { BaseButton } from 'react-native-gesture-handler';
-import { If } from '../../components/utils/ifElse';
 import { Photo } from '../../models/Photo';
 import { GetBasicUserProfile } from '../../models/User';
-import { ForEach } from '../../components/utils/ForEach';
+import { ForEach, If, ON, OFF } from '../../components/utils/';
 
 
 type userAttributes = keyof GetBasicUserProfile
@@ -33,6 +32,7 @@ type ProfileValues = {
   occupation: string,
   biography: string,
 }
+
 
 const validationSchemma = Yup.object<ProfileValues>({
   occupation: Yup.string().min(5).max(32).required(),
@@ -52,12 +52,12 @@ export default function UserProfileScreen(): JSX.Element {
   const mutateUserProfileById = useMutationUserProfileById();
 
   // queries
-  const { data: userProfile } = useQueryGetUserProfileByUid(uid);
+  const { data: userProfile, isLoading } = useQueryGetUserProfileByUid(uid);
   const userPhotos: Photo[] = userProfile?.photos ?? [];
   const selectionLimit: number = (userProfile?.maxNumPhotos || 5) - (userPhotos?.length || 0);
 
   // toggle edit mode
-  const [toggleEdit, setToggleEdit] = useState(true);
+  const [toggleEditProfile, setToggleEditProfile] = useState(ON);
 
   // bucketlist
   const bucketlistLikedEvents = userProfile
@@ -126,13 +126,20 @@ export default function UserProfileScreen(): JSX.Element {
 
   const Profile: FC = () => (
     <>
-      <ProfileCarousel userPhotos={userPhotos} />
+      <ProfileCarousel
+        isLoading={isLoading}
+        userPhotos={userPhotos}
+      />
+
       <View style={profileStyles.container}>
 
-        <ProfileHeader userProfile={userProfile} />
+        <ProfileTitle
+          isLoading={isLoading}
+          userProfile={userProfile}
+        />
 
         <AppButton
-          onPress={() => setToggleEdit(false)}
+          onPress={() => setToggleEditProfile(OFF)}
           btnColor='white'
           text='EDIT PROFILE'
         />
@@ -202,7 +209,7 @@ export default function UserProfileScreen(): JSX.Element {
               <AppButton
                 onPress={() => {
                   handleSubmit();
-                  setToggleEdit(true);
+                  setToggleEditProfile(ON);
                 }}
                 btnColor='blue'
                 text='SAVE PROFILE'
@@ -389,7 +396,7 @@ export default function UserProfileScreen(): JSX.Element {
         style={{ backgroundColor: background }}
       >
         <If
-          condition={toggleEdit}
+          condition={toggleEditProfile}
           render={<Profile />}
           elseRender={<EditProfile />}
         />
