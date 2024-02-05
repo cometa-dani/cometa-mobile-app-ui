@@ -30,7 +30,7 @@ class UserService extends RestApiService {
     if (payload.languages?.length) {
       updatedPayload = {
         ...payload,
-        lanaguges: (payload.languages as string[]).join(',')
+        languages: (payload.languages as string[]).join(',')
       };
     }
     else {

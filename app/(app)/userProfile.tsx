@@ -274,17 +274,19 @@ export default function UserProfileScreen(): JSX.Element {
                       />
                     )}
                     render={(
-                      <ForEach items={userProfile?.languages ?? []}>
-                        {(language, index) => (
-                          <AppButton
-                            key={index}
-                            btnColor='white'
-                            text={language}
-                            onPress={() => navigateToEditProfilePushedScreen('languages')}
-                            style={badgesStyles.badge}
-                          />
-                        )}
-                      </ForEach>
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, width: '80%' }}>
+                        <ForEach items={userProfile?.languages ?? []}>
+                          {(language, index) => (
+                            <AppButton
+                              key={index}
+                              btnColor='white'
+                              text={language}
+                              onPress={() => navigateToEditProfilePushedScreen('languages')}
+                              style={badgesStyles.badge}
+                            />
+                          )}
+                        </ForEach>
+                      </View>
                     )}
                   />
 
