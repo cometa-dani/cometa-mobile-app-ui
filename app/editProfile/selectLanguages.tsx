@@ -3,7 +3,7 @@ import { Text, View } from '../../components/Themed';
 import { Stack } from 'expo-router';
 import { animationDuration } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { useQueryGetAllLanguages } from '../../queries/editProfileHooks';
 import { gray_50, gray_900 } from '../../constants/colors';
@@ -13,6 +13,8 @@ import { AppButton } from '../../components/buttons/buttons';
 import { AppTextInput } from '../../components/textInput/AppTextInput';
 import { RectButton } from 'react-native-gesture-handler';
 import { If } from '../../components/utils/ifElse';
+import { useCometaStore } from '../../store/cometaStore';
+import { useQueryGetUserProfileByUid } from '../../queries/userHooks';
 
 
 const FadingLoader = () => {
@@ -113,6 +115,9 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
   const [inputValue, setInputValue] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const { data = [], isLoading } = useQueryGetAllLanguages();
+  const uuid = useCometaStore(state => state.uid);
+  const { data: userData } = useQueryGetUserProfileByUid(uuid);
+
   const filteredLanguagesData = data.filter(
     lang => lang?.toLowerCase().includes(inputValue?.toLowerCase())
   );
@@ -141,6 +146,11 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
       }
     }
   };
+
+
+  useEffect(() => {
+    setSelectedLanguages(userData?.languages || []);
+  }, [userData?.languages]);
 
 
   return (
