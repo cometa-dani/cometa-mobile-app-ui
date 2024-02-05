@@ -41,6 +41,7 @@ export const badgesStyles = StyleSheet.create({
     paddingVertical: 6,
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: 'auto'
+    minWidth: 'auto',
+    textTransform: 'capitalize',
   }
 });
