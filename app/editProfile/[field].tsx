@@ -11,6 +11,7 @@ import { useCometaStore } from '../../store/cometaStore';
 
 type UserProfileFields = 'homeTown' | 'currentLocation' | 'languages';
 
+
 export default function EditProfileOptionsScreen(): JSX.Element {
   const uid = useCometaStore(state => state.uid); // this can be abstracted
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);

@@ -339,9 +339,20 @@ export default function UserProfileScreen(): JSX.Element {
                 </View>
 
                 <View style={profileStyles.wrapper}>
-                  <AppButton
-                    onPress={() => navigateToEditProfilePushedScreen('homeTown')}
-                    btnColor='white' text='Add' style={badgesStyles.badge}
+                  <If
+                    condition={userProfile?.homeTown}
+                    render={(
+                      <AppButton
+                        onPress={() => navigateToEditProfilePushedScreen('homeTown')}
+                        btnColor='white' text={userProfile?.homeTown} style={badgesStyles.badge}
+                      />
+                    )}
+                    elseRender={(
+                      <AppButton
+                        onPress={() => navigateToEditProfilePushedScreen('homeTown')}
+                        btnColor='white' text='Add' style={badgesStyles.badge}
+                      />
+                    )}
                   />
 
                   <BaseButton
