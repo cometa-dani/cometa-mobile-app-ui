@@ -5,28 +5,43 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { SearchCityByName } from './searchCityByName';
 import { SelectLanguages } from './selectLanguages';
 import { If } from '../../components/utils/ifElse';
+import { useMutationUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
+import { useCometaStore } from '../../store/cometaStore';
 
 
 type UserProfileFields = 'homeTown' | 'currentLocation' | 'languages';
 
 export default function EditProfileOptionsScreen(): JSX.Element {
+  const uid = useCometaStore(state => state.uid); // this can be abstracted
+  const { data: userProfile } = useQueryGetUserProfileByUid(uid);
+
   const { background } = useColors();
-  const userProfileField = useLocalSearchParams<{ field: UserProfileFields }>()['field'];
+  const searchParams = useLocalSearchParams<{ field: UserProfileFields }>()['field'];
+  const mutateUserProfileById = useMutationUserProfileById();
+
 
   const handleCitySelection = (selectedCity: string): void => {
-    // mutation logic
-    // if (userProfileField === 'homeTown') {
-    //   console.log('homeTown');
-    // }
-    // else {
-    //   console.log('currentLocation');
-    // }
-    // console.log('selectedCity', selectedCity);
+    if (searchParams === 'homeTown' && userProfile?.id) {
+      mutateUserProfileById.mutate({ payload: { homeTown: selectedCity }, userId: userProfile?.id });
+    }
+
+    if (searchParams === 'currentLocation' && userProfile?.id) {
+      mutateUserProfileById.mutate({ payload: { currentLocation: selectedCity }, userId: userProfile?.id });
+    }
     router.back();
   };
 
+
   const handleLanguageSelection = (selectedLanguages: string[]): void => {
-    // console.log('selectedLanguages', selectedLanguages);
+    if (userProfile?.id)
+      mutateUserProfileById
+        .mutate({
+          payload: {
+            languages: selectedLanguages
+          },
+          userId: userProfile?.id
+        });
+
     router.back();
   };
 
@@ -35,16 +50,16 @@ export default function EditProfileOptionsScreen(): JSX.Element {
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <StatusBar style={'auto'} />
 
-      <If condition={userProfileField !== 'languages'}
+      <If condition={searchParams !== 'languages'}
         render={(
           <SearchCityByName
             onSaveCity={handleCitySelection}
-            userProfileField={userProfileField}
+            userProfileField={searchParams}
           />
         )}
       />
 
-      <If condition={userProfileField === 'languages'}
+      <If condition={searchParams === 'languages'}
         render={(
           <SelectLanguages onSelectLanguages={handleLanguageSelection} />
         )}

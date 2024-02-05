@@ -33,6 +33,7 @@ export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
 
 export const useMutationUserProfileById = () => {
   const queryClient = useQueryClient();
+  const uuid = useCometaStore(state => state.uid);
 
   return (
     useMutation({
@@ -44,6 +45,18 @@ export const useMutationUserProfileById = () => {
         else {
           throw new Error('failed fetched');
         }
+      },
+      onMutate: async ({ payload }) => {
+        queryClient
+          .setQueryData<GetDetailedUserProfile>
+          ([QueryKeys.GET_USER_INFO, uuid], (oldState): GetDetailedUserProfile => {
+            const optimisticState = {
+              ...oldState,
+              ...payload
+            } as GetDetailedUserProfile;
+
+            return optimisticState;
+          });
       },
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO] });

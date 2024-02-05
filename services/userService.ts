@@ -25,6 +25,8 @@ class UserService extends RestApiService {
 
 
   public updateById(userID: number, payload: Partial<UserClientState>) {
+    // payload = payload.languages?.length ? payload.languages?.join(',') : payload;
+
     return this.http.patch<GetBasicUserProfile>(`/users/${userID}`, payload);
   }
 

@@ -51,15 +51,8 @@ export default function UserProfileScreen(): JSX.Element {
   const userPhotos: Photo[] = userProfile?.photos ?? [];
   const selectionLimit: number = (userProfile?.maxNumPhotos || 5) - (userPhotos?.length || 0);
 
-  // const totalFriends =
-  //   (userProfile?._count.incomingFriendships || 0)
-  //   +
-  //   (userProfile?._count.outgoingFriendships || 0);
-
   // toggle edit mode
   const [toggleEdit, setToggleEdit] = useState(true);
-  // const usernameRef = useRef<TextInput>(null);
-  // const descriptionRef = useRef<TextInput>(null);
 
   // bucketlist
   const bucketlistLikedEvents = userProfile
@@ -73,35 +66,13 @@ export default function UserProfileScreen(): JSX.Element {
     )
     || [];
 
-  // /**
-  //  *
-  //  * @description upload avatar image
-  //  */
-  // const handlePickAvatarImg = async () => {
-  //   try {
-  //     const result = await ImagePicker.launchImageLibraryAsync({
-  //       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //       allowsEditing: true,
-  //       aspect: [4, 4],
-  //       quality: 1,
-  //     });
-  //     if (!result.canceled && userProfile?.id) {
-  //       mutateUserAvatarImg.mutate({
-  //         userID: userProfile?.id,
-  //         pickedImgFile: result.assets[0]
-  //       });
-  //     }
-  //   }
-  //   catch (error) {
-  //     // console.log(error);
-  //   }
-  // };
 
   const handleSumitUserInfo =
     async (values: ProfileValues, actions: FormikHelpers<ProfileValues>): Promise<void> => {
       mutateUserProfileById.mutate({ userId: userProfile?.id as number, payload: values });
       actions.setSubmitting(false);
     };
+
 
   const handlePickMultipleImages = async () => {
     if (selectionLimit == 0) {
@@ -129,13 +100,16 @@ export default function UserProfileScreen(): JSX.Element {
     }
   };
 
+
   const handleDeleteImage = async (photoUuid: string) => {
     mutateUserPhotosDelete.mutate({ userID: userProfile?.id as number, photoUuid });
   };
 
+
   const navigateToEditProfilePushedScreen = (field: string): void => {
     router.push(`/editProfile/${field}`);
   };
+
 
   const handleLogout = (): void => {
     queryClient.clear();
@@ -143,6 +117,7 @@ export default function UserProfileScreen(): JSX.Element {
     queryClient.cancelQueries();
     signOut(auth);
   };
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -173,25 +148,42 @@ export default function UserProfileScreen(): JSX.Element {
                   text='EDIT PROFILE'
                 />
 
-                <If condition={userProfile?.biography}>
-                  <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                    <FontAwesome size={16} name='user' />
-                    <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                      {userProfile?.biography}
-                    </Text>
-                  </View>
-                </If>
+                <If
+                  condition={userProfile?.biography}
+                  render={(
+                    <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                      <FontAwesome size={16} name='user' />
+                      <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                        {userProfile?.biography}
+                      </Text>
+                    </View>
+                  )}
+                />
 
-                {/* BUCKETLIST */}
                 <AppCarousel
                   list={bucketlistLikedEvents}
                   title='BucketList'
                 />
-                {/* BUCKETLIST */}
 
-                <Badges iconName='comment' title='Languages' items={['English', 'French', 'Spanish']} />
+                <If condition={userProfile?.languages?.length}
+                  render={(
+                    <Badges
+                      iconName='comment'
+                      title='Languages'
+                      items={userProfile?.languages ?? []}
+                    />
+                  )}
+                />
 
-                <Badges iconName='map-marker' title='Location' items={['Live in Doha', 'From Mexico']} />
+                <If condition={userProfile?.homeTown && userProfile?.currentLocation}
+                  render={(
+                    <Badges
+                      iconName='map-marker'
+                      title='Location'
+                      items={[userProfile?.homeTown, userProfile?.currentLocation]}
+                    />
+                  )}
+                />
               </View>
             </>
           )}
@@ -209,8 +201,8 @@ export default function UserProfileScreen(): JSX.Element {
                   enableReinitialize
                   validationSchema={validationSchemma}
                   initialValues={{
-                    biography: userProfile?.biography || '',
-                    occupation: userProfile?.occupation || 'Software Engineer',
+                    biography: userProfile?.biography ?? '',
+                    occupation: userProfile?.occupation ?? '',
                   }}
                   onSubmit={handleSumitUserInfo}
                 >
@@ -218,7 +210,7 @@ export default function UserProfileScreen(): JSX.Element {
                     <View style={profileStyles.porfileContent}>
                       <AppButton
                         onPress={() => {
-                          // handleSubmit();
+                          handleSubmit();
                           setToggleEdit(true);
                         }}
                         btnColor='blue'
@@ -275,6 +267,7 @@ export default function UserProfileScreen(): JSX.Element {
                         </View>
 
                         <View style={profileStyles.wrapper}>
+                          <If condition={userProfile?.languages?.length} />
                           <AppButton btnColor='white' text='English' style={badgesStyles.badge} />
                           <AppButton btnColor='white' text='Spanish' style={badgesStyles.badge} />
                           <AppButton btnColor='white' text='French' style={badgesStyles.badge} />

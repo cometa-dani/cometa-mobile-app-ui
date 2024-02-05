@@ -138,6 +138,7 @@ enum Education {
 // used in react query for SERVER STATE
 export interface GetBasicUserProfile {
   id: number;
+  uid: string;
   // avatar: string;
   photos: Photo[];
   username: string;
@@ -147,14 +148,15 @@ export interface GetBasicUserProfile {
   phone?: string;
 
   birthday?: Date;
-  address?: string;
+  homeTown?: string;
+  currentLocation?: string;
+  languages?: string[];
   interests?: EventCategory[];
   activateNotifications: boolean;
   lookingFor?: LookingFor;
   occupation?: string;
   educationLevel?: Education
 
-  uid: string;
   outgoingFriendships: Friendship[];
   incomingFriendships: Friendship[];
 }
