@@ -24,6 +24,7 @@ import { BaseButton } from 'react-native-gesture-handler';
 import { Photo } from '../../models/Photo';
 import { GetBasicUserProfile } from '../../models/User';
 import { ForEach, If, ON, OFF } from '../../components/utils/';
+import ContentLoader, { Rect } from 'react-content-loader/native';
 
 
 type userAttributes = keyof GetBasicUserProfile
@@ -146,6 +147,18 @@ export default function UserProfileScreen(): JSX.Element {
 
         <If
           condition={userProfile?.biography}
+          elseRender={(
+            <ContentLoader
+              speed={1}
+              width={150}
+              height={12}
+              viewBox={`0 0 ${150} ${12}`}
+              backgroundColor="#f3f3f3"
+              foregroundColor="#ecebeb"
+            >
+              <Rect x="6" y="0" rx="6" ry="6" width="140" height="12" />
+            </ContentLoader>
+          )}
           render={(
             <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
               <FontAwesome size={16} name='user' />

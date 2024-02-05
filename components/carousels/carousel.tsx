@@ -10,7 +10,8 @@ import { FlashList } from '@shopify/flash-list';
 interface Props {
   title: string,
   list: Array<{ id: string | number, img: string, placeholder?: string }>
-  isLocked?: boolean
+  isLocked?: boolean,
+  isLoading?: boolean
 }
 
 export const AppCarousel: FC<Props> = ({ list, title, isLocked = false }) => {

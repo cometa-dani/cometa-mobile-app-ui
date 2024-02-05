@@ -29,11 +29,9 @@ interface ProfileHeaderProps {
 }
 
 export const ProfileTitle: FC<ProfileHeaderProps> = ({ userProfile, isLoading = false }) => {
-  if (!userProfile) return null;
-
   return (
     <View>
-      <If condition={isLoading}
+      <If condition={isLoading || !userProfile}
         render={<SkeletonLoader />}
         elseRender={(
           <>
