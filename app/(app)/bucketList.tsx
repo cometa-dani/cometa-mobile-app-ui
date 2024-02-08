@@ -4,8 +4,6 @@ import { Pressable, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-// import { EntryExitTransition, CurvedTransition, JumpingTransition } from 'react-native-reanimated';
-
 import { RectButton } from 'react-native-gesture-handler';
 import { useInfiniteQueryGetLatestLikedEvents, useMutationDeleteLikedEventFromBucketList } from '../../queries/eventHooks';
 import { router } from 'expo-router';
@@ -18,7 +16,7 @@ import { gray_50, red_100 } from '../../constants/colors';
 import { If } from '../../components/utils/ifElse';
 
 
-const SkeletonLoader = () => {
+const SkeletonLoader: FC = () => {
   const windowWidth = Dimensions.get('window').width;
   const itemWidth = windowWidth - 40; // Subtract padding
   const itemHeight = 108;
@@ -67,7 +65,7 @@ const SkeletonLoader = () => {
 const renderItem = ({ item }: { item: GetAllLikedEventsWithPagination['events'][0] }) => {
   return (
     <>
-      <MemoizedEventItem
+      <MemoizedBucketItem
         key={item.id}
         item={item}
       />
@@ -79,10 +77,17 @@ const renderItem = ({ item }: { item: GetAllLikedEventsWithPagination['events'][
 export default function BuckectListScreen(): JSX.Element {
   const { data, isFetching, hasNextPage, fetchNextPage, isLoading, } = useInfiniteQueryGetLatestLikedEvents();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
-  const eventsData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
+  const bucketListData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
   const fadeAnim = useSharedValue(1);  // Initial value for opacity: 1
   const contentOpacity = useSharedValue(0);  // Initial value for opacity: 0
+
+  const transitionStyles = useAnimatedStyle(() => {
+    return {
+      opacity: isLoading ? fadeAnim.value : contentOpacity.value,
+    };
+  });
+
 
   useEffect(() => {
     if (!isLoading) {
@@ -91,11 +96,6 @@ export default function BuckectListScreen(): JSX.Element {
     }
   }, [isLoading]);
 
-  const transitionStyles = useAnimatedStyle(() => {
-    return {
-      opacity: isLoading ? fadeAnim.value : contentOpacity.value,
-    };
-  });
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -107,7 +107,7 @@ export default function BuckectListScreen(): JSX.Element {
           render={<SkeletonLoader />}
           elseRender={(
             <FlashList
-              data={eventsData}
+              data={bucketListData}
               pagingEnabled={false}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingVertical: 26 }}
@@ -186,9 +186,8 @@ const styles = StyleSheet.create({
 interface Props {
   item: GetAllLikedEventsWithPagination['events'][0],
 }
-const LikedEventItem: FC<Props> = ({ item }) => {
+const BucketItem: FC<Props> = ({ item }) => {
   const deleteLikedEventMutation = useMutationDeleteLikedEventFromBucketList();
-  // console.log(item.likes[0]?., 'item.id');
   return (
     <Swipeable renderRightActions={
       () => (
@@ -197,7 +196,7 @@ const LikedEventItem: FC<Props> = ({ item }) => {
         </RectButton>
       )
     }>
-      <Pressable onPress={() => router.push(`/${item.id}`)}>
+      <Pressable onPress={() => router.push(`/matches/${item.id}`)}>
         {({ pressed }) => (
           <View style={[styles.eventContainer, { opacity: pressed ? 0.8 : 1 }]}>
             <Image
@@ -229,7 +228,7 @@ const LikedEventItem: FC<Props> = ({ item }) => {
   );
 };
 
-const MemoizedEventItem = memo(LikedEventItem, areEqual);
+const MemoizedBucketItem = memo(BucketItem, areEqual);
 
 function areEqual(prevProps: Props, nextProps: Props) {
   return prevProps.item.id === nextProps.item.id;

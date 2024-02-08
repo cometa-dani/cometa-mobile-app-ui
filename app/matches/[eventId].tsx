@@ -1,27 +1,27 @@
 import { FC, useState } from 'react';
 import Modal from 'react-native-modal';
 import { SafeAreaView, StyleSheet, Pressable } from 'react-native';
-import { Text, View } from '../components/Themed';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useQueryGetEventById, useInfiteQueryGetUsersWhoLikedEventByID } from '../queries/eventHooks';
-import { Image } from 'react-native';
+import { Text, View } from '../../components/Themed';
+import { router, useGlobalSearchParams } from 'expo-router';
+import { useQueryGetEventById, useInfiteQueryGetUsersWhoLikedEventByID } from '../../queries/eventHooks';
+import { Image } from 'expo-image';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
-import { AppButton } from '../components/buttons/buttons';
+import { AppButton } from '../../components/buttons/buttons';
 import { StatusBar } from 'expo-status-bar';
-import { useInfiniteQueryGetNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../queries/friendshipHooks';
+import { useInfiniteQueryGetNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/friendshipHooks';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
-import { useCometaStore } from '../store/cometaStore';
-import { useQueryGetUserProfileByUid } from '../queries/userHooks';
+import { useCometaStore } from '../../store/cometaStore';
 import { FontAwesome } from '@expo/vector-icons';
-import { GetBasicUserProfile } from '../models/User';
+import { GetBasicUserProfile } from '../../models/User';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { addDoc, collection } from 'firebase/firestore';
-import { db } from '../firebase/firebase';
+import { db } from '../../firebase/firebase';
 import { IMessage, } from 'react-native-gifted-chat';
-import { nodeEnv } from '../constants/vars';
+import { nodeEnv } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
-import { gray_200 } from '../constants/colors';
+import { gray_200 } from '../../constants/colors';
+import { useQueryGetUserProfileByUid } from '../../queries/userHooks';
 
 
 type Message = { message: string };
@@ -31,7 +31,7 @@ const messageSchemmaValidation = Yup.object<Message>({
 });
 
 
-export default function ConnectWithPeopleScreen(): JSX.Element {
+export default function MatchesScreen(): JSX.Element {
   // client state
   const uid = useCometaStore(state => state.uid);
   const toggleModal = useCometaStore(state => state.toggleModal);
@@ -39,12 +39,11 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
   const incommginFriendshipSender = useCometaStore(state => state.incommginFriendshipSender);
   const setIncommginFriendshipSender = useCometaStore(state => state.setIncommginFriendshipSender);
 
-
   // queries
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
-  const urlParam = useLocalSearchParams()['connectWithPeople'];
-  const eventByIdRes = useQueryGetEventById(+urlParam);
-  const newPeopleRes = useInfiteQueryGetUsersWhoLikedEventByID(+urlParam);
+  const eventID = useGlobalSearchParams<{ eventId: string }>()['eventId'];
+  const eventByIdRes = useQueryGetEventById(+eventID);
+  const newPeopleRes = useInfiteQueryGetUsersWhoLikedEventByID(+eventID);
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();
 
   const allFriends = newestFriendsRes.data?.pages.flatMap(page => page?.friendships) || [];
@@ -96,7 +95,7 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
         text: values.message,
         createdAt: new Date(),
         user: {
-          avatar: userProfile?.avatar,
+          avatar: userProfile?.photos[0].url,
           name: userProfile?.username,
           _id: userProfile?.id as number,
         }
@@ -119,7 +118,11 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
 
   const TabsHeader: FC = () => (
     <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 26 }]}>
-      <Image style={styles.imgHeader} source={{ uri: eventByIdRes.data?.mediaUrl }} />
+      <Image
+        style={styles.imgHeader}
+        placeholder={{ thumbhash: eventByIdRes.data?.photos[0].placeholder }}
+        source={{ uri: eventByIdRes.data?.photos[0].url }}
+      />
 
       <View style={styles.tabs}>
         <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
@@ -144,9 +147,18 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
         <Modal isVisible={toggleModal}>
           <View style={modalStyles.modalView}>
             <View style={modalStyles.avatarMatchContainer}>
-              <Image style={modalStyles.avatarMatch} source={{ uri: userProfile?.avatar }} />
-              {incommginFriendshipSender?.avatar && (
-                <Image style={modalStyles.avatarMatch} source={{ uri: incommginFriendshipSender.avatar }} />
+              <Image
+                style={modalStyles.avatarMatch}
+                placeholder={{ thumbhash: userProfile?.photos[0].placeholder }}
+                source={{ uri: userProfile?.photos[0].url }}
+              />
+
+              {incommginFriendshipSender?.photos?.[0]?.url && (
+                <Image
+                  style={modalStyles.avatarMatch}
+                  placeholder={{ thumbhash: incommginFriendshipSender.photos[0].placeholder }}
+                  source={{ uri: incommginFriendshipSender.photos[0].url }}
+                />
               )}
             </View>
 
@@ -207,7 +219,11 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                     <View key={index} style={styles.user}>
                       <Pressable onPress={() => router.push(`/newPeopleProfile/${friend.uid}?isFriend=true`)}>
                         <View style={styles.avatarContainer}>
-                          <Image style={styles.userAvatar} source={{ uri: friend?.avatar }} />
+                          <Image
+                            style={styles.userAvatar}
+                            placeholder={{ thumbhash: friend?.photos[0].placeholder }}
+                            source={{ uri: friend?.photos[0].url }}
+                          />
 
                           <View style={styles.textContainer}>
                             <Text
@@ -253,7 +269,11 @@ export default function ConnectWithPeopleScreen(): JSX.Element {
                     <View key={index} style={styles.user}>
                       <Pressable onPress={() => router.push(`/newPeopleProfile/${anotherUser.uid}?isFriend=false`)}>
                         <View style={styles.avatarContainer}>
-                          <Image style={styles.userAvatar} source={{ uri: anotherUser.avatar }} />
+                          <Image
+                            style={styles.userAvatar}
+                            placeholder={{ thumbhash: anotherUser.photos[0].placeholder }}
+                            source={{ uri: anotherUser.photos[0].url }}
+                          />
 
                           <View style={styles.textContainer}>
                             <Text

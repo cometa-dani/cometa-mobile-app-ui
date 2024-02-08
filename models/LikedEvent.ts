@@ -17,11 +17,8 @@ interface LikedEvent {
   name: string;
   description: string;
   photos: Photo[]
-  // mediaUrl: string;
-  // mediaType: string;
   locationId: number;
   organizationId: number;
   categories: EventCategory[];
-  // matches: object[];
   likes: EventLike[];
 }

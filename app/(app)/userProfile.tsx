@@ -146,7 +146,7 @@ export default function UserProfileScreen(): JSX.Element {
         />
 
         <If
-          condition={userProfile?.biography}
+          condition={!isLoading}
           elseRender={(
             <ContentLoader
               speed={1}
@@ -217,11 +217,11 @@ export default function UserProfileScreen(): JSX.Element {
           }}
           onSubmit={handleSumitUserInfo}
         >
-          {({ handleBlur, handleChange, handleSubmit, values, touched, errors }) => (
+          {({ handleBlur, handleChange, handleSubmit, values, touched, errors, dirty }) => (
             <View style={profileStyles.porfileContent}>
               <AppButton
                 onPress={() => {
-                  handleSubmit();
+                  dirty && handleSubmit();
                   setToggleEditProfile(ON);
                 }}
                 btnColor='blue'

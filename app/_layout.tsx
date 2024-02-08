@@ -72,7 +72,7 @@ function RootLayoutNav(): JSX.Element {
       <Stack.Screen name="(app)" options={screenOptions} />
 
       <Stack.Screen
-        name="[connectWithPeople]"
+        name="matches/[eventId]"
         options={{
           presentation: 'fullScreenModal',
           headerTitleAlign: 'center',

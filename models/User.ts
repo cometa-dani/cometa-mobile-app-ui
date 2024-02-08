@@ -11,11 +11,6 @@ export interface UserClientState extends GetBasicUserProfile {
   imageRef: ImagePickerAsset;
 }
 
-// export interface Photo {
-//   url: string,
-//   uuid: string
-// }
-
 export interface GetUsersWhoLikedEventWithPagination {
   usersWhoLikedEvent: UsersWhoLikedEvent[];
   nextCursor: number;
@@ -31,30 +26,6 @@ export interface UsersWhoLikedEvent {
   userId: number;
   user: GetBasicUserProfile;
 }
-
-// enum LookingFor {
-//   MEET_NEW_PEOPLE,
-//   DISCOVER_NEW_EVENTS
-// }
-
-// enum Education {
-//   SECONDARY,
-//   UNIVERSITY,
-//   POST_GRADUATE,
-//   NONE
-// }
-
-
-// enum MediaType {
-//   IMAGE,
-//   VIDEO
-// }
-
-// enum FriendshipStatus {
-//   PENDING,
-//   ACCEPTED,
-//   BLOCKED,
-// }
 
 enum Gender {
   MALE,
@@ -173,31 +144,6 @@ export interface GetDetailedUserProfile {
   email: string;
   phone?: string;
 
-  //  currentLocation String ? @map("current_location")
-  // homeTown        String ? @map("home_town")
-  // languages       String[]    @default ([])
-  // height          Int ?
-  // weight          Int ?
-  //   favoriteSports  String[]    @default ([]) @map("favorite_sports")
-  // music           String[]    @default ([])
-
-  // lookingFor         LookingFor ? @map("looking_for")
-  // occupation         String ?
-  // educationLevel     Education ? @map("education_level")
-  // relationshipStatus RelationshipStatus ? @map("relationship_status")
-  // pets               String[]            @default ([])
-  // smoking            Boolean ?
-  // drinking           Boolean ?
-  //   religion           Religion ?
-  //     ethnicity          Ethnicity ?
-  //       children           Boolean ?
-  //         company            String ?
-  //           verified           Boolean ? @default (false)
-  // gender             Gender ?
-  // diet               Diet ?
-  //   exerciseFrequency  ExerciseFrequency ? @map("exercise_frequency")
-
-  // address?: string;
   currentLocation?: string;
   homeTown?: string;
   languages?: string[];
@@ -207,7 +153,7 @@ export interface GetDetailedUserProfile {
   music?: string[];
   lookingFor?: LookingFor;
   occupation?: string;
-  // education?: Education
+
   educationLevel?: Education;
   relationshipStatus?: RelationshipStatus;
   pets?: string[];
@@ -251,9 +197,7 @@ export interface LikedEvent {
 
 export interface Event {
   photos: Photo[];
-  // mediaUrl: string;
   name: string;
-  // mediaType: 'IMAGE' | 'VIDEO';
 }
 
 export interface OutgoingFriendship {

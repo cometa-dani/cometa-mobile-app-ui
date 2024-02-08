@@ -85,6 +85,7 @@ export const useQueryGetEventById = (eventID: number) => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return useQuery({
+    enabled: !!eventID,
     queryKey: [QueryKeys.GET_EVENT_BY_ID],
     queryFn: async (): Promise<GetLikedEventByID> => {
       const res = await eventService.getLikedEventByID(eventID, accessToken);
@@ -109,6 +110,7 @@ export const useInfiteQueryGetUsersWhoLikedEventByID = (eventID: number) => {
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT],
       initialPageParam: -1,
+      enabled: !!eventID,
       queryFn: async ({ pageParam }): Promise<GetUsersWhoLikedEventWithPagination> => {
         const res = await eventService.getAllUsersWhoLikedSameEvent(eventID, pageParam, 5, accessToken);
         if (res.status === 200) {

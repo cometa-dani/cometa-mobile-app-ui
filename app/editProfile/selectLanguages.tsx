@@ -125,7 +125,6 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
 
   const handleLanguageSelection = (language: string) => {
     setSelectedLanguages(removeOrAddLanguage);
-
     /**
      *
      * @param {string[]} selectedLanguages  maximum 5 languages
