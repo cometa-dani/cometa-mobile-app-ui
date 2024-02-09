@@ -3,7 +3,7 @@ import Modal from 'react-native-modal';
 import { SafeAreaView, StyleSheet, Pressable } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { router, useGlobalSearchParams } from 'expo-router';
-import { useQueryGetEventById, useInfiteQueryGetUsersWhoLikedEventByID } from '../../queries/eventHooks';
+import { useQueryGetEventById, useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../queries/eventHooks';
 import { Image } from 'expo-image';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { AppButton } from '../../components/buttons/buttons';
@@ -43,7 +43,7 @@ export default function MatchesScreen(): JSX.Element {
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
   const eventID = useGlobalSearchParams<{ eventId: string }>()['eventId'];
   const eventByIdRes = useQueryGetEventById(+eventID);
-  const newPeopleRes = useInfiteQueryGetUsersWhoLikedEventByID(+eventID);
+  const newPeopleRes = useInfiteQueryGetUsersWhoLikedSameEventByID(+eventID);
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();
 
   const allFriends = newestFriendsRes.data?.pages.flatMap(page => page?.friendships) || [];
@@ -120,8 +120,8 @@ export default function MatchesScreen(): JSX.Element {
     <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 26 }]}>
       <Image
         style={styles.imgHeader}
-        placeholder={{ thumbhash: eventByIdRes.data?.photos[0].placeholder }}
-        source={{ uri: eventByIdRes.data?.photos[0].url }}
+        placeholder={{ thumbhash: eventByIdRes.data?.photos[0]?.placeholder }}
+        source={{ uri: eventByIdRes.data?.photos[0]?.url }}
       />
 
       <View style={styles.tabs}>
@@ -149,15 +149,15 @@ export default function MatchesScreen(): JSX.Element {
             <View style={modalStyles.avatarMatchContainer}>
               <Image
                 style={modalStyles.avatarMatch}
-                placeholder={{ thumbhash: userProfile?.photos[0].placeholder }}
-                source={{ uri: userProfile?.photos[0].url }}
+                placeholder={{ thumbhash: userProfile?.photos[0]?.placeholder }}
+                source={{ uri: userProfile?.photos[0]?.url }}
               />
 
               {incommginFriendshipSender?.photos?.[0]?.url && (
                 <Image
                   style={modalStyles.avatarMatch}
-                  placeholder={{ thumbhash: incommginFriendshipSender.photos[0].placeholder }}
-                  source={{ uri: incommginFriendshipSender.photos[0].url }}
+                  placeholder={{ thumbhash: incommginFriendshipSender.photos[0]?.placeholder }}
+                  source={{ uri: incommginFriendshipSender.photos[0]?.url }}
                 />
               )}
             </View>
@@ -221,8 +221,8 @@ export default function MatchesScreen(): JSX.Element {
                         <View style={styles.avatarContainer}>
                           <Image
                             style={styles.userAvatar}
-                            placeholder={{ thumbhash: friend?.photos[0].placeholder }}
-                            source={{ uri: friend?.photos[0].url }}
+                            placeholder={{ thumbhash: friend?.photos[0]?.placeholder }}
+                            source={{ uri: friend?.photos[0]?.url }}
                           />
 
                           <View style={styles.textContainer}>
@@ -260,7 +260,7 @@ export default function MatchesScreen(): JSX.Element {
                 ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
                 contentContainerStyle={styles.flatList}
                 showsVerticalScrollIndicator={false}
-                data={newPeopleRes.data?.pages.flatMap(page => page.usersWhoLikedEvent)}
+                data={newPeopleRes.data?.pages?.flatMap(page => page.usersWhoLikedEvent) ?? []}
                 renderItem={({ item: { user: anotherUser }, index }) => {
                   const isReceiver: boolean = anotherUser?.incomingFriendships[0]?.status === 'PENDING';
                   const isSender: boolean = anotherUser?.outgoingFriendships[0]?.status === 'PENDING';
@@ -271,8 +271,8 @@ export default function MatchesScreen(): JSX.Element {
                         <View style={styles.avatarContainer}>
                           <Image
                             style={styles.userAvatar}
-                            placeholder={{ thumbhash: anotherUser.photos[0].placeholder }}
-                            source={{ uri: anotherUser.photos[0].url }}
+                            placeholder={{ thumbhash: anotherUser?.photos[0]?.placeholder }}
+                            source={{ uri: anotherUser?.photos[0]?.url }}
                           />
 
                           <View style={styles.textContainer}>

@@ -28,6 +28,7 @@ export default function WelcomeScreen(): JSX.Element {
         try {
           if (user) {
             const accessToken = await user.getIdToken();
+            // console.log(accessToken);
             setAccessToken(accessToken);
             setIsAuthenticated(true);
             setUserUid(user.uid);

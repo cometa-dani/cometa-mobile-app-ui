@@ -21,14 +21,18 @@ import { ProfileTitle } from '../../components/profile/profileTitle';
 
 
 const searchParamsSchemma = Yup.object({
-  isFriend: Yup.boolean().required().transform((originalValue) => {
-    // Coerce string to number if it's a parsable number
-    if (typeof originalValue === 'string') {
-      return JSON.parse(originalValue); // boolean
-    }
-    // Otherwise, leave it as is
-    return originalValue;
-  }),
+  isFriend:
+    Yup.boolean()
+      .required()
+      .transform((originalValue): boolean => {
+        // Coerce string to number if it's a parsable number
+        if (typeof originalValue === 'string') {
+          return JSON.parse(originalValue); // boolean
+        }
+        // Otherwise, leave it as is
+        return originalValue;
+      }),
+
   uuid: Yup.string().required(),
 });
 

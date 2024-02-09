@@ -103,7 +103,7 @@ export const useQueryGetEventById = (eventID: number) => {
 
 
 // Query to fetch users who liked the same event with infinite scrolling
-export const useInfiteQueryGetUsersWhoLikedEventByID = (eventID: number) => {
+export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return (
