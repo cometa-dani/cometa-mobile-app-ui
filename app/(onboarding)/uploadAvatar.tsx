@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { Text, View, useColors } from '../../components/Themed';
 import { useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
+import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboarding/WrapperOnBoarding';
 import { AppButton } from '../../components/buttons/buttons';
 import * as ImagePicker from 'expo-image-picker';
 import { UserClientState } from '../../models/User';
@@ -112,8 +112,8 @@ export default function UploadAvatarScreen(): JSX.Element {
     <AppWrapperOnBoarding>
       {/* logo */}
       <View style={{ alignItems: 'center' }}>
-        <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
-        <Text style={styles.title}>Upload your Image</Text>
+        <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
+        <Text style={onBoardingStyles.title}>Upload your Image</Text>
       </View>
       {/* logo */}
 
@@ -225,15 +225,5 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textAlign: 'center',
     textTransform: 'uppercase'
-  },
-
-  logo: {
-    aspectRatio: 1,
-    height: 100,
-  },
-
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
   }
 });

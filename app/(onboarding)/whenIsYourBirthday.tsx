@@ -1,7 +1,7 @@
 import { Image, Pressable, StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { router } from 'expo-router';
-import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
+import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboarding/WrapperOnBoarding';
 import { useCometaStore } from '../../store/cometaStore';
 import { AppButton, appButtonstyles } from '../../components/buttons/buttons';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
@@ -49,9 +49,9 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
     <AppWrapperOnBoarding>
       {/* logo */}
       <View style={styles.figure}>
-        <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
+        <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={styles.title}>When is your birthday?</Text>
+        <Text style={onBoardingStyles.title}>When is your birthday?</Text>
       </View>
       {/* logo */}
       {user.birthday && (
@@ -141,16 +141,6 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
 const styles = StyleSheet.create({
   figure: {
     alignItems: 'center',
-  },
-
-  logo: {
-    aspectRatio: 1,
-    height: 100,
-  },
-
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
   }
 });
 

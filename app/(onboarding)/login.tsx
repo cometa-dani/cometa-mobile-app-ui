@@ -3,7 +3,7 @@ import { Text, View } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { router } from 'expo-router';
-import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
+import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboarding/WrapperOnBoarding';
 
 // // auth services
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -56,9 +56,9 @@ export default function LoginScreen(): JSX.Element {
 
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 32 }}>
           <View>
-            <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
+            <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-            <Text style={styles.title}>Log In</Text>
+            <Text style={onBoardingStyles.title}>Log In</Text>
           </View>
 
           <Formik
@@ -118,22 +118,10 @@ export default function LoginScreen(): JSX.Element {
 }
 
 const styles = StyleSheet.create({
-
   form: {
     flexDirection: 'column',
     gap: 32,
     justifyContent: 'center',
     width: '100%'
-  },
-
-  logo: {
-    aspectRatio: 1,
-    height: 100,
-  },
-
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center'
   }
 });

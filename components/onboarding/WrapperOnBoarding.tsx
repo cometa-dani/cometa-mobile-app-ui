@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-unused-styles */
 import { View } from '../Themed';
 import { FC } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
@@ -10,7 +11,7 @@ interface Props {
 export const AppWrapperOnBoarding: FC<Props> = ({ children }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.container}>
+      <View style={onBoardingStyles.container}>
         {children}
       </View>
     </SafeAreaView>
@@ -18,7 +19,7 @@ export const AppWrapperOnBoarding: FC<Props> = ({ children }) => {
 };
 
 
-const styles = StyleSheet.create({
+export const onBoardingStyles = StyleSheet.create({
   container: {
     alignItems: 'center',
     flex: 1,
@@ -27,4 +28,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 26
   },
+
+  logo: {
+    aspectRatio: 1,
+    height: 70,
+  },
+
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+  }
 });

@@ -1,7 +1,7 @@
 import { Image, Platform, StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { router } from 'expo-router';
-import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
+import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboarding/WrapperOnBoarding';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppPhotosGrid } from '../../components/profile/photosGrid';
 import { useMutationDeleteUserPhotoByUuid, useMutationUploadUserPhotos, useQueryGetUserProfileByUid } from '../../queries/userHooks';
@@ -82,9 +82,9 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
     <AppWrapperOnBoarding>
       {/* logo */}
       <View style={styles.figure}>
-        <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
+        <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={styles.title}>Add photos to your profile</Text>
+        <Text style={onBoardingStyles.title}>Add photos to your profile</Text>
       </View>
       {/* logo */}
 
@@ -107,15 +107,5 @@ export default function AddPhotosAndVideosScreen(): JSX.Element {
 const styles = StyleSheet.create({
   figure: {
     alignItems: 'center',
-  },
-
-  logo: {
-    aspectRatio: 1,
-    height: 100,
-  },
-
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
   }
 });

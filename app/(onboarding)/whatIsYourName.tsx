@@ -3,7 +3,7 @@ import { Text, View } from '../../components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { router } from 'expo-router';
-import { AppWrapperOnBoarding } from '../../components/onboarding/WrapperOnBoarding';
+import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboarding/WrapperOnBoarding';
 import { useCometaStore } from '../../store/cometaStore';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppLabelFeedbackMsg, AppLabelMsgOk, AppTextInput } from '../../components/textInput/AppTextInput';
@@ -75,9 +75,9 @@ export default function WhatIsYourNameScreen(): JSX.Element {
     <AppWrapperOnBoarding>
       {/* logo */}
       <View style={styles.figure}>
-        <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
+        <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={styles.title}>What is your name?</Text>
+        <Text style={onBoardingStyles.title}>What is your name?</Text>
       </View>
       {/* logo */}
 
@@ -101,7 +101,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
                 onChangeText={handleChange('name')}
                 onBlur={handleBlur('name')}
                 value={values.name}
-                placeholder='Names'
+                placeholder='Name'
               />
             </View>
             {/* name */}
@@ -163,15 +163,5 @@ const styles = StyleSheet.create({
 
   formField: {
     position: 'relative',
-  },
-
-  logo: {
-    aspectRatio: 1,
-    height: 100,
-  },
-
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
   }
 });
