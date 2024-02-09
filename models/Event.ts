@@ -49,8 +49,6 @@ export interface GetBasicEvent {
   name: string;
   description: string;
   photos: Array<Photo>;
-  // mediaUrl: string;
-  // mediaType: MediaType;
   locationId: number;
   organizationId: number;
   categories: EventCategory[];
@@ -71,8 +69,6 @@ export interface LikedEvent {
   name: string;
   description: string;
   photos: Array<Photo>;
-  // mediaUrl: string;
-  // mediaType: MediaType;
   locationId: number;
   organizationId: number;
   categories: EventCategory[];

@@ -17,6 +17,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
 import { ProfileCarousel } from '../../components/profile/profileCarousel';
 import { Badges } from '../../components/profile/badges';
+import ContentLoader, { Rect } from 'react-content-loader/native';
+import { FontAwesome } from '@expo/vector-icons';
+import { If } from '../../components/utils';
 import { ProfileTitle } from '../../components/profile/profileTitle';
 
 
@@ -50,7 +53,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   const { isFriend, uuid } = searchParamsSchemma.validateSync(urlParams);
 
   // queries
-  const { data: newPeopleProfile, isSuccess } = useQueryGetNewPeopleProfileByUid(uuid);
+  const { data: newPeopleProfile, isSuccess, isLoading } = useQueryGetNewPeopleProfileByUid(uuid);
   const { data: matchedEvents } = useQueryGetMatchedEvents(uuid);
   const isReceiver: boolean = newPeopleProfile?.incomingFriendships[0]?.status === 'PENDING';
   const isSender: boolean = newPeopleProfile?.outgoingFriendships[0]?.status === 'PENDING';
@@ -113,10 +116,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           presentation: 'modal',
           animation: 'default',
           headerShown: true,
-          headerTitle: () => (
-            <ProfileTitle userProfile={newPeopleProfile} />
-          ),
-          // headerTitle: newPeopleProfile?.username || '',
+          headerTitle: newPeopleProfile?.username || '',
           headerTitleAlign: 'center'
         }}
       />
@@ -124,12 +124,41 @@ export default function NewPeopleProfileScreen(): JSX.Element {
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: background }}
       >
-        <ProfileCarousel userPhotos={newPeopleProfile?.photos || []} />
+        <ProfileCarousel
+          isLoading={isLoading}
+          userPhotos={newPeopleProfile?.photos || []}
+        />
 
         <View style={profileStyles.container}>
-          <Text>
-            {newPeopleProfile?.biography}
-          </Text>
+
+          <ProfileTitle
+            isLoading={isLoading}
+            userProfile={newPeopleProfile}
+          />
+
+          <If
+            condition={!isLoading}
+            elseRender={(
+              <ContentLoader
+                speed={1}
+                width={150}
+                height={12}
+                viewBox={`0 0 ${150} ${12}`}
+                backgroundColor="#f3f3f3"
+                foregroundColor="#ecebeb"
+              >
+                <Rect x="6" y="0" rx="6" ry="6" width="140" height="12" />
+              </ContentLoader>
+            )}
+            render={(
+              <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                <FontAwesome size={16} name='user' />
+                <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                  {newPeopleProfile?.biography}
+                </Text>
+              </View>
+            )}
+          />
 
           {/* ACTION BUTTONS */}
           {isSuccess && (
@@ -165,14 +194,17 @@ export default function NewPeopleProfileScreen(): JSX.Element {
               </>
             )
           )}
-
           {/* ACTION BUTTONS */}
 
           {/* MATCHES */}
           <AppCarousel
             title='Matches'
             list={matchedEvents?.map(
-              ({ event }) => ({ id: event.id, img: event.mediaUrl })) || []
+              ({ event }) => ({
+                id: event.id,
+                img: event.photos[0]?.url,
+                placeholder: event.photos[0]?.placeholder
+              })) || []
             }
           />
           {/* MATCHES */}
@@ -182,16 +214,34 @@ export default function NewPeopleProfileScreen(): JSX.Element {
             isLocked={!isFriend}
             title='BucketList'
             list={newPeopleProfile?.likedEvents.map(
-              (likedEvent) => ({ id: likedEvent.id, img: likedEvent.event.mediaUrl })) || []
+              (likedEvent) => ({
+                id: likedEvent.id,
+                img: likedEvent.event.photos[0]?.url,
+                placeholder: likedEvent.event.photos[0]?.placeholder
+              })) || []
             }
           />
           {/* BUCKETLIST */}
 
+          <If condition={newPeopleProfile?.languages?.length}
+            render={(
+              <Badges
+                iconName='comment'
+                title='Languages'
+                items={newPeopleProfile?.languages ?? []}
+              />
+            )}
+          />
 
-          <Badges iconName='comment' title='Languages' items={['English', 'French', 'Spanish']} />
-
-          <Badges iconName='map-marker' title='Location' items={['Live in Doha', 'From Mexico']} />
-
+          <If condition={newPeopleProfile?.homeTown && newPeopleProfile?.currentLocation}
+            render={(
+              <Badges
+                iconName='map-marker'
+                title='Location'
+                items={[`from ${newPeopleProfile?.homeTown}`, `live in ${newPeopleProfile?.currentLocation}`]}
+              />
+            )}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
