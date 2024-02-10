@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     backgroundColor: '#fff',
     borderRadius: 12,
-    height: 76
+    height: 70
   },
 
   textContainer: {

@@ -94,12 +94,28 @@ export const AppLabelFeedbackMsg: FC<AppLabelProps> = ({ text, position = 'top' 
 };
 
 
-export const AppLabelMsgOk: FC<{ text: string }> = ({ text }) => (
-  <TransparentView style={formFieldStyles.formLabelTop}>
-    <FontAwesome name='check-circle-o' color={messages.ok} size={20} />
-    <Text style={{ color: messages.ok, fontSize: 14 }}>{text} is available</Text>
-  </TransparentView>
-);
+export const AppLabelMsgOk: FC<AppLabelProps> = ({ text, position = 'top' }) => {
+  return (
+    position === 'top' ? (
+      <TransparentView style={formFieldStyles.formLabelTop}>
+        <FontAwesome name='check-circle-o' color={messages.ok} size={20} />
+        <Text style={{ color: messages.ok, fontSize: 14 }}>{text} is available</Text>
+      </TransparentView>
+    )
+      : (
+        <>
+          <FontAwesome
+            style={[formFieldStyles.cirle, { borderWidth: 0 }]}
+            name='check-circle'
+            color={messages.ok}
+            size={24}
+          />
+
+          <Text style={{ color: messages.ok, ...formFieldStyles.textBottom }}>{text}</Text>
+        </>
+      )
+  );
+};
 
 const formFieldStyles = StyleSheet.create({
   cirle: {

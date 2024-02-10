@@ -9,6 +9,7 @@ import { AppButton } from '../../components/buttons/buttons';
 import { AppLabelFeedbackMsg, AppLabelMsgOk, AppTextInput } from '../../components/textInput/AppTextInput';
 import { useEffect, useState } from 'react';
 import userService from '../../services/userService';
+import { If } from '../../components/utils';
 
 
 type UserForm = {
@@ -90,11 +91,14 @@ export default function WhatIsYourNameScreen(): JSX.Element {
         {({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
           <View style={styles.form}>
 
-            {/* names */}
+            {/* name */}
             <View style={styles.formField}>
-              {touched.name && errors.name && (
-                <AppLabelFeedbackMsg text={errors.name} />
-              )}
+              <If
+                condition={touched.name && errors.name}
+                render={(
+                  <AppLabelFeedbackMsg position='bottom' text={errors.name} />
+                )}
+              />
               <AppTextInput
                 iconName='user-o'
                 keyboardType="ascii-capable"
@@ -109,17 +113,29 @@ export default function WhatIsYourNameScreen(): JSX.Element {
             {/* @username */}
             <View style={styles.formField}>
               {/* sintactic/local validation */}
-              {touched.username && errors.username && (
-                <AppLabelFeedbackMsg text={errors.username} />
-              )}
+              <If
+                condition={touched.username && errors.username}
+                render={(
+                  <AppLabelFeedbackMsg position='bottom' text={errors.username} />
+                )}
+              />
 
               {/* validating in the backend */}
-              {!isFetching && !errors.username && !isAvaibleToUse && (
-                <AppLabelFeedbackMsg text='Your username is already taken' />
-              )}
-              {!isFetching && values.username.length >= 3 && !errors.username && isAvaibleToUse && (
+              <If
+                condition={!isFetching && !errors.username && !isAvaibleToUse}
+                render={(
+                  <AppLabelFeedbackMsg position='bottom' text={'Your username is already taken'} />
+                )}
+              />
+              <If
+                condition={!isFetching && values.username.length >= 3 && !errors.username && isAvaibleToUse}
+                render={(
+                  <AppLabelMsgOk position='bottom' text={`@${values.username}`} />
+                )}
+              />
+              {/* {!isFetching && values.username.length >= 3 && !errors.username && isAvaibleToUse && (
                 <AppLabelMsgOk text={`@${values.username}`} />
-              )}
+              )} */}
               {/* validating in the backend */}
               <AppTextInput
                 iconName='at'
@@ -163,5 +179,6 @@ const styles = StyleSheet.create({
 
   formField: {
     position: 'relative',
+    justifyContent: 'center'
   }
 });
