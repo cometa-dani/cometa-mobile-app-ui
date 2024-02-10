@@ -23,7 +23,7 @@ const validationSchemma = Yup.object({
   biography: Yup.string().min(5).max(120).required()
 });
 
-export default function UploadAvatarScreen(): JSX.Element {
+export function UploadAvatarScreen(): JSX.Element {
   const { text, gray500 } = useColors();
   const onboarding = useCometaStore(state => state.onboarding);
   const setOnboardingUser = useCometaStore(state => state.setOnboarding);
@@ -90,7 +90,7 @@ export default function UploadAvatarScreen(): JSX.Element {
             setUserUid(userCrendentials.uid);
             setAccessToken(await userCrendentials.getIdToken());
             actions.setSubmitting(false);
-            router.push('/(onboarding)/addPhotosAndVideos');
+            router.push('/(onboarding)/addPhotos');
           }
           catch (error) {
 

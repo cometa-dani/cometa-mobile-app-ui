@@ -133,9 +133,6 @@ export default function WhatIsYourNameScreen(): JSX.Element {
                   <AppLabelMsgOk position='bottom' text={`@${values.username}`} />
                 )}
               />
-              {/* {!isFetching && values.username.length >= 3 && !errors.username && isAvaibleToUse && (
-                <AppLabelMsgOk text={`@${values.username}`} />
-              )} */}
               {/* validating in the backend */}
               <AppTextInput
                 iconName='at'

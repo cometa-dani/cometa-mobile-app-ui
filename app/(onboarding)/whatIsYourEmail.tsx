@@ -13,12 +13,10 @@ import userService from '../../services/userService';
 
 type UserForm = {
   email: string,
-  password: string,
 }
 
 export const loginSchemma = Yup.object<UserForm>({
   email: Yup.string().email().required(),
-  password: Yup.string().min(6).max(18).required(),
 });
 
 
@@ -34,11 +32,10 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
       if (!isAvaibleToUse || isFetching) return;
       try {
         setOnboarding({
-          email: values.email,
-          password: values.password
+          email: values.email.trim(),
         });
         actions.setSubmitting(false);
-        router.push('/(onboarding)/whenIsYourBirthday');
+        router.push('/(onboarding)/whatIsYourPassword');
       }
       catch (error) {
         // console.log(error);
@@ -84,7 +81,7 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
       {/* logo */}
 
       <Formik
-        initialValues={{ email: onboarding.email || '', password: onboarding.password || '' }}
+        initialValues={{ email: onboarding.email || '' }}
         validationSchema={loginSchemma}
         onSubmit={handleNextSlide}
       >
@@ -92,15 +89,15 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
           <View style={styles.form}>
 
             {/* email */}
-            <View style={{ position: 'relative' }}>
+            <View style={{ position: 'relative', justifyContent: 'center' }}>
               {touched.email && errors.email && (
-                <AppLabelFeedbackMsg text={errors.email} />
+                <AppLabelFeedbackMsg position='bottom' text={errors.email} />
               )}
               {!isFetching && values.email.includes('@') && !errors.email && !isAvaibleToUse && (
-                <AppLabelFeedbackMsg text='Your email already exists' />
+                <AppLabelFeedbackMsg position='bottom' text='your email already exists' />
               )}
               {!isFetching && values.email.includes('@') && !errors.email && isAvaibleToUse && (
-                <AppLabelMsgOk text='email' />
+                <AppLabelMsgOk position='bottom' text='email is available' />
               )}
               <AppTextInput
                 iconName='envelope-o'
@@ -115,23 +112,6 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
               />
             </View>
             {/* email */}
-
-            {/* password */}
-            <View style={{ position: 'relative' }}>
-              {touched.password && errors.password && (
-                <AppLabelFeedbackMsg text={errors.password} />
-              )}
-              <AppTextInput
-                iconName='key'
-                keyboardType="ascii-capable"
-                secureTextEntry={true}
-                onChangeText={handleChange('password')}
-                onBlur={handleBlur('password')}
-                value={values.password}
-                placeholder='Password'
-              />
-            </View>
-            {/* password */}
 
             <AppButton
               onPress={() => handleSubmit()}

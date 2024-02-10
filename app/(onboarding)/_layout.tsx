@@ -16,8 +16,7 @@ export default function OnboardingLayout() {
         <Stack.Screen name="whatIsYourName" />
         <Stack.Screen name="whatIsYourEmail" />
         <Stack.Screen name="whenIsYourBirthday" />
-        <Stack.Screen name="uploadAvatar" />
-        <Stack.Screen name="addPhotosAndVideos" />
+        <Stack.Screen name="addPhotos" />
       </Stack>
     </>
   );

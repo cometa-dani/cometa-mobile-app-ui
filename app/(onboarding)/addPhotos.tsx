@@ -5,14 +5,14 @@ import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboard
 import { AppButton } from '../../components/buttons/buttons';
 import { AppPhotosGrid } from '../../components/profile/photosGrid';
 import { useMutationDeleteUserPhotoByUuid, useMutationUploadUserPhotos, useQueryGetUserProfileByUid } from '../../queries/userHooks';
-import { Photo } from '../../models/User';
+import { Photo } from '../../models/Photo';
 import * as ImagePicker from 'expo-image-picker';
 import { useCometaStore } from '../../store/cometaStore';
 import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
 
 
-export default function AddPhotosAndVideosScreen(): JSX.Element {
+export default function AddPhotosScreen(): JSX.Element {
   const uid = useCometaStore(state => state.uid);
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   // mutations

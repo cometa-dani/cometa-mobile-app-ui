@@ -42,7 +42,7 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
   };
 
   const handleSlideNext = (): void => {
-    router.push('/(onboarding)/uploadAvatar');
+    router.push('/(onboarding)/addPhotos');
   };
 
   return (
@@ -84,7 +84,7 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
       {!user.birthday && (
         <AppButton
           style={{ position: 'absolute', bottom: 24 }}
-          onPress={() => router.push('/(onboarding)/uploadAvatar')}
+          onPress={() => router.push('/(onboarding)/addPhotos')}
           btnColor='white'
           text='Skip this step'
         />
