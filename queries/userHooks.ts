@@ -5,7 +5,6 @@ import { Photo } from '../models/Photo';
 import { QueryKeys } from './queryKeys';
 import { useCometaStore } from '../store/cometaStore';
 import { ImagePickerAsset } from 'expo-image-picker';
-import uuid from 'react-native-uuid';
 
 
 export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
@@ -91,9 +90,17 @@ export const useQueryGetNewPeopleProfileByUid = (dynamicParam: string) => {
 };
 
 
-type PhotosParams = { pickedImgFiles: ImagePickerAsset[], userID: number };
+type PhotosParams = {
+  pickedImgFiles: Pick<ImagePickerAsset, 'uri' | 'assetId'>[],
+  userID: number
+};
 
-export const useMutationUploadUserPhotos = (dynamicParam: string) => {
+/**
+ *
+ * @param uuId universal unique id
+ * @returns
+ */
+export const useMutationUploadUserPhotos = (uuId: string) => {
   const queryClient = useQueryClient();
 
   return (
@@ -110,12 +117,12 @@ export const useMutationUploadUserPhotos = (dynamicParam: string) => {
         },
 
       onMutate: async ({ pickedImgFiles }) => {
-        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO, dynamicParam] });
+        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO, uuId] });
 
         queryClient
           .setQueryData<GetDetailedUserProfile>
-          ([QueryKeys.GET_USER_INFO, dynamicParam], (oldState): GetDetailedUserProfile => {
-            const newPhotos: Partial<Photo>[] = pickedImgFiles.map(img => ({ url: img.uri, uuid: uuid.v4() as string })) || [];
+          ([QueryKeys.GET_USER_INFO, uuId], (oldState): GetDetailedUserProfile => {
+            const newPhotos: Partial<Photo>[] = pickedImgFiles.map(imgFile => ({ url: imgFile.uri, uuid: imgFile.assetId ?? '' })) || [];
 
             const optimisticState = {
               ...oldState,
@@ -128,7 +135,7 @@ export const useMutationUploadUserPhotos = (dynamicParam: string) => {
       },
 
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO, dynamicParam] });
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO, uuId] });
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3

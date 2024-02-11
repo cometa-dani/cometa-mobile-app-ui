@@ -66,7 +66,6 @@ export default function AppLayout() {
               shadowColor: 'transparent',
               elevation: 0,
               borderTopWidth: 0,
-              // display: 'none'
             },
             headerStyle: { elevation: 0, shadowColor: 'transparent' },
             headerShown: false,

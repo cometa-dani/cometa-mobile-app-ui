@@ -5,7 +5,7 @@ import { UserClientState } from '../../models/User';
 
 export type OnboardingSlice = {
   onboarding: {
-    user: Partial<UserClientState>
+    user: UserClientState
   }
 
   setOnboarding: (user: Partial<UserClientState>) => void

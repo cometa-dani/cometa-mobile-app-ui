@@ -59,7 +59,7 @@ export function UploadAvatarScreen(): JSX.Element {
         quality: 1,
       });
       if (!result.canceled) {
-        setOnboardingUser({ imageRef: result.assets[0] });
+        // setOnboardingUser({ imageRef: result.assets[0] });
       }
     }
     catch (error) {
@@ -171,7 +171,7 @@ export function UploadAvatarScreen(): JSX.Element {
                       onBlur={handleBlur('biography')}
                       onChangeText={(text) => {
                         handleChange('biography')(text);
-                        setOnboardingUser({ biography: text });
+                        // setOnboardingUser({ biography: text });
                       }}
                       ref={bioRef}
                       value={values.biography}

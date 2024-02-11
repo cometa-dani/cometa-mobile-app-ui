@@ -6,7 +6,18 @@ import { Photo } from './Photo';
 
 
 // used in zustand store for global CLIENT STATE
-export interface UserClientState extends GetBasicUserProfile {
+export interface UserClientState extends Pick<GetBasicUserProfile, (
+  'id' |
+  'uid' |
+  'username' |
+  'birthday' |
+  'email' |
+  'name' |
+  'biography' |
+  'currentLocation' |
+  'homeTown' |
+  'languages'
+)> {
   password: string;
   imageRef: ImagePickerAsset;
 }

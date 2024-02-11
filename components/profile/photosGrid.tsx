@@ -1,11 +1,10 @@
-/* eslint-disable no-unused-vars */
 import { FC } from 'react';
 import { Pressable, PressableProps, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
-import { Photo } from '../../models/User';
 import { Text, View, useColors } from '../Themed';
 import { FontAwesome } from '@expo/vector-icons';
-import { blue_50, gray_50 } from '../../constants/colors';
+import { gray_50 } from '../../constants/colors';
+import { Photo } from '../../models/Photo';
 
 
 interface CloseBtnProps extends PressableProps {
@@ -15,11 +14,11 @@ interface CloseBtnProps extends PressableProps {
 interface AppPhotoGridProps {
   onHandlePickImage?: () => void,
   onDeleteImage?: (uuid: string) => void,
-  photosList: Photo[],
+  photosList: Pick<Photo, 'placeholder' | 'url' | 'uuid'>[],
   placeholders?: number,
   height?: number
 }
-export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDeleteImage, photosList, placeholders = 0, height = 190 }) => {
+export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDeleteImage, photosList = [], placeholders = 0, height = 190 }) => {
   const editorMode: boolean = onHandlePickImage || onDeleteImage ? true : false;
   const { gray500, gray900, white50 } = useColors();
 
@@ -54,11 +53,11 @@ export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDele
         <Text>No photos available</Text>
       ) : (
         <>
-          {/* col 1 */}
+          {/* photo 1 */}
           <View style={{ flex: 1, position: 'relative' }}>
-            {photosList[0]?.url.length ? (
+            {photosList[0]?.url?.length ? (
               <>
-                <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={[gridStyles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: photosList[0]?.url }} />
+                <Image placeholder={{ thumbhash: photosList[0]?.placeholder }} style={[gridStyles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: photosList[0]?.url }} />
                 <CloseButton onPress={() => onDeleteImage && onDeleteImage(photosList[0]?.uuid)} />
               </>
             ) : (
@@ -69,7 +68,7 @@ export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDele
               </View>
             )}
           </View>
-          {/* col 1 */}
+          {/* photo 1 */}
 
           {/* grid */}
           <View
@@ -81,13 +80,13 @@ export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDele
               alignContent: 'space-between'
             }}>
 
-            {photosList?.slice(1).concat(placeholdersPhotos).map(({ url, uuid }, i) => (
+            {photosList?.slice(1).concat(placeholdersPhotos).map(({ url, uuid, placeholder }, i) => (
               <View
                 key={uuid ?? i}
                 style={[gridStyles.item, { position: 'relative' }]}>
                 {url?.length ? (
                   <>
-                    <Image placeholder={'L39HdjPsUhyE05m0ucW,00lTm]R5'} style={gridStyles.uploadPhotoGrid} source={{ uri: url }} />
+                    <Image placeholder={{ thumbhash: placeholder }} style={gridStyles.uploadPhotoGrid} source={{ uri: url }} />
                     <CloseButton
                       size='small'
                       onPress={() => onDeleteImage && onDeleteImage(uuid)}

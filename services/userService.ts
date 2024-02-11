@@ -60,7 +60,7 @@ class UserService extends RestApiService {
   }
 
 
-  public uploadManyPhotosByUserId(userID: number, pickedImgFiles: ImagePickerAsset[]) {
+  public uploadManyPhotosByUserId(userID: number, pickedImgFiles: Pick<ImagePickerAsset, 'uri' | 'assetId'>[]) {
     const formData = new FormData();
     const headers = { 'Content-Type': 'multipart/form-data', };
 
@@ -68,8 +68,8 @@ class UserService extends RestApiService {
       const fileExtension = pickedImgFile.uri.split('.').at(-1);
       const imgFile = ({
         uri: pickedImgFile.uri,
-        type: `${pickedImgFile.type}/${fileExtension}`,
-        name: uuid.v4(),
+        type: `image/${fileExtension}`,
+        name: pickedImgFile.assetId ?? uuid.v4(),
       });
       // Include the order in the field name
       // formData.append(`files[${order}]`, imgFile);
