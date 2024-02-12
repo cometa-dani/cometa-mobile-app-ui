@@ -17,17 +17,12 @@ export default function ShowCurrentLocationScreen(): JSX.Element {
   const uid = useCometaStore(state => state.uid); // this can be abstracted
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
 
-  const navigateToEditProfilePushedScreen = (field: string): void => {
+  const pushEditProfileScreen = (field: string): void => {
     router.push(`/editProfile/${field}?userId=${uid}`);
   };
 
   const handleNextSlide = (): void => {
-    try {
-      router.push('/(onboarding)/whereAreYouFrom');
-    }
-    catch (error) {
-      // console.log(error);
-    }
+    router.push('/(onboarding)/whereAreYouFrom');
   };
 
   return (
@@ -39,6 +34,7 @@ export default function ShowCurrentLocationScreen(): JSX.Element {
         <Text style={onBoardingStyles.title}>Show your location</Text>
       </View>
       {/* logo */}
+
 
       <View style={{ width: '100%', position: 'relative' }}>
         <View style={{ gap: 8 }}>
@@ -66,7 +62,7 @@ export default function ShowCurrentLocationScreen(): JSX.Element {
               condition={userProfile?.currentLocation}
               render={(
                 <AppButton
-                  onPress={() => navigateToEditProfilePushedScreen('currentLocation')}
+                  onPress={() => pushEditProfileScreen('currentLocation')}
                   btnColor='white'
                   text={userProfile?.currentLocation}
                   style={badgesStyles.badge}
@@ -74,7 +70,7 @@ export default function ShowCurrentLocationScreen(): JSX.Element {
               )}
               elseRender={(
                 <AppButton
-                  onPress={() => navigateToEditProfilePushedScreen('currentLocation')}
+                  onPress={() => pushEditProfileScreen('currentLocation')}
                   btnColor='white'
                   text='Add'
                   style={{ ...badgesStyles.badge }}
@@ -83,7 +79,7 @@ export default function ShowCurrentLocationScreen(): JSX.Element {
             />
 
             <BaseButton
-              onPress={() => navigateToEditProfilePushedScreen('currentLocation')}
+              onPress={() => pushEditProfileScreen('currentLocation')}
               style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
               <FontAwesome name='chevron-right' size={18} />
             </BaseButton>
@@ -92,12 +88,21 @@ export default function ShowCurrentLocationScreen(): JSX.Element {
 
         <View style={{ marginTop: 32 }}>
           <AppButton
-            onPress={() => handleNextSlide()}
+            onPress={userProfile?.currentLocation ? handleNextSlide : undefined}
             btnColor='primary'
             text='NEXT'
           />
         </View>
       </View>
+
+      <View>
+        <AppButton
+          onPress={handleNextSlide}
+          btnColor='lightGray'
+          text='skip this step'
+        />
+      </View>
+
     </AppWrapperOnBoarding>
   );
 }

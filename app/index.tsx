@@ -17,8 +17,8 @@ export default function WelcomeScreen(): JSX.Element {
   // Function to handle navigation when "Get Started" button is pressed.
   const handleSlideNextScreen = (): void => {
     unsubscribe && unsubscribe();
-    router.push('/(onboarding)/tellUsAboutYourself');
-    // router.push(isAuthenticated ? '/(app)/' : '/(onboarding)/login');
+    // router.push('/(onboarding)/showYourCurrentLocation');
+    router.push(isAuthenticated ? '/(app)/' : '/(onboarding)/login');
   };
 
   // Function to handle authentication state changes.

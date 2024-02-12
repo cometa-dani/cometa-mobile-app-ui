@@ -17,18 +17,13 @@ export default function HowManyLanguagesScreen(): JSX.Element {
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
 
-  const navigateToEditProfilePushedScreen = (field: string): void => {
+  const pushToEditProfileScreen = (field: string): void => {
     router.push(`/editProfile/${field}?userId=${uid}`);
   };
 
   const handleNextSlide = (): void => {
-    try {
-      setIsAuthenticated(true);
-      router.push('/(app)/');
-    }
-    catch (error) {
-      // console.log(error);
-    }
+    setIsAuthenticated(true);
+    router.push('/(app)/');
   };
 
   return (
@@ -67,7 +62,7 @@ export default function HowManyLanguagesScreen(): JSX.Element {
               condition={userProfile?.languages?.length}
               elseRender={(
                 <AppButton
-                  onPress={() => navigateToEditProfilePushedScreen('languages')}
+                  onPress={() => pushToEditProfileScreen('languages')}
                   btnColor='white'
                   text='Add'
                   style={badgesStyles.badge}
@@ -81,7 +76,7 @@ export default function HowManyLanguagesScreen(): JSX.Element {
                         key={index}
                         btnColor='white'
                         text={language}
-                        onPress={() => navigateToEditProfilePushedScreen('languages')}
+                        onPress={() => pushToEditProfileScreen('languages')}
                         style={badgesStyles.badge}
                       />
                     )}
@@ -91,7 +86,7 @@ export default function HowManyLanguagesScreen(): JSX.Element {
             />
 
             <BaseButton
-              onPress={() => navigateToEditProfilePushedScreen('languages')}
+              onPress={() => pushToEditProfileScreen('languages')}
               style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
               <FontAwesome name='chevron-right' size={18} />
             </BaseButton>
@@ -100,12 +95,21 @@ export default function HowManyLanguagesScreen(): JSX.Element {
 
         <View style={{ marginTop: 32 }}>
           <AppButton
-            onPress={() => handleNextSlide()}
+            onPress={userProfile?.languages?.length ? handleNextSlide : undefined}
             btnColor='primary'
             text='NEXT'
           />
         </View>
       </View>
+
+      <View>
+        <AppButton
+          onPress={handleNextSlide}
+          btnColor='lightGray'
+          text='skip this step'
+        />
+      </View>
+
     </AppWrapperOnBoarding>
   );
 }

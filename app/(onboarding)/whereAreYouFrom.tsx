@@ -17,17 +17,12 @@ export default function WhereAreYouFromScreen(): JSX.Element {
   const uid = useCometaStore(state => state.uid); // this can be abstracted
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
 
-  const navigateToEditProfilePushedScreen = (field: string): void => {
+  const pushEditProfileScreen = (field: string): void => {
     router.push(`/editProfile/${field}?userId=${uid}`);
   };
 
   const handleNextSlide = (): void => {
-    try {
-      router.push('/(onboarding)/howManyLanguagesDoYouSpeak');
-    }
-    catch (error) {
-      // console.log(error);
-    }
+    router.push('/(onboarding)/howManyLanguagesDoYouSpeak');
   };
 
   return (
@@ -66,7 +61,7 @@ export default function WhereAreYouFromScreen(): JSX.Element {
               condition={userProfile?.homeTown}
               render={(
                 <AppButton
-                  onPress={() => navigateToEditProfilePushedScreen('homeTown')}
+                  onPress={() => pushEditProfileScreen('homeTown')}
                   btnColor='white'
                   text={userProfile?.homeTown}
                   style={badgesStyles.badge}
@@ -74,7 +69,7 @@ export default function WhereAreYouFromScreen(): JSX.Element {
               )}
               elseRender={(
                 <AppButton
-                  onPress={() => navigateToEditProfilePushedScreen('homeTown')}
+                  onPress={() => pushEditProfileScreen('homeTown')}
                   btnColor='white'
                   text='Add'
                   style={{ ...badgesStyles.badge }}
@@ -83,7 +78,7 @@ export default function WhereAreYouFromScreen(): JSX.Element {
             />
 
             <BaseButton
-              onPress={() => navigateToEditProfilePushedScreen('homeTown')}
+              onPress={() => pushEditProfileScreen('homeTown')}
               style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
               <FontAwesome name='chevron-right' size={18} />
             </BaseButton>
@@ -92,12 +87,21 @@ export default function WhereAreYouFromScreen(): JSX.Element {
 
         <View style={{ marginTop: 32 }}>
           <AppButton
-            onPress={() => handleNextSlide()}
+            onPress={userProfile?.homeTown ? handleNextSlide : undefined}
             btnColor='primary'
             text='NEXT'
           />
         </View>
       </View>
+
+      <View>
+        <AppButton
+          onPress={handleNextSlide}
+          btnColor='lightGray'
+          text='skip this step'
+        />
+      </View>
+
     </AppWrapperOnBoarding>
   );
 }
