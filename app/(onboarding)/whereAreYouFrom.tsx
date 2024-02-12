@@ -18,7 +18,7 @@ export default function WhereAreYouFromScreen(): JSX.Element {
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
 
   const pushEditProfileScreen = (field: string): void => {
-    router.push(`/editProfile/${field}?userId=${uid}`);
+    router.push(`/editProfile/${field}?userId=${userProfile?.id}`);
   };
 
   const handleNextSlide = (): void => {

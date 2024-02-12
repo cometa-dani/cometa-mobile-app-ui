@@ -113,7 +113,7 @@ export default function UserProfileScreen(): JSX.Element {
 
 
   const navigateToEditProfilePushedScreen = (field: userAttributes): void => {
-    router.push(`/editProfile/${field}?userId=${uid}`);
+    router.push(`/editProfile/${field}?userId=${userProfile?.id}`);
   };
 
 
