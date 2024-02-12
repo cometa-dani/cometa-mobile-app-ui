@@ -27,6 +27,8 @@ export default function WhatIsYourPasswordScreen(): JSX.Element {
 
   const handleNextSlide =
     (values: UserForm, actions: FormikHelpers<UserForm>): void => {
+
+      if (values.password.trim() !== values.repeatPassword.trim()) return;
       try {
         setOnboarding({
           password: values.password.trim(),
@@ -67,7 +69,7 @@ export default function WhatIsYourPasswordScreen(): JSX.Element {
                 )}
               />
               <If
-                condition={isValid && dirty && values.password === values.repeatPassword}
+                condition={touched.password && !errors.password && values.password === values.repeatPassword}
                 render={(
                   <AppLabelMsgOk text='' position='bottom' />
                 )}
@@ -95,7 +97,7 @@ export default function WhatIsYourPasswordScreen(): JSX.Element {
                 )}
               />
               <If
-                condition={isValid && dirty && values.password === values.repeatPassword}
+                condition={touched.repeatPassword && !errors.repeatPassword && values.password === values.repeatPassword}
                 render={(
                   <AppLabelMsgOk text='' position='bottom' />
                 )}

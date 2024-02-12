@@ -200,23 +200,23 @@ const BucketItem: FC<Props> = ({ item }) => {
         {({ pressed }) => (
           <View style={[styles.eventContainer, { opacity: pressed ? 0.8 : 1 }]}>
             <Image
-              source={{ uri: item.photos[0].url ?? '' }}
-              placeholder={{ thumbhash: item.photos[0].placeholder }}
+              source={{ uri: item?.photos[0]?.url ?? '' }}
+              placeholder={{ thumbhash: item?.photos[0]?.placeholder }}
               style={styles.img}
             />
 
             <View style={styles.textContainer}>
-              <Text style={styles.title}>{item.name}</Text>
+              <Text style={styles.title}>{item?.name}</Text>
 
-              <Text style={styles.date}>{new Date(item.date).toDateString()}</Text>
+              <Text style={styles.date}>{new Date(item?.date).toDateString()}</Text>
             </View>
 
             <View style={styles.bubblesContainer}>
-              {item.likes.slice(0, 3).map(({ user, userId }) => (
+              {item?.likes.slice(0, 3).map(({ user, userId }) => (
                 <Image
                   key={userId}
-                  source={{ uri: user.photos[0].url }}
-                  placeholder={{ thumbhash: user?.photos[0].placeholder }}
+                  source={{ uri: user?.photos[0]?.url }}
+                  placeholder={{ thumbhash: user?.photos[0]?.placeholder }}
                   style={styles.bubble}
                 />
               ))}
