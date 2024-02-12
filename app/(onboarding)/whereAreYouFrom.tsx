@@ -12,19 +12,17 @@ import { useCometaStore } from '../../store/cometaStore';
 import { useQueryGetUserProfileByUid } from '../../queries/userHooks';
 
 
-export default function ShowCurrentLocationScreen(): JSX.Element {
+export default function WhereAreYouFromScreen(): JSX.Element {
 
   const uid = useCometaStore(state => state.uid); // this can be abstracted
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
 
   const navigateToEditProfilePushedScreen = (field: string): void => {
-    router.push(`/editProfile/${field}`);
+    router.push(`/editProfile/${field}?userId=${uid}`);
   };
 
   const handleNextSlide = (): void => {
     try {
-      //  mutate the user object
-      // actions.setSubmitting(false);
       router.push('/(onboarding)/howManyLanguagesDoYouSpeak');
     }
     catch (error) {
@@ -65,7 +63,7 @@ export default function ShowCurrentLocationScreen(): JSX.Element {
             paddingHorizontal: 20,
           }}>
             <If
-              condition={userProfile?.currentLocation}
+              condition={userProfile?.homeTown}
               render={(
                 <AppButton
                   onPress={() => navigateToEditProfilePushedScreen('homeTown')}

@@ -24,7 +24,7 @@ const validationSchemma = Yup.object<ProfileValues>({
 });
 
 
-export default function TellUsAboutYourselftScreen(): JSX.Element {
+export default function TellUsAboutYourselfScreen(): JSX.Element {
 
   const handleNextSlide =
     (values: ProfileValues, actions: FormikHelpers<ProfileValues>): void => {

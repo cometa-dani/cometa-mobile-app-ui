@@ -18,13 +18,11 @@ export default function ShowCurrentLocationScreen(): JSX.Element {
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
 
   const navigateToEditProfilePushedScreen = (field: string): void => {
-    router.push(`/editProfile/${field}`);
+    router.push(`/editProfile/${field}?userId=${uid}`);
   };
 
   const handleNextSlide = (): void => {
     try {
-      //  mutate the user object
-      // actions.setSubmitting(false);
       router.push('/(onboarding)/whereAreYouFrom');
     }
     catch (error) {

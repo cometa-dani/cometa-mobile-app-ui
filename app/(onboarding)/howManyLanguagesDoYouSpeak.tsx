@@ -11,19 +11,19 @@ import { useCometaStore } from '../../store/cometaStore';
 import { useQueryGetUserProfileByUid } from '../../queries/userHooks';
 
 
-export default function ShowCurrentLocationScreen(): JSX.Element {
+export default function HowManyLanguagesScreen(): JSX.Element {
 
   const uid = useCometaStore(state => state.uid); // this can be abstracted
+  const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
 
   const navigateToEditProfilePushedScreen = (field: string): void => {
-    router.push(`/editProfile/${field}`);
+    router.push(`/editProfile/${field}?userId=${uid}`);
   };
 
   const handleNextSlide = (): void => {
     try {
-      //  mutate the user object
-      // actions.setSubmitting(false);
+      setIsAuthenticated(true);
       router.push('/(app)/');
     }
     catch (error) {
@@ -53,7 +53,7 @@ export default function ShowCurrentLocationScreen(): JSX.Element {
             flexDirection: 'row',
             elevation: 3,
             borderRadius: 50,
-            shadowColor: '#171717', // add shadow for iOS
+            shadowColor: '#171717',
             shadowOffset: {
               width: 0,
               height: 2,
