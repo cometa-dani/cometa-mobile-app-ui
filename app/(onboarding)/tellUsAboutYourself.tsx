@@ -4,35 +4,34 @@ import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { router } from 'expo-router';
 import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboarding/WrapperOnBoarding';
-import { useCometaStore } from '../../store/cometaStore';
 import { AppButton } from '../../components/buttons/buttons';
-import { AppLabelFeedbackMsg, AppLabelMsgOk, AppTextInput } from '../../components/textInput/AppTextInput';
+import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
 import { If } from '../../components/utils';
+import { profileStyles } from '../../components/profile/profileStyles';
+import { gray_300 } from '../../constants/colors';
 
 
-type UserForm = {
-  password: string,
-  repeatPassword: string,
+
+type ProfileValues = {
+  occupation: string,
+  biography: string,
 }
 
-export const loginSchemma = Yup.object<UserForm>({
-  password: Yup.string().min(6).max(18).required(),
-  repeatPassword: Yup.string().min(6).max(18).required(),
+
+const validationSchemma = Yup.object<ProfileValues>({
+  occupation: Yup.string().min(5).max(32).required(),
+  biography: Yup.string().min(5).max(120).required(),
 });
 
 
-export default function WhatIsYourPasswordScreen(): JSX.Element {
-  const setOnboarding = useCometaStore(state => state.setOnboarding);
-  const onboarding = useCometaStore(state => state.onboarding.user);
+export default function TellUsAboutYourselftScreen(): JSX.Element {
 
   const handleNextSlide =
-    (values: UserForm, actions: FormikHelpers<UserForm>): void => {
+    (values: ProfileValues, actions: FormikHelpers<ProfileValues>): void => {
       try {
-        setOnboarding({
-          password: values.password.trim(),
-        });
+        //  mutate the user object
         actions.setSubmitting(false);
-        router.push('/(onboarding)/whenIsYourBirthday');
+        router.push('/(onboarding)/showYourCurrentLocation');
       }
       catch (error) {
         // console.log(error);
@@ -46,82 +45,81 @@ export default function WhatIsYourPasswordScreen(): JSX.Element {
       <View style={styles.figure}>
         <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={onBoardingStyles.title}>What is your password?</Text>
+        <Text style={onBoardingStyles.title}>Tell us about yourself</Text>
       </View>
       {/* logo */}
 
       <Formik
-        initialValues={{ password: onboarding.password ?? '', repeatPassword: onboarding.password ?? '' }}
-        validationSchema={loginSchemma}
+        enableReinitialize
+        validationSchema={validationSchemma}
+        initialValues={{
+          biography: '',
+          occupation: '',
+        }}
         onSubmit={handleNextSlide}
       >
-        {({ handleSubmit, handleChange, handleBlur, values, errors, touched, isValid, dirty }) => (
-          <View style={styles.form}>
+        {({ handleBlur, handleChange, handleSubmit, values, touched, errors, dirty }) => (
+          <View style={{ ...profileStyles.porfileContent, width: '100%' }}>
 
-            {/* password */}
-            <View style={{ position: 'relative', justifyContent: 'center' }}>
-              <If
-                condition={touched.password && errors.password}
-                render={(
-                  <AppLabelFeedbackMsg position='bottom' text={errors.password} />
+            {/* occupation */}
+            <View style={{ gap: 8 }}>
+              <View style={{ gap: -4 }}>
+                <Text style={profileStyles.title}>Occupation</Text>
+                <Text style={{ color: gray_300 }}>Write your usual or principal job or profession </Text>
+              </View>
+
+              <View style={{ position: 'relative', justifyContent: 'center' }}>
+                <If
+                  condition={touched.occupation && errors.occupation}
+                  render={(
+                    <AppLabelFeedbackMsg position='bottom' text={errors.occupation} />
+                  )}
+                />
+                <AppTextInput
+                  iconName='briefcase'
+                  keyboardType="ascii-capable"
+                  onChangeText={handleChange('occupation')}
+                  onBlur={handleBlur('occupation')}
+                  value={values.occupation}
+                />
+              </View>
+            </View>
+            {/* occupation */}
+
+
+            {/* bio */}
+            <View style={{ gap: 8 }}>
+              <View style={{ gap: -4 }}>
+                <Text style={profileStyles.title}>Bio</Text>
+                <Text style={{ color: gray_300 }}>Something fun about yourself and who you are </Text>
+              </View>
+
+              <View style={{ position: 'relative' }}>
+                {touched.biography && errors.biography && (
+                  <AppLabelFeedbackMsg position='bottom' text={errors.biography} />
                 )}
-              />
-              <If
-                condition={isValid && dirty && values.password === values.repeatPassword}
-                render={(
-                  <AppLabelMsgOk text='' position='bottom' />
-                )}
-              />
-              <AppTextInput
-                iconName='lock'
-                keyboardType="ascii-capable"
-                secureTextEntry={true}
-                onChangeText={handleChange('password')}
-                onBlur={handleBlur('password')}
-                value={values.password}
-                placeholder='Password'
+                <AppTextInput
+                  iconName='user'
+                  keyboardType="ascii-capable"
+                  onChangeText={handleChange('biography')}
+                  onBlur={handleBlur('biography')}
+                  value={values.biography}
+                />
+              </View>
+            </View>
+            {/* bio */}
+
+
+            <View style={{ marginTop: 16 }}>
+              <AppButton
+                onPress={() => handleSubmit()}
+                btnColor='primary'
+                text='NEXT'
               />
             </View>
-            {/* password */}
-
-            <Text style={{ fontWeight: '700', marginLeft: 20 }}>Repeat password</Text>
-
-            {/* repeat password */}
-            <View style={{ position: 'relative', justifyContent: 'center' }}>
-              <If
-                condition={touched.repeatPassword && errors.repeatPassword}
-                render={(
-                  <AppLabelFeedbackMsg position='bottom' text={errors.repeatPassword} />
-                )}
-              />
-              <If
-                condition={isValid && dirty && values.password === values.repeatPassword}
-                render={(
-                  <AppLabelMsgOk text='' position='bottom' />
-                )}
-              />
-              <AppTextInput
-                iconName='lock'
-                keyboardType="ascii-capable"
-                secureTextEntry={true}
-                onChangeText={handleChange('repeatPassword')}
-                onBlur={handleBlur('repeatPassword')}
-                value={values.repeatPassword}
-                placeholder='Password'
-              />
-            </View>
-            {/* repeat password */}
-
-            <AppButton
-              onPress={() => handleSubmit()}
-              btnColor='primary'
-              text='NEXT'
-            />
           </View>
         )}
       </Formik>
-      {/* create user with email and password */}
-
     </AppWrapperOnBoarding>
   );
 }
@@ -131,10 +129,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  form: {
-    flexDirection: 'column',
-    gap: 32,
-    justifyContent: 'center',
-    width: '100%'
-  }
+  // form: {
+  //   flexDirection: 'column',
+  //   gap: 32,
+  //   justifyContent: 'center',
+  //   width: '100%'
+  // }
 });
