@@ -130,7 +130,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
               <If
                 condition={!isFetching && values.username.length >= 3 && !errors.username && isAvaibleToUse}
                 render={(
-                  <AppLabelMsgOk position='bottom' text={`@${values.username}`} />
+                  <AppLabelMsgOk position='bottom' text={`@${values.username} is available`} />
                 )}
               />
               {/* validating in the backend */}
