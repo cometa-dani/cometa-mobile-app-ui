@@ -42,6 +42,11 @@ export const buttonColors = {
   white: {
     background: '#fff',
     color: '#030303'
+  },
+
+  lightGray: {
+    background: gray_50,
+    color: gray_300
   }
 };
 

@@ -155,6 +155,7 @@ export default function AddPhotosScreen(): JSX.Element {
         onPress={handleNextSlide}
         btnColor='primary'
         text='NEXT'
+        style={{ width: '100%' }}
       />
     </AppWrapperOnBoarding>
   );

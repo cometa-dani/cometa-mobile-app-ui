@@ -11,6 +11,7 @@ export interface UserClientState extends Pick<GetBasicUserProfile, (
   'uid' |
   'username' |
   'birthday' |
+  'occupation' |
   'email' |
   'name' |
   'biography' |

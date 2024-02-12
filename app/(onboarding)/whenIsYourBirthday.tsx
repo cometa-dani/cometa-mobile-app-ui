@@ -42,7 +42,9 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
   };
 
   const handleSlideNext = (): void => {
-    router.push('/(onboarding)/addPhotos');
+    if (user.birthday) {
+      router.push('/(onboarding)/addPhotos');
+    }
   };
 
   return (
@@ -54,6 +56,7 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
         <Text style={onBoardingStyles.title}>When is your birthday?</Text>
       </View>
       {/* logo */}
+
       {user.birthday && (
         <View>
           <Text style={{ textAlign: 'center' }}>
@@ -81,22 +84,12 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
         text='PICK DATE'
       />
 
-      {!user.birthday && (
-        <AppButton
-          style={{ position: 'absolute', bottom: 24 }}
-          onPress={() => router.push('/(onboarding)/addPhotos')}
-          btnColor='white'
-          text='Skip this step'
-        />
-      )}
-
-      {user.birthday && (
-        <AppButton
-          onPress={handleSlideNext}
-          btnColor='primary'
-          text='NEXT'
-        />
-      )}
+      <AppButton
+        onPress={handleSlideNext}
+        btnColor='primary'
+        text='NEXT'
+        style={{ width: '100%' }}
+      />
 
       <AppModal isOpen={toggleModal} setIsOpen={setToggleModal}>
         <View style={modalStyles.modalView}>

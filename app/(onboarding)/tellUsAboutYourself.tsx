@@ -9,7 +9,8 @@ import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/Ap
 import { If } from '../../components/utils';
 import { profileStyles } from '../../components/profile/profileStyles';
 import { gray_300 } from '../../constants/colors';
-
+import { useMutationUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
+import { useCometaStore } from '../../store/cometaStore';
 
 
 type ProfileValues = {
@@ -25,13 +26,26 @@ const validationSchemma = Yup.object<ProfileValues>({
 
 
 export default function TellUsAboutYourselfScreen(): JSX.Element {
+  const uid = useCometaStore(state => state.uid);
+  const userProfile = useQueryGetUserProfileByUid(uid);
+  const mutateUser = useMutationUserProfileById();
+
+  const navigate = () => router.push('/(onboarding)/showYourCurrentLocation');
 
   const handleNextSlide =
     (values: ProfileValues, actions: FormikHelpers<ProfileValues>): void => {
       try {
-        //  mutate the user object
-        actions.setSubmitting(false);
-        router.push('/(onboarding)/showYourCurrentLocation');
+        if (userProfile.data?.id) {
+          mutateUser.mutate({
+            userId: userProfile.data?.id,
+            payload: {
+              occupation: values.occupation,
+              biography: values.biography,
+            }
+          });
+          actions.setSubmitting(false);
+          navigate();
+        }
       }
       catch (error) {
         // console.log(error);
@@ -120,6 +134,13 @@ export default function TellUsAboutYourselfScreen(): JSX.Element {
           </View>
         )}
       </Formik>
+
+      <AppButton
+        onPress={navigate}
+        btnColor='lightGray'
+        text='skip this step'
+      />
+
     </AppWrapperOnBoarding>
   );
 }
