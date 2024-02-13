@@ -20,7 +20,7 @@ import { db } from '../../firebase/firebase';
 import { IMessage, } from 'react-native-gifted-chat';
 import { nodeEnv } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
-import { gray_200 } from '../../constants/colors';
+import { gray_200, gray_500 } from '../../constants/colors';
 import { useQueryGetUserProfileByUid } from '../../queries/userHooks';
 
 
@@ -126,11 +126,11 @@ export default function MatchesScreen(): JSX.Element {
 
       <View style={styles.tabs}>
         <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
-          <Text style={[{ color: '#83C9DD' }, styles.tab, toggleTabs && styles.tabActive]}>Friends</Text>
+          <Text style={[styles.tab, toggleTabs && { ...styles.tabActive, color: '#83C9DD' }]}>Friends</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
-          <Text style={[{ color: '#E44063' }, styles.tab, !toggleTabs && styles.tabActive]}>New People</Text>
+          <Text style={[styles.tab, !toggleTabs && { ...styles.tabActive, color: '#E44063' }]}>New People</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -433,7 +433,8 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '700',
     paddingHorizontal: 10,
-    paddingVertical: 2
+    paddingVertical: 2,
+    color: gray_500
   },
 
   tabActive: {
