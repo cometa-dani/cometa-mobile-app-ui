@@ -43,7 +43,7 @@ export const profileStyles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
     marginBottom: 4,
     textTransform: 'capitalize'

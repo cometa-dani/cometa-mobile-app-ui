@@ -27,7 +27,7 @@ export const Badges: FC<BadgesProps> = ({ items, title, iconName }) => {
             btnColor='white'
             style={badgesStyles.badge}
           >
-            <Text>{item}</Text>
+            <Text style={{ fontSize: 16 }}>{item}</Text>
           </AppButton>
         ))}
       </View>

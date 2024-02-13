@@ -86,33 +86,35 @@ export default function WhatIsYourPasswordScreen(): JSX.Element {
             </View>
             {/* password */}
 
-            <Text style={{ fontWeight: '700', marginLeft: 20 }}>Repeat password</Text>
+            <View style={{ gap: 12 }}>
+              <Text style={{ fontWeight: '700', marginLeft: 20 }}>Repeat password</Text>
 
-            {/* repeat password */}
-            <View style={{ position: 'relative', justifyContent: 'center' }}>
-              <If
-                condition={touched.repeatPassword && errors.repeatPassword}
-                render={(
-                  <AppLabelFeedbackMsg position='bottom' text={errors.repeatPassword} />
-                )}
-              />
-              <If
-                condition={touched.repeatPassword && !errors.repeatPassword && values.password === values.repeatPassword}
-                render={(
-                  <AppLabelMsgOk text='' position='bottom' />
-                )}
-              />
-              <AppTextInput
-                iconName='lock'
-                keyboardType="ascii-capable"
-                secureTextEntry={true}
-                onChangeText={handleChange('repeatPassword')}
-                onBlur={handleBlur('repeatPassword')}
-                value={values.repeatPassword}
-                placeholder='Password'
-              />
+              {/* repeat password */}
+              <View style={{ position: 'relative', justifyContent: 'center' }}>
+                <If
+                  condition={touched.repeatPassword && errors.repeatPassword}
+                  render={(
+                    <AppLabelFeedbackMsg position='bottom' text={errors.repeatPassword} />
+                  )}
+                />
+                <If
+                  condition={touched.repeatPassword && !errors.repeatPassword && values.password === values.repeatPassword}
+                  render={(
+                    <AppLabelMsgOk text='' position='bottom' />
+                  )}
+                />
+                <AppTextInput
+                  iconName='lock'
+                  keyboardType="ascii-capable"
+                  secureTextEntry={true}
+                  onChangeText={handleChange('repeatPassword')}
+                  onBlur={handleBlur('repeatPassword')}
+                  value={values.repeatPassword}
+                  placeholder='Password'
+                />
+              </View>
+              {/* repeat password */}
             </View>
-            {/* repeat password */}
 
             <AppButton
               onPress={() => handleSubmit()}

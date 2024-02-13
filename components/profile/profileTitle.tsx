@@ -37,15 +37,15 @@ export const ProfileTitle: FC<ProfileHeaderProps> = ({ userProfile, isLoading = 
           <>
             <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
               <Text>
-                <Text style={{ fontSize: 18, fontWeight: '800' }}>{userProfile?.name}, </Text>
-                <Text style={{ fontSize: 18, fontWeight: '800' }}>{userProfile?.birthday && calAge(new Date(userProfile?.birthday)) || 26}</Text>
+                <Text style={{ fontSize: 24, fontWeight: '800' }}>{userProfile?.name}, </Text>
+                <Text style={{ fontSize: 24, fontWeight: '800' }}>{userProfile?.birthday && calAge(new Date(userProfile?.birthday)) || 26}</Text>
               </Text>
             </View>
             <If condition={userProfile?.occupation}
               render={(
                 <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                  <FontAwesome size={16} name='briefcase' />
-                  <Text style={{ color: 'gray', fontWeight: '600' }}>{userProfile?.occupation}</Text>
+                  <FontAwesome size={20} name='briefcase' />
+                  <Text style={{ color: 'gray', fontWeight: '600', fontSize: 18 }}>{userProfile?.occupation}</Text>
                 </View>
               )}
             />

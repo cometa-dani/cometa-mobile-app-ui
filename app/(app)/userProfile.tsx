@@ -1,4 +1,4 @@
-import { ScrollView, SafeAreaView, Dimensions, Button } from 'react-native';
+import { ScrollView, SafeAreaView, Dimensions } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
@@ -161,8 +161,8 @@ export default function UserProfileScreen(): JSX.Element {
           )}
           render={(
             <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-              <FontAwesome size={16} name='user' />
-              <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+              <FontAwesome size={20} name='user' style={{ alignSelf: 'flex-start' }} />
+              <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center', fontSize: 18, paddingRight: 20 }}>
                 {userProfile?.biography}
               </Text>
             </View>
@@ -171,7 +171,7 @@ export default function UserProfileScreen(): JSX.Element {
 
         <AppCarousel
           list={bucketlistLikedEvents}
-          title='BucketList'
+          title='Bucket list'
         />
 
         <If condition={userProfile?.languages?.length}
@@ -414,7 +414,7 @@ export default function UserProfileScreen(): JSX.Element {
           elseRender={<EditProfile />}
         />
         <View style={{ padding: 20 }}>
-          <Button onPress={() => handleLogout()} title='log out' />
+          <AppButton btnColor='black' onPress={() => handleLogout()} text='LOG OUT' />
         </View>
       </ScrollView>
     </SafeAreaView>
