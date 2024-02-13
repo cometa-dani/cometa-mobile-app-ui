@@ -26,7 +26,6 @@ const validationSchemma = Yup.object({
 export function UploadAvatarScreen(): JSX.Element {
   const { text, gray500 } = useColors();
   const onboarding = useCometaStore(state => state.onboarding);
-  const setOnboardingUser = useCometaStore(state => state.setOnboarding);
   const setUserUid = useCometaStore(state => state.setUid);
   const setAccessToken = useCometaStore(state => state.setAccessToken);
 

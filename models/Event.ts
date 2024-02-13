@@ -29,8 +29,6 @@ export enum EventCategory {
   CULTURAL
 }
 
-// type MediaType = 'IMAGE' | 'VIDEO'
-
 export interface CreateEventLike {
   id: number,
   eventId: number,
