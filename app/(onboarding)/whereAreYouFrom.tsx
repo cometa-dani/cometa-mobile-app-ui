@@ -38,7 +38,7 @@ export default function WhereAreYouFromScreen(): JSX.Element {
       <View style={{ width: '100%', position: 'relative' }}>
         <View style={{ gap: 8 }}>
           <View style={{ gap: -4 }}>
-            <Text style={{ color: gray_300 }}>Native country or place of origin</Text>
+            <Text style={{ color: gray_300 }}>Native city or place of origin</Text>
           </View>
 
           <View style={{

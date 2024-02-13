@@ -106,7 +106,7 @@ interface Props {
 
 export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.Element {
 
-  const placeholder = userProfileField === 'currentLocation' ? 'Find your current city' : 'Find your hometown';
+  const placeholder = userProfileField === 'currentLocation' ? 'Find your current city' : 'Find your home city';
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<TextInput>(null);
   const [triggerFetch, setTriggerFetch] = useState('');

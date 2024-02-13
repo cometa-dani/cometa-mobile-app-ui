@@ -91,7 +91,7 @@ export default function ChatScreen(): JSX.Element {
           headerLeft: () => (
             <View style={styles.avatarReciever}>
               <FontAwesome name='arrow-down' size={24} onPress={() => router.back()} />
-              <Image style={styles.avatarImg} source={{ uri: messageReceiver?.avatar }} />
+              <Image style={styles.avatarImg} source={{ uri: messageReceiver?.photos[0]?.url }} />
 
               <View>
                 <Text style={styles.avatarName}>{messageReceiver?.username}</Text>
@@ -124,7 +124,7 @@ export default function ChatScreen(): JSX.Element {
           user={{
             _id: messageSender?.id as number,
             name: messageSender?.username,
-            avatar: messageSender?.avatar
+            avatar: messageSender?.photos[0]?.url
           }}
         />
       </View>
