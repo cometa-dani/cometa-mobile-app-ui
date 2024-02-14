@@ -15,6 +15,7 @@ import { icons } from '../../../constants/assets';
 import { If } from '../../../components/utils/ifElse';
 import { Photo } from '../../../models/Photo';
 import { ForEach } from '../../../components/utils/ForEach';
+import { Stack } from 'expo-router';
 
 
 const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
@@ -87,6 +88,16 @@ export default function MatchesListScreen(): JSX.Element {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
+      <Stack.Screen
+        options={{
+          presentation: 'modal',
+          animation: 'default',
+          headerShown: true,
+          headerShadowVisible: false,
+          headerTitle: '',
+          headerTitleAlign: 'center'
+        }}
+      />
       <View style={styles.container}>
         <If
           condition={isLoading}
@@ -121,7 +132,9 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 16,
     flex: 1,
-    marginHorizontal: 10,
+    margin: 10,
+    marginBottom: 30,
+    // marginVertical: 30,
     overflow: 'hidden',
   },
 });

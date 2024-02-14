@@ -116,6 +116,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           presentation: 'modal',
           animation: 'default',
           headerShown: true,
+          headerShadowVisible: false,
           headerTitle: newPeopleProfile?.username || '',
           headerTitleAlign: 'center'
         }}

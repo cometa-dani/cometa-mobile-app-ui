@@ -76,7 +76,7 @@ function RootLayoutNav(): JSX.Element {
         options={{
           presentation: 'fullScreenModal',
           headerTitleAlign: 'center',
-          headerShadowVisible: true,
+          headerShadowVisible: false,
           headerTitle: () => (
             <Image
               style={{ height: 24, width: 110 }}
