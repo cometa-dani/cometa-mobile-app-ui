@@ -9,6 +9,8 @@ import { useState } from 'react';
 import { calAge } from '../../helpers/calcAge';
 import { AppModal } from '../../components/modal/modal';
 import { buttonColors } from '../../constants/colors';
+import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
+import { If } from '../../components/utils';
 
 
 const initialDate = new Date('1990');
@@ -83,6 +85,12 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
         btnColor='white'
         text='PICK DATE'
       />
+
+      <If condition={!user.birthday && !toggleModal}>
+        <View style={{ position: 'relative', alignItems: 'center', marginTop: 16 }}>
+          <AppLabelFeedbackMsg text="Mandatory date" />
+        </View>
+      </If>
 
       <AppButton
         onPress={handleSlideNext}

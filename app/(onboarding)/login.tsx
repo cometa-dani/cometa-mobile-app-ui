@@ -69,9 +69,9 @@ export default function LoginScreen(): JSX.Element {
             {({ handleSubmit, handleChange, handleBlur, values, touched, errors }) => (
               <View style={styles.form}>
 
-                <View style={{ position: 'relative' }}>
+                <View style={{ position: 'relative', justifyContent: 'center' }}>
                   {touched.email && errors.email && (
-                    <AppLabelFeedbackMsg text={errors.email} />
+                    <AppLabelFeedbackMsg position='bottom' text={errors.email} />
                   )}
                   <AppTextInput
                     iconName='envelope-o'
@@ -83,12 +83,12 @@ export default function LoginScreen(): JSX.Element {
                   />
                 </View>
 
-                <View style={{ position: 'relative' }}>
+                <View style={{ position: 'relative', justifyContent: 'center' }}>
                   {touched.password && errors.password && (
-                    <AppLabelFeedbackMsg text={errors.password} />
+                    <AppLabelFeedbackMsg position='bottom' text={errors.password} />
                   )}
                   <AppTextInput
-                    iconName='key'
+                    iconName='lock'
                     onChangeText={handleChange('password')}
                     onBlur={handleBlur('password')}
                     value={values.password}

@@ -101,6 +101,7 @@ export default function HomeScreen(): JSX.Element {
               data={eventsData}
               onEndReached={handleInfiniteFetch}
               onEndReachedThreshold={0.4}
+              decelerationRate={'normal'}
               renderItem={({ item }) => (
                 <MemoizedEventItem
                   key={item.id}
@@ -173,12 +174,12 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
           <Carousel
             layout='default'
             vertical={false}
-            activeSlideOffset={0}
-            inactiveSlideScale={0.78}
+            inactiveSlideScale={0.84}
             sliderWidth={carouselEstimatedWidth}
             itemWidth={carouselEstimatedWidth}
             data={item?.photos ?? []}
             onSnapToItem={(index) => setActiveSlide(index)}
+            shouldOptimizeUpdates={true}
             renderItem={renderCarouselItem}
           />
         </GestureDetector>
