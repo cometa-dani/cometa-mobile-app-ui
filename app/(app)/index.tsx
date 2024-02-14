@@ -185,7 +185,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
         </GestureDetector>
 
         <Pagination
-          dotsLength={item?.photos?.length ?? 0}
+          dotsLength={item?.photos?.length ?? 1}
           activeDotIndex={activeSlide}
           containerStyle={stylesEventItem.paginationContainer}
           dotStyle={stylesEventItem.paginationDots}
