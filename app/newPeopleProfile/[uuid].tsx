@@ -1,4 +1,4 @@
-import { SafeAreaView } from 'react-native';
+import { Pressable, SafeAreaView } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -197,16 +197,18 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           {/* ACTION BUTTONS */}
 
           {/* MATCHES */}
-          <AppCarousel
-            title='Matches'
-            list={matchedEvents?.map(
-              ({ event }) => ({
-                id: event.id,
-                img: event.photos[0]?.url,
-                placeholder: event.photos[0]?.placeholder
-              })) || []
-            }
-          />
+          <Pressable onPress={() => router.push('/newPeopleProfile/matchesList/3')}>
+            <AppCarousel
+              title='Matches'
+              list={matchedEvents?.map(
+                ({ event }) => ({
+                  id: event.id,
+                  img: event.photos[0]?.url,
+                  placeholder: event.photos[0]?.placeholder
+                })) || []
+              }
+            />
+          </Pressable>
           {/* MATCHES */}
 
           {/* BUCKETLIST */}
