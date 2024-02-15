@@ -187,13 +187,7 @@ export interface GetDetailedUserProfile {
 
   incomingFriendships: OutgoingFriendship[];
   outgoingFriendships: OutgoingFriendship[];
-  _count: Count;
-}
-
-export interface Count {
-  likedEvents: number;
-  incomingFriendships: number;
-  outgoingFriendships: number;
+  // _count: Count;
 }
 
 interface LikedEvent {
@@ -204,6 +198,14 @@ interface LikedEvent {
   userId: number;
   event: Event;
 }
+
+// export interface Count {
+//   likedEvents: number;
+//   incomingFriendships: number;
+//   outgoingFriendships: number;
+// }
+
+
 
 type Event = Pick<LikableEvent, ('photos' | 'name')>
 
