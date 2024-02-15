@@ -10,7 +10,7 @@ import { useCometaStore } from '../store/cometaStore';
 import eventService from '../services/eventService';
 import { GetAllLatestEventsWithPagination, CreateEventLike, MatchedEvents } from '../models/Event';
 import { GetAllLikedEventsWithPagination } from '../models/LikedEvent';
-import { GetUsersWhoLikedEventWithPagination } from '../models/User';
+import { GetMatchedUsersWhoLikedEventWithPagination } from '../models/User';
 import { GetEventByID } from '../models/EventLike';
 import { QueryKeys } from './queryKeys';
 
@@ -111,7 +111,7 @@ export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => 
       queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT],
       initialPageParam: -1,
       enabled: !!eventID,
-      queryFn: async ({ pageParam }): Promise<GetUsersWhoLikedEventWithPagination> => {
+      queryFn: async ({ pageParam }): Promise<GetMatchedUsersWhoLikedEventWithPagination> => {
         const res = await eventService.getAllUsersWhoLikedSameEventWithPagination(eventID, pageParam, 5, accessToken);
         if (res.status === 200) {
           return res.data;

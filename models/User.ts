@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { ImagePickerAsset } from 'expo-image-picker';
-import { EventCategory } from './Event';
+import { EventCategory, LikableEvent } from './Event';
 import { Friendship, Status } from './Friendship';
 import { Photo } from './Photo';
 
@@ -23,14 +23,14 @@ export interface UserClientState extends Pick<GetBasicUserProfile, (
   imageRef: ImagePickerAsset;
 }
 
-export interface GetUsersWhoLikedEventWithPagination {
-  usersWhoLikedEvent: UsersWhoLikedEvent[];
+export interface GetMatchedUsersWhoLikedEventWithPagination {
+  usersWhoLikedEvent: MatchedUsersWhoLikedEvent[];
   nextCursor: number;
   totalUsers: number;
   usersPerPage: number;
 }
 
-export interface UsersWhoLikedEvent {
+export interface MatchedUsersWhoLikedEvent {
   id: number;
   createdAt: string;
   updatedAt: string;
@@ -118,36 +118,34 @@ enum Education {
   OTHER
 }
 
-// used in react query for SERVER STATE
-export interface GetBasicUserProfile {
-  id: number;
-  uid: string;
-  // avatar: string;
-  photos: Photo[];
-  username: string;
-  name: string
-  biography: string;
-  email: string;
-  phone?: string;
+export interface GetBasicUserProfile extends
+  Pick<GetDetailedUserProfile, (
+    'id' |
+    'uid' |
+    'photos' |
+    'username' |
+    'name' |
+    'biography' |
+    'email' |
+    'phone' |
 
-  birthday?: Date;
-  homeTown?: string;
-  currentLocation?: string;
-  languages?: string[];
-  interests?: EventCategory[];
-  activateNotifications: boolean;
-  lookingFor?: LookingFor;
-  occupation?: string;
-  educationLevel?: Education
-
+    'birthday' |
+    'homeTown' |
+    'currentLocation' |
+    'languages' |
+    'interests' |
+    'activateNotifications' |
+    'lookingFor' |
+    'occupation' |
+    'educationLevel'
+  )> {
   outgoingFriendships: Friendship[];
   incomingFriendships: Friendship[];
 }
 
-
 export interface GetDetailedUserProfile {
   id: number;
-  // avatar: string;
+  avatar?: string;
   photos: Photo[];
   maxNumPhotos: number;
   username: string;
@@ -198,7 +196,7 @@ export interface Count {
   outgoingFriendships: number;
 }
 
-export interface LikedEvent {
+interface LikedEvent {
   id: number;
   createdAt: string;
   updatedAt: string;
@@ -207,16 +205,14 @@ export interface LikedEvent {
   event: Event;
 }
 
-export interface Event {
-  photos: Photo[];
-  name: string;
-}
+type Event = Pick<LikableEvent, ('photos' | 'name')>
 
-export interface OutgoingFriendship {
-  id: number;
-  createdAt: string;
-  updatedAt: string;
-  senderId: number;
-  receiverId: number;
-  status: Status;
-}
+type OutgoingFriendship =
+  Pick<Friendship, (
+    'id' |
+    'createdAt' |
+    'updatedAt' |
+    'senderId' |
+    'receiverId' |
+    'status'
+  )>

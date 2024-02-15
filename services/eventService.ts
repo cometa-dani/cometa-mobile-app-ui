@@ -1,7 +1,7 @@
 import { GetAllLatestEventsWithPagination, CreateEventLike, MatchedEvents } from '../models/Event';
 import { GetEventByID } from '../models/EventLike';
 import { GetAllLikedEventsWithPagination } from '../models/LikedEvent';
-import { GetUsersWhoLikedEventWithPagination } from '../models/User';
+import { GetMatchedUsersWhoLikedEventWithPagination } from '../models/User';
 import { RestApiService } from './restService';
 
 
@@ -44,7 +44,7 @@ class EventService extends RestApiService {
     const AuthHeaders = this.configAuthHeader(accessToken).headers;
     const config = { params, headers: AuthHeaders };
 
-    return this.http.get<GetUsersWhoLikedEventWithPagination>(`/events/liked/${eventID}/users`, config);
+    return this.http.get<GetMatchedUsersWhoLikedEventWithPagination>(`/events/liked/${eventID}/users`, config);
   }
 
 

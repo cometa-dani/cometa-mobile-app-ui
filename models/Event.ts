@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-// import { EventLike } from './EventLike';
 import { EventLike } from './EventLike';
 import { Location } from './Localization';
 import { Organization } from './Organization';
@@ -31,27 +30,28 @@ export enum EventCategory {
   CULTURAL
 }
 
-export interface CreateEventLike {
-  id: number,
-  eventId: number,
-  userId: number
-}
+export type CreateEventLike =
+  Pick<EventLike, (
+    'id' |
+    'eventId' |
+    'userId'
+  )>
+
 
 export interface MatchedEvents {
-  event: GetBasicEvent;
-}
-
-export interface GetBasicEvent {
-  id: number;
-  createdAt: string;
-  updatedAt: string;
-  date: string;
-  name: string;
-  description: string;
-  photos: Array<Photo>;
-  locationId: number;
-  organizationId: number;
-  categories: EventCategory[];
+  event: LikableEvent
+  // Pick<LikableEvent, (
+  //   'id' |
+  //   'createdAt' |
+  //   'updatedAt' |
+  //   'date' |
+  //   'name' |
+  //   'description' |
+  //   'photos' |
+  //   'locationId' |
+  //   'organizationId' |
+  //   'categories'
+  // )>;
 }
 
 export interface GetAllLatestEventsWithPagination {
