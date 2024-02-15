@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useReducer, useState } from 'react';
 import Modal from 'react-native-modal';
 import { SafeAreaView, StyleSheet, Pressable } from 'react-native';
 import { Text, View } from '../../components/Themed';
@@ -34,14 +34,16 @@ const messageSchemmaValidation = Yup.object<Message>({
 export default function MatchesScreen(): JSX.Element {
   // client state
   const uid = useCometaStore(state => state.uid);
-  const toggleModal = useCometaStore(state => state.toggleModal);
-  const setToggleModal = useCometaStore(state => state.setToggleModal);
+  const [toggleModal, setToggleModal] = useReducer((prev) => !prev, false);
+
   const incommginFriendshipSender = useCometaStore(state => state.incommginFriendshipSender);
   const setIncommginFriendshipSender = useCometaStore(state => state.setIncommginFriendshipSender);
 
   // queries
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
   const eventID = useGlobalSearchParams<{ eventId: string }>()['eventId'];
+
+  // fetching data
   const eventByIdRes = useQueryGetEventById(+eventID);
   const newPeopleRes = useInfiteQueryGetUsersWhoLikedSameEventByID(+eventID);
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();

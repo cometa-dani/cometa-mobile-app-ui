@@ -13,6 +13,7 @@ import ContentLoader, { Rect } from 'react-content-loader/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { gray_50, red_100 } from '../../constants/colors';
 import { If } from '../../components/utils/ifElse';
+import { ForEach } from '../../components/utils';
 
 
 const SkeletonLoader: FC = () => {
@@ -61,11 +62,11 @@ const SkeletonLoader: FC = () => {
 };
 
 
-const renderItem = ({ item }: { item: GetAllLikedEventsWithPagination['events'][0] }) => {
+const renderItem = ({ item, index }: { item: GetAllLikedEventsWithPagination['events'][0], index: number }) => {
   return (
     <>
       <MemoizedBucketItem
-        key={item.id}
+        key={index}
         item={item}
       />
       <View style={{ height: 20 }} />
@@ -161,6 +162,20 @@ interface Props {
 }
 const BucketItem: FC<Props> = ({ item }) => {
   const deleteLikedEventMutation = useMutationDeleteLikedEventFromBucketList();
+
+  const UsersBubbles = () => (
+    <ForEach items={item?.likes ?? []}>
+      {({ user }, index) => (
+        <Image
+          key={index}
+          source={{ uri: user?.photos[0]?.url }}
+          placeholder={{ thumbhash: user?.photos[0]?.placeholder }}
+          style={styles.bubble}
+        />
+      )}
+    </ForEach>
+  );
+
   return (
     <Swipeable renderRightActions={
       () => (
@@ -185,14 +200,7 @@ const BucketItem: FC<Props> = ({ item }) => {
             </View>
 
             <View style={styles.bubblesContainer}>
-              {item?.likes.slice(0, 3).map(({ user, userId }) => (
-                <Image
-                  key={userId}
-                  source={{ uri: user?.photos[0]?.url }}
-                  placeholder={{ thumbhash: user?.photos[0]?.placeholder }}
-                  style={styles.bubble}
-                />
-              ))}
+              <UsersBubbles />
             </View>
           </View>
         )}

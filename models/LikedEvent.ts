@@ -20,5 +20,5 @@ interface LikedEvent {
   locationId: number;
   organizationId: number;
   categories: EventCategory[];
-  likes: EventLike[];
+  likes: Pick<EventLike, 'user'>[];
 }
