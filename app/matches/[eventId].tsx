@@ -139,6 +139,111 @@ export default function MatchesScreen(): JSX.Element {
   );
 
 
+  const MeetNewPeople = () => (
+    <FlashList
+      estimatedItemSize={120}
+      ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+      contentContainerStyle={styles.flatList}
+      showsVerticalScrollIndicator={false}
+      data={newPeopleRes.data?.pages?.flatMap(page => page.usersWhoLikedEvent) ?? []}
+      renderItem={({ item: { user: anotherUser }, index }) => {
+        const isReceiver: boolean = anotherUser?.incomingFriendships[0]?.status === 'PENDING';
+        const isSender: boolean = anotherUser?.outgoingFriendships[0]?.status === 'PENDING';
+
+        return (
+          <View key={index} style={styles.user}>
+            <Pressable onPress={() => router.push(`/newPeopleProfile/${anotherUser.uid}?isFriend=false`)}>
+              <View style={styles.avatarContainer}>
+                <Image
+                  style={styles.userAvatar}
+                  placeholder={{ thumbhash: anotherUser?.photos[0]?.placeholder }}
+                  source={{ uri: anotherUser?.photos[0]?.url }}
+                />
+
+                <View style={styles.textContainer}>
+                  <Text
+                    style={styles.userName}
+                    numberOfLines={1}
+                    ellipsizeMode='tail'
+                  >
+                    {anotherUser.username}
+                  </Text>
+                  <Text>online</Text>
+                </View>
+              </View>
+            </Pressable>
+
+            {isReceiver && (
+              <AppButton
+                onPress={() => handleCancelFriendshipInvitation(anotherUser)}
+                text="PENDING"
+                btnColor='blue'
+              />
+            )}
+            {isSender && (
+              <AppButton
+                onPress={() => handleCurrentUserHasAPendingInvitation(anotherUser)}
+                text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
+                btnColor='black'
+              />
+            )}
+            {!isReceiver && !isSender && (
+              <AppButton
+                onPress={() => handleCurrentUserHasNoPendingInvitations(anotherUser)}
+                text="JOIN"
+                btnColor='black'
+              />
+            )}
+          </View>
+        );
+      }}
+    />
+  );
+
+
+  const Friends = () => (
+    <FlashList
+      estimatedItemSize={120}
+      ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+      contentContainerStyle={styles.flatList}
+      showsVerticalScrollIndicator={false}
+      data={allFriends || []}
+      renderItem={({ item: { friend }, index }) => {
+        return (
+          <View key={index} style={styles.user}>
+            <Pressable onPress={() => router.push(`/newPeopleProfile/${friend.uid}?isFriend=true`)}>
+              <View style={styles.avatarContainer}>
+                <Image
+                  style={styles.userAvatar}
+                  placeholder={{ thumbhash: friend?.photos[0]?.placeholder }}
+                  source={{ uri: friend?.photos[0]?.url }}
+                />
+
+                <View style={styles.textContainer}>
+                  <Text
+                    style={styles.userName}
+                    numberOfLines={1}
+                    ellipsizeMode='tail'
+                  >
+                    {friend?.username}
+                  </Text>
+                  <Text>online</Text>
+                </View>
+              </View>
+            </Pressable>
+
+            <AppButton
+              onPress={() => router.push(`/chat/${friend.id}`)}
+              text="CHAT"
+              btnColor='gray'
+            />
+          </View>
+        );
+      }}
+    />
+  );
+
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar backgroundColor="transparent" translucent={true} style={'auto'} />
@@ -208,115 +313,24 @@ export default function MatchesScreen(): JSX.Element {
 
         {/* FRIENDS */}
         {toggleTabs && (
-          newestFriendsRes.isSuccess && (
-            <Animated.View style={{ flex: 1 }} entering={SlideInLeft.duration(240)} exiting={SlideOutRight.duration(240)}>
-              <FlashList
-                estimatedItemSize={120}
-                ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
-                contentContainerStyle={styles.flatList}
-                showsVerticalScrollIndicator={false}
-                data={allFriends || []}
-                renderItem={({ item: { friend }, index }) => {
-                  return (
-                    <View key={index} style={styles.user}>
-                      <Pressable onPress={() => router.push(`/newPeopleProfile/${friend.uid}?isFriend=true`)}>
-                        <View style={styles.avatarContainer}>
-                          <Image
-                            style={styles.userAvatar}
-                            placeholder={{ thumbhash: friend?.photos[0]?.placeholder }}
-                            source={{ uri: friend?.photos[0]?.url }}
-                          />
-
-                          <View style={styles.textContainer}>
-                            <Text
-                              style={styles.userName}
-                              numberOfLines={1}
-                              ellipsizeMode='tail'
-                            >
-                              {friend?.username}
-                            </Text>
-                            <Text>online</Text>
-                          </View>
-                        </View>
-                      </Pressable>
-
-                      <AppButton
-                        onPress={() => router.push(`/chat/${friend.id}`)}
-                        text="CHAT"
-                        btnColor='gray'
-                      />
-                    </View>
-                  );
-                }}
-              />
-            </Animated.View>
-          )
+          <Animated.View
+            style={{ flex: 1 }}
+            entering={SlideInLeft.duration(240)}
+            exiting={SlideOutRight.duration(240)}
+          >
+            <Friends />
+          </Animated.View>
         )}
 
         {/* NEW PEOPLE */}
         {!toggleTabs && (
-          newPeopleRes.isSuccess && (
-            <Animated.View style={{ flex: 1 }} entering={SlideInRight.duration(240)} exiting={SlideOutLeft.duration(240)}>
-              <FlashList
-                estimatedItemSize={120}
-                ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
-                contentContainerStyle={styles.flatList}
-                showsVerticalScrollIndicator={false}
-                data={newPeopleRes.data?.pages?.flatMap(page => page.usersWhoLikedEvent) ?? []}
-                renderItem={({ item: { user: anotherUser }, index }) => {
-                  const isReceiver: boolean = anotherUser?.incomingFriendships[0]?.status === 'PENDING';
-                  const isSender: boolean = anotherUser?.outgoingFriendships[0]?.status === 'PENDING';
-
-                  return (
-                    <View key={index} style={styles.user}>
-                      <Pressable onPress={() => router.push(`/newPeopleProfile/${anotherUser.uid}?isFriend=false`)}>
-                        <View style={styles.avatarContainer}>
-                          <Image
-                            style={styles.userAvatar}
-                            placeholder={{ thumbhash: anotherUser?.photos[0]?.placeholder }}
-                            source={{ uri: anotherUser?.photos[0]?.url }}
-                          />
-
-                          <View style={styles.textContainer}>
-                            <Text
-                              style={styles.userName}
-                              numberOfLines={1}
-                              ellipsizeMode='tail'
-                            >
-                              {anotherUser.username}
-                            </Text>
-                            <Text>online</Text>
-                          </View>
-                        </View>
-                      </Pressable>
-
-                      {isReceiver && (
-                        <AppButton
-                          onPress={() => handleCancelFriendshipInvitation(anotherUser)}
-                          text="PENDING"
-                          btnColor='blue'
-                        />
-                      )}
-                      {isSender && (
-                        <AppButton
-                          onPress={() => handleCurrentUserHasAPendingInvitation(anotherUser)}
-                          text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
-                          btnColor='black'
-                        />
-                      )}
-                      {!isReceiver && !isSender && (
-                        <AppButton
-                          onPress={() => handleCurrentUserHasNoPendingInvitations(anotherUser)}
-                          text="JOIN"
-                          btnColor='black'
-                        />
-                      )}
-                    </View>
-                  );
-                }}
-              />
-            </Animated.View>
-          )
+          <Animated.View
+            style={{ flex: 1 }}
+            entering={SlideInRight.duration(240)}
+            exiting={SlideOutLeft.duration(240)}
+          >
+            <MeetNewPeople />
+          </Animated.View>
         )}
       </View>
     </SafeAreaView>
