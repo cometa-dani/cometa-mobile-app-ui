@@ -118,6 +118,18 @@ enum Education {
   OTHER
 }
 
+type Event = Pick<LikableEvent, ('photos' | 'name')>
+
+type OutgoingFriendship =
+  Pick<Friendship, (
+    'id' |
+    'createdAt' |
+    'updatedAt' |
+    'senderId' |
+    'receiverId' |
+    'status'
+  )>
+
 export interface GetBasicUserProfile extends
   Pick<GetDetailedUserProfile, (
     'id' |
@@ -204,17 +216,3 @@ interface LikedEvent {
 //   incomingFriendships: number;
 //   outgoingFriendships: number;
 // }
-
-
-
-type Event = Pick<LikableEvent, ('photos' | 'name')>
-
-type OutgoingFriendship =
-  Pick<Friendship, (
-    'id' |
-    'createdAt' |
-    'updatedAt' |
-    'senderId' |
-    'receiverId' |
-    'status'
-  )>
