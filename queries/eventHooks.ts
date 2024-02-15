@@ -11,7 +11,7 @@ import eventService from '../services/eventService';
 import { GetLatestEventsWithPagination, CreateEventLike, MatchedEvents } from '../models/Event';
 import { GetAllLikedEventsWithPagination } from '../models/LikedEvent';
 import { GetUsersWhoLikedEventWithPagination } from '../models/User';
-import { GetLikedEventByID } from '../models/EventLike';
+import { GetEventByID } from '../models/EventLike';
 import { QueryKeys } from './queryKeys';
 
 
@@ -24,7 +24,7 @@ export const useInfiniteQueryGetLatestEvents = () => {
       queryKey: [QueryKeys.GET_EVENTS],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetLatestEventsWithPagination> => {
-        const res = await eventService.getAll(pageParam, 4, accessToken);
+        const res = await eventService.getAllEventsWithPagination(pageParam, 4, accessToken);
         if (res.status === 200) {
           return res.data;
         }
@@ -57,7 +57,7 @@ export const useInfiniteQueryGetLatestLikedEvents = () => {
       queryKey: [QueryKeys.GET_LIKED_EVENTS],
       initialPageParam: 1,
       queryFn: async ({ pageParam }): Promise<GetAllLikedEventsWithPagination> => {
-        const res = await eventService.getAllLikedEvents(pageParam, 8, accessToken);
+        const res = await eventService.getAllLikedEventsWithPagination(pageParam, 8, accessToken);
         if (res.status === 200) {
           return res.data;
         }
@@ -87,8 +87,8 @@ export const useQueryGetEventById = (eventID: number) => {
   return useQuery({
     enabled: !!eventID,
     queryKey: [QueryKeys.GET_EVENT_BY_ID],
-    queryFn: async (): Promise<GetLikedEventByID> => {
-      const res = await eventService.getLikedEventByID(eventID, accessToken);
+    queryFn: async (): Promise<GetEventByID> => {
+      const res = await eventService.getEventByID(eventID, accessToken);
       if (res.status === 200) {
         return res.data;
       }
@@ -112,7 +112,7 @@ export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => 
       initialPageParam: -1,
       enabled: !!eventID,
       queryFn: async ({ pageParam }): Promise<GetUsersWhoLikedEventWithPagination> => {
-        const res = await eventService.getAllUsersWhoLikedSameEvent(eventID, pageParam, 5, accessToken);
+        const res = await eventService.getAllUsersWhoLikedSameEventWithPagination(eventID, pageParam, 5, accessToken);
         if (res.status === 200) {
           return res.data;
         }

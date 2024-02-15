@@ -1,8 +1,7 @@
-import React, { FC, Fragment, memo, useEffect, useMemo } from 'react';
+import React, { FC, Fragment, memo, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { RectButton } from 'react-native-gesture-handler';
 import { useInfiniteQueryGetLatestLikedEvents, useMutationDeleteLikedEventFromBucketList } from '../../queries/eventHooks';
@@ -79,46 +78,25 @@ export default function BuckectListScreen(): JSX.Element {
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const bucketListData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
-  const fadeAnim = useSharedValue(1);  // Initial value for opacity: 1
-  const contentOpacity = useSharedValue(0);  // Initial value for opacity: 0
-
-  const transitionStyles = useAnimatedStyle(() => {
-    return {
-      opacity: isLoading ? fadeAnim.value : contentOpacity.value,
-    };
-  });
-
-
-  useEffect(() => {
-    if (!isLoading) {
-      fadeAnim.value = withTiming(0, { duration: 300 });
-      contentOpacity.value = withTiming(1, { duration: 300 });
-    }
-  }, [isLoading]);
-
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <StatusBar style={'auto'} />
-
-      <Animated.View style={[styles.container, transitionStyles]}>
-        <If
-          condition={isLoading}
-          render={<SkeletonLoader />}
-          elseRender={(
-            <FlashList
-              data={bucketListData}
-              pagingEnabled={false}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingVertical: 26 }}
-              onMomentumScrollEnd={handleInfiniteFetch}
-              onEndReachedThreshold={1}
-              estimatedItemSize={100}
-              renderItem={renderItem}
-            />
-          )}
-        />
-      </Animated.View>
+      <If
+        condition={isLoading}
+        render={<SkeletonLoader />}
+        elseRender={(
+          <FlashList
+            data={bucketListData}
+            pagingEnabled={false}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingVertical: 26 }}
+            onMomentumScrollEnd={handleInfiniteFetch}
+            onEndReachedThreshold={1}
+            estimatedItemSize={100}
+            renderItem={renderItem}
+          />
+        )}
+      />
     </SafeAreaView>
   );
 }
@@ -136,11 +114,6 @@ const styles = StyleSheet.create({
     flex: 0,
     gap: -11,
     justifyContent: 'flex-start',
-  },
-
-  container: {
-    backgroundColor: '#fff',
-    flex: 1,
   },
 
   date: {

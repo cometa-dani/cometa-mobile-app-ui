@@ -1,5 +1,5 @@
 import { GetLatestEventsWithPagination, CreateEventLike, MatchedEvents } from '../models/Event';
-import { GetLikedEventByID } from '../models/EventLike';
+import { GetEventByID } from '../models/EventLike';
 import { GetAllLikedEventsWithPagination } from '../models/LikedEvent';
 import { GetUsersWhoLikedEventWithPagination } from '../models/User';
 import { RestApiService } from './restService';
@@ -7,7 +7,7 @@ import { RestApiService } from './restService';
 
 class EventService extends RestApiService {
 
-  public getAll(cursor: number, limit: number, accessToken: string) {
+  public getAllEventsWithPagination(cursor: number, limit: number, accessToken: string) {
     const params = { cursor, limit };
     const AuthHeaders = this.configAuthHeader(accessToken).headers;
     const config = { params, headers: AuthHeaders };
@@ -25,7 +25,7 @@ class EventService extends RestApiService {
   }
 
 
-  public getAllLikedEvents(page: number, limit: number, accessToken: string) {
+  public getAllLikedEventsWithPagination(page: number, limit: number, accessToken: string) {
     const params = { page, limit };
     const AuthHeaders = this.configAuthHeader(accessToken).headers;
     const config = { params, headers: AuthHeaders };
@@ -34,12 +34,12 @@ class EventService extends RestApiService {
   }
 
 
-  public getLikedEventByID(eventID: number, accessToken: string) {
-    return this.http.get<GetLikedEventByID>(`/events/liked/${eventID}`, this.configAuthHeader(accessToken));
+  public getEventByID(eventID: number, accessToken: string) {
+    return this.http.get<GetEventByID>(`/events/liked/${eventID}`, this.configAuthHeader(accessToken));
   }
 
 
-  public getAllUsersWhoLikedSameEvent(eventID: number, cursor: number, limit: number, accessToken: string) {
+  public getAllUsersWhoLikedSameEventWithPagination(eventID: number, cursor: number, limit: number, accessToken: string) {
     const params = { cursor, limit };
     const AuthHeaders = this.configAuthHeader(accessToken).headers;
     const config = { params, headers: AuthHeaders };

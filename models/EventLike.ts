@@ -11,7 +11,7 @@ export interface EventLike {
   user: Pick<GetBasicUserProfile, 'photos'>;
 }
 
-export interface GetLikedEventByID {
+export interface GetEventByID {
   id: number;
   createdAt: string;
   updatedAt: string;
