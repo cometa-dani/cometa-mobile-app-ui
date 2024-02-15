@@ -8,7 +8,7 @@ import {
   from '@tanstack/react-query';
 import { useCometaStore } from '../store/cometaStore';
 import eventService from '../services/eventService';
-import { GetLatestEventsWithPagination, CreateEventLike, MatchedEvents } from '../models/Event';
+import { GetAllLatestEventsWithPagination, CreateEventLike, MatchedEvents } from '../models/Event';
 import { GetAllLikedEventsWithPagination } from '../models/LikedEvent';
 import { GetUsersWhoLikedEventWithPagination } from '../models/User';
 import { GetEventByID } from '../models/EventLike';
@@ -23,7 +23,7 @@ export const useInfiniteQueryGetLatestEvents = () => {
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_EVENTS],
       initialPageParam: -1,
-      queryFn: async ({ pageParam }): Promise<GetLatestEventsWithPagination> => {
+      queryFn: async ({ pageParam }): Promise<GetAllLatestEventsWithPagination> => {
         const res = await eventService.getAllEventsWithPagination(pageParam, 4, accessToken);
         if (res.status === 200) {
           return res.data;
@@ -178,7 +178,7 @@ export const useMutationLikeOrDislikeEvent = () => {
       onMutate: (eventID) => {
         // Update the cache with the new liked state
         queryClient
-          .setQueryData<InfiniteData<GetLatestEventsWithPagination, number>>
+          .setQueryData<InfiniteData<GetAllLatestEventsWithPagination, number>>
           ([QueryKeys.GET_EVENTS], (data) => ({
             pages: data?.pages.map(
               (page) => (

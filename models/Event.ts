@@ -1,4 +1,6 @@
 /* eslint-disable no-unused-vars */
+// import { EventLike } from './EventLike';
+import { EventLike } from './EventLike';
 import { Location } from './Localization';
 import { Organization } from './Organization';
 import { Photo } from './Photo';
@@ -52,14 +54,14 @@ export interface GetBasicEvent {
   categories: EventCategory[];
 }
 
-export interface GetLatestEventsWithPagination {
-  events: LikedEvent[];
+export interface GetAllLatestEventsWithPagination {
+  events: LikableEvent[];
   totalEvents: number;
   nextCursor: number;
   eventsPerPage: number;
 }
 
-export interface LikedEvent {
+export interface LikableEvent {
   id: number;
   createdAt: string;
   updatedAt: string;
@@ -67,12 +69,12 @@ export interface LikedEvent {
   name: string;
   description: string;
   photos: Array<Photo>;
-  locationId: number;
-  organizationId: number;
+  locationId?: number;
+  organizationId?: number;
   categories: EventCategory[];
   organization: Organization;
-  location: Location;
-  likes: Array<Like>
+  location?: Location;
+  likes?: EventLike[]
   _count: Count;
   isLiked: boolean;
 }
@@ -80,12 +82,4 @@ export interface LikedEvent {
 export interface Count {
   likes: number;
   shares: number
-}
-
-interface Like {
-  id: number;
-  createdAt: string;
-  updatedAt: string;
-  eventId: number;
-  userId: number;
 }

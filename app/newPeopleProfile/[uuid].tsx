@@ -198,7 +198,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           {/* ACTION BUTTONS */}
 
           {/* MATCHES */}
-          <Pressable onPress={() => router.push('/newPeopleProfile/matchesList/3')}>
+          <Pressable onPress={() => router.push('/newPeopleProfile/matchesList')}>
             <AppCarousel
               title='Matches'
               list={matchedEvents?.map(

@@ -11,7 +11,7 @@ interface Props {
   title: string,
   list: Array<{ id: string | number, img: string, placeholder?: string }>
   isLocked?: boolean,
-  isLoading?: boolean
+  isLoading?: boolean,
 }
 
 export const AppCarousel: FC<Props> = ({ list, title, isLocked = false }) => {

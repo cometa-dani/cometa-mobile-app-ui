@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
-import { View, useColors } from '../../../components/Themed';
-import { useInfiniteQueryGetLatestEvents } from '../../../queries/eventHooks';
+import { View, useColors } from '../../components/Themed';
+import { useInfiniteQueryGetLatestEvents } from '../../queries/eventHooks';
 import { Stack } from 'expo-router';
-import { EventsList } from '../../../components/events/eventsList';
+import { EventsList } from '../../components/events/eventsList';
 
 
 export default function MatchesListScreen(): JSX.Element {

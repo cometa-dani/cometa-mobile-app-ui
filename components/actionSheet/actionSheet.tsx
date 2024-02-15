@@ -2,7 +2,7 @@
 import type { FC } from 'react';
 import { StyleSheet, ScrollView, Pressable, Image } from 'react-native';
 import { Text, View } from '../Themed';
-import { LikedEvent } from '../../models/Event';
+import { LikableEvent } from '../../models/Event';
 import { FontAwesome, Feather } from '@expo/vector-icons';
 // import MapView, { Marker } from 'react-native-maps';
 import { getRegionForCoordinates } from '../../helpers/getRegionFromCoords';
@@ -32,7 +32,7 @@ const initialOffSetY = (TOTAL_HEIGHT / 2) + 50;
 
 
 interface EventActionSheetProps {
-  eventItem: LikedEvent,
+  eventItem: LikableEvent,
   isOpen: boolean,
   setIsOpen: (openOrClose: boolean) => void
 }
