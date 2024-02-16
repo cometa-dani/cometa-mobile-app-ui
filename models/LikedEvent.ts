@@ -1,8 +1,8 @@
 import { LikeableEvent } from './Event';
 
-export interface GetAllLikedEventsWithPagination {
+export interface GetLikedEventsForBucketListWithPagination {
   events: LikeableEvent[];
   totalEvents: number;
-  currentPage: number;
+  nextCursor: number;
   eventsPerPage: number;
 }

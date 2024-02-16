@@ -9,7 +9,7 @@ import {
 import { useCometaStore } from '../store/cometaStore';
 import eventService from '../services/eventService';
 import { GetAllLatestEventsWithPagination, CreateEventLike, MatchedEvents } from '../models/Event';
-import { GetAllLikedEventsWithPagination } from '../models/LikedEvent';
+import { GetLikedEventsForBucketListWithPagination } from '../models/LikedEvent';
 import { GetMatchedUsersWhoLikedEventWithPagination } from '../models/User';
 import { GetEventByID } from '../models/EventLike';
 import { QueryKeys } from './queryKeys';
@@ -46,18 +46,15 @@ export const useInfiniteQueryGetLatestEvents = () => {
 };
 
 
-// TODO: change to cursor based pagination
-
-// Query to fetch liked events with infinite scrolling
 export const useInfiniteQueryGetLikedEventsForBucketList = () => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return (
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION],
-      initialPageParam: 1,
-      queryFn: async ({ pageParam }): Promise<GetAllLikedEventsWithPagination> => {
-        const res = await eventService.getAllLikedEventsWithPagination(pageParam, 8, accessToken);
+      initialPageParam: -1,
+      queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
+        const res = await eventService.getLikedEventsForBucketListWithPagination(pageParam, 8, accessToken);
         if (res.status === 200) {
           return res.data;
         }
@@ -68,10 +65,10 @@ export const useInfiniteQueryGetLikedEventsForBucketList = () => {
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (lastPage.events.length == 0) {
+        if (!lastPage.nextCursor) {
           return null; // makes hasNextPage evalutes to false
         }
-        return lastPage.currentPage + 1;
+        return lastPage.nextCursor;
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
@@ -242,7 +239,7 @@ export const useMutationDeleteLikedEventFromBucketList = () => {
       onMutate: (eventID) => {
         // Update the cache with the new liked state
         queryClient
-          .setQueryData<InfiniteData<GetAllLikedEventsWithPagination, number>>
+          .setQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>
           ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION], (data) => ({
             pages: data?.pages.map(
               (page) => (

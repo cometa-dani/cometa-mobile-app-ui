@@ -8,7 +8,7 @@ import { useInfiniteQueryGetLikedEventsForBucketList, useMutationDeleteLikedEven
 import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { View, Text } from '../../components/Themed';
-import { GetAllLikedEventsWithPagination } from '../../models/LikedEvent';
+import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEvent';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { gray_50, red_100 } from '../../constants/colors';
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
 });
 
 
-const renderMemoizedBucketItem = ({ item, index }: { item: GetAllLikedEventsWithPagination['events'][0], index: number }) => {
+const renderMemoizedBucketItem = ({ item, index }: { item: GetLikedEventsForBucketListWithPagination['events'][0], index: number }) => {
   return (
     <>
       <MemoizedBucketItem
@@ -159,7 +159,7 @@ const SkeletonLoader: FC = () => {
 
 
 interface BucketItemProps {
-  item: GetAllLikedEventsWithPagination['events'][0],
+  item: GetLikedEventsForBucketListWithPagination['events'][0],
 }
 const BucketItem: FC<BucketItemProps> = ({ item }) => {
   const deleteLikedEventMutation = useMutationDeleteLikedEventFromBucketList();

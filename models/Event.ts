@@ -68,12 +68,13 @@ export interface LikeableEvent {
   date: string;
   name: string;
   description: string;
-  photos: Array<Photo>;
+  categories: EventCategory[];
   locationId?: number;
   organizationId?: number;
-  categories: EventCategory[];
-  organization: Organization;
+  organization?: Organization;
   location?: Location;
+
+  photos: Array<Photo>; // 1 or 3
   likes?: EventLike[]
   _count: Count;
   isLiked: boolean;
