@@ -58,7 +58,7 @@ export default function UserProfileScreen(): JSX.Element {
   const selectionLimit: number = (userProfile?.maxNumPhotos || 5) - (userPhotos?.length || 0);
 
   // toggle edit mode
-  const [toggleEditProfile, setToggleEditProfile] = useState(ON);
+  const [switchEditProfile, setSwitchEditProfile] = useState(ON);
 
   // bucketlist
   const bucketlistLikedEvents = userProfile
@@ -140,7 +140,7 @@ export default function UserProfileScreen(): JSX.Element {
         />
 
         <AppButton
-          onPress={() => setToggleEditProfile(OFF)}
+          onPress={() => setSwitchEditProfile(OFF)}
           btnColor='white'
           text='EDIT PROFILE'
         />
@@ -222,7 +222,7 @@ export default function UserProfileScreen(): JSX.Element {
               <AppButton
                 onPress={() => {
                   dirty && handleSubmit();
-                  setToggleEditProfile(ON);
+                  setSwitchEditProfile(ON);
                 }}
                 btnColor='blue'
                 text='SAVE PROFILE'
@@ -396,7 +396,6 @@ export default function UserProfileScreen(): JSX.Element {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-
       <Stack.Screen
         options={{
           headerShown: true,
@@ -408,14 +407,21 @@ export default function UserProfileScreen(): JSX.Element {
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: background }}
       >
+
         <If
-          condition={toggleEditProfile}
-          render={<Profile />}
-          elseRender={<EditProfile />}
+          condition={switchEditProfile}
+          render={(
+            <Profile />
+          )}
+          elseRender={(
+            <EditProfile />
+          )}
         />
+
         <View style={{ padding: 20 }}>
           <AppButton btnColor='black' onPress={() => handleLogout()} text='LOG OUT' />
         </View>
+
       </ScrollView>
     </SafeAreaView>
   );
