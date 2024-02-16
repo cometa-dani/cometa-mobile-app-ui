@@ -420,6 +420,7 @@ const modalStyles = StyleSheet.create({
   }
 });
 
+
 const styles = StyleSheet.create({
   avatarContainer: {
     flexDirection: 'row',

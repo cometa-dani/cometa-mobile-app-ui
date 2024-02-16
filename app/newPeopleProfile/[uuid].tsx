@@ -260,11 +260,15 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           <BucketListCarousel />
 
           <If condition={newPeopleProfile?.languages?.length}
-            render={<UserLanguages />}
+            render={
+              <UserLanguages />
+            }
           />
 
           <If condition={newPeopleProfile?.homeTown && newPeopleProfile?.currentLocation}
-            render={<UserLocations />}
+            render={
+              <UserLocations />
+            }
           />
         </View>
       </ScrollView>
