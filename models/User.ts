@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { ImagePickerAsset } from 'expo-image-picker';
-import { EventCategory, LikableEvent } from './Event';
+import { EventCategory, LikeableEvent } from './Event';
 import { Friendship } from './Friendship';
 import { Photo } from './Photo';
 
@@ -118,7 +118,7 @@ export interface MatchedUsersWhoLikedEvent {
   user: GetBasicUserProfile;
 }
 
-type Event = Pick<LikableEvent, ('photos' | 'name')>
+type Event = Pick<LikeableEvent, ('photos' | 'name')>
 
 type OutgoingFriendship =
   Pick<Friendship, (

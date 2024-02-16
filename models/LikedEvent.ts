@@ -1,7 +1,7 @@
-import { LikableEvent } from './Event';
+import { LikeableEvent } from './Event';
 
 export interface GetAllLikedEventsWithPagination {
-  events: LikableEvent[];
+  events: LikeableEvent[];
   totalEvents: number;
   currentPage: number;
   eventsPerPage: number;

@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { LikableEvent, } from '../../models/Event';
+import { LikeableEvent, } from '../../models/Event';
 import { StyleSheet, DimensionValue, Pressable, Dimensions, View as TransParentView } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Text, View, useColors } from '../../components/Themed';
@@ -22,7 +22,7 @@ const carouselEstimatedWidth = Dimensions.get('window').width - 20;
 
 
 interface EventsListProps {
-  items: LikableEvent[],
+  items: LikeableEvent[],
   handleInfiniteFetch: () => void,
   isLoading: boolean,
 }
@@ -111,7 +111,7 @@ const SkeletonLoader: FC = () => {
 
 // Define the props for the memoized list item
 interface ListItemProps {
-  item: LikableEvent,
+  item: LikeableEvent,
   layoutHeight: DimensionValue,
 }
 

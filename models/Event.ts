@@ -39,7 +39,7 @@ export type CreateEventLike =
 
 
 export interface MatchedEvents {
-  event: LikableEvent
+  event: LikeableEvent
   // Pick<LikableEvent, (
   //   'id' |
   //   'createdAt' |
@@ -55,13 +55,13 @@ export interface MatchedEvents {
 }
 
 export interface GetAllLatestEventsWithPagination {
-  events: LikableEvent[];
+  events: LikeableEvent[];
   totalEvents: number;
   nextCursor: number;
   eventsPerPage: number;
 }
 
-export interface LikableEvent {
+export interface LikeableEvent {
   id: number;
   createdAt: string;
   updatedAt: string;
