@@ -6,7 +6,7 @@ import { Text, View, useColors } from '../../components/Themed';
 import * as Yup from 'yup';
 import { profileStyles } from '../../components/profile/profileStyles';
 import { useQueryGetNewPeopleProfileByUid } from '../../queries/userHooks';
-import { useQueryGetMatchedEvents } from '../../queries/eventHooks';
+import { useQueryGetMatchedEventsBySameUsers } from '../../queries/eventHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppCarousel } from '../../components/carousels/carousel';
 import { nodeEnv } from '../../constants/vars';
@@ -54,7 +54,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
 
   // queries
   const { data: newPeopleProfile, isSuccess, isLoading } = useQueryGetNewPeopleProfileByUid(uuid);
-  const { data: matchedEvents } = useQueryGetMatchedEvents(uuid);
+  const { data: matchedEvents } = useQueryGetMatchedEventsBySameUsers(uuid);
   const isReceiver: boolean = newPeopleProfile?.incomingFriendships[0]?.status === 'PENDING';
   const isSender: boolean = newPeopleProfile?.outgoingFriendships[0]?.status === 'PENDING';
 
@@ -75,7 +75,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
     const friendshipID = sender.outgoingFriendships[0].id;
     mutationAcceptFriendship.mutate(friendshipID, {
       onSuccess() {
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEW_PEOPLE_INFO] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE] });
       },
     });
   };
@@ -88,7 +88,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   const handleCurrentUserHasNoPendingInvitations = (receiver: GetDetailedUserProfile): void => {
     mutationSentFriendship.mutate(receiver.id, {
       onSuccess() {
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEW_PEOPLE_INFO] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE] });
       },
     });
   };
@@ -101,7 +101,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   const handleCancelFriendshipInvitation = (receiver: GetDetailedUserProfile): void => {
     mutationCancelFriendship.mutate(receiver.id, {
       onSuccess() {
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEW_PEOPLE_INFO] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE] });
       },
     });
   };

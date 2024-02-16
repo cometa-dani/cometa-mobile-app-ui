@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { RectButton } from 'react-native-gesture-handler';
-import { useInfiniteQueryGetLatestLikedEvents, useMutationDeleteLikedEventFromBucketList } from '../../queries/eventHooks';
+import { useInfiniteQueryGetLikedEventsForBucketList, useMutationDeleteLikedEventFromBucketList } from '../../queries/eventHooks';
 import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { View, Text } from '../../components/Themed';
@@ -75,7 +75,7 @@ const renderItem = ({ item, index }: { item: GetAllLikedEventsWithPagination['ev
 };
 
 export default function BuckectListScreen(): JSX.Element {
-  const { data, isFetching, hasNextPage, fetchNextPage, isLoading, } = useInfiniteQueryGetLatestLikedEvents();
+  const { data, isFetching, hasNextPage, fetchNextPage, isLoading, } = useInfiniteQueryGetLikedEventsForBucketList();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const bucketListData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 

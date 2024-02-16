@@ -3,7 +3,7 @@ import Modal from 'react-native-modal';
 import { SafeAreaView, StyleSheet, Pressable } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { router, useGlobalSearchParams } from 'expo-router';
-import { useQueryGetEventById, useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../queries/eventHooks';
+import { useQueryGetEventInfoById, useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../queries/eventHooks';
 import { Image } from 'expo-image';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { AppButton } from '../../components/buttons/buttons';
@@ -44,7 +44,7 @@ export default function MatchesScreen(): JSX.Element {
   const eventID = useGlobalSearchParams<{ eventId: string }>()['eventId'];
 
   // fetching data
-  const eventByIdRes = useQueryGetEventById(+eventID);
+  const eventByIdRes = useQueryGetEventInfoById(+eventID);
   const newPeopleRes = useInfiteQueryGetUsersWhoLikedSameEventByID(+eventID);
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();
 

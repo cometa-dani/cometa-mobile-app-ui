@@ -13,7 +13,7 @@ export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
   return (
     useQuery({
       enabled: !!dynamicParam,
-      queryKey: [QueryKeys.GET_USER_INFO, dynamicParam],
+      queryKey: [QueryKeys.GET_USER_INFO_PROFILE, dynamicParam],
       queryFn: async (): Promise<GetDetailedUserProfile> => {
         const res = await userService.getUserInfoByUid(dynamicParam, accessToken);
         if (res.status === 200) {
@@ -48,7 +48,7 @@ export const useMutationUserProfileById = () => {
       onMutate: async ({ payload }) => {
         queryClient
           .setQueryData<GetDetailedUserProfile>
-          ([QueryKeys.GET_USER_INFO, uuid], (oldState): GetDetailedUserProfile => {
+          ([QueryKeys.GET_USER_INFO_PROFILE, uuid], (oldState): GetDetailedUserProfile => {
             const optimisticState = {
               ...oldState,
               ...payload
@@ -58,7 +58,7 @@ export const useMutationUserProfileById = () => {
           });
       },
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO] });
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO_PROFILE] });
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
@@ -73,7 +73,7 @@ export const useQueryGetNewPeopleProfileByUid = (dynamicParam: string) => {
   return (
     useQuery({
       enabled: !!dynamicParam,
-      queryKey: [QueryKeys.GET_NEW_PEOPLE_INFO, dynamicParam],
+      queryKey: [QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE, dynamicParam],
       queryFn: async (): Promise<GetDetailedUserProfile> => {
         const res = await userService.getUserInfoByUid(dynamicParam, accessToken);
         if (res.status === 200) {
@@ -117,11 +117,11 @@ export const useMutationUploadUserPhotos = (uuId: string) => {
         },
 
       onMutate: async ({ pickedImgFiles }) => {
-        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO, uuId] });
+        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO_PROFILE, uuId] });
 
         queryClient
           .setQueryData<GetDetailedUserProfile>
-          ([QueryKeys.GET_USER_INFO, uuId], (oldState): GetDetailedUserProfile => {
+          ([QueryKeys.GET_USER_INFO_PROFILE, uuId], (oldState): GetDetailedUserProfile => {
             const newPhotos: Partial<Photo>[] = pickedImgFiles.map(imgFile => ({ url: imgFile.uri, uuid: imgFile.assetId ?? '' })) || [];
 
             const optimisticState = {
@@ -135,7 +135,7 @@ export const useMutationUploadUserPhotos = (uuId: string) => {
       },
 
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO, uuId] });
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO_PROFILE, uuId] });
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
@@ -163,11 +163,11 @@ export const useMutationDeleteUserPhotoByUuid = (dynamicParam: string) => {
         },
 
       onMutate: async ({ photoUuid }) => {
-        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO, dynamicParam] });
+        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO_PROFILE, dynamicParam] });
         // TODO
         queryClient
           .setQueryData<GetDetailedUserProfile>
-          ([QueryKeys.GET_USER_INFO, dynamicParam], (oldState): GetDetailedUserProfile => {
+          ([QueryKeys.GET_USER_INFO_PROFILE, dynamicParam], (oldState): GetDetailedUserProfile => {
             const filteredPhotos: Photo[] = oldState?.photos.filter(({ uuid }) => photoUuid !== uuid) || [];
 
             const optimisticState = {
@@ -181,7 +181,7 @@ export const useMutationDeleteUserPhotoByUuid = (dynamicParam: string) => {
       },
 
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO, dynamicParam] });
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO_PROFILE, dynamicParam] });
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
@@ -209,11 +209,11 @@ export const useMutationUpdateUserAvatar = (dynamicParam: string) => {
         },
 
       onMutate: async ({ pickedImgFile }) => {
-        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO, dynamicParam] });
+        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_USER_INFO_PROFILE, dynamicParam] });
 
         queryClient
           .setQueryData<GetDetailedUserProfile>
-          ([QueryKeys.GET_USER_INFO, dynamicParam], (oldState): GetDetailedUserProfile => {
+          ([QueryKeys.GET_USER_INFO_PROFILE, dynamicParam], (oldState): GetDetailedUserProfile => {
 
             const optimisticState = {
               ...oldState,
@@ -226,7 +226,7 @@ export const useMutationUpdateUserAvatar = (dynamicParam: string) => {
       },
 
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO, dynamicParam] });
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_INFO_PROFILE, dynamicParam] });
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
