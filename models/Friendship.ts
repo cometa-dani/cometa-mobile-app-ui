@@ -9,11 +9,11 @@ export interface Friendship {
   sender: GetBasicUserProfile;
   receiverId: number;
   receiver: GetBasicUserProfile
-  status: Status;
+  status: FriendShipStatus;
   friend: GetBasicUserProfile
 }
 
-export type Status = 'PENDING' | 'ACCEPTED' | 'BLOCKED'
+export type FriendShipStatus = 'PENDING' | 'ACCEPTED' | 'BLOCKED'
 
 export interface GetLatestFriendships {
   friendships: Friendship[];

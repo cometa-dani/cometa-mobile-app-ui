@@ -1,10 +1,10 @@
 export interface Cities {
   links: Link[];
-  data: Datum[];
+  data: CityDatum[];
   metadata: Metadata;
 }
 
-export interface Datum {
+export interface CityDatum {
   id: number;
   wikiDataId: string;
   type: string;

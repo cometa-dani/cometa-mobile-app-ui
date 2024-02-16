@@ -1,43 +1,9 @@
 /* eslint-disable no-unused-vars */
 import { ImagePickerAsset } from 'expo-image-picker';
 import { EventCategory, LikableEvent } from './Event';
-import { Friendship, Status } from './Friendship';
+import { Friendship } from './Friendship';
 import { Photo } from './Photo';
 
-
-// used in zustand store for global CLIENT STATE
-export interface UserClientState extends Pick<GetBasicUserProfile, (
-  'id' |
-  'uid' |
-  'username' |
-  'birthday' |
-  'occupation' |
-  'email' |
-  'name' |
-  'biography' |
-  'currentLocation' |
-  'homeTown' |
-  'languages'
-)> {
-  password: string;
-  imageRef: ImagePickerAsset;
-}
-
-export interface GetMatchedUsersWhoLikedEventWithPagination {
-  usersWhoLikedEvent: MatchedUsersWhoLikedEvent[];
-  nextCursor: number;
-  totalUsers: number;
-  usersPerPage: number;
-}
-
-export interface MatchedUsersWhoLikedEvent {
-  id: number;
-  createdAt: string;
-  updatedAt: string;
-  eventId: number;
-  userId: number;
-  user: GetBasicUserProfile;
-}
 
 enum Gender {
   MALE,
@@ -116,6 +82,40 @@ enum Education {
   MASTERS,
   DOCTORATE,
   OTHER
+}
+
+// used in zustand store for global CLIENT STATE
+export interface UserClientState extends Pick<GetBasicUserProfile, (
+  'id' |
+  'uid' |
+  'username' |
+  'birthday' |
+  'occupation' |
+  'email' |
+  'name' |
+  'biography' |
+  'currentLocation' |
+  'homeTown' |
+  'languages'
+)> {
+  password: string;
+  imageRef: ImagePickerAsset;
+}
+
+export interface GetMatchedUsersWhoLikedEventWithPagination {
+  usersWhoLikedEvent: MatchedUsersWhoLikedEvent[];
+  nextCursor: number;
+  totalUsers: number;
+  usersPerPage: number;
+}
+
+export interface MatchedUsersWhoLikedEvent {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  eventId: number;
+  userId: number;
+  user: GetBasicUserProfile;
 }
 
 type Event = Pick<LikableEvent, ('photos' | 'name')>
