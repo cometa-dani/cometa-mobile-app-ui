@@ -35,7 +35,7 @@ export const useInfiniteQueryGetLatestEvents = () => {
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (!lastPage.nextCursor) {
+        if (!lastPage.nextCursor || lastPage.events.length < 4) {
           return null; // makes hasNextPage evalutes to false
         }
         return lastPage.nextCursor;
@@ -65,7 +65,7 @@ export const useInfiniteQueryGetLikedEventsForBucketList = () => {
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (!lastPage.nextCursor) {
+        if (!lastPage.nextCursor || lastPage.events.length < 8) {
           return null; // makes hasNextPage evalutes to false
         }
         return lastPage.nextCursor;
@@ -120,7 +120,7 @@ export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => 
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (!lastPage.nextCursor) {
+        if (!lastPage.nextCursor || lastPage.usersWhoLikedEvent.length < 5) {
           return null; // makes hasNextPage evalutes to false
         }
         return lastPage.nextCursor;
