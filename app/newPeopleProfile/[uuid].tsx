@@ -1,3 +1,4 @@
+import { FC } from 'react';
 import { Pressable, SafeAreaView } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -107,6 +108,119 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   };
 
 
+  const UserBiography: FC = () => (
+    <If
+      condition={!isLoading}
+      elseRender={(
+        <ContentLoader
+          speed={1}
+          width={150}
+          height={12}
+          viewBox={`0 0 ${150} ${12}`}
+          backgroundColor="#f3f3f3"
+          foregroundColor="#ecebeb"
+        >
+          <Rect x="6" y="0" rx="6" ry="6" width="140" height="12" />
+        </ContentLoader>
+      )}
+      render={(
+        <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+          <FontAwesome size={16} name='user' />
+          <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+            {newPeopleProfile?.biography}
+          </Text>
+        </View>
+      )}
+    />
+  );
+
+
+  const MatchedEventsCarousel: FC = () => (
+    <Pressable onPress={() => router.push('/newPeopleProfile/matchesList')}>
+      <AppCarousel
+        title='Matches'
+        list={matchedEvents?.map(
+          ({ event }) => ({
+            id: event.id,
+            img: event.photos[0]?.url,
+            placeholder: event.photos[0]?.placeholder
+          })) || []
+        }
+      />
+    </Pressable>
+  );
+
+
+  const BucketListCarousel: FC = () => (
+    <AppCarousel
+      isLocked={!isFriend}
+      title='BucketList'
+      list={newPeopleProfile?.likedEvents.map(
+        (likedEvent) => ({
+          id: likedEvent.id,
+          img: likedEvent.event.photos[0]?.url,
+          placeholder: likedEvent.event.photos[0]?.placeholder
+        })) || []
+      }
+    />
+  );
+
+
+  const ActionsButtons: FC = () => (
+    isSuccess && (
+      isFriend ? (
+        <AppButton
+          onPress={() => router.push(`/chat/${newPeopleProfile?.id}`)}
+          btnColor='gray'
+          text='CHAT'
+        />
+      ) : (
+        <>
+          {isReceiver && (
+            <AppButton
+              onPress={() => handleCancelFriendshipInvitation(newPeopleProfile)}
+              text="PENDING"
+              btnColor='blue'
+            />
+          )}
+          {isSender && (
+            <AppButton
+              onPress={() => handleCurrentUserHasAPendingInvitation(newPeopleProfile)}
+              text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
+              btnColor='black'
+            />
+          )}
+          {!isReceiver && !isSender && (
+            <AppButton
+              onPress={() => handleCurrentUserHasNoPendingInvitations(newPeopleProfile)}
+              text="JOIN"
+              btnColor='black'
+            />
+          )}
+        </>
+      )
+    )
+  );
+
+
+  const UserLanguages: FC = () => (
+    <Badges
+      iconName='comment'
+      title='Languages'
+      items={newPeopleProfile?.languages ?? []}
+    />
+  );
+
+
+  const UserLocations: FC = () => (
+    <Badges
+      iconName='map-marker'
+      title='Location'
+      items={[`from ${newPeopleProfile?.homeTown}`, `live in ${newPeopleProfile?.currentLocation}`]}
+    />
+  );
+
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style={'auto'} />
@@ -137,116 +251,23 @@ export default function NewPeopleProfileScreen(): JSX.Element {
             userProfile={newPeopleProfile}
           />
 
-          <If
-            condition={!isLoading}
-            elseRender={(
-              <ContentLoader
-                speed={1}
-                width={150}
-                height={12}
-                viewBox={`0 0 ${150} ${12}`}
-                backgroundColor="#f3f3f3"
-                foregroundColor="#ecebeb"
-              >
-                <Rect x="6" y="0" rx="6" ry="6" width="140" height="12" />
-              </ContentLoader>
-            )}
-            render={(
-              <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                <FontAwesome size={16} name='user' />
-                <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                  {newPeopleProfile?.biography}
-                </Text>
-              </View>
-            )}
-          />
+          <UserBiography />
 
-          {/* ACTION BUTTONS */}
-          {isSuccess && (
-            isFriend ? (
-              <AppButton
-                onPress={() => router.push(`/chat/${newPeopleProfile?.id}`)}
-                btnColor='gray'
-                text='CHAT'
-              />
-            ) : (
-              <>
-                {isReceiver && (
-                  <AppButton
-                    onPress={() => handleCancelFriendshipInvitation(newPeopleProfile)}
-                    text="PENDING"
-                    btnColor='blue'
-                  />
-                )}
-                {isSender && (
-                  <AppButton
-                    onPress={() => handleCurrentUserHasAPendingInvitation(newPeopleProfile)}
-                    text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
-                    btnColor='black'
-                  />
-                )}
-                {!isReceiver && !isSender && (
-                  <AppButton
-                    onPress={() => handleCurrentUserHasNoPendingInvitations(newPeopleProfile)}
-                    text="JOIN"
-                    btnColor='black'
-                  />
-                )}
-              </>
-            )
-          )}
-          {/* ACTION BUTTONS */}
+          <ActionsButtons />
 
-          {/* MATCHES */}
-          <Pressable onPress={() => router.push('/newPeopleProfile/matchesList')}>
-            <AppCarousel
-              title='Matches'
-              list={matchedEvents?.map(
-                ({ event }) => ({
-                  id: event.id,
-                  img: event.photos[0]?.url,
-                  placeholder: event.photos[0]?.placeholder
-                })) || []
-              }
-            />
-          </Pressable>
-          {/* MATCHES */}
+          <MatchedEventsCarousel />
 
-          {/* BUCKETLIST */}
-          <AppCarousel
-            isLocked={!isFriend}
-            title='BucketList'
-            list={newPeopleProfile?.likedEvents.map(
-              (likedEvent) => ({
-                id: likedEvent.id,
-                img: likedEvent.event.photos[0]?.url,
-                placeholder: likedEvent.event.photos[0]?.placeholder
-              })) || []
-            }
-          />
-          {/* BUCKETLIST */}
+          <BucketListCarousel />
 
           <If condition={newPeopleProfile?.languages?.length}
-            render={(
-              <Badges
-                iconName='comment'
-                title='Languages'
-                items={newPeopleProfile?.languages ?? []}
-              />
-            )}
+            render={<UserLanguages />}
           />
 
           <If condition={newPeopleProfile?.homeTown && newPeopleProfile?.currentLocation}
-            render={(
-              <Badges
-                iconName='map-marker'
-                title='Location'
-                items={[`from ${newPeopleProfile?.homeTown}`, `live in ${newPeopleProfile?.currentLocation}`]}
-              />
-            )}
+            render={<UserLocations />}
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
