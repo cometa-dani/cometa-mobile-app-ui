@@ -3,7 +3,7 @@ import Modal from 'react-native-modal';
 import { SafeAreaView, StyleSheet, Pressable } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { router, useGlobalSearchParams } from 'expo-router';
-import { useQueryGetEventInfoById, useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../queries/eventHooks';
+import { useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../queries/eventHooks';
 import { Image } from 'expo-image';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { AppButton } from '../../components/buttons/buttons';
@@ -22,6 +22,9 @@ import { nodeEnv } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { gray_200, gray_500 } from '../../constants/colors';
 import { useQueryGetUserProfileByUid } from '../../queries/userHooks';
+import { InfiniteData, useQueryClient } from '@tanstack/react-query';
+import { QueryKeys } from '../../queries/queryKeys';
+import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEvent';
 
 
 type Message = { message: string };
@@ -43,8 +46,12 @@ export default function MatchesScreen(): JSX.Element {
   const { data: userProfile } = useQueryGetUserProfileByUid(uid);
   const eventID = useGlobalSearchParams<{ eventId: string }>()['eventId'];
 
+  // cached data
+  const queryClient = useQueryClient();
+  const queryData = queryClient.getQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION]);
+  const eventById = queryData?.pages.flatMap(page => page?.events).find(event => event.id === +eventID);
+
   // fetching data
-  const eventByIdRes = useQueryGetEventInfoById(+eventID);
   const newPeopleRes = useInfiteQueryGetUsersWhoLikedSameEventByID(+eventID);
   const newestFriendsRes = useInfiniteQueryGetNewestFriends();
 
@@ -122,8 +129,8 @@ export default function MatchesScreen(): JSX.Element {
     <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 26 }]}>
       <Image
         style={styles.imgHeader}
-        placeholder={{ thumbhash: eventByIdRes.data?.photos[0]?.placeholder }}
-        source={{ uri: eventByIdRes.data?.photos[0]?.url }}
+        placeholder={{ thumbhash: eventById?.photos[0]?.placeholder }}
+        source={{ uri: eventById?.photos[0]?.url }}
       />
 
       <View style={styles.tabs}>

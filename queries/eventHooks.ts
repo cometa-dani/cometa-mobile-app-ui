@@ -77,6 +77,35 @@ export const useInfiniteQueryGetLikedEventsForBucketList = () => {
 };
 
 
+export const useInfiniteQueryGetLikedEventsByUserId = (userId?: number) => {
+  return (
+    useInfiniteQuery({
+      enabled: !!userId,
+      queryKey: [QueryKeys.GET_LIKED_EVENTS_BY_USER_ID_WITH_PAGINATION, userId],
+      initialPageParam: -1,
+      queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
+        const res = await eventService.getLikedEventsForBucketListWithPagination(pageParam, 4, undefined, true, userId);
+        if (res.status === 200) {
+          return res.data;
+        }
+        else {
+          throw new Error('failed to request data');
+        }
+      },
+      // Define when to stop refetching
+      getNextPageParam: (lastPage) => {
+        // stops incrementing next page because there no more events left
+        if (!lastPage.nextCursor || lastPage.events.length < 8) {
+          return null; // makes hasNextPage evalutes to false
+        }
+        return lastPage.nextCursor;
+      },
+      retry: 3,
+      retryDelay: 1_000 * 60 * 3
+    })
+  );
+};
+
 // Query to fetch a single event by its ID
 export const useQueryGetEventInfoById = (eventID: number) => {
   const accessToken = useCometaStore(state => state.accessToken);
@@ -203,6 +232,14 @@ export const useMutationLikeOrDislikeEvent = () => {
       },
       // Invalidate queries after the mutation succeeds
       onSuccess: async () => {
+
+        // TODO
+
+        // What if on succes we dont invalidate the query?
+        // and just update the cache ?
+
+        // TODO
+
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION] }),
           queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION] })
@@ -254,8 +291,8 @@ export const useMutationDeleteLikedEventFromBucketList = () => {
       // Invalidate queries after the mutation succeeds
       onSuccess: async () => {
         await Promise.all([
+          // TOO SLOW
           queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION] }),
-          // queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS] }),
         ]);
       },
       retry: 3,

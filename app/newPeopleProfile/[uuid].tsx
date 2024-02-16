@@ -152,17 +152,19 @@ export default function NewPeopleProfileScreen(): JSX.Element {
 
 
   const BucketListCarousel: FC = () => (
-    <AppCarousel
-      isLocked={!isFriend}
-      title='BucketList'
-      list={newPeopleProfile?.likedEvents.map(
-        (likedEvent) => ({
-          id: likedEvent.id,
-          img: likedEvent.event.photos[0]?.url,
-          placeholder: likedEvent.event.photos[0]?.placeholder
-        })) || []
-      }
-    />
+    <Pressable onPress={() => router.push(`/newPeopleProfile/bucketList/${uuid}`)}>
+      <AppCarousel
+        // isLocked={!isFriend}
+        title='BucketList'
+        list={newPeopleProfile?.likedEvents.map(
+          (likedEvent) => ({
+            id: likedEvent.id,
+            img: likedEvent.event.photos[0]?.url,
+            placeholder: likedEvent.event.photos[0]?.placeholder
+          })) || []
+        }
+      />
+    </Pressable>
   );
 
 

@@ -6,7 +6,7 @@ import { Stack } from 'expo-router';
 import { EventsFlashList } from '../../components/events/eventsList';
 
 
-export default function MatchesListScreen(): JSX.Element {
+export default function MatchedEventsListScreen(): JSX.Element {
   // colors
   const { background } = useColors();
 
