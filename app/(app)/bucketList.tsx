@@ -16,64 +16,6 @@ import { If } from '../../components/utils/ifElse';
 import { ForEach } from '../../components/utils';
 
 
-const SkeletonLoader: FC = () => {
-  const windowWidth = Dimensions.get('window').width;
-  const itemWidth = windowWidth - 40; // Subtract padding
-  const itemHeight = 108;
-  const gap = 20;
-  const totalHeight = 6 * (itemHeight + gap);
-
-  const rect1Width = itemWidth * 0.40; // 35% of item width
-  const rect2Width = itemWidth * 0.60; // 51% of item width
-  const rect2X = rect1Width + 20; // Start of second rect, add 20 for gap
-
-  return (
-    <ContentLoader
-      speed={1}
-      style={{ marginVertical: 26 }}
-      width={windowWidth}
-      height={totalHeight}
-      viewBox={`0 0 ${windowWidth} ${totalHeight}`}
-      backgroundColor="#f3f3f3"
-      foregroundColor="#ecebeb"
-    >
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Fragment key={i}>
-          <Rect
-            x="20"
-            y={i * (itemHeight + gap) + 6}
-            rx="26"
-            ry="26"
-            width={rect1Width}
-            height={itemHeight}
-          />
-          <Rect
-            x={rect2X + 10}
-            y={i * (itemHeight + gap) + 6}
-            rx="26"
-            ry="26"
-            width={rect2Width - 10}
-            height={itemHeight}
-          />
-        </Fragment>
-      ))}
-    </ContentLoader>
-  );
-};
-
-
-const renderItem = ({ item, index }: { item: GetAllLikedEventsWithPagination['events'][0], index: number }) => {
-  return (
-    <>
-      <MemoizedBucketItem
-        key={index}
-        item={item}
-      />
-      <View style={{ height: 20 }} />
-    </>
-  );
-};
-
 export default function BuckectListScreen(): JSX.Element {
   const { data, isFetching, hasNextPage, fetchNextPage, isLoading, } = useInfiniteQueryGetLikedEventsForBucketList();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
@@ -94,7 +36,7 @@ export default function BuckectListScreen(): JSX.Element {
             onMomentumScrollEnd={handleInfiniteFetch}
             onEndReachedThreshold={1}
             estimatedItemSize={100}
-            renderItem={renderItem}
+            renderItem={renderMemoizedBucketItem}
           />
         )}
       />
@@ -157,13 +99,72 @@ const styles = StyleSheet.create({
 });
 
 
-interface Props {
+const renderMemoizedBucketItem = ({ item, index }: { item: GetAllLikedEventsWithPagination['events'][0], index: number }) => {
+  return (
+    <>
+      <MemoizedBucketItem
+        key={index}
+        item={item}
+      />
+      <View style={{ height: 20 }} />
+    </>
+  );
+};
+
+
+const SkeletonLoader: FC = () => {
+  const windowWidth = Dimensions.get('window').width;
+  const itemWidth = windowWidth - 40; // Subtract padding
+  const itemHeight = 108;
+  const gap = 20;
+  const totalHeight = 6 * (itemHeight + gap);
+
+  const rect1Width = itemWidth * 0.40; // 35% of item width
+  const rect2Width = itemWidth * 0.60; // 51% of item width
+  const rect2X = rect1Width + 20; // Start of second rect, add 20 for gap
+
+  return (
+    <ContentLoader
+      speed={1}
+      style={{ marginVertical: 26 }}
+      width={windowWidth}
+      height={totalHeight}
+      viewBox={`0 0 ${windowWidth} ${totalHeight}`}
+      backgroundColor="#f3f3f3"
+      foregroundColor="#ecebeb"
+    >
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Fragment key={i}>
+          <Rect
+            x="20"
+            y={i * (itemHeight + gap) + 6}
+            rx="26"
+            ry="26"
+            width={rect1Width}
+            height={itemHeight}
+          />
+          <Rect
+            x={rect2X + 10}
+            y={i * (itemHeight + gap) + 6}
+            rx="26"
+            ry="26"
+            width={rect2Width - 10}
+            height={itemHeight}
+          />
+        </Fragment>
+      ))}
+    </ContentLoader>
+  );
+};
+
+
+interface BucketItemProps {
   item: GetAllLikedEventsWithPagination['events'][0],
 }
-const BucketItem: FC<Props> = ({ item }) => {
+const BucketItem: FC<BucketItemProps> = ({ item }) => {
   const deleteLikedEventMutation = useMutationDeleteLikedEventFromBucketList();
 
-  const UsersBubbles = () => (
+  const UsersBubbles: FC = () => (
     <ForEach items={item?.likes ?? []}>
       {({ user }, index) => (
         <Image
@@ -211,6 +212,6 @@ const BucketItem: FC<Props> = ({ item }) => {
 
 const MemoizedBucketItem = memo(BucketItem, areEqual);
 
-function areEqual(prevProps: Props, nextProps: Props) {
+function areEqual(prevProps: BucketItemProps, nextProps: BucketItemProps) {
   return prevProps.item.id === nextProps.item.id;
 }

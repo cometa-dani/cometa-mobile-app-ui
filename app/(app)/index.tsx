@@ -2,24 +2,26 @@ import React, { useMemo } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { View, useColors } from '../../components/Themed';
 import { useInfiniteQueryGetLatestEvents } from '../../queries/eventHooks';
-import { EventsList } from '../../components/events/eventsList';
+import { EventsFlashList } from '../../components/events/eventsList';
 
 
 export default function HomeScreen(): JSX.Element {
   // colors
   const { background } = useColors();
 
-  // events & function to handle fetching more events when reaching the end
+  // eventsData
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetLatestEvents();
   const eventsData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
+  // handling fetch when reaching the end
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <View style={styles.container}>
 
-        <EventsList
+        <EventsFlashList
           items={eventsData}
           isLoading={isLoading}
           handleInfiniteFetch={handleInfiniteFetch}
@@ -29,6 +31,7 @@ export default function HomeScreen(): JSX.Element {
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

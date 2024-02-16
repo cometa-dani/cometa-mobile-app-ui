@@ -21,6 +21,43 @@ const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
 const carouselEstimatedWidth = Dimensions.get('window').width - 20;
 
 
+interface EventsListProps {
+  items: LikableEvent[],
+  handleInfiniteFetch: () => void,
+  isLoading: boolean,
+}
+
+export const EventsFlashList: FC<EventsListProps> = ({ handleInfiniteFetch, isLoading, items }) => {
+  const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
+
+  return (
+    <If
+      condition={isLoading}
+      render={<SkeletonLoader />}
+      elseRender={(
+        <FlashList
+          onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
+          showsVerticalScrollIndicator={false}
+          estimatedItemSize={eventItemEstimatedHeight}
+          pagingEnabled={true}
+          data={items}
+          onEndReached={handleInfiniteFetch}
+          onEndReachedThreshold={0.4}
+          decelerationRate={'normal'}
+          renderItem={({ item }) => (
+            <MemoizedEventItem
+              key={item.id}
+              item={item}
+              layoutHeight={layoutHeight}
+            />
+          )}
+        />
+      )}
+    />
+  );
+};
+
+
 const SkeletonLoader: FC = () => {
   const width = Dimensions.get('window').width;
   const height = Dimensions.get('window').height;
@@ -70,48 +107,6 @@ const SkeletonLoader: FC = () => {
     </>
   );
 };
-
-
-interface EventsListProps {
-  items: LikableEvent[],
-  handleInfiniteFetch: () => void,
-  isLoading: boolean,
-}
-
-export const EventsList: FC<EventsListProps> = ({ handleInfiniteFetch, isLoading, items }) => {
-  const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
-
-  return (
-    <If
-      condition={isLoading}
-      render={<SkeletonLoader />}
-      elseRender={(
-        <FlashList
-          onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
-          showsVerticalScrollIndicator={false}
-          estimatedItemSize={eventItemEstimatedHeight}
-          pagingEnabled={true}
-          data={items}
-          onEndReached={handleInfiniteFetch}
-          onEndReachedThreshold={0.4}
-          decelerationRate={'normal'}
-          renderItem={({ item }) => (
-            <MemoizedEventItem
-              key={item.id}
-              item={item}
-              layoutHeight={layoutHeight}
-            />
-          )}
-        />
-      )}
-    />
-  );
-};
-
-
-const renderCarouselItem = ({ item }: { item: Photo }) => (
-  <CarouselItem key={item.id} item={item} />
-);
 
 
 // Define the props for the memoized list item
@@ -256,6 +251,12 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
     </View>
   );
 };
+
+
+const renderCarouselItem = ({ item }: { item: Photo }) => (
+  <CarouselItem key={item.id} item={item} />
+);
+
 
 /**
  *
