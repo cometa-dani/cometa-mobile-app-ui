@@ -166,7 +166,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   );
 
 
-  const ActionsButtons: FC = () => (
+  const FriendShipInvitationButtons: FC = () => (
     isSuccess && (
       isFriend ? (
         <AppButton
@@ -253,7 +253,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
 
           <UserBiography />
 
-          <ActionsButtons />
+          <FriendShipInvitationButtons />
 
           <MatchedEventsCarousel />
 

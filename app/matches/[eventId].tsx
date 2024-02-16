@@ -139,7 +139,7 @@ export default function MatchesScreen(): JSX.Element {
   );
 
 
-  const MeetNewPeople = () => (
+  const MeetNewPeopleFlashList: FC = () => (
     <FlashList
       estimatedItemSize={120}
       ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
@@ -201,7 +201,7 @@ export default function MatchesScreen(): JSX.Element {
   );
 
 
-  const Friends = () => (
+  const FriendsFlashList: FC = () => (
     <FlashList
       estimatedItemSize={120}
       ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
@@ -318,7 +318,7 @@ export default function MatchesScreen(): JSX.Element {
             entering={SlideInLeft.duration(240)}
             exiting={SlideOutRight.duration(240)}
           >
-            <Friends />
+            <FriendsFlashList />
           </Animated.View>
         )}
 
@@ -329,7 +329,7 @@ export default function MatchesScreen(): JSX.Element {
             entering={SlideInRight.duration(240)}
             exiting={SlideOutLeft.duration(240)}
           >
-            <MeetNewPeople />
+            <MeetNewPeopleFlashList />
           </Animated.View>
         )}
       </View>
