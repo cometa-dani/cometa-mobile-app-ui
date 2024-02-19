@@ -14,13 +14,12 @@ import { useCometaStore } from '../../../store/cometaStore';
 export default function MatchedEventsListScreen(): JSX.Element {
   // colors
   const { background } = useColors();
-  const authUserUuid = useCometaStore(state => state.uid);
+  const authenticatedUserUuid = useCometaStore(state => state.uid);
 
-  const uuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
+  const anotherUserUuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
   const queryClient = useQueryClient();
-  // const queryData = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_USER_INFO_PROFILE]);
-  const friendQueryData = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE, uuid]);
-  const authUserData = useQueryGetUserProfileByUid(authUserUuid);
+  const friendQueryData = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE, anotherUserUuid]);
+  const authUserData = useQueryGetUserProfileByUid(authenticatedUserUuid);
 
 
   // events & function to handle fetching more events when reaching the end

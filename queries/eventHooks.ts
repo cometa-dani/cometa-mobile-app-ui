@@ -77,14 +77,14 @@ export const useInfiniteQueryGetLikedEventsForBucketList = () => {
 };
 
 
-export const useInfiniteQueryGetLikedEventsByUserId = (userId?: number) => {
+export const useInfiniteQueryGetLikedEventsByUserId = (anotherUserId?: number) => {
   return (
     useInfiniteQuery({
-      enabled: !!userId,
-      queryKey: [QueryKeys.GET_LIKED_EVENTS_BY_USER_ID_WITH_PAGINATION, userId],
+      enabled: !!anotherUserId,
+      queryKey: [QueryKeys.GET_LIKED_EVENTS_BY_USER_ID_WITH_PAGINATION, anotherUserId],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
-        const res = await eventService.getLikedEventsForBucketListWithPagination(pageParam, 4, undefined, true, userId);
+        const res = await eventService.getLikedEventsForBucketListWithPagination(pageParam, 4, undefined, true, anotherUserId);
         if (res.status === 200) {
           return res.data;
         }

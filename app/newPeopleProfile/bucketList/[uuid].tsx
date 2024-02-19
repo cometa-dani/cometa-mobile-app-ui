@@ -9,16 +9,15 @@ import { QueryKeys } from '../../../queries/queryKeys';
 import { GetDetailedUserProfile } from '../../../models/User';
 import { Image } from 'expo-image';
 import { red_100 } from '../../../constants/colors';
-// import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 export default function BucketListScreen(): JSX.Element {
   // colors
   const { background } = useColors();
 
-  const uuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
+  const anotherUserUuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
   const queryClient = useQueryClient();
-  const userProfileCachedData = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE, uuid]);
+  const userProfileCachedData = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE, anotherUserUuid]);
 
   // events & function to handle fetching more events when reaching the end
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetLikedEventsByUserId(userProfileCachedData?.id);
@@ -36,7 +35,6 @@ export default function BucketListScreen(): JSX.Element {
           headerShown: false,
           headerShadowVisible: false,
           headerTitle: '',
-          headerStyle: { backgroundColor: 'rgba(0, 0, 0, 0)' }
         }}
       />
 
