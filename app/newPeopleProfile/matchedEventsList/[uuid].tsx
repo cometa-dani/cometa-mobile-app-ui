@@ -1,20 +1,34 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
-import { View, useColors } from '../../components/Themed';
-import { useInfiniteQueryGetLatestEvents } from '../../queries/eventHooks';
-import { Stack } from 'expo-router';
-import { EventsFlashList } from '../../components/events/eventsList';
+import { View, useColors } from '../../../components/Themed';
+import { useInfiniteQueryGetLatestEvents } from '../../../queries/eventHooks';
+import { Stack, useLocalSearchParams } from 'expo-router';
+import { EventsFlashList } from '../../../components/events/eventsList';
+import { useQueryClient } from '@tanstack/react-query';
+import { GetDetailedUserProfile } from '../../../models/User';
+import { QueryKeys } from '../../../queries/queryKeys';
+import { useQueryGetUserProfileByUid } from '../../../queries/userHooks';
+import { useCometaStore } from '../../../store/cometaStore';
 
 
 export default function MatchedEventsListScreen(): JSX.Element {
   // colors
   const { background } = useColors();
+  const authUserUuid = useCometaStore(state => state.uid);
+
+  const uuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
+  const queryClient = useQueryClient();
+  // const queryData = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_USER_INFO_PROFILE]);
+  const friendQueryData = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE, uuid]);
+  const authUserData = useQueryGetUserProfileByUid(authUserUuid);
+
 
   // events & function to handle fetching more events when reaching the end
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetLatestEvents();
   const eventsData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>

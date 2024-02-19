@@ -15,3 +15,5 @@ export const measurementId = process.env?.EXPO_PUBLIC_MEASURING_ID || 'G-G4W08CQ
 
 export const animationDuration = 290;
 export const screenOptions = { headerShown: false, animation: 'slide_from_right', animationDuration } as ScreenProps;
+
+export const defaultImgPlaceholder = 'https://placehold.co/400';

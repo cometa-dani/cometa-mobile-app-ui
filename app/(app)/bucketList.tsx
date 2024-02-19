@@ -14,6 +14,7 @@ import { gray_50, red_100 } from '../../constants/colors';
 import { If } from '../../components/utils/ifElse';
 import { ForEach } from '../../components/utils';
 import { LikeableEvent } from '../../models/Event';
+import { defaultImgPlaceholder } from '../../constants/vars';
 
 
 export default function BuckectListScreen(): JSX.Element {
@@ -169,7 +170,7 @@ const BucketItem: FC<BucketItemProps> = ({ item }) => {
       {({ user }, index) => (
         <Image
           key={index}
-          source={{ uri: user?.photos[0]?.url }}
+          source={{ uri: user?.photos[0]?.url ?? defaultImgPlaceholder }}
           placeholder={{ thumbhash: user?.photos[0]?.placeholder }}
           style={styles.bubble}
         />

@@ -18,7 +18,7 @@ import * as Yup from 'yup';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
 import { IMessage, } from 'react-native-gifted-chat';
-import { nodeEnv } from '../../constants/vars';
+import { defaultImgPlaceholder, nodeEnv } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { gray_200, gray_500 } from '../../constants/colors';
 import { useQueryGetUserProfileByUid } from '../../queries/userHooks';
@@ -49,7 +49,7 @@ export default function MatchesScreen(): JSX.Element {
   // cached data
   const queryClient = useQueryClient();
   const queryData = queryClient.getQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION]);
-  const eventById = queryData?.pages.flatMap(page => page?.events).find(event => event.id === +eventID);
+  const eventByIdCahedData = queryData?.pages.flatMap(page => page?.events).find(event => event.id === +eventID);
 
   // fetching data
   const newPeopleRes = useInfiteQueryGetUsersWhoLikedSameEventByID(+eventID);
@@ -129,8 +129,8 @@ export default function MatchesScreen(): JSX.Element {
     <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 26 }]}>
       <Image
         style={styles.imgHeader}
-        placeholder={{ thumbhash: eventById?.photos[0]?.placeholder }}
-        source={{ uri: eventById?.photos[0]?.url }}
+        placeholder={{ thumbhash: eventByIdCahedData?.photos[0]?.placeholder }}
+        source={{ uri: eventByIdCahedData?.photos[0]?.url }}
       />
 
       <View style={styles.tabs}>
@@ -164,7 +164,7 @@ export default function MatchesScreen(): JSX.Element {
                 <Image
                   style={styles.userAvatar}
                   placeholder={{ thumbhash: anotherUser?.photos[0]?.placeholder }}
-                  source={{ uri: anotherUser?.photos[0]?.url }}
+                  source={{ uri: anotherUser?.photos[0]?.url ?? defaultImgPlaceholder }}
                 />
 
                 <View style={styles.textContainer}>
@@ -325,6 +325,7 @@ export default function MatchesScreen(): JSX.Element {
             entering={SlideInLeft.duration(240)}
             exiting={SlideOutRight.duration(240)}
           >
+            {/* flashlist fails to render because is empty on first mount */}
             <FriendsFlashList />
           </Animated.View>
         )}
@@ -336,6 +337,7 @@ export default function MatchesScreen(): JSX.Element {
             entering={SlideInRight.duration(240)}
             exiting={SlideOutLeft.duration(240)}
           >
+            {/* flashlist fails to render because is empty on first mount */}
             <MeetNewPeopleFlashList />
           </Animated.View>
         )}
