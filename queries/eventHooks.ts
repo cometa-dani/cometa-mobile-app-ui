@@ -8,7 +8,7 @@ import {
   from '@tanstack/react-query';
 import { useCometaStore } from '../store/cometaStore';
 import eventService from '../services/eventService';
-import { GetAllLatestEventsWithPagination, CreateEventLike, MatchedEvents } from '../models/Event';
+import { GetAllLatestEventsWithPagination, CreateEventLike } from '../models/Event';
 import { GetLikedEventsForBucketListWithPagination } from '../models/LikedEvent';
 import { GetMatchedUsersWhoLikedEventWithPagination } from '../models/User';
 import { GetEventByID } from '../models/EventLike';
@@ -95,7 +95,7 @@ export const useInfiniteQueryGetLikedEventsByUserId = (anotherUserId?: number) =
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (!lastPage.nextCursor || lastPage.events.length < 8) {
+        if (!lastPage.nextCursor || lastPage.events.length < 4) {
           return null; // makes hasNextPage evalutes to false
         }
         return lastPage.nextCursor;
@@ -106,7 +106,7 @@ export const useInfiniteQueryGetLikedEventsByUserId = (anotherUserId?: number) =
   );
 };
 
-// Query to fetch a single event by its ID
+// TODO can be removed beacuse it's not used and I am reading the cahed date from the queryClient
 export const useQueryGetEventInfoById = (eventID: number) => {
   const accessToken = useCometaStore(state => state.accessToken);
 
@@ -161,14 +161,15 @@ export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => 
 };
 
 
-export const useQueryGetMatchedEventsBySameUsers = (user2Token: string, take = 5,) => {
+export const useInfiniteQueryGetMatchedEventsBySameUsers = (user2Token: string, take = 4, allPhotos = true) => {
   const user1Token = useCometaStore(state => state.accessToken);
 
   return (
-    useQuery({
-      queryKey: [QueryKeys.GET_MATCHED_EVENTS_BY_SAME_USERS_WITH_PAGINATION],
-      queryFn: async (): Promise<MatchedEvents[]> => {
-        const res = await eventService.getMatchedEventsByTwoUsers(user2Token, take, user1Token);
+    useInfiniteQuery({
+      initialPageParam: -1,
+      queryKey: [QueryKeys.GET_MATCHED_EVENTS_BY_SAME_USERS_WITH_PAGINATION, user2Token],
+      queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
+        const res = await eventService.getMatchedEventsByTwoUsersWithPagination(user2Token, pageParam, take, user1Token, allPhotos);
         if (res.status === 200) {
           return res.data;
         }
@@ -176,11 +177,40 @@ export const useQueryGetMatchedEventsBySameUsers = (user2Token: string, take = 5
           throw new Error('failed to request data');
         }
       },
+      getNextPageParam: (lastPage) => {
+        // stops incrementing next page because there no more events left
+        if (!lastPage.nextCursor || lastPage.events.length < take) {
+          return null; // makes hasNextPage evalutes to false
+        }
+        return lastPage.nextCursor;
+      },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
     })
   );
 };
+
+
+// export const useQueryGetMatchedEventsBySameUsers = (user2Token: string, take = 5,) => {
+//   const user1Token = useCometaStore(state => state.accessToken);
+
+//   return (
+//     useQuery({
+//       queryKey: [QueryKeys.GET_MATCHED_EVENTS_BY_SAME_USERS_WITH_PAGINATION],
+//       queryFn: async (): Promise<MatchedEvents[]> => {
+//         const res = await eventService.getMatchedEventsByTwoUsers(user2Token, take, user1Token);
+//         if (res.status === 200) {
+//           return res.data;
+//         }
+//         else {
+//           throw new Error('failed to request data');
+//         }
+//       },
+//       retry: 3,
+//       retryDelay: 1_000 * 60 * 3
+//     })
+//   );
+// };
 
 // Mutation to like or dislike an event
 export const useMutationLikeOrDislikeEvent = () => {

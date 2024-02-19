@@ -1,4 +1,4 @@
-import { GetAllLatestEventsWithPagination, CreateEventLike, MatchedEvents } from '../models/Event';
+import { GetAllLatestEventsWithPagination, CreateEventLike } from '../models/Event';
 import { GetEventByID } from '../models/EventLike';
 import { GetLikedEventsForBucketListWithPagination } from '../models/LikedEvent';
 import { GetMatchedUsersWhoLikedEventWithPagination } from '../models/User';
@@ -48,8 +48,11 @@ class EventService extends RestApiService {
   }
 
 
-  public getMatchedEventsByTwoUsers(newPeopleUui: string, take: number, accessToken: string) {
-    return this.http.get<MatchedEvents[]>(`/events/liked/matches/${newPeopleUui}?limit=${take}`, this.configAuthHeader(accessToken));
+  public getMatchedEventsByTwoUsersWithPagination(newPeopleUui: string, cursor: number, limit: number, accessToken: string, allPhotos?: boolean,) {
+    const params = { cursor, limit, allPhotos };
+    const config = { params, headers: this.configAuthHeader(accessToken).headers };
+
+    return this.http.get<GetLikedEventsForBucketListWithPagination>(`/events/liked/matches/${newPeopleUui}`, config);
   }
 }
 

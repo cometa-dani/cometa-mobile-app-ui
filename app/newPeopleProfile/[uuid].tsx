@@ -7,7 +7,7 @@ import { Text, View, useColors } from '../../components/Themed';
 import * as Yup from 'yup';
 import { profileStyles } from '../../components/profile/profileStyles';
 import { useQueryGetNewPeopleProfileByUid } from '../../queries/userHooks';
-import { useQueryGetMatchedEventsBySameUsers } from '../../queries/eventHooks';
+import { useInfiniteQueryGetMatchedEventsBySameUsers } from '../../queries/eventHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppCarousel } from '../../components/carousels/carousel';
 import { nodeEnv } from '../../constants/vars';
@@ -55,7 +55,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
 
   // queries
   const { data: newPeopleProfile, isSuccess, isLoading } = useQueryGetNewPeopleProfileByUid(uuid);
-  const { data: matchedEvents } = useQueryGetMatchedEventsBySameUsers(uuid);
+  const { data: matchedEvents } = useInfiniteQueryGetMatchedEventsBySameUsers(uuid);
   const isReceiver: boolean = newPeopleProfile?.incomingFriendships[0]?.status === 'PENDING';
   const isSender: boolean = newPeopleProfile?.outgoingFriendships[0]?.status === 'PENDING';
 
@@ -136,15 +136,18 @@ export default function NewPeopleProfileScreen(): JSX.Element {
 
 
   const MatchedEventsCarousel: FC = () => (
-    <Pressable onPress={() => router.push('/newPeopleProfile/matchesList')}>
+    <Pressable onPress={() => router.push(`/newPeopleProfile/matchedEventsList/${uuid}`)}>
       <AppCarousel
         title='Matches'
-        list={matchedEvents?.map(
-          ({ event }) => ({
-            id: event.id,
-            img: event.photos[0]?.url,
-            placeholder: event.photos[0]?.placeholder
-          })) || []
+        list={matchedEvents?.pages.flatMap(
+          page => page.events.map(
+            event => ({
+              id: event.id,
+              img: event.photos[0]?.url,
+              placeholder: event.photos[0]?.placeholder
+            })
+          ))
+          || []
         }
       />
     </Pressable>

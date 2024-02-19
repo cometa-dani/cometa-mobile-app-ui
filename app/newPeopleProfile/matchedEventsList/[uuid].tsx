@@ -1,14 +1,16 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, SafeAreaView } from 'react-native';
+import { StyleSheet, SafeAreaView, Pressable } from 'react-native';
 import { View, useColors } from '../../../components/Themed';
-import { useInfiniteQueryGetLatestEvents } from '../../../queries/eventHooks';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { useInfiniteQueryGetMatchedEventsBySameUsers } from '../../../queries/eventHooks';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { EventsFlashList } from '../../../components/events/eventsList';
 import { useQueryClient } from '@tanstack/react-query';
 import { GetDetailedUserProfile } from '../../../models/User';
 import { QueryKeys } from '../../../queries/queryKeys';
 import { useQueryGetUserProfileByUid } from '../../../queries/userHooks';
 import { useCometaStore } from '../../../store/cometaStore';
+import { Image } from 'expo-image';
+import { blue_100, red_100 } from '../../../constants/colors';
 
 
 export default function MatchedEventsListScreen(): JSX.Element {
@@ -19,15 +21,13 @@ export default function MatchedEventsListScreen(): JSX.Element {
   const anotherUserUuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
   const queryClient = useQueryClient();
   const friendQueryData = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE, anotherUserUuid]);
-  const authUserData = useQueryGetUserProfileByUid(authenticatedUserUuid);
-
+  const { data: authUserData } = useQueryGetUserProfileByUid(authenticatedUserUuid);
 
   // events & function to handle fetching more events when reaching the end
-  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetLatestEvents();
+  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetMatchedEventsBySameUsers(anotherUserUuid);
   const eventsData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
-
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
@@ -35,12 +35,48 @@ export default function MatchedEventsListScreen(): JSX.Element {
         options={{
           presentation: 'modal',
           animation: 'default',
-          headerShown: true,
+          headerShown: false,
           headerShadowVisible: false,
           headerTitle: '',
-          headerTitleAlign: 'center'
         }}
       />
+
+      <View style={{ height: 70 }} />
+
+      <Pressable
+        style={{
+          position: 'absolute',
+          top: 32,
+          zIndex: 1000,
+          alignSelf: 'center',
+          flexDirection: 'row',
+          gap: -20
+        }}
+        onPress={() => router.back()}>
+        <Image
+          style={{
+            borderColor: red_100,
+            borderWidth: 3.6,
+            width: 76,
+            height: 76,
+            borderRadius: 50,
+          }}
+          placeholder={{ thumbhash: authUserData?.photos[0].placeholder }}
+          source={{ uri: authUserData?.photos[0].url }}
+        />
+        <Image
+          style={{
+            borderColor: blue_100,
+            borderWidth: 3.6,
+            width: 76,
+            height: 76,
+            borderRadius: 50,
+          }}
+          placeholder={{ thumbhash: friendQueryData?.photos[0].placeholder }}
+          source={{ uri: friendQueryData?.photos[0].url }}
+        />
+      </Pressable>
+
       <View style={styles.container}>
 
         <EventsFlashList
@@ -61,5 +97,7 @@ const styles = StyleSheet.create({
     margin: 10,
     marginBottom: 30,
     overflow: 'hidden',
+    position: 'relative',
+    zIndex: 0
   },
 });
