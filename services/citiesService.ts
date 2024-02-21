@@ -1,21 +1,16 @@
-import axios from 'axios';
-import { Cities } from '../models/Cities';
+import { GetCitiesWithPagination } from '../models/Cities';
+import { RestApiService } from './restService';
 
 
-class CitiesService {
-
-  private http = axios.create({
-    baseURL: 'http://geodb-free-service.wirefreethought.com/v1/geo/'
-  });
-
+class CitiesService extends RestApiService {
   /**
    *
    * @param prefix {string}
    * @param offset {number} must be multiples of 10
    * @returns
    */
-  searchCitiesByPrefix(offset: number, prefix: string) {
-    return this.http.get<Cities>(`/places?limit=10&offset=${offset}&namePrefix=${prefix}`);
+  searchCitiesByPrefix(prefix: string, cursor: number, limit = 10) {
+    return this.http.get<GetCitiesWithPagination>(`/world-cities?limit=${limit}&cursor=${cursor}&cityName=${prefix}`);
   }
 }
 

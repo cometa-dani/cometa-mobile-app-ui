@@ -1,33 +1,20 @@
-export interface Cities {
-  links: Link[];
-  data: CityDatum[];
-  metadata: Metadata;
+export interface GetCitiesWithPagination {
+  cities: CityDatum[];
+  totalCities: number;
+  nextCursor: number;
+  citiesPerPage: number;
 }
 
 export interface CityDatum {
   id: number;
-  wikiDataId: string;
-  type: string;
-  name: string;
-  country: string;
-  countryCode: string;
-  region: string;
-  regionCode: string;
-  regionWdId: string;
-  latitude: number;
-  longitude: number;
-  population: number;
-  distance: null | number;
-  placeType: string;
-}
-
-
-interface Link {
-  rel: string;
-  href: string;
-}
-
-interface Metadata {
-  currentOffset: number;
-  totalCount: number;
+  population?: number;
+  capital?: string;
+  city: string;
+  cityAscii: string;
+  adminName?: string;
+  iso2?: string;
+  iso3?: string;
+  country?: string;
+  lng: number;
+  lat: number;
 }

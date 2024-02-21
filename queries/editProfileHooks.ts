@@ -4,14 +4,14 @@ import citiesService from '../services/citiesService';
 import languagesServices from '../services/languagesServices';
 
 
-export const useInfiniteQueryGetCities = (prefixName: string) => {
+export const useInfiniteQueryGetCities = (prefixName: string, limit = 10) => {
   return useInfiniteQuery({
     enabled: true,
-    initialPageParam: 0,
+    initialPageParam: -1,
 
     queryKey: [QueryKeys.GET_CURRENT_LOCATION_CITIES, prefixName],
-    queryFn: async ({ pageParam = 0 }) => {
-      const response = await citiesService.searchCitiesByPrefix(pageParam, prefixName);
+    queryFn: async ({ pageParam }) => {
+      const response = await citiesService.searchCitiesByPrefix(prefixName, pageParam, limit);
       if (response.status === 200) {
         return response.data;
       }
@@ -20,11 +20,11 @@ export const useInfiniteQueryGetCities = (prefixName: string) => {
       }
     },
     getNextPageParam: (lastPage) => {
-      if (!lastPage.data.length) {
+      if (!lastPage.cities.length || lastPage.cities.length < limit) {
         return null;
       }
       else {
-        return lastPage.metadata.currentOffset + 10;
+        return lastPage.nextCursor;
       }
     },
     retry: 3,

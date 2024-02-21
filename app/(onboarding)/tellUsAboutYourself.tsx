@@ -21,7 +21,7 @@ type ProfileValues = {
 
 const validationSchemma = Yup.object<ProfileValues>({
   occupation: Yup.string().min(5).max(32).required(),
-  biography: Yup.string().min(5).max(120).required(),
+  biography: Yup.string().min(5).max(120).optional(),
 });
 
 
@@ -108,7 +108,7 @@ export default function TellUsAboutYourselfScreen(): JSX.Element {
                 <Text style={{ color: gray_300 }}>Something fun about yourself and who you are </Text>
               </View>
 
-              <View style={{ position: 'relative' }}>
+              <View style={{ position: 'relative', justifyContent: 'center' }}>
                 {touched.biography && errors.biography && (
                   <AppLabelFeedbackMsg position='bottom' text={errors.biography} />
                 )}

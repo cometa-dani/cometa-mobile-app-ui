@@ -17,7 +17,10 @@ type UserForm = {
 
 export const loginSchemma = Yup.object<UserForm>({
   password: Yup.string().min(6).max(18).required(),
-  repeatPassword: Yup.string().min(6).max(18).required(),
+  repeatPassword:
+    Yup.string()
+      .oneOf([Yup.ref('password'), ''], 'passwords must match')
+      .required(),
 });
 
 
@@ -66,6 +69,12 @@ export default function WhatIsYourPasswordScreen(): JSX.Element {
                 condition={touched.password && errors.password}
                 render={(
                   <AppLabelFeedbackMsg position='bottom' text={errors.password} />
+                )}
+              />
+              <If
+                condition={!errors.password && errors.repeatPassword === 'passwords must match'}
+                render={(
+                  <AppLabelFeedbackMsg position='bottom' text={errors.repeatPassword} />
                 )}
               />
               <If

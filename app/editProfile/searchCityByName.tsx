@@ -112,7 +112,7 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
   const [triggerFetch, setTriggerFetch] = useState('');
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetCities(triggerFetch);
 
-  const citiesData = useMemo(() => data?.pages.flatMap(page => page.data) || [], [data?.pages]);
+  const citiesData = useMemo(() => data?.pages.flatMap(page => page.cities) || [], [data?.pages]);
 
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
@@ -174,7 +174,7 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
             ItemSeparatorComponent={() => <View style={{ height: 0.6, backgroundColor: gray_50 }} />}
             renderItem={({ item }) => (
               <Pressable
-                onPress={() => onSaveCity(item.name)}
+                onPress={() => onSaveCity(item.city)}
                 key={item.id}
                 style={cityStyles.city}
               >
@@ -182,13 +182,13 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
                   <>
                     <View style={{ opacity: pressed ? 0.6 : 1 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                        <Text style={{ fontWeight: '700' }}>{item.name}</Text>
+                        <Text style={{ fontWeight: '700' }}>{item.city}</Text>
                         <FontAwesome name='flag-o' size={20} />
                       </View>
                       <Text>{item.country}</Text>
                     </View>
 
-                    <Text style={{ opacity: pressed ? 0.6 : 1 }}>{item.countryCode}</Text>
+                    <Text style={{ opacity: pressed ? 0.6 : 1 }}>{item.country}</Text>
                   </>
                 )}
               </Pressable>
