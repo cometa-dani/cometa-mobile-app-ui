@@ -1,11 +1,19 @@
+/* eslint-disable react/prop-types */
 import { FC } from 'react';
 import { Pressable, PressableProps, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
-import { Text, View, useColors } from '../Themed';
+import { View, useColors } from '../Themed';
 import { FontAwesome } from '@expo/vector-icons';
 import { gray_50 } from '../../constants/colors';
 import { Photo } from '../../models/Photo';
+import { RectButton } from 'react-native-gesture-handler';
+import { maximunNumberOfPhotos } from '../../constants/vars';
+import { ForEach, If } from '../utils';
 
+
+function range(length: number) {
+  return Array.from({ length }, () => ({} as Partial<Photo>));
+}
 
 interface CloseBtnProps extends PressableProps {
   size?: 'large' | 'small'
@@ -14,98 +22,99 @@ interface CloseBtnProps extends PressableProps {
 interface AppPhotoGridProps {
   onHandlePickImage?: () => void,
   onDeleteImage?: (uuid: string) => void,
-  photosList: Pick<Photo, 'placeholder' | 'url' | 'uuid'>[],
+  photosList: Partial<Photo>[],
   placeholders?: number,
   height?: number
 }
-export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDeleteImage, photosList = [], placeholders = 0, height = 190 }) => {
-  const editorMode: boolean = onHandlePickImage || onDeleteImage ? true : false;
+export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDeleteImage, photosList = [], height = 190 }) => {
   const { gray500, gray900, white50 } = useColors();
-
-  const lastItemOff = photosList.length === 0 ? - 1 : 0;
-  const placeholdersPhotos = (
-    placeholders == 0 ?
-      []
-      :
-      Array
-        .from({ length: placeholders + lastItemOff }, (_, index) => index)
-        .map(() => ({} as Photo))
+  const isFirstPhotoPresent = photosList.length === 0 ? 1 : 0;
+  const remainingPhotos = photosList.length;
+  const totalNumberOfPlaceholders: number = (
+    (maximunNumberOfPhotos - isFirstPhotoPresent)
+    -
+    remainingPhotos
   );
+  const emptyPlaceholders = range(totalNumberOfPlaceholders);
+  const gridPhotos = photosList?.slice(1).concat(emptyPlaceholders) ?? [];
+
 
   const CloseButton: FC<CloseBtnProps> = ({ size = 'large', ...props }) => {
     const { style, ...anotherProps } = props;
     const width = size === 'large' ? 30 : 26;
     const fontSize = size === 'large' ? 22 : 18;
     return (
-      editorMode ? (
-        <Pressable {...anotherProps} style={[gridStyles.closeBtn, { backgroundColor: gray900, width }]}>
-          <FontAwesome name='close' style={{ color: white50, fontSize }} />
-        </Pressable>
-      ) :
-        null
+      <Pressable {...anotherProps} style={[gridStyles.closeBtn, { backgroundColor: gray900, width }]}>
+        <FontAwesome name='close' style={{ color: white50, fontSize }} />
+      </Pressable>
     );
   };
 
-  return (
-    <View style={{ height: height, flexDirection: 'row', gap: 12, marginTop: 7 }}>
 
-      {!editorMode && photosList.length === 0 ? (
-        <Text>No photos available</Text>
-      ) : (
-        <>
-          {/* photo 1 */}
-          <View style={{ flex: 1, position: 'relative' }}>
-            {photosList[0]?.url?.length ? (
-              <>
-                <Image placeholder={{ thumbhash: photosList[0]?.placeholder }} style={[gridStyles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: photosList[0]?.url }} />
-                <CloseButton onPress={() => onDeleteImage && onDeleteImage(photosList[0]?.uuid)} />
-              </>
-            ) : (
-              <View style={gridStyles.uploadPhoto1}>
-                <Pressable onPress={onHandlePickImage}>
-                  <FontAwesome style={{ fontSize: 32, color: gray500 }} name='plus-square-o' />
-                </Pressable>
-              </View>
-            )}
-          </View>
-          {/* photo 1 */}
+  const FirstPhoto: FC<{ photo: Partial<Photo> }> = ({ photo }) => (
+    <View style={{ flex: 1, position: 'relative' }}>
+      <If
+        condition={photo?.url}
+        render={(
+          <>
+            <Image placeholder={{ thumbhash: photo?.placeholder }} style={[gridStyles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: photo?.url }} />
+            <CloseButton onPress={() => onDeleteImage && photo?.uuid && onDeleteImage(photo.uuid)} />
+          </>
+        )}
+        elseRender={(
+          <RectButton style={gridStyles.uploadPhoto1} onPress={onHandlePickImage}>
+            <FontAwesome style={{ fontSize: 32, color: gray500 }} name='plus-square-o' />
+          </RectButton>
+        )}
+      />
+    </View>
+  );
 
-          {/* grid */}
+
+  const Grid: FC = () => (
+    <View
+      style={{
+        flex: 1,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        alignContent: 'space-between'
+      }}>
+      <ForEach items={gridPhotos}>
+        {(photo, i) => (
           <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-              alignContent: 'space-between'
-            }}>
-
-            {photosList?.slice(1).concat(placeholdersPhotos).map(({ url, uuid, placeholder }, i) => (
-              <View
-                key={uuid ?? i}
-                style={[gridStyles.item, { position: 'relative' }]}>
-                {url?.length ? (
+            key={photo?.uuid ?? i}
+            style={[gridStyles.item, { position: 'relative' }]}>
+            <View style={{ flex: 1, position: 'relative' }}>
+              <If
+                condition={photo?.url}
+                render={(
                   <>
-                    <Image placeholder={{ thumbhash: placeholder }} style={gridStyles.uploadPhotoGrid} source={{ uri: url }} />
+                    <Image placeholder={{ thumbhash: photo.placeholder }} style={[gridStyles.uploadPhotoGrid, { objectFit: 'contain' }]} source={{ uri: photo.url }} />
                     <CloseButton
                       size='small'
-                      onPress={() => onDeleteImage && onDeleteImage(uuid)}
+                      onPress={() => onDeleteImage && photo.uuid && onDeleteImage(photo.uuid)}
                     />
                   </>
-                ) : (
-                  <View style={gridStyles.uploadPhotoGrid}>
-                    <Pressable onPress={onHandlePickImage}>
-                      <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
-                    </Pressable>
-                  </View>
                 )}
-              </View>
-            ))}
-
+                elseRender={(
+                  <RectButton style={gridStyles.uploadPhotoGrid} onPress={onHandlePickImage}>
+                    <FontAwesome style={{ fontSize: 28, color: gray500 }} name='plus-square-o' />
+                  </RectButton>
+                )}
+              />
+            </View>
           </View>
-          {/* grid */}
-        </>
-      )}
+        )}
+      </ForEach>
+    </View>
+  );
+
+
+  return (
+    <View style={{ height: height, flexDirection: 'row', gap: 12, marginTop: 7 }}>
+      <FirstPhoto photo={photosList[0]} />
+      <Grid />
     </View>
   );
 };
