@@ -127,7 +127,6 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeButton }) =>
 
   // perform mutations
   const likeOrDislikeMutation = useMutationLikeOrDislikeEvent();
-  const handleLikeOrDislike = () => likeOrDislikeMutation.mutate(item.id);
 
   // expand description
   const [isExpanded, setIsExpanded] = useState(false);
@@ -180,7 +179,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeButton }) =>
             condition={!hideLikeButton}
             render={(
               <TransParentView style={{ alignItems: 'center', gap: 2 }}>
-                <Pressable onPress={handleLikeOrDislike}>
+                <Pressable onPress={() => likeOrDislikeMutation.mutate(item.id)}>
                   {({ hovered, pressed }) => (
                     (item.isLiked) ? (
                       <FontAwesome name='heart' size={34} style={{ color: (hovered && pressed) ? white50 : red100 }} />

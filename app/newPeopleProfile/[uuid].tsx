@@ -153,11 +153,11 @@ export default function NewPeopleProfileScreen(): JSX.Element {
     </Pressable>
   );
 
-
+  // to block set to !isFriend
   const BucketListCarousel: FC = () => (
-    <Pressable onPress={!isFriend ? undefined : () => router.push(`/newPeopleProfile/bucketList/${uuid}`)}>
+    <Pressable onPress={isFriend ? undefined : () => router.push(`/newPeopleProfile/bucketList/${uuid}`)}>
       <AppCarousel
-        isLocked={!isFriend}
+        isLocked={isFriend}
         title='BucketList'
         list={newPeopleProfile?.likedEvents.map(
           (likedEvent) => ({
