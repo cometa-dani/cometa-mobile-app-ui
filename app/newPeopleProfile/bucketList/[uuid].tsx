@@ -7,7 +7,7 @@ import { EventsFlashList } from '../../../components/events/eventsList';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../../queries/queryKeys';
 import { GetDetailedUserProfile } from '../../../models/User';
-import { CustomHeader } from '../../../components/customHeader/CustomHeader';
+import { CustomHeader } from '../../../components/customHeader/customHeader';
 
 
 export default function BucketListScreen(): JSX.Element {

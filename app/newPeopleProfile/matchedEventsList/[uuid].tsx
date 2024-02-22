@@ -9,7 +9,7 @@ import { GetDetailedUserProfile } from '../../../models/User';
 import { QueryKeys } from '../../../queries/queryKeys';
 import { useQueryGetUserProfileByUid } from '../../../queries/userHooks';
 import { useCometaStore } from '../../../store/cometaStore';
-import { CustomHeader } from '../../../components/customHeader/CustomHeader';
+import { CustomHeader } from '../../../components/customHeader/customHeader';
 
 
 export default function MatchedEventsListScreen(): JSX.Element {
