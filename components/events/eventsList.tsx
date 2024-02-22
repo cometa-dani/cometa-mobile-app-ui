@@ -25,9 +25,10 @@ interface EventsListProps {
   items: LikeableEvent[],
   handleInfiniteFetch: () => void,
   isLoading: boolean,
+  hideLikeButton?: boolean,
 }
 
-export const EventsFlashList: FC<EventsListProps> = ({ handleInfiniteFetch, isLoading, items }) => {
+export const EventsFlashList: FC<EventsListProps> = ({ handleInfiniteFetch, isLoading, items, hideLikeButton }) => {
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
 
   return (
@@ -46,6 +47,7 @@ export const EventsFlashList: FC<EventsListProps> = ({ handleInfiniteFetch, isLo
           decelerationRate={'normal'}
           renderItem={({ item }) => (
             <MemoizedEventItem
+              hideLikeButton={hideLikeButton}
               key={item.id}
               item={item}
               layoutHeight={layoutHeight}
@@ -113,9 +115,10 @@ const SkeletonLoader: FC = () => {
 interface ListItemProps {
   item: LikeableEvent,
   layoutHeight: DimensionValue,
+  hideLikeButton?: boolean,
 }
 
-const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
+const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeButton }) => {
   // Get access to colors and store data
   const { red100, white50 } = useColors();
 
@@ -173,18 +176,23 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight }) => {
 
         {/* positioned buttons */}
         <TransParentView style={stylesEventItem.positionedButtons}>
-          <TransParentView style={{ alignItems: 'center', gap: 2 }}>
-            <Pressable onPress={handleLikeOrDislike}>
-              {({ hovered, pressed }) => (
-                (item.isLiked) ? (
-                  <FontAwesome name='heart' size={34} style={{ color: (hovered && pressed) ? white50 : red100 }} />
-                ) : (
-                  <FontAwesome name='heart-o' size={34} style={{ color: (hovered && pressed) ? red100 : white50 }} />
-                )
-              )}
-            </Pressable>
-            <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 16 }}>{item._count.likes || 0}</Text>
-          </TransParentView>
+          <If
+            condition={!hideLikeButton}
+            render={(
+              <TransParentView style={{ alignItems: 'center', gap: 2 }}>
+                <Pressable onPress={handleLikeOrDislike}>
+                  {({ hovered, pressed }) => (
+                    (item.isLiked) ? (
+                      <FontAwesome name='heart' size={34} style={{ color: (hovered && pressed) ? white50 : red100 }} />
+                    ) : (
+                      <FontAwesome name='heart-o' size={34} style={{ color: (hovered && pressed) ? red100 : white50 }} />
+                    )
+                  )}
+                </Pressable>
+                <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 16 }}>{item._count.likes || 0}</Text>
+              </TransParentView>
+            )}
+          />
 
           <TransParentView style={{ alignItems: 'center', gap: 2 }}>
             <Pressable>

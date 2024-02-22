@@ -25,9 +25,9 @@ class EventService extends RestApiService {
   }
 
 
-  public getLikedEventsForBucketListWithPagination(cursor: number, limit: number, accessToken?: string, allPhotos?: boolean, otherUserId?: number) {
-    const params = { cursor, limit, allPhotos, userId: otherUserId };
-    const AuthHeaders = accessToken ? this.configAuthHeader(accessToken).headers : undefined;
+  public getLikedEventsForDifferentUsersWithPagination(cursor: number, limit: number, accessToken: string, secondUserId?: number) {
+    const params = { cursor, limit, userId: secondUserId };
+    const AuthHeaders = this.configAuthHeader(accessToken).headers;
     const config = { params, headers: AuthHeaders };
 
     return this.http.get<GetLikedEventsForBucketListWithPagination>('/events/liked', config);

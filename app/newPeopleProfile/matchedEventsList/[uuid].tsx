@@ -47,6 +47,7 @@ export default function MatchedEventsListScreen(): JSX.Element {
 
       <View style={styles.container}>
         <EventsFlashList
+          hideLikeButton={true}
           items={eventsData}
           isLoading={isLoading}
           handleInfiniteFetch={handleInfiniteFetch}

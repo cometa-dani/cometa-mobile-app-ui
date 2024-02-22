@@ -54,7 +54,7 @@ export const useInfiniteQueryGetLikedEventsForBucketList = () => {
       queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
-        const res = await eventService.getLikedEventsForBucketListWithPagination(pageParam, 8, accessToken);
+        const res = await eventService.getLikedEventsForDifferentUsersWithPagination(pageParam, 8, accessToken);
         if (res.status === 200) {
           return res.data;
         }
@@ -77,14 +77,15 @@ export const useInfiniteQueryGetLikedEventsForBucketList = () => {
 };
 
 
-export const useInfiniteQueryGetLikedEventsByUserId = (anotherUserId?: number) => {
+export const useInfiniteQueryGetLikedEventsForSecondUserById = (secondUserId?: number) => {
+  const firstUserAccessToken = useCometaStore(state => state.accessToken);
   return (
     useInfiniteQuery({
-      enabled: !!anotherUserId,
-      queryKey: [QueryKeys.GET_LIKED_EVENTS_BY_USER_ID_WITH_PAGINATION, anotherUserId],
+      enabled: !!secondUserId,
+      queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_SECOND_USER_BY_ID_WITH_PAGINATION, secondUserId],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
-        const res = await eventService.getLikedEventsForBucketListWithPagination(pageParam, 4, undefined, true, anotherUserId);
+        const res = await eventService.getLikedEventsForDifferentUsersWithPagination(pageParam, 4, firstUserAccessToken, secondUserId);
         if (res.status === 200) {
           return res.data;
         }
