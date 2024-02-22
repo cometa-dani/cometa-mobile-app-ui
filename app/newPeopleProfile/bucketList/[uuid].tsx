@@ -1,14 +1,13 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, SafeAreaView, Pressable } from 'react-native';
+import { StyleSheet, SafeAreaView } from 'react-native';
 import { View, useColors } from '../../../components/Themed';
 import { useInfiniteQueryGetLikedEventsByUserId } from '../../../queries/eventHooks';
-import { Stack, router, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { EventsFlashList } from '../../../components/events/eventsList';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../../queries/queryKeys';
 import { GetDetailedUserProfile } from '../../../models/User';
-import { Image } from 'expo-image';
-import { red_100 } from '../../../constants/colors';
+import { CustomHeader } from '../../../components/customHeader/CustomHeader';
 
 
 export default function BucketListScreen(): JSX.Element {
@@ -32,43 +31,22 @@ export default function BucketListScreen(): JSX.Element {
         options={{
           presentation: 'modal',
           animation: 'default',
-          headerShown: false,
-          headerShadowVisible: false,
+          headerShown: true,
           headerTitle: '',
+          header: () => (
+            <CustomHeader
+              user1={userProfileCachedData?.photos[0]}
+            />
+          )
         }}
       />
 
-      <View style={{ height: 70 }} />
-
-      <Pressable
-        style={{
-          position: 'absolute',
-          top: 32,
-          zIndex: 1000,
-          alignSelf: 'center',
-        }}
-        onPress={() => router.back()}>
-        <Image
-          style={{
-            borderColor: red_100,
-            borderWidth: 3.6,
-            width: 76,
-            height: 76,
-            borderRadius: 50,
-          }}
-          placeholder={{ thumbhash: userProfileCachedData?.photos[0].placeholder }}
-          source={{ uri: userProfileCachedData?.photos[0].url }}
-        />
-      </Pressable>
-
       <View style={styles.container}>
-
         <EventsFlashList
           items={eventsData}
           isLoading={isLoading}
           handleInfiniteFetch={handleInfiniteFetch}
         />
-
       </View>
     </SafeAreaView>
   );

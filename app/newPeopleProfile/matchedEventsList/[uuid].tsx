@@ -1,16 +1,15 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, SafeAreaView, Pressable } from 'react-native';
+import { StyleSheet, SafeAreaView } from 'react-native';
 import { View, useColors } from '../../../components/Themed';
 import { useInfiniteQueryGetMatchedEventsBySameUsers } from '../../../queries/eventHooks';
-import { Stack, router, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { EventsFlashList } from '../../../components/events/eventsList';
 import { useQueryClient } from '@tanstack/react-query';
 import { GetDetailedUserProfile } from '../../../models/User';
 import { QueryKeys } from '../../../queries/queryKeys';
 import { useQueryGetUserProfileByUid } from '../../../queries/userHooks';
 import { useCometaStore } from '../../../store/cometaStore';
-import { Image } from 'expo-image';
-import { blue_100, red_100 } from '../../../constants/colors';
+import { CustomHeader } from '../../../components/customHeader/CustomHeader';
 
 
 export default function MatchedEventsListScreen(): JSX.Element {
@@ -29,62 +28,29 @@ export default function MatchedEventsListScreen(): JSX.Element {
 
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <Stack.Screen
         options={{
           presentation: 'modal',
           animation: 'default',
-          headerShown: false,
-          headerShadowVisible: false,
-          headerTitle: '',
+          headerShown: true,
+          header: () => (
+            <CustomHeader
+              user1={authUserData?.photos[0]}
+              user2={friendQueryData?.photos[0]}
+            />
+          )
         }}
       />
 
-      <View style={{ height: 70 }} />
-
-      <Pressable
-        style={{
-          position: 'absolute',
-          top: 32,
-          zIndex: 1000,
-          alignSelf: 'center',
-          flexDirection: 'row',
-          gap: -20
-        }}
-        onPress={() => router.back()}>
-        <Image
-          style={{
-            borderColor: red_100,
-            borderWidth: 3.6,
-            width: 76,
-            height: 76,
-            borderRadius: 50,
-          }}
-          placeholder={{ thumbhash: authUserData?.photos[0].placeholder }}
-          source={{ uri: authUserData?.photos[0].url }}
-        />
-        <Image
-          style={{
-            borderColor: blue_100,
-            borderWidth: 3.6,
-            width: 76,
-            height: 76,
-            borderRadius: 50,
-          }}
-          placeholder={{ thumbhash: friendQueryData?.photos[0].placeholder }}
-          source={{ uri: friendQueryData?.photos[0].url }}
-        />
-      </Pressable>
-
       <View style={styles.container}>
-
         <EventsFlashList
           items={eventsData}
           isLoading={isLoading}
           handleInfiniteFetch={handleInfiniteFetch}
         />
-
       </View>
     </SafeAreaView>
   );
@@ -98,6 +64,5 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     overflow: 'hidden',
     position: 'relative',
-    zIndex: 0
   },
 });
