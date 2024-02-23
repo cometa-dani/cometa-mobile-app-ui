@@ -9,13 +9,13 @@ import { BaseButton } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { badgesStyles } from '../../components/profile/badges';
 import { useCometaStore } from '../../store/cometaStore';
-import { useQueryGetUserProfileByUid } from '../../queries/userHooks';
+import { useQueryGetAuthenticatedUserProfileByUid } from '../../queries/userHooks';
 
 
 export default function WhereAreYouFromScreen(): JSX.Element {
 
   const uid = useCometaStore(state => state.uid); // this can be abstracted
-  const { data: userProfile } = useQueryGetUserProfileByUid(uid);
+  const { data: userProfile } = useQueryGetAuthenticatedUserProfileByUid(uid);
 
   const pushEditProfileScreen = (field: string): void => {
     router.push(`/editProfile/${field}?userId=${userProfile?.id}`);

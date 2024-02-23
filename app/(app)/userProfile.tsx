@@ -3,7 +3,7 @@ import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
-import { useMutationDeleteUserPhotoByUuid, useMutationUploadUserPhotos, useMutationAuthenticatedUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
+import { useMutationDeleteUserPhotoByUuid, useMutationUploadUserPhotos, useMutationAuthenticatedUserProfileById, useQueryGetAuthenticatedUserProfileByUid } from '../../queries/userHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { FC, useState } from 'react';
 import { Stack, router } from 'expo-router';
@@ -55,7 +55,7 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
 
   // queries
   const { data: bucketList } = useInfiniteQueryGetLikedEventsForBucketList();
-  const { data: userProfile, isLoading } = useQueryGetUserProfileByUid(authenticatedUserUuid);
+  const { data: userProfile, isLoading } = useQueryGetAuthenticatedUserProfileByUid(authenticatedUserUuid);
   const userPhotos: Photo[] = userProfile?.photos ?? [];
   const selectionLimit: number = (userProfile?.maxNumPhotos || 5) - (userPhotos?.length || 0);
 

@@ -1,6 +1,6 @@
-import { FC, useReducer, useState } from 'react';
+import { FC, useMemo, useReducer, useState } from 'react';
 import Modal from 'react-native-modal';
-import { SafeAreaView, StyleSheet, Pressable } from 'react-native';
+import { SafeAreaView, StyleSheet, Pressable, Image as StaticImage } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { router, useGlobalSearchParams } from 'expo-router';
 import { useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../queries/eventHooks';
@@ -21,7 +21,7 @@ import { IMessage, } from 'react-native-gifted-chat';
 import { defaultImgPlaceholder, nodeEnv } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { gray_200, gray_500 } from '../../constants/colors';
-import { useQueryGetUserProfileByUid } from '../../queries/userHooks';
+import { useQueryGetAuthenticatedUserProfileByUid } from '../../queries/userHooks';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
 import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEvent';
@@ -43,13 +43,16 @@ export default function MatchesScreen(): JSX.Element {
   const setIncommginFriendshipSender = useCometaStore(state => state.setIncommginFriendshipSender);
 
   // queries
-  const { data: userProfile } = useQueryGetUserProfileByUid(uid);
+  const { data: userProfile } = useQueryGetAuthenticatedUserProfileByUid(uid);
   const eventID = useGlobalSearchParams<{ eventId: string }>()['eventId'];
 
   // cached data
   const queryClient = useQueryClient();
   const queryData = queryClient.getQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION]);
-  const eventByIdCahedData = queryData?.pages.flatMap(page => page?.events).find(event => event.id === +eventID);
+  const eventByIdCahedData = useMemo(
+    () => queryData?.pages.flatMap(page => page?.events).find(event => event.id === +eventID),
+    [eventID]
+  );
 
   // fetching data
   const newPeopleRes = useInfiteQueryGetUsersWhoLikedSameEventByID(+eventID);
@@ -127,9 +130,8 @@ export default function MatchesScreen(): JSX.Element {
 
   const TabsHeader: FC = () => (
     <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 26 }]}>
-      <Image
+      <StaticImage
         style={styles.imgHeader}
-        placeholder={{ thumbhash: eventByIdCahedData?.photos[0]?.placeholder }}
         source={{ uri: eventByIdCahedData?.photos[0]?.url }}
       />
 

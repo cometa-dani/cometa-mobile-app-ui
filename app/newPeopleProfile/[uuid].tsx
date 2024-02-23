@@ -51,11 +51,11 @@ export default function NewPeopleProfileScreen(): JSX.Element {
 
   // url params
   const urlParams = useLocalSearchParams();
-  const { isFriend, uuid } = searchParamsSchemma.validateSync(urlParams);
+  const { isFriend, uuid: secondUserUuid } = searchParamsSchemma.validateSync(urlParams);
 
   // queries
-  const { data: newPeopleProfile, isSuccess, isLoading } = useQueryGetNewPeopleProfileByUid(uuid);
-  const { data: matchedEvents } = useInfiniteQueryGetMatchedEventsBySameUsers(uuid);
+  const { data: newPeopleProfile, isSuccess, isLoading } = useQueryGetNewPeopleProfileByUid(secondUserUuid);
+  const { data: matchedEvents } = useInfiniteQueryGetMatchedEventsBySameUsers(secondUserUuid);
   const isReceiver: boolean = newPeopleProfile?.incomingFriendships[0]?.status === 'PENDING';
   const isSender: boolean = newPeopleProfile?.outgoingFriendships[0]?.status === 'PENDING';
 
@@ -136,7 +136,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
 
 
   const MatchedEventsCarousel: FC = () => (
-    <Pressable onPress={() => router.push(`/newPeopleProfile/matchedEventsList/${uuid}`)}>
+    <Pressable onPress={() => router.push(`/newPeopleProfile/matchedEventsList/${secondUserUuid}`)}>
       <AppCarousel
         title='Matches'
         list={matchedEvents?.pages.flatMap(
@@ -155,7 +155,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
 
   // to block set to !isFriend
   const BucketListCarousel: FC = () => (
-    <Pressable onPress={isFriend ? undefined : () => router.push(`/newPeopleProfile/bucketList/${uuid}`)}>
+    <Pressable onPress={isFriend ? undefined : () => router.push(`/newPeopleProfile/bucketList/${secondUserUuid}`)}>
       <AppCarousel
         isLocked={isFriend}
         title='BucketList'

@@ -7,7 +7,7 @@ import { useCometaStore } from '../store/cometaStore';
 import { ImagePickerAsset } from 'expo-image-picker';
 
 
-export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
+export const useQueryGetAuthenticatedUserProfileByUid = (dynamicParam: string) => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return (
@@ -72,7 +72,7 @@ export const useQueryGetNewPeopleProfileByUid = (dynamicParam: string) => {
 
   return (
     useQuery({
-      enabled: !!dynamicParam,
+      // enabled: !!dynamicParam,
       queryKey: [QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE, dynamicParam],
       queryFn: async (): Promise<GetDetailedUserProfile> => {
         const res = await userService.getUserInfoByUid(dynamicParam, accessToken);

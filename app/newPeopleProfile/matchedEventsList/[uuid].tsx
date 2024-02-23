@@ -7,7 +7,7 @@ import { EventsFlashList } from '../../../components/events/eventsList';
 import { useQueryClient } from '@tanstack/react-query';
 import { GetDetailedUserProfile } from '../../../models/User';
 import { QueryKeys } from '../../../queries/queryKeys';
-import { useQueryGetUserProfileByUid } from '../../../queries/userHooks';
+import { useQueryGetAuthenticatedUserProfileByUid } from '../../../queries/userHooks';
 import { useCometaStore } from '../../../store/cometaStore';
 import { CustomHeader } from '../../../components/customHeader/customHeader';
 
@@ -20,7 +20,7 @@ export default function MatchedEventsListScreen(): JSX.Element {
   const anotherUserUuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
   const queryClient = useQueryClient();
   const friendQueryData = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE, anotherUserUuid]);
-  const { data: authUserData } = useQueryGetUserProfileByUid(authenticatedUserUuid);
+  const { data: authUserData } = useQueryGetAuthenticatedUserProfileByUid(authenticatedUserUuid);
 
   // events & function to handle fetching more events when reaching the end
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetMatchedEventsBySameUsers(anotherUserUuid);
