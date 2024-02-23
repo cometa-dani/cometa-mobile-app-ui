@@ -9,7 +9,7 @@ import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/Ap
 import { If } from '../../components/utils';
 import { profileStyles } from '../../components/profile/profileStyles';
 import { gray_300 } from '../../constants/colors';
-import { useMutationAuthenticatedUserProfileById, useQueryGetAuthenticatedUserProfileByUid } from '../../queries/userHooks';
+import { useMutationLoggedInUserProfileById, useQueryGetLoggedInUserProfileByUid } from '../../queries/userHooks';
 import { useCometaStore } from '../../store/cometaStore';
 
 
@@ -27,8 +27,8 @@ const validationSchemma = Yup.object<ProfileValues>({
 
 export default function TellUsAboutYourselfScreen(): JSX.Element {
   const uid = useCometaStore(state => state.uid);
-  const userProfile = useQueryGetAuthenticatedUserProfileByUid(uid);
-  const mutateUser = useMutationAuthenticatedUserProfileById();
+  const userProfile = useQueryGetLoggedInUserProfileByUid(uid);
+  const mutateUser = useMutationLoggedInUserProfileById();
 
   const navigate = () => router.push('/(onboarding)/showYourCurrentLocation');
 
@@ -148,12 +148,5 @@ export default function TellUsAboutYourselfScreen(): JSX.Element {
 const styles = StyleSheet.create({
   figure: {
     alignItems: 'center',
-  },
-
-  // form: {
-  //   flexDirection: 'column',
-  //   gap: 32,
-  //   justifyContent: 'center',
-  //   width: '100%'
-  // }
+  }
 });

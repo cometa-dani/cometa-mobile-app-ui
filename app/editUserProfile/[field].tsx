@@ -5,25 +5,25 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { SearchCityByName } from './searchCityByName';
 import { SelectLanguages } from './selectLanguages';
 import { If } from '../../components/utils/ifElse';
-import { useMutationAuthenticatedUserProfileById } from '../../queries/userHooks';
+import { useMutationLoggedInUserProfileById } from '../../queries/userHooks';
 
 
 type UserProfileFields = 'homeTown' | 'currentLocation' | 'languages';
 
 
-export default function EditProfileOptionsScreen(): JSX.Element {
+export default function EditUserProfileOptionsScreen(): JSX.Element {
   const { background } = useColors();
   const { field, userId } = useLocalSearchParams<{ field: UserProfileFields, userId: string }>();
-  const mutateUserProfileById = useMutationAuthenticatedUserProfileById();
+  const mutateLoggedInUserProfileById = useMutationLoggedInUserProfileById();
 
 
   const handleCitySelection = (selectedCity: string): void => {
     if (field === 'homeTown' && userId) {
-      mutateUserProfileById.mutate({ payload: { homeTown: selectedCity }, userId: +userId });
+      mutateLoggedInUserProfileById.mutate({ payload: { homeTown: selectedCity }, userId: +userId });
     }
 
     if (field === 'currentLocation' && userId) {
-      mutateUserProfileById.mutate({ payload: { currentLocation: selectedCity }, userId: +userId });
+      mutateLoggedInUserProfileById.mutate({ payload: { currentLocation: selectedCity }, userId: +userId });
     }
     router.back();
   };
@@ -31,7 +31,7 @@ export default function EditProfileOptionsScreen(): JSX.Element {
 
   const handleLanguageSelection = (selectedLanguages: string[]): void => {
     if (userId)
-      mutateUserProfileById
+      mutateLoggedInUserProfileById
         .mutate({
           payload: {
             languages: selectedLanguages

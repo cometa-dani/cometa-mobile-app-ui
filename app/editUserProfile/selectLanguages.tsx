@@ -14,7 +14,7 @@ import { AppTextInput } from '../../components/textInput/AppTextInput';
 import { RectButton } from 'react-native-gesture-handler';
 import { If } from '../../components/utils/ifElse';
 import { useCometaStore } from '../../store/cometaStore';
-import { useQueryGetAuthenticatedUserProfileByUid } from '../../queries/userHooks';
+import { useQueryGetLoggedInUserProfileByUid } from '../../queries/userHooks';
 
 
 const FadingLoader = () => {
@@ -116,7 +116,7 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const { data = [], isLoading } = useQueryGetAllLanguages();
   const uuid = useCometaStore(state => state.uid);
-  const { data: userData } = useQueryGetAuthenticatedUserProfileByUid(uuid);
+  const { data: userData } = useQueryGetLoggedInUserProfileByUid(uuid);
 
   const filteredLanguagesData = data.filter(
     lang => lang?.toLowerCase().includes(inputValue?.toLowerCase())

@@ -7,35 +7,39 @@ import { RestApiService } from './restService';
 
 class EventService extends RestApiService {
 
-  public getAllEventsWithPagination(cursor: number, limit: number, accessToken: string) {
+  public getAllEventsWithPagination(cursor: number, limit: number, loggedInUserAccessToken: string) {
     const params = { cursor, limit };
-    const AuthHeaders = this.configAuthHeader(accessToken).headers;
+    const AuthHeaders = this.configAuthHeader(loggedInUserAccessToken).headers;
     const config = { params, headers: AuthHeaders };
 
     return this.http.get<GetAllLatestEventsWithPagination>('/events', config);
   }
 
-
-  public createOrDeleteLikeByEventID(eventID: number, accessToken: string) {
+  // TODO make autorization configHeader
+  public createOrDeleteLikeByEventID(eventID: number, loggedInUserAccessToken: string) {
     return (
       this.http
         .post<{ eventLikedOrDisliked: CreateEventLike }>
-        (`/events/${eventID}/like`, null, this.configAuthHeader(accessToken))
+        (`/events/${eventID}/like`, null, this.configAuthHeader(loggedInUserAccessToken))
     );
   }
 
 
-  public getLikedEventsForDifferentUsersWithPagination(cursor: number, limit: number, accessToken: string, secondUserId?: number) {
-    const params = { cursor, limit, userId: secondUserId };
-    const AuthHeaders = this.configAuthHeader(accessToken).headers;
+  public getLikedEventsByUserIdWithPagination(cursor: number, limit: number, loggedInUserToken: string, targerUserID?: number) {
+    const params = { cursor, limit, userId: targerUserID };
+    const AuthHeaders = this.configAuthHeader(loggedInUserToken).headers;
     const config = { params, headers: AuthHeaders };
 
     return this.http.get<GetLikedEventsForBucketListWithPagination>('/events/liked', config);
   }
 
 
-  public getEventByID(eventID: number, accessToken: string) {
-    return this.http.get<GetEventByID>(`/events/liked/${eventID}`, this.configAuthHeader(accessToken));
+  /**
+   *
+   * @param {string} userAccessToken  can be either the loggedInUser or the targetUser
+   */
+  public getEventByID(eventID: number, userAccessToken: string) {
+    return this.http.get<GetEventByID>(`/events/liked/${eventID}`, this.configAuthHeader(userAccessToken));
   }
 
 
@@ -48,11 +52,11 @@ class EventService extends RestApiService {
   }
 
 
-  public getMatchedEventsByTwoUsersWithPagination(newPeopleUui: string, cursor: number, limit: number, accessToken: string, allPhotos?: boolean,) {
+  public getSameMatchedEventsByTwoUsersWithPagination(targetUserUuid: string, cursor: number, limit: number, loggedInUserAccessToken: string, allPhotos?: boolean,) {
     const params = { cursor, limit, allPhotos };
-    const config = { params, headers: this.configAuthHeader(accessToken).headers };
+    const config = { params, headers: this.configAuthHeader(loggedInUserAccessToken).headers };
 
-    return this.http.get<GetLikedEventsForBucketListWithPagination>(`/events/liked/matches/${newPeopleUui}`, config);
+    return this.http.get<GetLikedEventsForBucketListWithPagination>(`/events/liked/matches/${targetUserUuid}`, config);
   }
 }
 

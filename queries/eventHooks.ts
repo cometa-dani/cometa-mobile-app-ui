@@ -1,5 +1,4 @@
 import {
-  useQuery,
   useInfiniteQuery,
   useMutation,
   useQueryClient,
@@ -11,12 +10,105 @@ import eventService from '../services/eventService';
 import { GetAllLatestEventsWithPagination, CreateEventLike } from '../models/Event';
 import { GetLikedEventsForBucketListWithPagination } from '../models/LikedEvent';
 import { GetMatchedUsersWhoLikedEventWithPagination } from '../models/User';
-import { GetEventByID } from '../models/EventLike';
 import { QueryKeys } from './queryKeys';
 
 
+export const targetUser = {
+
+  useInfiniteQueryGetLikedEventsForBucketListWithPagination: (targetUserId?: number) => {
+    const firstUserAccessToken = useCometaStore(state => state.accessToken);
+    return (
+      useInfiniteQuery({
+        enabled: !!targetUserId,
+        queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_TARGET_USER_ID_WITH_PAGINATION, targetUserId],
+        initialPageParam: -1,
+        queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
+          const res = await eventService.getLikedEventsByUserIdWithPagination(pageParam, 4, firstUserAccessToken, targetUserId);
+          if (res.status === 200) {
+            return res.data;
+          }
+          else {
+            throw new Error('failed to request data');
+          }
+        },
+        // Define when to stop refetching
+        getNextPageParam: (lastPage) => {
+          // stops incrementing next page because there no more events left
+          if (!lastPage.nextCursor || lastPage.events.length < 4) {
+            return null; // makes hasNextPage evalutes to false
+          }
+          return lastPage.nextCursor;
+        },
+        retry: 3,
+        retryDelay: 1_000 * 60 * 3
+      })
+    );
+  },
+
+  useMutationLikeOrDislikeEvent: () => {
+    const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
+    const queryClient = useQueryClient();
+
+    return (
+      useMutation({
+        mutationFn: async (eventID: number): Promise<CreateEventLike | null> => {
+          const res = await eventService.createOrDeleteLikeByEventID(eventID, loggedInUserAccessToken);
+          if (res.status === 201) {
+            return res.data?.eventLikedOrDisliked;
+          }
+          else if (res.status === 204) {
+            return null;
+          }
+          else {
+            throw new Error('failed to request data');
+          }
+        },
+        onMutate: (eventID) => {
+          queryClient
+            .setQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>
+            ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_TARGET_USER_ID_WITH_PAGINATION], (oldData) => ({
+              pages: oldData?.pages.map(
+                (page) => (
+                  {
+                    ...page,
+                    events: page.events.map(event =>
+                      eventID === event.id ? (
+                        {
+                          ...event,
+                          isLiked: !event.isLiked,
+                          _count: {
+                            ...event._count,
+                            likes: !event.isLiked ?
+                              event._count.likes + 1
+                              : event._count.likes - 1
+                          }
+                        }
+                      ) :
+                        event
+                    )
+                  }
+                )) || [],
+              pageParams: oldData?.pageParams || []
+            }));
+        },
+        // Invalidate queries after the mutation succeeds
+        onSuccess: async () => {
+          // we maybe are giving like to an event that is in the first user bucketlist
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION] }),
+            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION] })
+          ]);
+        },
+        retry: 3,
+        retryDelay: 1_000 * 60 * 3
+      })
+    );
+  }
+};
+
+
 // Query to fetch a list of events with infinite scrolling
-export const useInfiniteQueryGetLatestEvents = () => {
+export const useInfiniteQueryGetLatestEventsByLoggedInUser = () => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return (
@@ -46,15 +138,15 @@ export const useInfiniteQueryGetLatestEvents = () => {
 };
 
 
-export const useInfiniteQueryGetLikedEventsForBucketList = () => {
-  const accessToken = useCometaStore(state => state.accessToken);
+export const useInfiniteQueryGetLikedEventsByLoggedInUser = () => {
+  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
 
   return (
     useInfiniteQuery({
-      queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION],
+      queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
-        const res = await eventService.getLikedEventsForDifferentUsersWithPagination(pageParam, 8, accessToken);
+        const res = await eventService.getLikedEventsByUserIdWithPagination(pageParam, 8, loggedInUserAccessToken);
         if (res.status === 200) {
           return res.data;
         }
@@ -77,15 +169,15 @@ export const useInfiniteQueryGetLikedEventsForBucketList = () => {
 };
 
 
-export const useInfiniteQueryGetLikedEventsForSecondUserById = (secondUserId?: number) => {
+export const useInfiniteQueryGetLikedEventsByTargetUserId = (targetUserId?: number) => {
   const firstUserAccessToken = useCometaStore(state => state.accessToken);
   return (
     useInfiniteQuery({
-      enabled: !!secondUserId,
-      queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_SECOND_USER_BY_ID_WITH_PAGINATION, secondUserId],
+      enabled: !!targetUserId,
+      queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_TARGET_USER_ID_WITH_PAGINATION, targetUserId],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
-        const res = await eventService.getLikedEventsForDifferentUsersWithPagination(pageParam, 4, firstUserAccessToken, secondUserId);
+        const res = await eventService.getLikedEventsByUserIdWithPagination(pageParam, 4, firstUserAccessToken, targetUserId);
         if (res.status === 200) {
           return res.data;
         }
@@ -108,25 +200,25 @@ export const useInfiniteQueryGetLikedEventsForSecondUserById = (secondUserId?: n
 };
 
 // TODO can be removed beacuse it's not used and I am reading the cahed date from the queryClient
-export const useQueryGetEventInfoById = (eventID: number) => {
-  const accessToken = useCometaStore(state => state.accessToken);
+// export const useQueryGetEventInfoById = (eventID: number) => {
+//   const accessToken = useCometaStore(state => state.accessToken);
 
-  return useQuery({
-    enabled: !!eventID,
-    queryKey: [QueryKeys.GET_EVENT_INFO_BY_ID],
-    queryFn: async (): Promise<GetEventByID> => {
-      const res = await eventService.getEventByID(eventID, accessToken);
-      if (res.status === 200) {
-        return res.data;
-      }
-      else {
-        throw new Error('failed to request data');
-      }
-    },
-    retry: 3,
-    retryDelay: 3_000
-  });
-};
+//   return useQuery({
+//     enabled: !!eventID,
+//     queryKey: [QueryKeys.GET_EVENT_INFO_BY_ID],
+//     queryFn: async (): Promise<GetEventByID> => {
+//       const res = await eventService.getEventByID(eventID, accessToken);
+//       if (res.status === 200) {
+//         return res.data;
+//       }
+//       else {
+//         throw new Error('failed to request data');
+//       }
+//     },
+//     retry: 3,
+//     retryDelay: 3_000
+//   });
+// };
 
 
 // Query to fetch users who liked the same event with infinite scrolling
@@ -162,15 +254,15 @@ export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => 
 };
 
 
-export const useInfiniteQueryGetMatchedEventsBySameUsers = (user2Token: string, take = 4, allPhotos = true) => {
-  const user1Token = useCometaStore(state => state.accessToken);
+export const useInfiniteQueryGetSameMatchedEventsByTwoUsers = (targetUserToken: string, take = 4, allPhotos = true) => {
+  const loggedInUserToken = useCometaStore(state => state.accessToken);
 
   return (
     useInfiniteQuery({
       initialPageParam: -1,
-      queryKey: [QueryKeys.GET_MATCHED_EVENTS_BY_SAME_USERS_WITH_PAGINATION, user2Token],
+      queryKey: [QueryKeys.GET_SAME_MATCHED_EVENTS_BY_TWO_USERS_WITH_PAGINATION, targetUserToken],
       queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
-        const res = await eventService.getMatchedEventsByTwoUsersWithPagination(user2Token, pageParam, take, user1Token, allPhotos);
+        const res = await eventService.getSameMatchedEventsByTwoUsersWithPagination(targetUserToken, pageParam, take, loggedInUserToken, allPhotos);
         if (res.status === 200) {
           return res.data;
         }
@@ -192,36 +284,15 @@ export const useInfiniteQueryGetMatchedEventsBySameUsers = (user2Token: string, 
 };
 
 
-// export const useQueryGetMatchedEventsBySameUsers = (user2Token: string, take = 5,) => {
-//   const user1Token = useCometaStore(state => state.accessToken);
-
-//   return (
-//     useQuery({
-//       queryKey: [QueryKeys.GET_MATCHED_EVENTS_BY_SAME_USERS_WITH_PAGINATION],
-//       queryFn: async (): Promise<MatchedEvents[]> => {
-//         const res = await eventService.getMatchedEventsByTwoUsers(user2Token, take, user1Token);
-//         if (res.status === 200) {
-//           return res.data;
-//         }
-//         else {
-//           throw new Error('failed to request data');
-//         }
-//       },
-//       retry: 3,
-//       retryDelay: 1_000 * 60 * 3
-//     })
-//   );
-// };
-
 // Mutation to like or dislike an event
 export const useMutationLikeOrDislikeEvent = () => {
-  const accessToken = useCometaStore(state => state.accessToken);
+  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
   const queryClient = useQueryClient();
 
   return (
     useMutation({
       mutationFn: async (eventID: number): Promise<CreateEventLike | null> => {
-        const res = await eventService.createOrDeleteLikeByEventID(eventID, accessToken);
+        const res = await eventService.createOrDeleteLikeByEventID(eventID, loggedInUserAccessToken);
         if (res.status === 201) {
           return res.data?.eventLikedOrDisliked;
         }
@@ -263,21 +334,7 @@ export const useMutationLikeOrDislikeEvent = () => {
       },
       // Invalidate queries after the mutation succeeds
       onSuccess: async () => {
-
-        // TODO
-
-        // What if on succes we dont invalidate the query?
-        // and just update the cache ?
-
-        // TODO
-
-        // await Promise.all([
-        //   queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION] }),
-
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION] });
-        //   //  ADD
-        //   // INVALIDATE QUERIES FOR MATCHED EVENTS
-        // ]);
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION] });
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
@@ -287,13 +344,13 @@ export const useMutationLikeOrDislikeEvent = () => {
 
 
 export const useMutationDeleteLikedEventFromBucketList = () => {
-  const accessToken = useCometaStore(state => state.accessToken);
+  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
   const queryClient = useQueryClient();
 
   return (
     useMutation({
       mutationFn: async (eventID: number): Promise<CreateEventLike | null> => {
-        const res = await eventService.createOrDeleteLikeByEventID(eventID, accessToken);
+        const res = await eventService.createOrDeleteLikeByEventID(eventID, loggedInUserAccessToken);
         if (res.status === 201) {
           return res.data?.eventLikedOrDisliked;
         }
@@ -308,7 +365,7 @@ export const useMutationDeleteLikedEventFromBucketList = () => {
         // Update the cache with the new liked state
         queryClient
           .setQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>
-          ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION], (data) => ({
+          ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION], (data) => ({
             pages: data?.pages.map(
               (page) => (
                 {

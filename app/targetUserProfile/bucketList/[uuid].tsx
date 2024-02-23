@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { View, useColors } from '../../../components/Themed';
-import { useInfiniteQueryGetLikedEventsForSecondUserById } from '../../../queries/eventHooks';
+import { targetUser as targetUser } from '../../../queries/eventHooks';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { EventsFlashList } from '../../../components/events/eventsList';
 import { useQueryClient } from '@tanstack/react-query';
@@ -14,14 +14,15 @@ export default function BucketListScreen(): JSX.Element {
   // colors
   const { background } = useColors();
 
-  const secondUserUuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
+  const targetUserUuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
   const queryClient = useQueryClient();
-  const secondUserProfileCachedData = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE, secondUserUuid]);
+  const targetUserProfileCached = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUuid]);
 
   // events & function to handle fetching more events when reaching the end
-  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetLikedEventsForSecondUserById(secondUserProfileCachedData?.id);
-  const eventsData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
+  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } =
+    targetUser.useInfiniteQueryGetLikedEventsForBucketListWithPagination(targetUserProfileCached?.id);
 
+  const eventsData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
   return (
@@ -35,7 +36,7 @@ export default function BucketListScreen(): JSX.Element {
           headerTitle: '',
           header: () => (
             <CustomHeader
-              user1={secondUserProfileCachedData?.photos[0]}
+              user1={targetUserProfileCached?.photos[0]}
             />
           )
         }}

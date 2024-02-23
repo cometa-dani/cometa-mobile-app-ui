@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboarding/WrapperOnBoarding';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppPhotosGrid } from '../../components/profile/photosGrid';
-import { useMutationUploadUserPhotos } from '../../queries/userHooks';
+import { useMutationUploadLoggedInUserPhotos } from '../../queries/userHooks';
 import { Photo } from '../../models/Photo';
 import * as ImagePicker from 'expo-image-picker';
 import { useCometaStore } from '../../store/cometaStore';
@@ -30,7 +30,7 @@ export default function AddPhotosScreen(): JSX.Element {
   const setAccessToken = useCometaStore(state => state.setAccessToken);
 
   // mutations
-  const mutateUserPhotosUpload = useMutationUploadUserPhotos(uid);
+  const mutateUserPhotosUpload = useMutationUploadLoggedInUserPhotos(uid);
 
   // photos presentation
   const [userPhotos, setUserPhotos] = useState<UserPhoto[]>([]);

@@ -3,7 +3,7 @@ import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
-import { useMutationDeleteUserPhotoByUuid, useMutationUploadUserPhotos, useMutationAuthenticatedUserProfileById, useQueryGetAuthenticatedUserProfileByUid } from '../../queries/userHooks';
+import { useMutationDeleteLoggedInUserPhotoByUuid, useMutationUploadLoggedInUserPhotos, useMutationLoggedInUserProfileById, useQueryGetLoggedInUserProfileByUid } from '../../queries/userHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { FC, useState } from 'react';
 import { Stack, router } from 'expo-router';
@@ -23,9 +23,9 @@ import { gray_300 } from '../../constants/colors';
 import { BaseButton } from 'react-native-gesture-handler';
 import { Photo } from '../../models/Photo';
 import { GetBasicUserProfile } from '../../models/User';
-import { ForEach, If, ON, OFF } from '../../components/utils/';
+import { ForEach, If, ON, OFF } from '../../components/utils';
 import ContentLoader, { Rect } from 'react-content-loader/native';
-import { useInfiniteQueryGetLikedEventsForBucketList } from '../../queries/eventHooks';
+import { useInfiniteQueryGetLikedEventsByLoggedInUser } from '../../queries/eventHooks';
 
 
 type userAttributes = keyof GetBasicUserProfile
@@ -42,29 +42,29 @@ const validationSchemma = Yup.object<ProfileValues>({
 });
 
 
-export default function AutenticatedUserProfileScreen(): JSX.Element {
+export default function LoggedInUserProfileScreen(): JSX.Element {
 
   const queryClient = useQueryClient();
   const { background } = useColors();
-  const authenticatedUserUuid = useCometaStore(state => state.uid); // this can be abstracted
+  const loggedInUserUuid = useCometaStore(state => state.uid); // this can be abstracted
 
   // mutations
-  const mutateUserPhotosUpload = useMutationUploadUserPhotos(authenticatedUserUuid);
-  const mutateUserPhotosDelete = useMutationDeleteUserPhotoByUuid(authenticatedUserUuid);
-  const mutateUserProfileById = useMutationAuthenticatedUserProfileById();
+  const mutateLoggedInUserPhotosUpload = useMutationUploadLoggedInUserPhotos(loggedInUserUuid);
+  const mutateLoggedInUserPhotosDelete = useMutationDeleteLoggedInUserPhotoByUuid(loggedInUserUuid);
+  const mutateLoggedInUserProfileById = useMutationLoggedInUserProfileById();
 
   // queries
-  const { data: bucketList } = useInfiniteQueryGetLikedEventsForBucketList();
-  const { data: userProfile, isLoading } = useQueryGetAuthenticatedUserProfileByUid(authenticatedUserUuid);
-  const userPhotos: Photo[] = userProfile?.photos ?? [];
-  const selectionLimit: number = (userProfile?.maxNumPhotos || 5) - (userPhotos?.length || 0);
+  const { data: loggedInUserBucketList } = useInfiniteQueryGetLikedEventsByLoggedInUser();
+  const { data: loggedInuserProfile, isLoading } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
+  const userPhotos: Photo[] = loggedInuserProfile?.photos ?? [];
+  const selectionLimit: number = (loggedInuserProfile?.maxNumPhotos || 5) - (userPhotos?.length || 0);
 
   // toggle edit mode
-  const [switchEditProfile, setSwitchEditProfile] = useState(ON);
+  const [switchEditionModeForLoggedInUser, setSwitchEditionModeForLoggedInUser] = useState(ON);
 
   // bucketlist
   const bucketlistLikedEvents =
-    bucketList?.pages.
+    loggedInUserBucketList?.pages.
       flatMap(({ events }) => (
         events.map(
           event => ({
@@ -76,9 +76,9 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
       )) || [];
 
 
-  const handleSumitUserInfo =
+  const handleSumitLoggedInUserInfo =
     async (values: ProfileValues, actions: FormikHelpers<ProfileValues>): Promise<void> => {
-      mutateUserProfileById.mutate({ userId: userProfile?.id as number, payload: values });
+      mutateLoggedInUserProfileById.mutate({ userId: loggedInuserProfile?.id as number, payload: values });
       actions.setSubmitting(false);
     };
 
@@ -96,9 +96,9 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
           aspect: [4, 3],
           quality: 1,
         });
-        if (!result.canceled && userProfile?.id) {
-          mutateUserPhotosUpload.mutate({
-            userID: userProfile?.id,
+        if (!result.canceled && loggedInuserProfile?.id) {
+          mutateLoggedInUserPhotosUpload.mutate({
+            userID: loggedInuserProfile?.id,
             pickedImgFiles: result.assets
           });
         }
@@ -111,12 +111,12 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
 
 
   const handleDeleteImage = async (photoUuid: string) => {
-    mutateUserPhotosDelete.mutate({ userID: userProfile?.id as number, photoUuid });
+    mutateLoggedInUserPhotosDelete.mutate({ userID: loggedInuserProfile?.id as number, photoUuid });
   };
 
 
-  const navigateToEditProfilePushedScreen = (field: userAttributes): void => {
-    router.push(`/editProfile/${field}?userId=${userProfile?.id}`);
+  const navigateToEditLoggedInUserProfilePushedScreen = (field: userAttributes): void => {
+    router.push(`/editUserProfile/${field}?userId=${loggedInuserProfile?.id}`);
   };
 
 
@@ -128,7 +128,7 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
   };
 
 
-  const Profile: FC = () => (
+  const LoggedInUserProfile: FC = () => (
     <>
       <ProfileCarousel
         isLoading={isLoading}
@@ -139,11 +139,11 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
 
         <ProfileTitle
           isLoading={isLoading}
-          userProfile={userProfile}
+          userProfile={loggedInuserProfile}
         />
 
         <AppButton
-          onPress={() => setSwitchEditProfile(OFF)}
+          onPress={() => setSwitchEditionModeForLoggedInUser(OFF)}
           btnColor='white'
           text='EDIT PROFILE'
         />
@@ -166,7 +166,7 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
             <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
               <FontAwesome size={20} name='user' style={{ alignSelf: 'flex-start' }} />
               <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center', fontSize: 18, paddingRight: 20 }}>
-                {userProfile?.biography}
+                {loggedInuserProfile?.biography}
               </Text>
             </View>
           )}
@@ -177,22 +177,22 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
           title='Bucket list'
         />
 
-        <If condition={userProfile?.languages?.length}
+        <If condition={loggedInuserProfile?.languages?.length}
           render={(
             <Badges
               iconName='comment'
               title='Languages'
-              items={userProfile?.languages ?? []}
+              items={loggedInuserProfile?.languages ?? []}
             />
           )}
         />
 
-        <If condition={userProfile?.homeTown && userProfile?.currentLocation}
+        <If condition={loggedInuserProfile?.homeTown && loggedInuserProfile?.currentLocation}
           render={(
             <Badges
               iconName='map-marker'
               title='Location'
-              items={[`from ${userProfile?.homeTown}`, `live in ${userProfile?.currentLocation}`]}
+              items={[`from ${loggedInuserProfile?.homeTown}`, `live in ${loggedInuserProfile?.currentLocation}`]}
             />
           )}
         />
@@ -201,7 +201,7 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
   );
 
 
-  const EditProfile: FC = () => (
+  const EditLoggedInUserProfile: FC = () => (
     <>
       <AppPhotosGrid
         height={Dimensions.get('window').height * 0.25}
@@ -215,17 +215,17 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
           enableReinitialize
           validationSchema={validationSchemma}
           initialValues={{
-            biography: userProfile?.biography ?? '',
-            occupation: userProfile?.occupation ?? '',
+            biography: loggedInuserProfile?.biography ?? '',
+            occupation: loggedInuserProfile?.occupation ?? '',
           }}
-          onSubmit={handleSumitUserInfo}
+          onSubmit={handleSumitLoggedInUserInfo}
         >
           {({ handleBlur, handleChange, handleSubmit, values, touched, errors, dirty }) => (
             <View style={profileStyles.porfileContent}>
               <AppButton
                 onPress={() => {
                   dirty && handleSubmit();
-                  setSwitchEditProfile(ON);
+                  setSwitchEditionModeForLoggedInUser(ON);
                 }}
                 btnColor='blue'
                 text='SAVE PROFILE'
@@ -289,22 +289,22 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
 
                 <View style={profileStyles.wrapper}>
                   <If
-                    condition={userProfile?.languages?.length}
+                    condition={loggedInuserProfile?.languages?.length}
                     elseRender={(
                       <AppButton
-                        onPress={() => navigateToEditProfilePushedScreen('languages')}
+                        onPress={() => navigateToEditLoggedInUserProfilePushedScreen('languages')}
                         btnColor='white' text='Add' style={badgesStyles.badge}
                       />
                     )}
                     render={(
                       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, width: '80%' }}>
-                        <ForEach items={userProfile?.languages ?? []}>
+                        <ForEach items={loggedInuserProfile?.languages ?? []}>
                           {(language, index) => (
                             <AppButton
                               key={index}
                               btnColor='white'
                               text={language}
-                              onPress={() => navigateToEditProfilePushedScreen('languages')}
+                              onPress={() => navigateToEditLoggedInUserProfilePushedScreen('languages')}
                               style={badgesStyles.badge}
                             />
                           )}
@@ -314,7 +314,7 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
                   />
 
                   <BaseButton
-                    onPress={() => navigateToEditProfilePushedScreen('languages')}
+                    onPress={() => navigateToEditLoggedInUserProfilePushedScreen('languages')}
                     style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
                     <FontAwesome name='chevron-right' size={18} />
                   </BaseButton>
@@ -332,23 +332,23 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
 
                 <View style={profileStyles.wrapper}>
                   <If
-                    condition={userProfile?.currentLocation}
+                    condition={loggedInuserProfile?.currentLocation}
                     render={(
                       <AppButton
-                        onPress={() => navigateToEditProfilePushedScreen('currentLocation')}
-                        btnColor='white' text={userProfile?.currentLocation} style={badgesStyles.badge}
+                        onPress={() => navigateToEditLoggedInUserProfilePushedScreen('currentLocation')}
+                        btnColor='white' text={loggedInuserProfile?.currentLocation} style={badgesStyles.badge}
                       />
                     )}
                     elseRender={(
                       <AppButton
-                        onPress={() => navigateToEditProfilePushedScreen('currentLocation')}
+                        onPress={() => navigateToEditLoggedInUserProfilePushedScreen('currentLocation')}
                         btnColor='white' text='Add' style={badgesStyles.badge}
                       />
                     )}
                   />
 
                   <BaseButton
-                    onPress={() => navigateToEditProfilePushedScreen('currentLocation')}
+                    onPress={() => navigateToEditLoggedInUserProfilePushedScreen('currentLocation')}
                     style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
                     <FontAwesome name='chevron-right' size={18} />
                   </BaseButton>
@@ -366,23 +366,23 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
 
                 <View style={profileStyles.wrapper}>
                   <If
-                    condition={userProfile?.homeTown}
+                    condition={loggedInuserProfile?.homeTown}
                     render={(
                       <AppButton
-                        onPress={() => navigateToEditProfilePushedScreen('homeTown')}
-                        btnColor='white' text={userProfile?.homeTown} style={badgesStyles.badge}
+                        onPress={() => navigateToEditLoggedInUserProfilePushedScreen('homeTown')}
+                        btnColor='white' text={loggedInuserProfile?.homeTown} style={badgesStyles.badge}
                       />
                     )}
                     elseRender={(
                       <AppButton
-                        onPress={() => navigateToEditProfilePushedScreen('homeTown')}
+                        onPress={() => navigateToEditLoggedInUserProfilePushedScreen('homeTown')}
                         btnColor='white' text='Add' style={badgesStyles.badge}
                       />
                     )}
                   />
 
                   <BaseButton
-                    onPress={() => navigateToEditProfilePushedScreen('homeTown')}
+                    onPress={() => navigateToEditLoggedInUserProfilePushedScreen('homeTown')}
                     style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
                     <FontAwesome name='chevron-right' size={18} />
                   </BaseButton>
@@ -402,7 +402,7 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: userProfile?.username || '',
+          headerTitle: loggedInuserProfile?.username || '',
           headerTitleAlign: 'center'
         }}
       />
@@ -412,12 +412,12 @@ export default function AutenticatedUserProfileScreen(): JSX.Element {
       >
 
         <If
-          condition={switchEditProfile}
+          condition={switchEditionModeForLoggedInUser}
           render={(
-            <Profile />
+            <LoggedInUserProfile />
           )}
           elseRender={(
-            <EditProfile />
+            <EditLoggedInUserProfile />
           )}
         />
 

@@ -1,13 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import userService from '../services/userService';
-import { GetBasicUserProfile, GetDetailedUserProfile, UserClientState } from '../models/User';
+import { GetBasicUserProfile, GetDetailedUserProfile, LoggedUserClientState } from '../models/User';
 import { Photo } from '../models/Photo';
 import { QueryKeys } from './queryKeys';
 import { useCometaStore } from '../store/cometaStore';
 import { ImagePickerAsset } from 'expo-image-picker';
 
 
-export const useQueryGetAuthenticatedUserProfileByUid = (dynamicParam: string) => {
+export const useQueryGetLoggedInUserProfileByUid = (dynamicParam: string) => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return (
@@ -15,7 +15,7 @@ export const useQueryGetAuthenticatedUserProfileByUid = (dynamicParam: string) =
       enabled: !!dynamicParam,
       queryKey: [QueryKeys.GET_USER_INFO_PROFILE, dynamicParam],
       queryFn: async (): Promise<GetDetailedUserProfile> => {
-        const res = await userService.getUserInfoByUid(dynamicParam, accessToken);
+        const res = await userService.getUserInfoByUidWithFriendShips(dynamicParam, accessToken);
         if (res.status === 200) {
           return res.data;
         }
@@ -30,13 +30,13 @@ export const useQueryGetAuthenticatedUserProfileByUid = (dynamicParam: string) =
 };
 
 
-export const useMutationAuthenticatedUserProfileById = () => {
+export const useMutationLoggedInUserProfileById = () => {
   const queryClient = useQueryClient();
   const uuid = useCometaStore(state => state.uid);
 
   return (
     useMutation({
-      mutationFn: async (args: { userId: number, payload: Partial<UserClientState> }) => {
+      mutationFn: async (args: { userId: number, payload: Partial<LoggedUserClientState> }) => {
         const res = await userService.updateById(args.userId, args.payload);
         if (res.status == 201) {
           return res.data;
@@ -67,15 +67,15 @@ export const useMutationAuthenticatedUserProfileById = () => {
 };
 
 
-export const useQueryGetNewPeopleProfileByUid = (dynamicParam: string) => {
+export const useQueryGetTargetUserPeopleProfileByUid = (dynamicParam: string) => {
   const accessToken = useCometaStore(state => state.accessToken);
 
   return (
     useQuery({
       // enabled: !!dynamicParam,
-      queryKey: [QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE, dynamicParam],
+      queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, dynamicParam],
       queryFn: async (): Promise<GetDetailedUserProfile> => {
-        const res = await userService.getUserInfoByUid(dynamicParam, accessToken);
+        const res = await userService.getUserInfoByUidWithFriendShips(dynamicParam, accessToken);
         if (res.status === 200) {
           return res.data;
         }
@@ -100,14 +100,14 @@ type PhotosParams = {
  * @param uuId universal unique id
  * @returns
  */
-export const useMutationUploadUserPhotos = (uuId: string) => {
+export const useMutationUploadLoggedInUserPhotos = (uuId: string) => {
   const queryClient = useQueryClient();
 
   return (
     useMutation({
       mutationFn:
         async ({ userID, pickedImgFiles }: PhotosParams): Promise<GetBasicUserProfile> => {
-          const res = await userService.uploadManyPhotosByUserId(userID, pickedImgFiles);
+          const res = await userService.uploadManyPhotosByLoggedInUserId(userID, pickedImgFiles);
           if (res.status === 200) {
             return res.data;
           }
@@ -146,7 +146,7 @@ export const useMutationUploadUserPhotos = (uuId: string) => {
 
 type DeletePhotoArgs = { userID: number, photoUuid: string }
 
-export const useMutationDeleteUserPhotoByUuid = (dynamicParam: string) => {
+export const useMutationDeleteLoggedInUserPhotoByUuid = (dynamicParam: string) => {
   const queryClient = useQueryClient();
 
   return (
@@ -192,14 +192,14 @@ export const useMutationDeleteUserPhotoByUuid = (dynamicParam: string) => {
 
 type AvatarParams = { pickedImgFile: ImagePickerAsset, userID: number };
 
-export const useMutationUpdateUserAvatar = (dynamicParam: string) => {
+export const useMutationUpdateLoggedInUserAvatar = (dynamicParam: string) => {
   const queryClient = useQueryClient();
 
   return (
     useMutation({
       mutationFn:
         async ({ userID, pickedImgFile }: AvatarParams): Promise<GetBasicUserProfile> => {
-          const res = await userService.uploadOrUpdateAvatarImgByUserID(userID, pickedImgFile);
+          const res = await userService.uploadOrUpdateAvatarImgByLoggedInUserID(userID, pickedImgFile);
           if (res.status === 200) {
             return res.data;
           }

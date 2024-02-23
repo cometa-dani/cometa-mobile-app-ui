@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { RectButton } from 'react-native-gesture-handler';
-import { useInfiniteQueryGetLikedEventsForBucketList, useMutationDeleteLikedEventFromBucketList } from '../../queries/eventHooks';
+import { useInfiniteQueryGetLikedEventsByLoggedInUser, useMutationDeleteLikedEventFromBucketList } from '../../queries/eventHooks';
 import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { View, Text } from '../../components/Themed';
@@ -18,9 +18,9 @@ import { defaultImgPlaceholder } from '../../constants/vars';
 
 
 export default function BuckectListScreen(): JSX.Element {
-  const { data, isFetching, hasNextPage, fetchNextPage, isLoading, } = useInfiniteQueryGetLikedEventsForBucketList();
+  const { data, isFetching, hasNextPage, fetchNextPage, isLoading, } = useInfiniteQueryGetLikedEventsByLoggedInUser();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
-  const bucketListData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
+  const loggedInUserBucketList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -30,7 +30,7 @@ export default function BuckectListScreen(): JSX.Element {
         render={<SkeletonLoader />}
         elseRender={(
           <FlashList
-            data={bucketListData}
+            data={loggedInUserBucketList}
             pagingEnabled={false}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingVertical: 26 }}
@@ -186,7 +186,7 @@ const BucketItem: FC<BucketItemProps> = ({ item }) => {
         </RectButton>
       )
     }>
-      <Pressable onPress={() => router.push(`/matches/${item.id}`)}>
+      <Pressable onPress={() => router.push(`/matchedEvents/${item.id}`)}>
         {({ pressed }) => (
           <View style={[styles.eventContainer, { opacity: pressed ? 0.8 : 1 }]}>
             <Image

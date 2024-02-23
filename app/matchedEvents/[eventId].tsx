@@ -8,7 +8,7 @@ import { Image } from 'expo-image';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { AppButton } from '../../components/buttons/buttons';
 import { StatusBar } from 'expo-status-bar';
-import { useInfiniteQueryGetNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/friendshipHooks';
+import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/friendshipHooks';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 import { useCometaStore } from '../../store/cometaStore';
 import { FontAwesome } from '@expo/vector-icons';
@@ -21,7 +21,7 @@ import { IMessage, } from 'react-native-gifted-chat';
 import { defaultImgPlaceholder, nodeEnv } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { gray_200, gray_500 } from '../../constants/colors';
-import { useQueryGetAuthenticatedUserProfileByUid } from '../../queries/userHooks';
+import { useQueryGetLoggedInUserProfileByUid } from '../../queries/userHooks';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
 import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEvent';
@@ -34,31 +34,38 @@ const messageSchemmaValidation = Yup.object<Message>({
 });
 
 
-export default function MatchesScreen(): JSX.Element {
+export default function MatchedEventsScreen(): JSX.Element {
   // client state
-  const uid = useCometaStore(state => state.uid);
+  const loggedInUserUuid = useCometaStore(state => state.uid);
   const [toggleModal, setToggleModal] = useReducer((prev) => !prev, false);
 
-  const incommginFriendshipSender = useCometaStore(state => state.incommginFriendshipSender);
-  const setIncommginFriendshipSender = useCometaStore(state => state.setIncommginFriendshipSender);
+  const incommginFriendshipSenderForLoggedInUser = useCometaStore(state => state.incommginFriendshipSender);
+  const setIncommginFriendshipSenderForLoggedInUser = useCometaStore(state => state.setIncommginFriendshipSender);
 
   // queries
-  const { data: userProfile } = useQueryGetAuthenticatedUserProfileByUid(uid);
+  const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
   const eventID = useGlobalSearchParams<{ eventId: string }>()['eventId'];
 
   // cached data
   const queryClient = useQueryClient();
-  const queryData = queryClient.getQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION]);
-  const eventByIdCahedData = useMemo(
+  const queryData = queryClient.getQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION]);
+  const eventByIdCahed = useMemo(
     () => queryData?.pages.flatMap(page => page?.events).find(event => event.id === +eventID),
     [eventID]
   );
 
   // fetching data
-  const newPeopleRes = useInfiteQueryGetUsersWhoLikedSameEventByID(+eventID);
-  const newestFriendsRes = useInfiniteQueryGetNewestFriends();
+  const newPeopleTargetUsers = useInfiteQueryGetUsersWhoLikedSameEventByID(+eventID);
+  const newestFriendsTargetUsers = useInfiniteQueryGetLoggedInUserNewestFriends();
 
-  const allFriends = newestFriendsRes.data?.pages.flatMap(page => page?.friendships) || [];
+  const loggedInUserFriendsList =
+    useMemo(() => (newestFriendsTargetUsers.data?.pages.flatMap(page => page?.friendships) ?? []),
+      [newestFriendsTargetUsers.data?.pages]
+    );
+  const loggedInUserMeetNewPeoplelist =
+    useMemo(() => (newPeopleTargetUsers.data?.pages?.flatMap(page => page.usersWhoLikedEvent) ?? []),
+      [newPeopleTargetUsers.data?.pages]
+    );
 
   // toggling tabs
   const [toggleTabs, setToggleTabs] = useState(true); // shuould be store on phone
@@ -71,35 +78,35 @@ export default function MatchesScreen(): JSX.Element {
   /**
   *
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
-  * @param {GetBasicUserProfile} sender the sender of the friendship invitation
+  * @param {GetBasicUserProfile} targetUserAsSender the sender of the friendship invitation
   */
-  const handleCurrentUserHasAPendingInvitation = (sender: GetBasicUserProfile): void => {
-    setIncommginFriendshipSender(sender);
+  const handleLoggedInUserHasAPendingInvitation = (targetUserAsSender: GetBasicUserProfile): void => {
+    setIncommginFriendshipSenderForLoggedInUser(targetUserAsSender);
     setTimeout(() => setToggleModal(), 100);
-    const friendshipID = sender.outgoingFriendships[0].id;
+    const friendshipID = targetUserAsSender.outgoingFriendships[0].id;
     mutationAcceptFriendship.mutate(friendshipID);
   };
 
   /**
   *
   * @description for a receiver user, sends a friendship invitation with status 'PENDING'
-  * @param {GetBasicUserProfile} receiver the receiver of the friendship invitation
+  * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const handleCurrentUserHasNoPendingInvitations = (receiver: GetBasicUserProfile): void => {
-    mutationSentFriendship.mutate(receiver.id);
+  const handleLoggedInUserHasNoPendingInvitations = (targetUserAsReceiver: GetBasicUserProfile): void => {
+    mutationSentFriendship.mutate(targetUserAsReceiver.id);
   };
 
   /**
   *
   * @description cancels a friendship invitation with status 'PENDING'
-  * @param {GetBasicUserProfile} receiver the receiver of the friendship invitation
+  * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const handleCancelFriendshipInvitation = (receiver: GetBasicUserProfile): void => {
-    mutationCancelFriendship.mutate(receiver.id);
+  const handleCancelFriendshipInvitation = (targetUserAsReceiver: GetBasicUserProfile): void => {
+    mutationCancelFriendship.mutate(targetUserAsReceiver.id);
   };
 
 
-  const handleMessageNewFriend =
+  const handleSentMessageToTargetUserAsNewFriend =
     async (values: Message, actions: FormikHelpers<Message>): Promise<void> => {
       // start chat with new friend
       const messagePayload: IMessage = {
@@ -107,9 +114,9 @@ export default function MatchesScreen(): JSX.Element {
         text: values.message,
         createdAt: new Date(),
         user: {
-          avatar: userProfile?.photos[0].url,
-          name: userProfile?.username,
-          _id: userProfile?.id as number,
+          avatar: loggedInUserProfile?.photos[0].url,
+          name: loggedInUserProfile?.username,
+          _id: loggedInUserProfile?.id as number,
         }
       };
       actions.resetForm();
@@ -120,7 +127,7 @@ export default function MatchesScreen(): JSX.Element {
       if (friendshipID) {
         const subCollection = collection(db, 'chats', `${friendshipID}`, 'messages');
         await addDoc(subCollection, messagePayload);
-        router.push(`/chat/${incommginFriendshipSender.id}`);
+        router.push(`/chat/${incommginFriendshipSenderForLoggedInUser.id}`);
       }
       else {
         throw new Error('frienship id undefined');
@@ -132,7 +139,7 @@ export default function MatchesScreen(): JSX.Element {
     <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 26 }]}>
       <StaticImage
         style={styles.imgHeader}
-        source={{ uri: eventByIdCahedData?.photos[0]?.url }}
+        source={{ uri: eventByIdCahed?.photos[0]?.url }}
       />
 
       <View style={styles.tabs}>
@@ -154,19 +161,19 @@ export default function MatchesScreen(): JSX.Element {
       ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
       contentContainerStyle={styles.flatList}
       showsVerticalScrollIndicator={false}
-      data={newPeopleRes.data?.pages?.flatMap(page => page.usersWhoLikedEvent) ?? []}
-      renderItem={({ item: { user: anotherUser }, index }) => {
-        const isReceiver: boolean = anotherUser?.incomingFriendships[0]?.status === 'PENDING';
-        const isSender: boolean = anotherUser?.outgoingFriendships[0]?.status === 'PENDING';
+      data={loggedInUserMeetNewPeoplelist}
+      renderItem={({ item: { user: targetUser } }) => {
+        const isReceiver: boolean = targetUser?.incomingFriendships[0]?.status === 'PENDING';
+        const isSender: boolean = targetUser?.outgoingFriendships[0]?.status === 'PENDING';
 
         return (
-          <View key={index} style={styles.user}>
-            <Pressable onPress={() => router.push(`/newPeopleProfile/${anotherUser.uid}?isFriend=false`)}>
+          <View key={targetUser.id} style={styles.user}>
+            <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?isFriend=false`)}>
               <View style={styles.avatarContainer}>
                 <Image
                   style={styles.userAvatar}
-                  placeholder={{ thumbhash: anotherUser?.photos[0]?.placeholder }}
-                  source={{ uri: anotherUser?.photos[0]?.url ?? defaultImgPlaceholder }}
+                  placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
+                  source={{ uri: targetUser?.photos[0]?.url ?? defaultImgPlaceholder }}
                 />
 
                 <View style={styles.textContainer}>
@@ -175,7 +182,7 @@ export default function MatchesScreen(): JSX.Element {
                     numberOfLines={1}
                     ellipsizeMode='tail'
                   >
-                    {anotherUser.username}
+                    {targetUser.username}
                   </Text>
                   <Text>online</Text>
                 </View>
@@ -184,21 +191,21 @@ export default function MatchesScreen(): JSX.Element {
 
             {isReceiver && (
               <AppButton
-                onPress={() => handleCancelFriendshipInvitation(anotherUser)}
+                onPress={() => handleCancelFriendshipInvitation(targetUser)}
                 text="PENDING"
                 btnColor='blue'
               />
             )}
             {isSender && (
               <AppButton
-                onPress={() => handleCurrentUserHasAPendingInvitation(anotherUser)}
+                onPress={() => handleLoggedInUserHasAPendingInvitation(targetUser)}
                 text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
                 btnColor='black'
               />
             )}
             {!isReceiver && !isSender && (
               <AppButton
-                onPress={() => handleCurrentUserHasNoPendingInvitations(anotherUser)}
+                onPress={() => handleLoggedInUserHasNoPendingInvitations(targetUser)}
                 text="JOIN"
                 btnColor='black'
               />
@@ -216,16 +223,16 @@ export default function MatchesScreen(): JSX.Element {
       ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
       contentContainerStyle={styles.flatList}
       showsVerticalScrollIndicator={false}
-      data={allFriends || []}
-      renderItem={({ item: { friend }, index }) => {
+      data={loggedInUserFriendsList}
+      renderItem={({ item: { friend: targetUser } }) => {
         return (
-          <View key={index} style={styles.user}>
-            <Pressable onPress={() => router.push(`/newPeopleProfile/${friend.uid}?isFriend=true`)}>
+          <View key={targetUser.id} style={styles.user}>
+            <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?isFriend=true`)}>
               <View style={styles.avatarContainer}>
                 <Image
                   style={styles.userAvatar}
-                  placeholder={{ thumbhash: friend?.photos[0]?.placeholder }}
-                  source={{ uri: friend?.photos[0]?.url }}
+                  placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
+                  source={{ uri: targetUser?.photos[0]?.url }}
                 />
 
                 <View style={styles.textContainer}>
@@ -234,7 +241,7 @@ export default function MatchesScreen(): JSX.Element {
                     numberOfLines={1}
                     ellipsizeMode='tail'
                   >
-                    {friend?.username}
+                    {targetUser?.username}
                   </Text>
                   <Text>online</Text>
                 </View>
@@ -242,7 +249,7 @@ export default function MatchesScreen(): JSX.Element {
             </Pressable>
 
             <AppButton
-              onPress={() => router.push(`/chat/${friend.id}`)}
+              onPress={() => router.push(`/chat/${targetUser.id}`)}
               text="CHAT"
               btnColor='gray'
             />
@@ -265,15 +272,15 @@ export default function MatchesScreen(): JSX.Element {
             <View style={modalStyles.avatarMatchContainer}>
               <Image
                 style={modalStyles.avatarMatch}
-                placeholder={{ thumbhash: userProfile?.photos[0]?.placeholder }}
-                source={{ uri: userProfile?.photos[0]?.url }}
+                placeholder={{ thumbhash: loggedInUserProfile?.photos[0]?.placeholder }}
+                source={{ uri: loggedInUserProfile?.photos[0]?.url }}
               />
 
-              {incommginFriendshipSender?.photos?.[0]?.url && (
+              {incommginFriendshipSenderForLoggedInUser?.photos?.[0]?.url && (
                 <Image
                   style={modalStyles.avatarMatch}
-                  placeholder={{ thumbhash: incommginFriendshipSender.photos[0]?.placeholder }}
-                  source={{ uri: incommginFriendshipSender.photos[0]?.url }}
+                  placeholder={{ thumbhash: incommginFriendshipSenderForLoggedInUser.photos[0]?.placeholder }}
+                  source={{ uri: incommginFriendshipSenderForLoggedInUser.photos[0]?.url }}
                 />
               )}
             </View>
@@ -286,7 +293,7 @@ export default function MatchesScreen(): JSX.Element {
             <Formik
               validationSchema={messageSchemmaValidation}
               initialValues={{ message: '' }}
-              onSubmit={handleMessageNewFriend}
+              onSubmit={handleSentMessageToTargetUserAsNewFriend}
             >
               {({ handleSubmit, handleBlur, handleChange, values }) => (
                 <View style={modalStyles.inputContainer}>
@@ -296,7 +303,7 @@ export default function MatchesScreen(): JSX.Element {
                     onChangeText={handleChange('message')}
                     onBlur={handleBlur('message')}
                     value={values.message}
-                    placeholder={`Mesage ${incommginFriendshipSender.username} to join together`}
+                    placeholder={`Mesage ${incommginFriendshipSenderForLoggedInUser.username} to join together`}
                   />
                   <Pressable
                     style={modalStyles.btnSubmit}

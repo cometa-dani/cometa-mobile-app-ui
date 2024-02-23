@@ -5,15 +5,15 @@ import { useCometaStore } from '../store/cometaStore';
 import { QueryKeys } from './queryKeys';
 
 
-export const useInfiniteQueryGetNewestFriends = () => {
-  const accessToken = useCometaStore(state => state.accessToken);
+export const useInfiniteQueryGetLoggedInUserNewestFriends = () => {
+  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
 
   return (
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetLatestFriendships> => {
-        const res = await friendshipService.getAllLatest(pageParam, 5, accessToken);
+        const res = await friendshipService.getAllLatest(pageParam, 5, loggedInUserAccessToken);
         if (res.status == 200) {
           return res.data;
         }

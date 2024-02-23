@@ -6,7 +6,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboarding/WrapperOnBoarding';
 import { AppButton } from '../../components/buttons/buttons';
 import * as ImagePicker from 'expo-image-picker';
-import { UserClientState } from '../../models/User';
+import { LoggedUserClientState } from '../../models/User';
 import { TextInput } from 'react-native-gesture-handler';
 import { Formik, FormikHelpers } from 'formik';
 import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
@@ -69,7 +69,7 @@ export function UploadAvatarScreen(): JSX.Element {
   // TODO: verify that username & phone & email are unique and do not exist already
   const handleUserRegistrationAndSlideNext =
     async (values: { biography: string }, actions: FormikHelpers<{ biography: string }>) => {
-      const { username, email, password, ...otherUserFields } = onboarding?.user as UserClientState;
+      const { username, email, password, ...otherUserFields } = onboarding?.user as LoggedUserClientState;
       try {
         if (onboarding.user.imageRef?.uri) {
           // put this step on the register form

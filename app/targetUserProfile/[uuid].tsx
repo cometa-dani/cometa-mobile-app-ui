@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { Pressable, SafeAreaView } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -6,8 +6,8 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Text, View, useColors } from '../../components/Themed';
 import * as Yup from 'yup';
 import { profileStyles } from '../../components/profile/profileStyles';
-import { useQueryGetNewPeopleProfileByUid } from '../../queries/userHooks';
-import { useInfiniteQueryGetMatchedEventsBySameUsers } from '../../queries/eventHooks';
+import { useQueryGetTargetUserPeopleProfileByUid } from '../../queries/userHooks';
+import { useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../queries/eventHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppCarousel } from '../../components/carousels/carousel';
 import { nodeEnv } from '../../constants/vars';
@@ -41,23 +41,34 @@ const searchParamsSchemma = Yup.object({
 });
 
 
-export default function NewPeopleProfileScreen(): JSX.Element {
+export default function TargerUserProfileScreen(): JSX.Element {
   // client state
   const setToggleModal = useCometaStore(state => state.setToggleModal);
-  const setIncommginFriendshipSender = useCometaStore(state => state.setIncommginFriendshipSender);
+  const setTargetUserAsIncommginFriendshipSender = useCometaStore(state => state.setIncommginFriendshipSender);
 
   // colors
   const { background } = useColors();
 
   // url params
   const urlParams = useLocalSearchParams();
-  const { isFriend, uuid: secondUserUuid } = searchParamsSchemma.validateSync(urlParams);
+  const targetUserUrlParams = searchParamsSchemma.validateSync(urlParams);
 
   // queries
-  const { data: newPeopleProfile, isSuccess, isLoading } = useQueryGetNewPeopleProfileByUid(secondUserUuid);
-  const { data: matchedEvents } = useInfiniteQueryGetMatchedEventsBySameUsers(secondUserUuid);
-  const isReceiver: boolean = newPeopleProfile?.incomingFriendships[0]?.status === 'PENDING';
-  const isSender: boolean = newPeopleProfile?.outgoingFriendships[0]?.status === 'PENDING';
+  const { data: targetUserProfile, isSuccess, isLoading } = useQueryGetTargetUserPeopleProfileByUid(targetUserUrlParams.uuid);
+  const { data: matchedEvents } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUserUrlParams.uuid);
+  const memoizedMatchedEvents =
+    useMemo(() => (matchedEvents?.pages.flatMap(
+      page => page.events.map(
+        event => ({
+          id: event.id,
+          img: event.photos[0]?.url,
+          placeholder: event.photos[0]?.placeholder
+        })
+      ))
+      || []), [matchedEvents?.pages]);
+
+  const isTargetUserFriendShipReceiver: boolean = targetUserProfile?.incomingFriendships[0]?.status === 'PENDING';
+  const isTargetUserFriendShipSender: boolean = targetUserProfile?.outgoingFriendships[0]?.status === 'PENDING';
 
   // mutations
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
@@ -68,15 +79,15 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   /**
   *
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
-  * @param {GetBasicUserProfile} sender the sender of the friendship invitation
+  * @param {GetBasicUserProfile} targetUserAsSender the sender of the friendship invitation
   */
-  const handleCurrentUserHasAPendingInvitation = (sender: GetDetailedUserProfile): void => {
-    setIncommginFriendshipSender(sender);
+  const handleLoggedInUserHasAPendingInvitation = (targetUserAsSender: GetDetailedUserProfile): void => {
+    setTargetUserAsIncommginFriendshipSender(targetUserAsSender);
     setTimeout(() => setToggleModal(), 100);
-    const friendshipID = sender.outgoingFriendships[0].id;
+    const friendshipID = targetUserAsSender.outgoingFriendships[0].id;
     mutationAcceptFriendship.mutate(friendshipID, {
       onSuccess() {
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE] });
       },
     });
   };
@@ -84,12 +95,12 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   /**
   *
   * @description for a receiver user, sends a friendship invitation with status 'PENDING'
-  * @param {GetBasicUserProfile} receiver the receiver of the friendship invitation
+  * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const handleCurrentUserHasNoPendingInvitations = (receiver: GetDetailedUserProfile): void => {
-    mutationSentFriendship.mutate(receiver.id, {
+  const handleLoggedInUserHasNoPendingInvitations = (targetUserAsReceiver: GetDetailedUserProfile): void => {
+    mutationSentFriendship.mutate(targetUserAsReceiver.id, {
       onSuccess() {
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE] });
       },
     });
   };
@@ -97,18 +108,18 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   /**
   *
   * @description cancels a friendship invitation with status 'PENDING'
-  * @param {GetBasicUserProfile} receiver the receiver of the friendship invitation
+  * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const handleCancelFriendshipInvitation = (receiver: GetDetailedUserProfile): void => {
-    mutationCancelFriendship.mutate(receiver.id, {
+  const handleLoggedInUserCancelFriendshipInvitation = (targetUserAsReceiver: GetDetailedUserProfile): void => {
+    mutationCancelFriendship.mutate(targetUserAsReceiver.id, {
       onSuccess() {
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEW_PEOPLE_INFO_PROFILE] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE] });
       },
     });
   };
 
 
-  const UserBiography: FC = () => (
+  const TargetUserBiography: FC = () => (
     <If
       condition={!isLoading}
       elseRender={(
@@ -127,7 +138,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
         <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
           <FontAwesome size={16} name='user' />
           <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-            {newPeopleProfile?.biography}
+            {targetUserProfile?.biography}
           </Text>
         </View>
       )}
@@ -135,31 +146,22 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   );
 
 
-  const MatchedEventsCarousel: FC = () => (
-    <Pressable onPress={() => router.push(`/newPeopleProfile/matchedEventsList/${secondUserUuid}`)}>
+  const MatchedEventsByLoggedInUserAndTargetUserCarousel: FC = () => (
+    <Pressable onPress={() => router.push(`/targetUserProfile/matchedEventsList/${targetUserUrlParams.uuid}`)}>
       <AppCarousel
         title='Matches'
-        list={matchedEvents?.pages.flatMap(
-          page => page.events.map(
-            event => ({
-              id: event.id,
-              img: event.photos[0]?.url,
-              placeholder: event.photos[0]?.placeholder
-            })
-          ))
-          || []
-        }
+        list={memoizedMatchedEvents}
       />
     </Pressable>
   );
 
   // to block set to !isFriend
-  const BucketListCarousel: FC = () => (
-    <Pressable onPress={isFriend ? undefined : () => router.push(`/newPeopleProfile/bucketList/${secondUserUuid}`)}>
+  const TargetUserBucketListCarousel: FC = () => (
+    <Pressable onPress={targetUserUrlParams.isFriend ? undefined : () => router.push(`/targetUserProfile/bucketList/${targetUserUrlParams.uuid}`)}>
       <AppCarousel
-        isLocked={isFriend}
+        isLocked={targetUserUrlParams.isFriend}
         title='BucketList'
-        list={newPeopleProfile?.likedEvents.map(
+        list={targetUserProfile?.likedEvents.map(
           (likedEvent) => ({
             id: likedEvent.id,
             img: likedEvent.event.photos[0]?.url,
@@ -171,33 +173,33 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   );
 
 
-  const FriendShipInvitationButtons: FC = () => (
+  const TargetUserFriendShipInvitationButtons: FC = () => (
     isSuccess && (
-      isFriend ? (
+      targetUserUrlParams.isFriend ? (
         <AppButton
-          onPress={() => router.push(`/chat/${newPeopleProfile?.id}`)}
+          onPress={() => router.push(`/chat/${targetUserProfile?.id}`)}
           btnColor='gray'
           text='CHAT'
         />
       ) : (
         <>
-          {isReceiver && (
+          {isTargetUserFriendShipReceiver && (
             <AppButton
-              onPress={() => handleCancelFriendshipInvitation(newPeopleProfile)}
+              onPress={() => handleLoggedInUserCancelFriendshipInvitation(targetUserProfile)}
               text="PENDING"
               btnColor='blue'
             />
           )}
-          {isSender && (
+          {isTargetUserFriendShipSender && (
             <AppButton
-              onPress={() => handleCurrentUserHasAPendingInvitation(newPeopleProfile)}
+              onPress={() => handleLoggedInUserHasAPendingInvitation(targetUserProfile)}
               text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
               btnColor='black'
             />
           )}
-          {!isReceiver && !isSender && (
+          {!isTargetUserFriendShipReceiver && !isTargetUserFriendShipSender && (
             <AppButton
-              onPress={() => handleCurrentUserHasNoPendingInvitations(newPeopleProfile)}
+              onPress={() => handleLoggedInUserHasNoPendingInvitations(targetUserProfile)}
               text="JOIN"
               btnColor='black'
             />
@@ -208,20 +210,20 @@ export default function NewPeopleProfileScreen(): JSX.Element {
   );
 
 
-  const UserLanguages: FC = () => (
+  const TargetUserLanguages: FC = () => (
     <Badges
       iconName='comment'
       title='Languages'
-      items={newPeopleProfile?.languages ?? []}
+      items={targetUserProfile?.languages ?? []}
     />
   );
 
 
-  const UserLocations: FC = () => (
+  const TargetUserLocations: FC = () => (
     <Badges
       iconName='map-marker'
       title='Location'
-      items={[`from ${newPeopleProfile?.homeTown}`, `live in ${newPeopleProfile?.currentLocation}`]}
+      items={[`from ${targetUserProfile?.homeTown}`, `live in ${targetUserProfile?.currentLocation}`]}
     />
   );
 
@@ -236,7 +238,7 @@ export default function NewPeopleProfileScreen(): JSX.Element {
           animation: 'default',
           headerShown: true,
           headerShadowVisible: false,
-          headerTitle: newPeopleProfile?.username || '',
+          headerTitle: targetUserProfile?.username || '',
           headerTitleAlign: 'center'
         }}
       />
@@ -246,33 +248,33 @@ export default function NewPeopleProfileScreen(): JSX.Element {
       >
         <ProfileCarousel
           isLoading={isLoading}
-          userPhotos={newPeopleProfile?.photos || []}
+          userPhotos={targetUserProfile?.photos || []}
         />
 
         <View style={profileStyles.container}>
 
           <ProfileTitle
             isLoading={isLoading}
-            userProfile={newPeopleProfile}
+            userProfile={targetUserProfile}
           />
 
-          <UserBiography />
+          <TargetUserBiography />
 
-          <FriendShipInvitationButtons />
+          <TargetUserFriendShipInvitationButtons />
 
-          <MatchedEventsCarousel />
+          <MatchedEventsByLoggedInUserAndTargetUserCarousel />
 
-          <BucketListCarousel />
+          <TargetUserBucketListCarousel />
 
-          <If condition={newPeopleProfile?.languages?.length}
+          <If condition={targetUserProfile?.languages?.length}
             render={
-              <UserLanguages />
+              <TargetUserLanguages />
             }
           />
 
-          <If condition={newPeopleProfile?.homeTown && newPeopleProfile?.currentLocation}
+          <If condition={targetUserProfile?.homeTown && targetUserProfile?.currentLocation}
             render={
-              <UserLocations />
+              <TargetUserLocations />
             }
           />
         </View>
