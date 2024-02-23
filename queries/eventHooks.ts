@@ -318,13 +318,36 @@ export const useMutationDeleteLikedEventFromBucketList = () => {
               )) || [],
             pageParams: data?.pageParams || []
           }));
+
+        return eventID;
       },
       // Invalidate queries after the mutation succeeds
-      onSuccess: async () => {
-        await Promise.all([
-          // TOO SLOW
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION] }),
-        ]);
+      onSuccess: async (_, eventID) => {
+        queryClient
+          .setQueryData<InfiniteData<GetAllLatestEventsWithPagination, number>>
+          ([QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION], (oldData) => ({
+            pages: oldData?.pages.map(
+              (page) => (
+                {
+                  ...page,
+                  events: page.events.map(event =>
+                    eventID === event.id ? (
+                      {
+                        ...event,
+                        isLiked: false,
+                        _count: {
+                          ...event._count,
+                          likes: event._count.likes - 1
+                        }
+                      }
+                    ) :
+                      event
+                  )
+                }
+              )) || [],
+
+            pageParams: oldData?.pageParams || []
+          }));
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
