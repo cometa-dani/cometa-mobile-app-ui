@@ -5,7 +5,7 @@
     "slug": "cometa-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo_cometa.png",
+    "icon": "./assets/favicons/android-icon-48x48.png",
     "scheme": "myapp",
     "userInterfaceStyle": "light",
     "splash": {
@@ -15,13 +15,13 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "icon": "./assets/images/cometa-logo-2.png",
+      "icon": "./assets/favicons/apple-icon-60x60.png",
       "backgroundColor": "#ffffff",
       "supportsTablet": true,
       "bundleIdentifier": "com.cometadaniexpo.cometaapp"
     },
     "android": {
-      "icon": "./assets/images/cometa-logo-2.png",
+      "icon": "./assets/favicons/android-icon-48x48.png",
       "backgroundColor": "#ffffff",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo_cometa.png",
