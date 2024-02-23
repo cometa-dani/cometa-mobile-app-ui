@@ -20,7 +20,7 @@ import { defaultImgPlaceholder } from '../../constants/vars';
 export default function BuckectListScreen(): JSX.Element {
   const { data, isFetching, hasNextPage, fetchNextPage, isLoading, } = useInfiniteQueryGetLikedEventsByLoggedInUser();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
-  const loggedInUserBucketList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
+  const memoizedLoggedInUserBucketList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -30,7 +30,7 @@ export default function BuckectListScreen(): JSX.Element {
         render={<SkeletonLoader />}
         elseRender={(
           <FlashList
-            data={loggedInUserBucketList}
+            data={memoizedLoggedInUserBucketList}
             pagingEnabled={false}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingVertical: 26 }}

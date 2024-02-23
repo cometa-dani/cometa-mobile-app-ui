@@ -22,7 +22,7 @@ export default function BucketListScreen(): JSX.Element {
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } =
     targetUser.useInfiniteQueryGetLikedEventsForBucketListWithPagination(targetUserProfileCached?.id);
 
-  const eventsData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
+  const memoizedEventsList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
   return (
@@ -44,7 +44,7 @@ export default function BucketListScreen(): JSX.Element {
 
       <View style={styles.container}>
         <EventsFlashList
-          items={eventsData}
+          items={memoizedEventsList}
           isLoading={isLoading}
           handleInfiniteFetch={handleInfiniteFetch}
         />

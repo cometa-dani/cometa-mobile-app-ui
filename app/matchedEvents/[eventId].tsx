@@ -58,11 +58,11 @@ export default function MatchedEventsScreen(): JSX.Element {
   const newPeopleTargetUsers = useInfiteQueryGetUsersWhoLikedSameEventByID(+eventID);
   const newestFriendsTargetUsers = useInfiniteQueryGetLoggedInUserNewestFriends();
 
-  const loggedInUserFriendsList =
+  const memoizedFriendsList =
     useMemo(() => (newestFriendsTargetUsers.data?.pages.flatMap(page => page?.friendships) ?? []),
       [newestFriendsTargetUsers.data?.pages]
     );
-  const loggedInUserMeetNewPeoplelist =
+  const memoizedMeetNewPeoplelist =
     useMemo(() => (newPeopleTargetUsers.data?.pages?.flatMap(page => page.usersWhoLikedEvent) ?? []),
       [newPeopleTargetUsers.data?.pages]
     );
@@ -161,7 +161,7 @@ export default function MatchedEventsScreen(): JSX.Element {
       ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
       contentContainerStyle={styles.flatList}
       showsVerticalScrollIndicator={false}
-      data={loggedInUserMeetNewPeoplelist}
+      data={memoizedMeetNewPeoplelist}
       renderItem={({ item: { user: targetUser } }) => {
         const isReceiver: boolean = targetUser?.incomingFriendships[0]?.status === 'PENDING';
         const isSender: boolean = targetUser?.outgoingFriendships[0]?.status === 'PENDING';
@@ -223,7 +223,7 @@ export default function MatchedEventsScreen(): JSX.Element {
       ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
       contentContainerStyle={styles.flatList}
       showsVerticalScrollIndicator={false}
-      data={loggedInUserFriendsList}
+      data={memoizedFriendsList}
       renderItem={({ item: { friend: targetUser } }) => {
         return (
           <View key={targetUser.id} style={styles.user}>

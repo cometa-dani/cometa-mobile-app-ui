@@ -24,7 +24,7 @@ export default function MatchedEventsListScreen(): JSX.Element {
 
   // events & function to handle fetching more events when reaching the end
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUserUuid);
-  const matchedEventsData = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
+  const memoizedMatchedEventsList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
@@ -48,7 +48,7 @@ export default function MatchedEventsListScreen(): JSX.Element {
       <View style={styles.container}>
         <EventsFlashList
           hideLikeButton={true}
-          items={matchedEventsData}
+          items={memoizedMatchedEventsList}
           isLoading={isLoading}
           handleInfiniteFetch={handleInfiniteFetch}
         />

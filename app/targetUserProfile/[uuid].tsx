@@ -56,6 +56,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   // queries
   const { data: targetUserProfile, isSuccess, isLoading } = useQueryGetTargetUserPeopleProfileByUid(targetUserUrlParams.uuid);
   const { data: matchedEvents } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUserUrlParams.uuid);
+
   const memoizedMatchedEvents =
     useMemo(() => (matchedEvents?.pages.flatMap(
       page => page.events.map(
@@ -66,6 +67,16 @@ export default function TargerUserProfileScreen(): JSX.Element {
         })
       ))
       || []), [matchedEvents?.pages]);
+
+  const memoizedLikedEvents = useMemo(() => (
+    targetUserProfile?.likedEvents.map(
+      (likedEvent) => ({
+        id: likedEvent.id,
+        img: likedEvent.event.photos[0]?.url,
+        placeholder: likedEvent.event.photos[0]?.placeholder
+      })) || []
+  ), []);
+
 
   const isTargetUserFriendShipReceiver: boolean = targetUserProfile?.incomingFriendships[0]?.status === 'PENDING';
   const isTargetUserFriendShipSender: boolean = targetUserProfile?.outgoingFriendships[0]?.status === 'PENDING';
@@ -161,13 +172,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
       <AppCarousel
         isLocked={targetUserUrlParams.isFriend}
         title='BucketList'
-        list={targetUserProfile?.likedEvents.map(
-          (likedEvent) => ({
-            id: likedEvent.id,
-            img: likedEvent.event.photos[0]?.url,
-            placeholder: likedEvent.event.photos[0]?.placeholder
-          })) || []
-        }
+        list={memoizedLikedEvents}
       />
     </Pressable>
   );
