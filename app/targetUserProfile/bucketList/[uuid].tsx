@@ -46,7 +46,7 @@ export default function BucketListScreen(): JSX.Element {
         <EventsFlashList
           items={memoizedEventsList}
           isLoading={isLoading}
-          handleInfiniteFetch={handleInfiniteFetch}
+          onInfiniteScroll={handleInfiniteFetch}
         />
       </View>
     </SafeAreaView>

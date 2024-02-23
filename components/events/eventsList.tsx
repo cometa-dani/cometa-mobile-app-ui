@@ -23,12 +23,12 @@ const carouselEstimatedWidth = Dimensions.get('window').width - 20;
 
 interface EventsListProps {
   items: LikeableEvent[],
-  handleInfiniteFetch: () => void,
+  onInfiniteScroll: () => void,
   isLoading: boolean,
   hideLikeButton?: boolean,
 }
 
-export const EventsFlashList: FC<EventsListProps> = ({ handleInfiniteFetch, isLoading, items, hideLikeButton }) => {
+export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoading, items, hideLikeButton }) => {
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
 
   return (
@@ -42,7 +42,7 @@ export const EventsFlashList: FC<EventsListProps> = ({ handleInfiniteFetch, isLo
           estimatedItemSize={eventItemEstimatedHeight}
           pagingEnabled={true}
           data={items}
-          onEndReached={handleInfiniteFetch}
+          onEndReached={onInfiniteScroll}
           onEndReachedThreshold={0.4}
           decelerationRate={'normal'}
           renderItem={({ item }) => (

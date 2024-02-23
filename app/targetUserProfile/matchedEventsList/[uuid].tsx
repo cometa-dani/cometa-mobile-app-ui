@@ -50,7 +50,7 @@ export default function MatchedEventsListScreen(): JSX.Element {
           hideLikeButton={true}
           items={memoizedMatchedEventsList}
           isLoading={isLoading}
-          handleInfiniteFetch={handleInfiniteFetch}
+          onInfiniteScroll={handleInfiniteFetch}
         />
       </View>
     </SafeAreaView>
