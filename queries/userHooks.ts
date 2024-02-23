@@ -30,7 +30,7 @@ export const useQueryGetUserProfileByUid = (dynamicParam: string) => {
 };
 
 
-export const useMutationUserProfileById = () => {
+export const useMutationAuthenticatedUserProfileById = () => {
   const queryClient = useQueryClient();
   const uuid = useCometaStore(state => state.uid);
 

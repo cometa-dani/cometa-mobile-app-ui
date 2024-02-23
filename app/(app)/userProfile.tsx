@@ -3,7 +3,7 @@ import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
-import { useMutationDeleteUserPhotoByUuid, useMutationUploadUserPhotos, useMutationUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
+import { useMutationDeleteUserPhotoByUuid, useMutationUploadUserPhotos, useMutationAuthenticatedUserProfileById, useQueryGetUserProfileByUid } from '../../queries/userHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { FC, useState } from 'react';
 import { Stack, router } from 'expo-router';
@@ -25,6 +25,7 @@ import { Photo } from '../../models/Photo';
 import { GetBasicUserProfile } from '../../models/User';
 import { ForEach, If, ON, OFF } from '../../components/utils/';
 import ContentLoader, { Rect } from 'react-content-loader/native';
+import { useInfiniteQueryGetLikedEventsForBucketList } from '../../queries/eventHooks';
 
 
 type userAttributes = keyof GetBasicUserProfile
@@ -41,19 +42,20 @@ const validationSchemma = Yup.object<ProfileValues>({
 });
 
 
-export default function UserProfileScreen(): JSX.Element {
+export default function AutenticatedUserProfileScreen(): JSX.Element {
 
   const queryClient = useQueryClient();
   const { background } = useColors();
-  const uid = useCometaStore(state => state.uid); // this can be abstracted
+  const authenticatedUserUuid = useCometaStore(state => state.uid); // this can be abstracted
 
   // mutations
-  const mutateUserPhotosUpload = useMutationUploadUserPhotos(uid);
-  const mutateUserPhotosDelete = useMutationDeleteUserPhotoByUuid(uid);
-  const mutateUserProfileById = useMutationUserProfileById();
+  const mutateUserPhotosUpload = useMutationUploadUserPhotos(authenticatedUserUuid);
+  const mutateUserPhotosDelete = useMutationDeleteUserPhotoByUuid(authenticatedUserUuid);
+  const mutateUserProfileById = useMutationAuthenticatedUserProfileById();
 
   // queries
-  const { data: userProfile, isLoading } = useQueryGetUserProfileByUid(uid);
+  const { data: bucketList } = useInfiniteQueryGetLikedEventsForBucketList();
+  const { data: userProfile, isLoading } = useQueryGetUserProfileByUid(authenticatedUserUuid);
   const userPhotos: Photo[] = userProfile?.photos ?? [];
   const selectionLimit: number = (userProfile?.maxNumPhotos || 5) - (userPhotos?.length || 0);
 
@@ -61,16 +63,17 @@ export default function UserProfileScreen(): JSX.Element {
   const [switchEditProfile, setSwitchEditProfile] = useState(ON);
 
   // bucketlist
-  const bucketlistLikedEvents = userProfile
-    ?.likedEvents
-    .map(
-      (item) => ({
-        id: item.event.photos[0].id,
-        img: item.event.photos[0].url,
-        placeholder: item.event.photos[0].placeholder
-      })
-    )
-    || [];
+  const bucketlistLikedEvents =
+    bucketList?.pages.
+      flatMap(({ events }) => (
+        events.map(
+          event => ({
+            id: event?.photos[0]?.id,
+            img: event?.photos[0]?.url,
+            placeholder: event?.photos[0]?.placeholder
+          })
+        )
+      )) || [];
 
 
   const handleSumitUserInfo =

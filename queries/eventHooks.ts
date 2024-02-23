@@ -236,8 +236,8 @@ export const useMutationLikeOrDislikeEvent = () => {
         // Update the cache with the new liked state
         queryClient
           .setQueryData<InfiniteData<GetAllLatestEventsWithPagination, number>>
-          ([QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION], (data) => ({
-            pages: data?.pages.map(
+          ([QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION], (oldData) => ({
+            pages: oldData?.pages.map(
               (page) => (
                 {
                   ...page,
@@ -258,7 +258,7 @@ export const useMutationLikeOrDislikeEvent = () => {
                   )
                 }
               )) || [],
-            pageParams: data?.pageParams || []
+            pageParams: oldData?.pageParams || []
           }));
       },
       // Invalidate queries after the mutation succeeds
@@ -271,13 +271,13 @@ export const useMutationLikeOrDislikeEvent = () => {
 
         // TODO
 
-        await Promise.all([
-          // queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION] }),
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION] })
+        // await Promise.all([
+        //   queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION] }),
 
-          //  ADD
-          // INVALIDATE QUERIES FOR MATCHED EVENTS
-        ]);
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION] });
+        //   //  ADD
+        //   // INVALIDATE QUERIES FOR MATCHED EVENTS
+        // ]);
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3

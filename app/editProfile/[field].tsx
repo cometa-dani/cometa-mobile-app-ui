@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { SearchCityByName } from './searchCityByName';
 import { SelectLanguages } from './selectLanguages';
 import { If } from '../../components/utils/ifElse';
-import { useMutationUserProfileById } from '../../queries/userHooks';
+import { useMutationAuthenticatedUserProfileById } from '../../queries/userHooks';
 
 
 type UserProfileFields = 'homeTown' | 'currentLocation' | 'languages';
@@ -14,7 +14,7 @@ type UserProfileFields = 'homeTown' | 'currentLocation' | 'languages';
 export default function EditProfileOptionsScreen(): JSX.Element {
   const { background } = useColors();
   const { field, userId } = useLocalSearchParams<{ field: UserProfileFields, userId: string }>();
-  const mutateUserProfileById = useMutationUserProfileById();
+  const mutateUserProfileById = useMutationAuthenticatedUserProfileById();
 
 
   const handleCitySelection = (selectedCity: string): void => {
