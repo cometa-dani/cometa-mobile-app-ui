@@ -1,7 +1,7 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { QueryKeys } from './queryKeys';
-import citiesService from '../services/citiesService';
-import languagesServices from '../services/languagesServices';
+import { QueryKeys } from '../queryKeys';
+import citiesService from '../../services/citiesService';
+import languagesServices from '../../services/languagesServices';
 
 
 export const useInfiniteQueryGetCities = (prefixName: string, limit = 10) => {

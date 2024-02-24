@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { View, useColors } from '../../components/Themed';
-import { useInfiniteQueryGetLatestEventsByLoggedInUser } from '../../queries/eventHooks';
+import { useInfiniteQueryGetLatestEventsByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
 import { EventsFlashList } from '../../components/eventsFlashList/eventsFlashList';
 
 

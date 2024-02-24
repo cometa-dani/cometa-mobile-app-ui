@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { View, useColors } from '../../../components/Themed';
-import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser } from '../../../queries/eventHooks';
+import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser } from '../../../queries/targetUser/eventHooks';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { EventsFlashList } from '../../../components/eventsFlashList/eventsFlashList';
 import { useQueryClient } from '@tanstack/react-query';

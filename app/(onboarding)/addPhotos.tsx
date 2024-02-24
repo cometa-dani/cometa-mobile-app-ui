@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboarding/WrapperOnBoarding';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppPhotosGrid } from '../../components/profile/photosGrid';
-import { useMutationUploadLoggedInUserPhotos } from '../../queries/userHooks';
+import { useMutationUploadLoggedInUserPhotos } from '../../queries/loggedInUser/userProfileHooks';
 import { Photo } from '../../models/Photo';
 import * as ImagePicker from 'expo-image-picker';
 import { useCometaStore } from '../../store/cometaStore';

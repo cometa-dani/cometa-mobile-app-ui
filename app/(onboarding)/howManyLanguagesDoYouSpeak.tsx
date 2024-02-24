@@ -8,7 +8,7 @@ import { BaseButton } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { badgesStyles } from '../../components/profile/badges';
 import { useCometaStore } from '../../store/cometaStore';
-import { useQueryGetLoggedInUserProfileByUid } from '../../queries/userHooks';
+import { useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
 
 
 export default function HowManyLanguagesScreen(): JSX.Element {

@@ -5,7 +5,7 @@ import { FlashList } from '@shopify/flash-list';
 import { Text, View, useColors } from '../Themed';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
-import { useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
+import { useMutationLikeOrDislikeEvent } from '../../queries/loggedInUser/likeEventHooks';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
@@ -50,20 +50,13 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
           onEndReachedThreshold={0.4}
           decelerationRate={'normal'}
           renderItem={({ item }) => (
-            <EventItem
-              key={item.id}
+            <MemoizedEventItem
               hideLikeButton={hideLikeButton}
+              key={item.id}
               item={item}
               layoutHeight={layoutHeight}
               onHandleLikeButtonPress={onHandleLikeButtonPress}
             />
-            // <MemoizedEventItem
-            //   hideLikeButton={hideLikeButton}
-            //   key={item.id}
-            //   item={item}
-            //   layoutHeight={layoutHeight}
-            //   onHandleLikeButtonPress={onHandleLikeButtonPress}
-            // />
           )}
         />
       )}

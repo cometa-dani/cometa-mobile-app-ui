@@ -1,13 +1,13 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { View, useColors } from '../../../components/Themed';
-import { useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../../queries/eventHooks';
+import { useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../../queries/targetUser/eventHooks';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { EventsFlashList } from '../../../components/eventsFlashList/eventsFlashList';
 import { useQueryClient } from '@tanstack/react-query';
 import { GetDetailedUserProfile } from '../../../models/User';
 import { QueryKeys } from '../../../queries/queryKeys';
-import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/userHooks';
+import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/loggedInUser/userProfileHooks';
 import { useCometaStore } from '../../../store/cometaStore';
 import { CustomHeader } from '../../../components/customHeader/customHeader';
 
@@ -24,7 +24,7 @@ export default function MatchedEventsListScreen(): JSX.Element {
 
   // events & function to handle fetching more events when reaching the end
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUserUuid);
-  const memoizedMatchedEventsList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
+  // const memoizedMatchedEventsList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
@@ -48,7 +48,7 @@ export default function MatchedEventsListScreen(): JSX.Element {
       <View style={styles.container}>
         <EventsFlashList
           hideLikeButton={true}
-          items={memoizedMatchedEventsList}
+          items={data?.pages.flatMap(page => page.events) || []}
           isLoading={isLoading}
           onInfiniteScroll={handleInfiniteFetch}
         />

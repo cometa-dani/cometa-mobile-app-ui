@@ -9,7 +9,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { collection, addDoc, query, onSnapshot, orderBy, limit } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
 import { Image, SafeAreaView } from 'react-native';
-import { useQueryGetFriendshipByReceiverAndSender } from '../../queries/friendshipHooks';
+import { useQueryGetFriendshipByReceiverAndSender } from '../../queries/loggedInUser/friendshipHooks';
 import { Unsubscribe } from 'firebase/auth';
 
 

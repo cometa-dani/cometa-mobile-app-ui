@@ -5,7 +5,7 @@ import { animationDuration } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { FC, useEffect, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { useQueryGetAllLanguages } from '../../queries/editProfileHooks';
+import { useQueryGetAllLanguages } from '../../queries/loggedInUser/editProfileHooks';
 import { gray_50, gray_900 } from '../../constants/colors';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import Checkbox from 'expo-checkbox';
@@ -14,7 +14,7 @@ import { AppTextInput } from '../../components/textInput/AppTextInput';
 import { RectButton } from 'react-native-gesture-handler';
 import { If } from '../../components/utils/ifElse';
 import { useCometaStore } from '../../store/cometaStore';
-import { useQueryGetLoggedInUserProfileByUid } from '../../queries/userHooks';
+import { useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
 
 
 const FadingLoader = () => {

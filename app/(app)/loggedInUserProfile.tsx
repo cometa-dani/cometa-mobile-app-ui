@@ -3,7 +3,7 @@ import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
-import { useMutationDeleteLoggedInUserPhotoByUuid, useMutationUploadLoggedInUserPhotos, useMutationLoggedInUserProfileById, useQueryGetLoggedInUserProfileByUid } from '../../queries/userHooks';
+import { useMutationDeleteLoggedInUserPhotoByUuid, useMutationUploadLoggedInUserPhotos, useMutationLoggedInUserProfileById, useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { FC, useState } from 'react';
 import { Stack, router } from 'expo-router';
@@ -25,7 +25,7 @@ import { Photo } from '../../models/Photo';
 import { GetBasicUserProfile } from '../../models/User';
 import { ForEach, If, ON, OFF } from '../../components/utils';
 import ContentLoader, { Rect } from 'react-content-loader/native';
-import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../queries/eventHooks';
+import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
 
 
 type userAttributes = keyof GetBasicUserProfile
