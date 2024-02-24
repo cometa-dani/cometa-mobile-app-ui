@@ -76,7 +76,7 @@ export const useMutationSentFriendshipInvitation = () => {
       },
       onMutate: async () => { },
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION] });
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION] });
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
@@ -103,7 +103,7 @@ export const useMutationCancelFriendshipInvitation = () => {
       },
       onMutate: async () => { },
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION] });
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION] });
       },
       retry: 3,
       retryDelay: 1_000 * 60 * 3
@@ -132,7 +132,7 @@ export const useMutationAcceptFriendshipInvitation = () => {
       onSuccess: async () => {
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] }),
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION] })
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION] })
         ]);
       },
       retry: 3,

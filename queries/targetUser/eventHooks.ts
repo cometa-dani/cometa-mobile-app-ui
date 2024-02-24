@@ -44,7 +44,7 @@ export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => 
 
   return (
     useInfiniteQuery({
-      queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION],
+      queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION],
       initialPageParam: -1,
       enabled: !!eventID,
       queryFn: async ({ pageParam }): Promise<GetMatchedUsersWhoLikedEventWithPagination> => {

@@ -6,7 +6,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Text, View, useColors } from '../../components/Themed';
 import * as Yup from 'yup';
 import { profileStyles } from '../../components/profile/profileStyles';
-import { useQueryGetTargetUserPeopleProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
+import { useQueryGetTargetUserPeopleProfileByUid } from '../../queries/targetUser/userProfileHooks';
 import { useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../queries/targetUser/eventHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppCarousel } from '../../components/carousels/carousel';
