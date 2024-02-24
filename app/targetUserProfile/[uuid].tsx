@@ -75,7 +75,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
         img: likedEvent.event.photos[0]?.url,
         placeholder: likedEvent.event.photos[0]?.placeholder
       })) || []
-  ), []);
+  ), [targetUserProfile?.likedEvents]);
 
 
   const isTargetUserFriendShipReceiver: boolean = targetUserProfile?.incomingFriendships[0]?.status === 'PENDING';

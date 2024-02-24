@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { RectButton } from 'react-native-gesture-handler';
-import { useInfiniteQueryGetLikedEventsByLoggedInUser, useMutationDeleteLikedEventFromBucketList } from '../../queries/eventHooks';
+import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser, useMutationDeleteLikedEventFromBucketList } from '../../queries/eventHooks';
 import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { View, Text } from '../../components/Themed';
@@ -18,7 +18,7 @@ import { defaultImgPlaceholder } from '../../constants/vars';
 
 
 export default function BuckectListScreen(): JSX.Element {
-  const { data, isFetching, hasNextPage, fetchNextPage, isLoading, } = useInfiniteQueryGetLikedEventsByLoggedInUser();
+  const { data, isFetching, hasNextPage, fetchNextPage, isLoading, } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const memoizedLoggedInUserBucketList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
@@ -186,7 +186,7 @@ const BucketItem: FC<BucketItemProps> = ({ item }) => {
         </RectButton>
       )
     }>
-      <Pressable onPress={() => router.push(`/matchedEvents/${item.id}`)}>
+      <Pressable onPress={() => router.push(`/matches/${item.id}`)}>
         {({ pressed }) => (
           <View style={[styles.eventContainer, { opacity: pressed ? 0.8 : 1 }]}>
             <Image

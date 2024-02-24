@@ -25,7 +25,7 @@ import { Photo } from '../../models/Photo';
 import { GetBasicUserProfile } from '../../models/User';
 import { ForEach, If, ON, OFF } from '../../components/utils';
 import ContentLoader, { Rect } from 'react-content-loader/native';
-import { useInfiniteQueryGetLikedEventsByLoggedInUser } from '../../queries/eventHooks';
+import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../queries/eventHooks';
 
 
 type userAttributes = keyof GetBasicUserProfile
@@ -54,7 +54,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
   const mutateLoggedInUserProfileById = useMutationLoggedInUserProfileById();
 
   // queries
-  const { data: loggedInUserBucketList } = useInfiniteQueryGetLikedEventsByLoggedInUser();
+  const { data: loggedInUserBucketList } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
   const { data: loggedInuserProfile, isLoading } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
   const userPhotos: Photo[] = loggedInuserProfile?.photos ?? [];
   const selectionLimit: number = (loggedInuserProfile?.maxNumPhotos || 5) - (userPhotos?.length || 0);

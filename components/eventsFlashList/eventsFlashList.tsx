@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import { LikeableEvent, } from '../../models/Event';
 import { StyleSheet, DimensionValue, Pressable, Dimensions, View as TransParentView } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { Text, View, useColors } from '../../components/Themed';
+import { Text, View, useColors } from '../Themed';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { useMutationLikeOrDislikeEvent } from '../../queries/eventHooks';
@@ -12,9 +12,9 @@ import Carousel, { Pagination } from 'react-native-snap-carousel';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 import { gray_200, white_50 } from '../../constants/colors';
 import { icons } from '../../constants/assets';
-import { If } from '../../components/utils/ifElse';
+import { If } from '../utils/ifElse';
 import { Photo } from '../../models/Photo';
-import { ForEach } from '../../components/utils/ForEach';
+import { ForEach } from '../utils/ForEach';
 
 
 const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
@@ -26,10 +26,14 @@ interface EventsListProps {
   onInfiniteScroll: () => void,
   isLoading: boolean,
   hideLikeButton?: boolean,
+  targetUserId?: number,
 }
 
-export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoading, items, hideLikeButton }) => {
+export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoading, items, hideLikeButton, targetUserId }) => {
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
+  // perform mutations
+  const mutateEventLike = useMutationLikeOrDislikeEvent();
+  const onHandleLikeButtonPress = (eventID: number) => mutateEventLike.mutate({ eventID, targetUserId });
 
   return (
     <If
@@ -46,12 +50,20 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
           onEndReachedThreshold={0.4}
           decelerationRate={'normal'}
           renderItem={({ item }) => (
-            <MemoizedEventItem
-              hideLikeButton={hideLikeButton}
+            <EventItem
               key={item.id}
+              hideLikeButton={hideLikeButton}
               item={item}
               layoutHeight={layoutHeight}
+              onHandleLikeButtonPress={onHandleLikeButtonPress}
             />
+            // <MemoizedEventItem
+            //   hideLikeButton={hideLikeButton}
+            //   key={item.id}
+            //   item={item}
+            //   layoutHeight={layoutHeight}
+            //   onHandleLikeButtonPress={onHandleLikeButtonPress}
+            // />
           )}
         />
       )}
@@ -116,17 +128,15 @@ interface ListItemProps {
   item: LikeableEvent,
   layoutHeight: DimensionValue,
   hideLikeButton?: boolean,
+  onHandleLikeButtonPress: (id: number) => void,
 }
 
-const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeButton }) => {
+const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeButton = false, onHandleLikeButtonPress }) => {
   // Get access to colors and store data
   const { red100, white50 } = useColors();
 
   // carousel slider pagination
   const [activeSlide, setActiveSlide] = useState<number>(0);
-
-  // perform mutations
-  const likeOrDislikeMutation = useMutationLikeOrDislikeEvent();
 
   // expand description
   const [isExpanded, setIsExpanded] = useState(false);
@@ -135,7 +145,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeButton }) =>
   const doubleTap = Gesture.Tap();
   doubleTap
     .numberOfTaps(2)
-    .onEnd(() => likeOrDislikeMutation.mutate(item.id));
+    .onEnd(() => onHandleLikeButtonPress(item.id));
 
   return (
     <View style={{
@@ -179,7 +189,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeButton }) =>
             condition={!hideLikeButton}
             render={(
               <TransParentView style={{ alignItems: 'center', gap: 2 }}>
-                <Pressable onPress={() => likeOrDislikeMutation.mutate(item.id)}>
+                <Pressable onPress={() => onHandleLikeButtonPress(item.id)}>
                   {({ hovered, pressed }) => (
                     (item.isLiked) ? (
                       <FontAwesome name='heart' size={34} style={{ color: (hovered && pressed) ? white50 : red100 }} />

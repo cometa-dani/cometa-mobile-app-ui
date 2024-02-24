@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { View, useColors } from '../../../components/Themed';
-import { targetUser as targetUser } from '../../../queries/eventHooks';
+import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser } from '../../../queries/eventHooks';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { EventsFlashList } from '../../../components/events/eventsList';
+import { EventsFlashList } from '../../../components/eventsFlashList/eventsFlashList';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../../queries/queryKeys';
 import { GetDetailedUserProfile } from '../../../models/User';
@@ -19,10 +19,9 @@ export default function BucketListScreen(): JSX.Element {
   const targetUserProfileCached = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUuid]);
 
   // events & function to handle fetching more events when reaching the end
-  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } =
-    targetUser.useInfiniteQueryGetLikedEventsForBucketListWithPagination(targetUserProfileCached?.id);
+  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfileCached?.id);
 
-  const memoizedEventsList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
+  // const memoizedEventsList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
   return (
@@ -44,9 +43,10 @@ export default function BucketListScreen(): JSX.Element {
 
       <View style={styles.container}>
         <EventsFlashList
-          items={memoizedEventsList}
+          items={data?.pages.flatMap(page => page.events) || []}
           isLoading={isLoading}
           onInfiniteScroll={handleInfiniteFetch}
+          targetUserId={targetUserProfileCached?.id}
         />
       </View>
     </SafeAreaView>

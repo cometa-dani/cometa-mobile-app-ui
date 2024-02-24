@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { View, useColors } from '../../components/Themed';
 import { useInfiniteQueryGetLatestEventsByLoggedInUser } from '../../queries/eventHooks';
-import { EventsFlashList } from '../../components/events/eventsList';
+import { EventsFlashList } from '../../components/eventsFlashList/eventsFlashList';
 
 
 export default function HomeScreen(): JSX.Element {
@@ -11,7 +11,7 @@ export default function HomeScreen(): JSX.Element {
 
   // eventsData
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetLatestEventsByLoggedInUser();
-  const memoizedLoggedInUserLatestEventsList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
+  // const memoizedLoggedInUserLatestEventsList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
   // handling fetch when reaching the end
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
@@ -22,7 +22,7 @@ export default function HomeScreen(): JSX.Element {
       <View style={styles.container}>
 
         <EventsFlashList
-          items={memoizedLoggedInUserLatestEventsList}
+          items={data?.pages.flatMap(page => page.events) || []}
           isLoading={isLoading}
           onInfiniteScroll={handleInfiniteFetch}
         />

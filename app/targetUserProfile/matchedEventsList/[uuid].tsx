@@ -3,7 +3,7 @@ import { StyleSheet, SafeAreaView } from 'react-native';
 import { View, useColors } from '../../../components/Themed';
 import { useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../../queries/eventHooks';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { EventsFlashList } from '../../../components/events/eventsList';
+import { EventsFlashList } from '../../../components/eventsFlashList/eventsFlashList';
 import { useQueryClient } from '@tanstack/react-query';
 import { GetDetailedUserProfile } from '../../../models/User';
 import { QueryKeys } from '../../../queries/queryKeys';
