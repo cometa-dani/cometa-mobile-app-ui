@@ -14,7 +14,7 @@ export default function BucketListScreen(): JSX.Element {
   // colors
   const { background } = useColors();
 
-  const targetUserUuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
+  const { uuid: targetUserUuid, eventId } = useLocalSearchParams<{ uuid: string, eventId: string }>();
   const queryClient = useQueryClient();
   const targetUserProfileCached = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUuid]);
 
@@ -43,7 +43,7 @@ export default function BucketListScreen(): JSX.Element {
 
       <View style={styles.container}>
         <EventsFlashList
-          items={data?.pages.flatMap(page => page.events) || []}
+          items={data?.pages.flatMap(page => page.events.filter(event => event?.id !== +eventId)) || []}
           isLoading={isLoading}
           onInfiniteScroll={handleInfiniteFetch}
           targetUserId={targetUserProfileCached?.id}

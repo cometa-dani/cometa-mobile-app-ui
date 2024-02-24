@@ -38,6 +38,7 @@ const searchParamsSchemma = Yup.object({
       }),
 
   uuid: Yup.string().required(),
+  eventId: Yup.string().required()
 });
 
 
@@ -69,12 +70,16 @@ export default function TargerUserProfileScreen(): JSX.Element {
       || []), [matchedEvents?.pages]);
 
   const memoizedLikedEvents = useMemo(() => (
-    targetUserProfile?.likedEvents.map(
-      (likedEvent) => ({
-        id: likedEvent.id,
-        img: likedEvent.event.photos[0]?.url,
-        placeholder: likedEvent.event.photos[0]?.placeholder
-      })) || []
+    targetUserProfile?.likedEvents
+      .map(
+        (likedEvent) => ({
+          id: likedEvent.id,
+          img: likedEvent.event.photos[0]?.url,
+          placeholder: likedEvent.event.photos[0]?.placeholder
+        }))
+      .filter(event => event.id !== +targetUserUrlParams?.eventId)
+    ||
+    []
   ), [targetUserProfile?.likedEvents]);
 
 
@@ -168,7 +173,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
 
   // to block set to !isFriend
   const TargetUserBucketListCarousel: FC = () => (
-    <Pressable onPress={targetUserUrlParams.isFriend ? undefined : () => router.push(`/targetUserProfile/bucketList/${targetUserUrlParams.uuid}`)}>
+    <Pressable onPress={targetUserUrlParams.isFriend ? undefined : () => router.push(`/targetUserProfile/bucketList/${targetUserUrlParams.uuid}?eventId=${targetUserUrlParams.eventId}`)}>
       <AppCarousel
         isLocked={targetUserUrlParams.isFriend}
         title='BucketList'

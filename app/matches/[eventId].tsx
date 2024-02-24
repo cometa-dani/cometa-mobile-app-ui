@@ -170,7 +170,7 @@ export default function MatchedEventsScreen(): JSX.Element {
 
         return (
           <View key={targetUser.id} style={styles.user}>
-            <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?isFriend=false`)}>
+            <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?isFriend=false&eventId=${eventID}`)}>
               <View style={styles.avatarContainer}>
                 <Image
                   style={styles.userAvatar}
@@ -229,7 +229,7 @@ export default function MatchedEventsScreen(): JSX.Element {
       renderItem={({ item: { friend: targetUser } }) => {
         return (
           <View key={targetUser.id} style={styles.user}>
-            <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?isFriend=true`)}>
+            <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?isFriend=true&eventId=${eventID}`)}>
               <View style={styles.avatarContainer}>
                 <Image
                   style={styles.userAvatar}
