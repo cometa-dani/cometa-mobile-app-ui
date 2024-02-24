@@ -1,4 +1,4 @@
-import React, { FC, Fragment, memo, useMemo } from 'react';
+import React, { FC, Fragment, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
@@ -38,7 +38,7 @@ export default function BuckectListScreen(): JSX.Element {
             onMomentumScrollEnd={handleInfiniteFetch}
             onEndReachedThreshold={1}
             estimatedItemSize={100}
-            renderItem={renderMemoizedBucketItem}
+            renderItem={renderBucketItem}
           />
         )}
       />
@@ -101,10 +101,10 @@ const styles = StyleSheet.create({
 });
 
 
-const renderMemoizedBucketItem = ({ item }: { item: LikeableEvent }) => {
+const renderBucketItem = ({ item }: { item: LikeableEvent }) => {
   return (
     <>
-      <MemoizedBucketItem
+      <BucketItem
         key={item.id}
         item={item}
       />
@@ -211,9 +211,3 @@ const BucketItem: FC<BucketItemProps> = ({ item }) => {
     </Swipeable>
   );
 };
-
-const MemoizedBucketItem = memo(BucketItem, areEqual);
-
-function areEqual(prevProps: BucketItemProps, nextProps: BucketItemProps) {
-  return prevProps.item.id === nextProps.item.id;
-}

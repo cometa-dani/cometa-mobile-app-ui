@@ -44,6 +44,9 @@ export const useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser = () => {
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION],
       initialPageParam: -1,
+      // select(data): GetLikedEventsForBucketListWithPagination{
+      //   return data?.pages.flatMap(page => page.events) ;
+      // },
       queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
         const res = await eventService.getLikedEventsByUserIdWithPagination(pageParam, 8, loggedInUserAccessToken);
         if (res.status === 200) {
@@ -62,7 +65,8 @@ export const useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser = () => {
         return lastPage.nextCursor;
       },
       retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retryDelay: 1_000 * 60 * 3,
+      refetchInterval: 1_000 * 60 * 15
     })
   );
 };

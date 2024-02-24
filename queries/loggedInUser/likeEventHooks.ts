@@ -38,6 +38,7 @@ export const useMutationLikeOrDislikeEvent = () => {
                 (page) => (
                   {
                     ...page,
+                    totalEvents: page?.totalEvents - 1,
                     events: page.events.map(event =>
                       eventID === event.id ? (
                         {

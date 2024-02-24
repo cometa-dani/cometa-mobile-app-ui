@@ -1,17 +1,21 @@
+/* eslint-disable react-native/no-raw-text */
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs, router } from 'expo-router';
-import { Pressable } from 'react-native';
-import { View, useColors } from '../../components/Themed';
+import { Pressable, Text as TransparentText } from 'react-native';
+import { View, useColors, Text } from '../../components/Themed';
 import { StatusBar } from 'expo-status-bar';
-import { FC, ReactNode, useEffect } from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
 import { Image } from 'expo-image';
 import { icons, titles } from '../../constants/assets';
 import { RectButton } from 'react-native-gesture-handler';
-import { gray_900 } from '../../constants/colors';
+import { gray_900, white_50 } from '../../constants/colors';
 import { If } from '../../components/utils/ifElse';
+import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
+import ReactNativeModal from 'react-native-modal';
+import { appButtonstyles } from '../../components/buttons/buttons';
 
 
 /**
@@ -38,6 +42,11 @@ export default function AppLayout() {
   const isCurrentUserAuthenticated = useCometaStore(state => state.isAuthenticated);
   const setIsCurrentUserAuthenticated = useCometaStore(state => state.setIsAuthenticated);
 
+  // bucket list empty modal
+  const [toggleModal, setToggleModal] = useState(false);
+  const { data } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
+
+
   // listens only for log-out event
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -56,6 +65,28 @@ export default function AppLayout() {
   return (
     <>
       <StatusBar style={'auto'} />
+
+      <ReactNativeModal isVisible={toggleModal}>
+        <View style={{ minHeight: 200, width: 300, alignItems: 'center', justifyContent: 'center', padding: 20, borderRadius: 20, alignSelf: 'center' }}>
+          <View style={{ gap: 20 }}>
+            <View>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', }}>Bucket List is Empty</Text>
+              <Text style={{ textAlign: 'center' }}>No events liked yet</Text>
+            </View>
+
+            <Pressable
+              style={{ ...appButtonstyles.button, backgroundColor: gray_900 }}
+              onPress={() => {
+                setToggleModal(false);
+                setTimeout(() => router.push('/(app)/'), 600);
+              }} >
+              <TransparentText style={{ ...appButtonstyles.buttonText, color: white_50 }}>
+                Close
+              </TransparentText>
+            </Pressable>
+          </View>
+        </View>
+      </ReactNativeModal>
 
       <Tabs
         screenOptions={() => {
@@ -146,6 +177,13 @@ export default function AppLayout() {
         />
         <Tabs.Screen
           name="bucketList"
+          listeners={{
+            focus: (args) => {
+              if (!data?.pages[0]?.totalEvents) {
+                setTimeout(() => setToggleModal(true), 600);
+              }
+            }
+          }}
           options={{
             headerTitleAlign: 'center',
             headerShown: true,

@@ -1,6 +1,6 @@
 import { FC, useMemo, useReducer, useState } from 'react';
 import Modal from 'react-native-modal';
-import { SafeAreaView, StyleSheet, Pressable, Image as StaticImage } from 'react-native';
+import { SafeAreaView, StyleSheet, Pressable, Image as HeaderImage } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { router, useGlobalSearchParams } from 'expo-router';
 import { useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../queries/targetUser/eventHooks';
@@ -39,8 +39,8 @@ export default function MatchedEventsScreen(): JSX.Element {
   const loggedInUserUuid = useCometaStore(state => state.uid);
   const [toggleModal, setToggleModal] = useReducer((prev) => !prev, false);
 
-  const incommginFriendshipSenderForLoggedInUser = useCometaStore(state => state.incommginFriendshipSender);
-  const setIncommginFriendshipSenderForLoggedInUser = useCometaStore(state => state.setIncommginFriendshipSender);
+  const incommingFriendshipSenderForLoggedInUser = useCometaStore(state => state.incommginFriendshipSender);
+  const setIncommingFriendshipSenderForLoggedInUser = useCometaStore(state => state.setIncommginFriendshipSender);
 
   // queries
   const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
@@ -49,6 +49,8 @@ export default function MatchedEventsScreen(): JSX.Element {
   // cached data
   const queryClient = useQueryClient();
   const queryData = queryClient.getQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION]);
+
+  // TODO: should not be read from cache
   const eventByIdCahed = useMemo(
     () => queryData?.pages.flatMap(page => page?.events).find(event => event.id === +eventID),
     [eventID]
@@ -81,7 +83,7 @@ export default function MatchedEventsScreen(): JSX.Element {
   * @param {GetBasicUserProfile} targetUserAsSender the sender of the friendship invitation
   */
   const handleLoggedInUserHasAPendingInvitation = (targetUserAsSender: GetBasicUserProfile): void => {
-    setIncommginFriendshipSenderForLoggedInUser(targetUserAsSender);
+    setIncommingFriendshipSenderForLoggedInUser(targetUserAsSender);
     setTimeout(() => setToggleModal(), 100);
     const friendshipID = targetUserAsSender.outgoingFriendships[0].id;
     mutationAcceptFriendship.mutate(friendshipID);
@@ -127,7 +129,7 @@ export default function MatchedEventsScreen(): JSX.Element {
       if (friendshipID) {
         const subCollection = collection(db, 'chats', `${friendshipID}`, 'messages');
         await addDoc(subCollection, messagePayload);
-        router.push(`/chat/${incommginFriendshipSenderForLoggedInUser.id}`);
+        router.push(`/chat/${incommingFriendshipSenderForLoggedInUser.id}`);
       }
       else {
         throw new Error('frienship id undefined');
@@ -137,7 +139,7 @@ export default function MatchedEventsScreen(): JSX.Element {
 
   const TabsHeader: FC = () => (
     <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 26 }]}>
-      <StaticImage
+      <HeaderImage
         style={styles.imgHeader}
         source={{ uri: eventByIdCahed?.photos[0]?.url }}
       />
@@ -276,11 +278,11 @@ export default function MatchedEventsScreen(): JSX.Element {
                 source={{ uri: loggedInUserProfile?.photos[0]?.url }}
               />
 
-              {incommginFriendshipSenderForLoggedInUser?.photos?.[0]?.url && (
+              {incommingFriendshipSenderForLoggedInUser?.photos?.[0]?.url && (
                 <Image
                   style={modalStyles.avatarMatch}
-                  placeholder={{ thumbhash: incommginFriendshipSenderForLoggedInUser.photos[0]?.placeholder }}
-                  source={{ uri: incommginFriendshipSenderForLoggedInUser.photos[0]?.url }}
+                  placeholder={{ thumbhash: incommingFriendshipSenderForLoggedInUser.photos[0]?.placeholder }}
+                  source={{ uri: incommingFriendshipSenderForLoggedInUser.photos[0]?.url }}
                 />
               )}
             </View>
@@ -303,7 +305,7 @@ export default function MatchedEventsScreen(): JSX.Element {
                     onChangeText={handleChange('message')}
                     onBlur={handleBlur('message')}
                     value={values.message}
-                    placeholder={`Mesage ${incommginFriendshipSenderForLoggedInUser.username} to join together`}
+                    placeholder={`Mesage ${incommingFriendshipSenderForLoggedInUser.username} to join together`}
                   />
                   <Pressable
                     style={modalStyles.btnSubmit}

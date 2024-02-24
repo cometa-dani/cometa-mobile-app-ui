@@ -67,7 +67,6 @@ export const useMutationLoggedInUserProfileById = () => {
 };
 
 
-
 type PhotosParams = {
   pickedImgFiles: Pick<ImagePickerAsset, 'uri' | 'assetId'>[],
   userID: number
