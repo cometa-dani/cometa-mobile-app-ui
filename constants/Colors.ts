@@ -44,6 +44,11 @@ export const buttonColors = {
     color: '#030303'
   },
 
+  transparent: {
+    background: 'transparent',
+    color: '#030303'
+  },
+
   lightGray: {
     background: gray_50,
     color: gray_300

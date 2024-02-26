@@ -173,7 +173,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
           dotsLength={item?.photos?.length ?? 1}
           activeDotIndex={activeSlide}
           containerStyle={stylesEventItem.paginationContainer}
-          dotStyle={{ ...stylesEventItem.paginationDots, top: dotsTopMargin || -18 }}
+          dotStyle={{ ...stylesEventItem.paginationDots, top: dotsTopMargin || -14 }}
           inactiveDotOpacity={0.5}
           inactiveDotScale={0.8}
         />
@@ -317,7 +317,7 @@ const stylesEventItem = StyleSheet.create({
   },
 
   eventTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '500',
   },
 

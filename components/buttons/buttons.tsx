@@ -28,13 +28,13 @@ export const LightButton: FC<Props> = ({ text, textStyles = {}, ...props }) => {
 interface AppButtonProps extends BaseButtonProps {
   text?: string,
   children?: ReactNode
-  btnColor: 'black' | 'gray' | 'blue' | 'white' | 'primary' | 'lightGray',
+  btnColor: 'black' | 'gray' | 'blue' | 'white' | 'primary' | 'lightGray' | 'transparent',
 }
 
 export const AppButton: FC<AppButtonProps> = ({ children, text, btnColor, ...props }) => {
   const { background, color } = buttonColors[btnColor];
   const { style, ...otherProps } = props;
-  const buttonStyles = [appButtonstyles.button, { backgroundColor: background }, style];
+  const buttonStyles = [{ backgroundColor: background }, appButtonstyles.button, style];
   const textStyles = [appButtonstyles.buttonText, { color }];
 
   return (

@@ -1,4 +1,4 @@
-import { ScrollView, SafeAreaView, Dimensions } from 'react-native';
+import { ScrollView, SafeAreaView, Dimensions, View as TransparentView } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
@@ -287,38 +287,39 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
                   <Text style={{ color: gray_300 }}>How many languages you speak</Text>
                 </View>
 
-                <View style={profileStyles.wrapper}>
+                <AppButton
+                  btnColor='white'
+                  onPress={() => navigateToEditLoggedInUserProfilePushedScreen('languages')}
+                  style={profileStyles.wrapper}
+                >
                   <If
                     condition={loggedInuserProfile?.languages?.length}
                     elseRender={(
                       <AppButton
-                        onPress={() => navigateToEditLoggedInUserProfilePushedScreen('languages')}
                         btnColor='white' text='Add' style={badgesStyles.badge}
                       />
                     )}
                     render={(
-                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, width: '80%' }}>
+                      <TransparentView style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, width: '80%' }}>
                         <ForEach items={loggedInuserProfile?.languages ?? []}>
                           {(language, index) => (
                             <AppButton
                               key={index}
                               btnColor='white'
                               text={language}
-                              onPress={() => navigateToEditLoggedInUserProfilePushedScreen('languages')}
                               style={badgesStyles.badge}
                             />
                           )}
                         </ForEach>
-                      </View>
+                      </TransparentView>
                     )}
                   />
 
-                  <BaseButton
-                    onPress={() => navigateToEditLoggedInUserProfilePushedScreen('languages')}
+                  <TransparentView
                     style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
                     <FontAwesome name='chevron-right' size={18} />
-                  </BaseButton>
-                </View>
+                  </TransparentView>
+                </AppButton>
               </View>
               {/* languages */}
 
@@ -330,29 +331,32 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
                   <Text style={{ color: gray_300 }}>Where you are currently</Text>
                 </View>
 
-                <View style={profileStyles.wrapper}>
+                <AppButton
+                  btnColor='white'
+                  onPress={() => navigateToEditLoggedInUserProfilePushedScreen('currentLocation')}
+                  style={profileStyles.wrapper}
+                >
                   <If
                     condition={loggedInuserProfile?.currentLocation}
                     render={(
                       <AppButton
-                        onPress={() => navigateToEditLoggedInUserProfilePushedScreen('currentLocation')}
                         btnColor='white' text={loggedInuserProfile?.currentLocation} style={badgesStyles.badge}
                       />
                     )}
                     elseRender={(
                       <AppButton
-                        onPress={() => navigateToEditLoggedInUserProfilePushedScreen('currentLocation')}
+                        // onPress={() => navigateToEditLoggedInUserProfilePushedScreen('currentLocation')}
                         btnColor='white' text='Add' style={badgesStyles.badge}
                       />
                     )}
                   />
 
                   <BaseButton
-                    onPress={() => navigateToEditLoggedInUserProfilePushedScreen('currentLocation')}
+                    // onPress={() => navigateToEditLoggedInUserProfilePushedScreen('currentLocation')}
                     style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
                     <FontAwesome name='chevron-right' size={18} />
                   </BaseButton>
-                </View>
+                </AppButton>
               </View>
               {/* current location */}
 
@@ -364,35 +368,35 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
                   <Text style={{ color: gray_300 }}>Where you come from</Text>
                 </View>
 
-                <View style={profileStyles.wrapper}>
+                <AppButton
+                  onPress={() => navigateToEditLoggedInUserProfilePushedScreen('homeTown')}
+                  btnColor='white'
+                  style={profileStyles.wrapper}>
                   <If
                     condition={loggedInuserProfile?.homeTown}
                     render={(
                       <AppButton
-                        onPress={() => navigateToEditLoggedInUserProfilePushedScreen('homeTown')}
                         btnColor='white' text={loggedInuserProfile?.homeTown} style={badgesStyles.badge}
                       />
                     )}
                     elseRender={(
                       <AppButton
-                        onPress={() => navigateToEditLoggedInUserProfilePushedScreen('homeTown')}
                         btnColor='white' text='Add' style={badgesStyles.badge}
                       />
                     )}
                   />
 
                   <BaseButton
-                    onPress={() => navigateToEditLoggedInUserProfilePushedScreen('homeTown')}
                     style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
                     <FontAwesome name='chevron-right' size={18} />
                   </BaseButton>
-                </View>
+                </AppButton>
               </View>
               {/* hometown */}
             </View>
           )}
         </Formik>
-      </View>
+      </View >
     </>
   );
 
