@@ -25,11 +25,11 @@ interface EventsListProps {
   items: LikeableEvent[],
   onInfiniteScroll: () => void,
   isLoading: boolean,
-  hideLikeButton?: boolean,
+  hideLikeAndShareButtons?: boolean,
   targetUserId?: number,
 }
 
-export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoading, items, hideLikeButton, targetUserId }) => {
+export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoading, items, hideLikeAndShareButtons, targetUserId }) => {
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
   // perform mutations
   const mutateEventLike = useMutationLikeOrDislikeEvent();
@@ -51,7 +51,7 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
           decelerationRate={'normal'}
           renderItem={({ item }) => (
             <MemoizedEventItem
-              hideLikeButton={hideLikeButton}
+              hideLikeAndShareButtons={hideLikeAndShareButtons}
               key={item.id}
               item={item}
               layoutHeight={layoutHeight}
@@ -120,11 +120,11 @@ const SkeletonLoader: FC = () => {
 interface ListItemProps {
   item: LikeableEvent,
   layoutHeight: DimensionValue,
-  hideLikeButton?: boolean,
+  hideLikeAndShareButtons?: boolean,
   onHandleLikeButtonPress: (id: number) => void,
 }
 
-const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeButton = false, onHandleLikeButtonPress }) => {
+const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButtons = false, onHandleLikeButtonPress }) => {
   // Get access to colors and store data
   const { red100, white50 } = useColors();
 
@@ -179,35 +179,37 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeButton = fal
         {/* positioned buttons */}
         <TransParentView style={stylesEventItem.positionedButtons}>
           <If
-            condition={!hideLikeButton}
+            condition={!hideLikeAndShareButtons}
             render={(
-              <TransParentView style={{ alignItems: 'center', gap: 2 }}>
-                <Pressable onPress={() => onHandleLikeButtonPress(item.id)}>
-                  {({ hovered, pressed }) => (
-                    (item.isLiked) ? (
-                      <FontAwesome name='heart' size={34} style={{ color: (hovered && pressed) ? white50 : red100 }} />
-                    ) : (
-                      <FontAwesome name='heart-o' size={34} style={{ color: (hovered && pressed) ? red100 : white50 }} />
-                    )
-                  )}
-                </Pressable>
-                <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 16 }}>{item._count.likes || 0}</Text>
-              </TransParentView>
+              <>
+                <TransParentView style={{ alignItems: 'center', gap: 2 }}>
+                  <Pressable onPress={() => onHandleLikeButtonPress(item.id)}>
+                    {({ hovered, pressed }) => (
+                      (item.isLiked) ? (
+                        <FontAwesome name='heart' size={28} style={{ color: (hovered && pressed) ? white50 : red100 }} />
+                      ) : (
+                        <FontAwesome name='heart-o' size={28} style={{ color: (hovered && pressed) ? red100 : white50 }} />
+                      )
+                    )}
+                  </Pressable>
+                  <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 16 }}>{item._count.likes || 0}</Text>
+                </TransParentView>
+
+                <TransParentView style={{ alignItems: 'center', gap: 2 }}>
+                  <Pressable>
+                    {() => (
+                      <Image style={{ width: 28, height: 28 }} source={icons.share} />
+                    )}
+                  </Pressable>
+                  <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 16 }}>{3612}</Text>
+                </TransParentView>
+              </>
             )}
           />
 
-          <TransParentView style={{ alignItems: 'center', gap: 2 }}>
-            <Pressable>
-              {() => (
-                <Image style={{ width: 42, height: 34 }} source={icons.share} />
-              )}
-            </Pressable>
-            <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 16 }}>{3612}</Text>
-          </TransParentView>
-
           <Pressable>
             {() => (
-              <Image style={{ width: 36, height: 36 }} source={icons.locationMarker} />
+              <Image style={{ width: 28, height: 28 }} source={icons.locationMarker} />
             )}
           </Pressable>
         </TransParentView>
@@ -304,15 +306,15 @@ const stylesEventItem = StyleSheet.create({
   },
 
   eventInfoContainer: {
-    bottom: 70,
+    bottom: 22,
     gap: 12,
-    left: 20,
+    left: 14,
     position: 'absolute',
     width: '70%',
   },
 
   eventTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '500',
   },
 
@@ -320,26 +322,30 @@ const stylesEventItem = StyleSheet.create({
 
   paginationContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0)',
-    bottom: 0,
+    top: 0,
     position: 'absolute',
-    width: '100%'
+    padding: 0,
+    margin: 0,
+    width: '100%',
   },
 
   paginationDots: {
     backgroundColor: 'rgba(255, 255, 255, 0.92)',
     borderRadius: 10,
-    height: 10,
+    height: 8,
     marginHorizontal: -2,
-    width: 10
+    width: 8,
+    position: 'relative',
+    top: -18,
   },
 
   positionedButtons: {
     alignItems: 'center',
-    bottom: 70,
+    bottom: 22,
     gap: 24,
     justifyContent: 'center',
     position: 'absolute',
-    right: 20,
+    right: 14,
   },
 
   tagContainer: {
@@ -347,8 +353,8 @@ const stylesEventItem = StyleSheet.create({
     backgroundColor: gray_200,
     borderRadius: 10,
     elevation: 3,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     shadowColor: '#171717',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
@@ -357,7 +363,7 @@ const stylesEventItem = StyleSheet.create({
 
   tagText: {
     color: white_50,
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: '500',
     textTransform: 'uppercase'
   },

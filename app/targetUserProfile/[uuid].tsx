@@ -80,7 +80,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
       .filter(event => event.id !== +targetUserUrlParams?.eventId)
     ||
     []
-  ), [targetUserProfile?.likedEvents]);
+  ), [targetUserProfile?.likedEvents, targetUserUrlParams?.eventId]);
 
 
   const isTargetUserFriendShipReceiver: boolean = targetUserProfile?.incomingFriendships[0]?.status === 'PENDING';

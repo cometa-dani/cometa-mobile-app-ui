@@ -47,7 +47,7 @@ export default function MatchedEventsListScreen(): JSX.Element {
 
       <View style={styles.container}>
         <EventsFlashList
-          hideLikeButton={true}
+          hideLikeAndShareButtons={true}
           items={data?.pages.flatMap(page => page.events) || []}
           isLoading={isLoading}
           onInfiniteScroll={handleInfiniteFetch}
