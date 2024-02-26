@@ -27,9 +27,10 @@ interface EventsListProps {
   isLoading: boolean,
   hideLikeAndShareButtons?: boolean,
   targetUserId?: number,
+  dotsTopMargin?: number,
 }
 
-export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoading, items, hideLikeAndShareButtons, targetUserId }) => {
+export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoading, items, hideLikeAndShareButtons, targetUserId, dotsTopMargin }) => {
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
   // perform mutations
   const mutateEventLike = useMutationLikeOrDislikeEvent();
@@ -51,6 +52,7 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
           decelerationRate={'normal'}
           renderItem={({ item }) => (
             <MemoizedEventItem
+              dotsTopMargin={dotsTopMargin}
               hideLikeAndShareButtons={hideLikeAndShareButtons}
               key={item.id}
               item={item}
@@ -122,9 +124,10 @@ interface ListItemProps {
   layoutHeight: DimensionValue,
   hideLikeAndShareButtons?: boolean,
   onHandleLikeButtonPress: (id: number) => void,
+  dotsTopMargin?: number,
 }
 
-const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButtons = false, onHandleLikeButtonPress }) => {
+const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButtons = false, dotsTopMargin, onHandleLikeButtonPress }) => {
   // Get access to colors and store data
   const { red100, white50 } = useColors();
 
@@ -170,11 +173,10 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
           dotsLength={item?.photos?.length ?? 1}
           activeDotIndex={activeSlide}
           containerStyle={stylesEventItem.paginationContainer}
-          dotStyle={stylesEventItem.paginationDots}
+          dotStyle={{ ...stylesEventItem.paginationDots, top: dotsTopMargin || -18 }}
           inactiveDotOpacity={0.5}
           inactiveDotScale={0.8}
         />
-
 
         {/* positioned buttons */}
         <TransParentView style={stylesEventItem.positionedButtons}>
@@ -337,7 +339,7 @@ const stylesEventItem = StyleSheet.create({
     marginHorizontal: -2,
     width: 8,
     position: 'relative',
-    top: -18,
+    // top: -18,
   },
 
   positionedButtons: {
