@@ -248,6 +248,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
                 style={[
                   stylesEventItem.textShadow,
                   {
+                    fontSize: 14,
                     opacity: pressed ? 0.84 : 1,
                     backgroundColor: pressed ? 'rgba(255,255,255,0.05)' : 'transparent',
                   }
@@ -306,7 +307,7 @@ const stylesEventItem = StyleSheet.create({
   },
 
   eventInfoContainer: {
-    bottom: 22,
+    bottom: 24,
     gap: 12,
     left: 14,
     position: 'absolute',
@@ -341,7 +342,7 @@ const stylesEventItem = StyleSheet.create({
 
   positionedButtons: {
     alignItems: 'center',
-    bottom: 22,
+    bottom: 24,
     gap: 24,
     justifyContent: 'center',
     position: 'absolute',
@@ -373,6 +374,7 @@ const stylesEventItem = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.6)',
     textShadowOffset: { width: -1, height: 1 },
     textShadowRadius: 10,
+    // fontSize: 14,
   },
 
   wrapper: { flex: 1, position: 'relative' }
