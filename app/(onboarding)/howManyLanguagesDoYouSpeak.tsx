@@ -42,27 +42,29 @@ export default function HowManyLanguagesScreen(): JSX.Element {
       <View style={{ width: '100%', position: 'relative' }}>
         <View style={{ gap: 8 }}>
 
-          <View style={{
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            flexDirection: 'row',
-            elevation: 3,
-            borderRadius: 50,
-            shadowColor: '#171717',
-            shadowOffset: {
-              width: 0,
-              height: 2,
-            },
-            shadowOpacity: 0.05,
-            shadowRadius: 3.84,
-            paddingVertical: 12,
-            paddingHorizontal: 20,
-          }}>
+          <AppButton
+            btnColor='white'
+            onPress={() => pushToEditProfileScreen('languages')}
+            style={{
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              flexDirection: 'row',
+              elevation: 3,
+              borderRadius: 50,
+              shadowColor: '#171717',
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.05,
+              shadowRadius: 3.84,
+              paddingVertical: 12,
+              paddingHorizontal: 20,
+            }}>
             <If
               condition={userProfile?.languages?.length}
               elseRender={(
                 <AppButton
-                  onPress={() => pushToEditProfileScreen('languages')}
                   btnColor='white'
                   text='Add'
                   style={badgesStyles.badge}
@@ -76,7 +78,6 @@ export default function HowManyLanguagesScreen(): JSX.Element {
                         key={index}
                         btnColor='white'
                         text={language}
-                        onPress={() => pushToEditProfileScreen('languages')}
                         style={badgesStyles.badge}
                       />
                     )}
@@ -86,11 +87,10 @@ export default function HowManyLanguagesScreen(): JSX.Element {
             />
 
             <BaseButton
-              onPress={() => pushToEditProfileScreen('languages')}
               style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
               <FontAwesome name='chevron-right' size={18} />
             </BaseButton>
-          </View>
+          </AppButton>
         </View>
 
         <View style={{ marginTop: 32 }}>

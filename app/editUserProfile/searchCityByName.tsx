@@ -185,10 +185,10 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
                         <Text style={{ fontWeight: '700' }}>{item.city}</Text>
                         <FontAwesome name='flag-o' size={20} />
                       </View>
-                      <Text>{item.country}</Text>
+                      <Text>{item.iso2}</Text>
                     </View>
 
-                    <Text style={{ opacity: pressed ? 0.6 : 1 }}>{item.country}</Text>
+                    <Text style={{ opacity: pressed ? 0.6 : 1 }}>{item.iso2}</Text>
                   </>
                 )}
               </Pressable>

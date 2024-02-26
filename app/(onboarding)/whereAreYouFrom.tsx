@@ -41,27 +41,29 @@ export default function WhereAreYouFromScreen(): JSX.Element {
             <Text style={{ color: gray_300 }}>Native city or place of origin</Text>
           </View>
 
-          <View style={{
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            flexDirection: 'row',
-            elevation: 3,
-            borderRadius: 50,
-            shadowColor: '#171717', // add shadow for iOS
-            shadowOffset: {
-              width: 0,
-              height: 2,
-            },
-            shadowOpacity: 0.05,
-            shadowRadius: 3.84,
-            paddingVertical: 12,
-            paddingHorizontal: 20,
-          }}>
+          <AppButton
+            btnColor='white'
+            onPress={() => pushEditProfileScreen('homeTown')}
+            style={{
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              flexDirection: 'row',
+              elevation: 3,
+              borderRadius: 50,
+              shadowColor: '#171717', // add shadow for iOS
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.05,
+              shadowRadius: 3.84,
+              paddingVertical: 12,
+              paddingHorizontal: 20,
+            }}>
             <If
               condition={userProfile?.homeTown}
               render={(
                 <AppButton
-                  onPress={() => pushEditProfileScreen('homeTown')}
                   btnColor='white'
                   text={userProfile?.homeTown}
                   style={badgesStyles.badge}
@@ -69,7 +71,6 @@ export default function WhereAreYouFromScreen(): JSX.Element {
               )}
               elseRender={(
                 <AppButton
-                  onPress={() => pushEditProfileScreen('homeTown')}
                   btnColor='white'
                   text='Add'
                   style={{ ...badgesStyles.badge }}
@@ -78,11 +79,10 @@ export default function WhereAreYouFromScreen(): JSX.Element {
             />
 
             <BaseButton
-              onPress={() => pushEditProfileScreen('homeTown')}
               style={{ borderRadius: 50, padding: 4, position: 'absolute', right: 20 }}>
               <FontAwesome name='chevron-right' size={18} />
             </BaseButton>
-          </View>
+          </AppButton>
         </View>
 
         <View style={{ marginTop: 32 }}>
