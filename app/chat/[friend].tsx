@@ -8,7 +8,7 @@ import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { collection, addDoc, query, onSnapshot, orderBy, limit } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
-import { Image, SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { Image as ImageWithPlaceholder } from 'expo-image';
 import { useQueryGetFriendshipByReceiverAndSender } from '../../queries/loggedInUser/friendshipHooks';
 import { Unsubscribe } from 'firebase/auth';
