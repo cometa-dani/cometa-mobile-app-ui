@@ -5,7 +5,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Pressable } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { blue_100, red_100 } from '../../constants/colors';
 import { Photo } from '../../models/Photo';
 import { If } from '../utils';
 
@@ -41,8 +40,6 @@ export const CustomHeader: FC<CustomHeaderProps> = ({ user1, user2 }) => {
             <>
               <Image
                 style={{
-                  borderColor: red_100,
-                  borderWidth: 3.6,
                   width: 76,
                   height: 76,
                   borderRadius: 50,
@@ -52,8 +49,6 @@ export const CustomHeader: FC<CustomHeaderProps> = ({ user1, user2 }) => {
               />
               <Image
                 style={{
-                  borderColor: blue_100,
-                  borderWidth: 3.6,
                   width: 76,
                   height: 76,
                   borderRadius: 50,
@@ -66,8 +61,6 @@ export const CustomHeader: FC<CustomHeaderProps> = ({ user1, user2 }) => {
           elseRender={(
             <Image
               style={{
-                borderColor: red_100,
-                borderWidth: 3.6,
                 width: 76,
                 height: 76,
                 borderRadius: 50,

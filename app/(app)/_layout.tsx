@@ -178,7 +178,7 @@ export default function AppLayout() {
         <Tabs.Screen
           name="bucketList"
           listeners={{
-            focus: (args) => {
+            focus: () => {
               if (!data?.pages[0]?.totalEvents) {
                 setTimeout(() => setToggleModal(true), 600);
               }
