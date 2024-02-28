@@ -19,7 +19,7 @@ import { defaultImgPlaceholder } from '../../constants/vars';
 
 
 export default function BuckectListScreen(): JSX.Element {
-  const { data, isFetching, hasNextPage, fetchNextPage, isLoading, } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
+  const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const memoizedLoggedInUserBucketList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
@@ -27,8 +27,8 @@ export default function BuckectListScreen(): JSX.Element {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <StatusBar style={'auto'} />
       <If
-        condition={isLoading}
-        render={<SkeletonLoader />}
+        condition={isFetching}
+        render={<SkeletonLoaderList />}
         elseRender={(
           <FlashList
             data={memoizedLoggedInUserBucketList}
@@ -101,12 +101,13 @@ const styles = StyleSheet.create({
 });
 
 
-const renderBucketItem = ({ item }: { item: LikeableEvent }) => {
+const renderBucketItem = ({ item, index }: { item: LikeableEvent, index: number }) => {
   return (
     <>
       <BucketItem
         key={item.id}
         item={item}
+        index={index}
       />
       <View style={{ height: 20 }} />
     </>
@@ -114,56 +115,58 @@ const renderBucketItem = ({ item }: { item: LikeableEvent }) => {
 };
 
 
-const SkeletonLoader: FC = () => {
-  const windowWidth = Dimensions.get('window').width;
-  const itemWidth = windowWidth - 40; // Subtract padding
-  const itemHeight = 108;
-  const gap = 20;
-  const totalHeight = 6 * (itemHeight + gap);
+export const SkeletonLoaderList:
+  FC<{ height?: number, numberOfItems?: number, gap?: number }> = ({ height = 108, numberOfItems = 6, gap = 20 }) => {
+    const windowWidth = Dimensions.get('window').width;
+    const itemWidth = windowWidth - 40; // Subtract padding
+    const itemHeight = height;
+    const totalHeight = numberOfItems * (itemHeight + gap);
 
-  const rect1Width = itemWidth * 0.40; // 35% of item width
-  const rect2Width = itemWidth * 0.60; // 51% of item width
-  const rect2X = rect1Width + 20; // Start of second rect, add 20 for gap
+    const rect1Width = itemWidth * 0.40; // 35% of item width
+    const rect2Width = itemWidth * 0.60; // 51% of item width
+    const rect2X = rect1Width + 20; // Start of second rect, add 20 for gap
 
-  return (
-    <ContentLoader
-      speed={1}
-      style={{ marginVertical: 26 }}
-      width={windowWidth}
-      height={totalHeight}
-      viewBox={`0 0 ${windowWidth} ${totalHeight}`}
-      backgroundColor="#f3f3f3"
-      foregroundColor="#ecebeb"
-    >
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Fragment key={i}>
-          <Rect
-            x="20"
-            y={i * (itemHeight + gap) + 6}
-            rx="26"
-            ry="26"
-            width={rect1Width}
-            height={itemHeight}
-          />
-          <Rect
-            x={rect2X + 10}
-            y={i * (itemHeight + gap) + 6}
-            rx="26"
-            ry="26"
-            width={rect2Width - 10}
-            height={itemHeight}
-          />
-        </Fragment>
-      ))}
-    </ContentLoader>
-  );
-};
+    return (
+      <ContentLoader
+        speed={1}
+        style={{ marginVertical: 26 }}
+        width={windowWidth}
+        height={totalHeight}
+        viewBox={`0 0 ${windowWidth} ${totalHeight}`}
+        backgroundColor="#f3f3f3"
+        foregroundColor="#ecebeb"
+      >
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Fragment key={i}>
+            <Rect
+              x="20"
+              y={i * (itemHeight + gap) + 6}
+              rx="26"
+              ry="26"
+              width={rect1Width}
+              height={itemHeight}
+            />
+            <Rect
+              x={rect2X + 10}
+              y={i * (itemHeight + gap) + 6}
+              rx="26"
+              ry="26"
+              width={rect2Width - 10}
+              height={itemHeight}
+            />
+          </Fragment>
+        ))}
+      </ContentLoader>
+    );
+  };
 
+// const AnimatedImage  = Animated.createAnimatedComponent(Image);
 
 interface BucketItemProps {
   item: LikeableEvent,
+  index: number
 }
-const BucketItem: FC<BucketItemProps> = ({ item }) => {
+const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
   const deleteLikedEventMutation = useMutationDeleteLikedEventFromBucketList();
 
   const UsersBubbles: FC = () => (
@@ -187,7 +190,10 @@ const BucketItem: FC<BucketItemProps> = ({ item }) => {
         </RectButton>
       )
     }>
-      <Pressable onPress={() => router.push(`/matches/${item.id}`)}>
+      <Pressable
+        onPress={() => router.push(`/matches/${item.id}?eventIndex=${index}`)}
+      // onPress={() => router.push(`/`)}
+      >
         {({ pressed }) => (
           <View style={[styles.eventContainer, { opacity: pressed ? 0.8 : 1 }]}>
             <Image

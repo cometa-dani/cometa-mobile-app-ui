@@ -9,6 +9,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { collection, addDoc, query, onSnapshot, orderBy, limit } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
 import { Image, SafeAreaView } from 'react-native';
+import { Image as ImageWithPlaceholder } from 'expo-image';
 import { useQueryGetFriendshipByReceiverAndSender } from '../../queries/loggedInUser/friendshipHooks';
 import { Unsubscribe } from 'firebase/auth';
 
@@ -91,7 +92,11 @@ export default function ChatScreen(): JSX.Element {
           headerLeft: () => (
             <View style={styles.avatarReciever}>
               <FontAwesome name='arrow-down' size={24} onPress={() => router.back()} />
-              <Image style={styles.avatarImg} source={{ uri: messageReceiver?.photos[0]?.url }} />
+              <ImageWithPlaceholder
+                style={styles.avatarImg}
+                source={{ uri: messageReceiver?.photos[0]?.url }}
+                placeholder={{ thumbhash: messageReceiver?.photos[0]?.placeholder }}
+              />
 
               <View>
                 <Text style={styles.avatarName}>{messageReceiver?.username}</Text>

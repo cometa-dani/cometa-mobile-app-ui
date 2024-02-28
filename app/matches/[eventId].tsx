@@ -9,7 +9,6 @@ import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { AppButton } from '../../components/buttons/buttons';
 import { StatusBar } from 'expo-status-bar';
 import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
-import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 import { useCometaStore } from '../../store/cometaStore';
 import { FontAwesome } from '@expo/vector-icons';
 import { GetBasicUserProfile } from '../../models/User';
@@ -25,6 +24,8 @@ import { useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
 import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEvent';
+import { If } from '../../components/utils';
+import { SkeletonLoaderList } from '../(app)/bucketList';
 
 
 type Message = { message: string };
@@ -44,21 +45,23 @@ export default function MatchedEventsScreen(): JSX.Element {
 
   // queries
   const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
-  const eventID = useGlobalSearchParams<{ eventId: string }>()['eventId'];
+  const urlParams = useGlobalSearchParams<{ eventId: string, eventIndex: string }>();
 
   // cached data
   const queryClient = useQueryClient();
   const queryData = queryClient.getQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION]);
 
   // TODO: should not be read from cache
-  const eventByIdCahed = useMemo(
-    () => queryData?.pages.flatMap(page => page?.events).find(event => event.id === +eventID),
-    [eventID]
-  );
+  const eventByIdCahed = queryData?.pages.flatMap(page => page?.events)[+urlParams.eventIndex] ?? null;
 
   // fetching data
-  const newPeopleTargetUsers = useInfiteQueryGetUsersWhoLikedSameEventByID(+eventID);
+  const newPeopleTargetUsers = useInfiteQueryGetUsersWhoLikedSameEventByID(+urlParams.eventId);
   const newestFriendsTargetUsers = useInfiniteQueryGetLoggedInUserNewestFriends();
+
+  const memoizedNewPeopleTargetUsers =
+    useMemo(() => newPeopleTargetUsers.data?.pages.flatMap(page => page?.usersWhoLikedEvent) || [], [newPeopleTargetUsers.data?.pages]);
+  const memoizedNewestFriendsTargetUsers =
+    useMemo(() => newestFriendsTargetUsers.data?.pages.flatMap(page => page?.friendships) || [], [newestFriendsTargetUsers.data?.pages]);
 
   // toggling tabs
   const [toggleTabs, setToggleTabs] = useState(false); // shuould be store on phone
@@ -149,108 +152,142 @@ export default function MatchedEventsScreen(): JSX.Element {
 
 
   const MeetNewPeopleFlashList: FC = () => (
-    newPeopleTargetUsers.isSuccess &&
-    <FlashList
-      estimatedItemSize={120}
-      ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
-      contentContainerStyle={styles.flatList}
-      showsVerticalScrollIndicator={false}
-      data={newPeopleTargetUsers.data?.pages.flatMap(page => page?.usersWhoLikedEvent) ?? []}
-      renderItem={({ item: { user: targetUser } }) => {
-        const isReceiver: boolean = targetUser?.incomingFriendships[0]?.status === 'PENDING';
-        const isSender: boolean = targetUser?.outgoingFriendships[0]?.status === 'PENDING';
+    <If
+      condition={newPeopleTargetUsers.isFetching}
+      render={(
+        <SkeletonLoaderList height={80} gap={26} />
+      )}
+      elseRender={(
+        <If
+          condition={!newPeopleTargetUsers.data?.pages[0]?.totalUsers}
+          render={(
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <Text>No new people</Text>
+            </View>
+          )}
+          elseRender={(
+            <FlashList
+              estimatedItemSize={100}
+              ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+              contentContainerStyle={styles.flatList}
+              showsVerticalScrollIndicator={false}
+              data={memoizedNewPeopleTargetUsers}
+              renderItem={({ item: { user: targetUser } }) => {
+                const isReceiver: boolean = targetUser?.incomingFriendships[0]?.status === 'PENDING';
+                const isSender: boolean = targetUser?.outgoingFriendships[0]?.status === 'PENDING';
 
-        return (
-          <View key={targetUser.id} style={styles.user}>
-            <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?isFriend=false&eventId=${eventID}`)}>
-              <View style={styles.avatarContainer}>
-                <Image
-                  style={styles.userAvatar}
-                  placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
-                  source={{ uri: targetUser?.photos[0]?.url ?? defaultImgPlaceholder }}
-                />
+                return (
+                  <View key={targetUser.id} style={styles.user}>
+                    <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?isFriend=false&eventId=${urlParams.eventId}`)}>
+                      <View style={styles.avatarContainer}>
+                        <Image
+                          style={styles.userAvatar}
+                          placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
+                          source={{ uri: targetUser?.photos[0]?.url ?? defaultImgPlaceholder }}
+                        />
 
-                <View style={styles.textContainer}>
-                  <Text
-                    style={styles.userName}
-                    numberOfLines={1}
-                    ellipsizeMode='tail'
-                  >
-                    {targetUser.username}
-                  </Text>
-                  <Text>online</Text>
-                </View>
-              </View>
-            </Pressable>
+                        <View style={styles.textContainer}>
+                          <Text
+                            style={styles.userName}
+                            numberOfLines={1}
+                            ellipsizeMode='tail'
+                          >
+                            {targetUser.username}
+                          </Text>
+                          <Text>online</Text>
+                        </View>
+                      </View>
+                    </Pressable>
 
-            {isReceiver && (
-              <AppButton
-                onPress={() => handleCancelFriendshipInvitation(targetUser)}
-                text="PENDING"
-                btnColor='blue'
-              />
-            )}
-            {isSender && (
-              <AppButton
-                onPress={() => handleLoggedInUserHasAPendingInvitation(targetUser)}
-                text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
-                btnColor='black'
-              />
-            )}
-            {!isReceiver && !isSender && (
-              <AppButton
-                onPress={() => handleLoggedInUserHasNoPendingInvitations(targetUser)}
-                text="JOIN"
-                btnColor='black'
-              />
-            )}
-          </View>
-        );
-      }}
+                    {isReceiver && (
+                      <AppButton
+                        onPress={() => handleCancelFriendshipInvitation(targetUser)}
+                        text="PENDING"
+                        btnColor='blue'
+                      />
+                    )}
+                    {isSender && (
+                      <AppButton
+                        onPress={() => handleLoggedInUserHasAPendingInvitation(targetUser)}
+                        text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
+                        btnColor='black'
+                      />
+                    )}
+                    {!isReceiver && !isSender && (
+                      <AppButton
+                        onPress={() => handleLoggedInUserHasNoPendingInvitations(targetUser)}
+                        text="JOIN"
+                        btnColor='black'
+                      />
+                    )}
+                  </View>
+                );
+              }}
+            />
+          )}
+        />
+      )}
     />
   );
 
 
   const FriendsFlashList: FC = () => (
-    newestFriendsTargetUsers.isSuccess &&
-    <FlashList
-      estimatedItemSize={120}
-      ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
-      contentContainerStyle={styles.flatList}
-      showsVerticalScrollIndicator={false}
-      data={newestFriendsTargetUsers.data?.pages?.flatMap(page => page?.friendships) ?? []}
-      renderItem={({ item }) => {
-        return (
-          <View key={item?.friend?.id} style={styles.user}>
-            <Pressable onPress={() => router.push(`/targetUserProfile/${item?.friend?.uid}?isFriend=true&eventId=${eventID}`)}>
-              <View style={styles.avatarContainer}>
-                <Image
-                  style={styles.userAvatar}
-                  placeholder={{ thumbhash: item?.friend?.photos[0]?.placeholder }}
-                  source={{ uri: item?.friend?.photos[0]?.url }}
-                />
+    <If
+      condition={newestFriendsTargetUsers.isFetching}
+      render={(
+        <SkeletonLoaderList height={80} gap={26} />
+      )}
+      elseRender={(
+        <If
+          condition={!newestFriendsTargetUsers.data?.pages[0]?.totalFriendships}
+          render={(
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <Text>No friends</Text>
+            </View>
+          )}
+          elseRender={(
+            <FlashList
+              estimatedItemSize={100}
+              ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+              contentContainerStyle={styles.flatList}
+              showsVerticalScrollIndicator={false}
+              data={memoizedNewestFriendsTargetUsers}
+              renderItem={({ item }) => {
+                return (
+                  <View key={item?.friend?.id} style={styles.user}>
+                    <Pressable onPress={() => router.push(`/targetUserProfile/${item?.friend?.uid}?isFriend=true&eventId=${urlParams.eventId}`)}>
+                      <View style={styles.avatarContainer}>
+                        <Image
+                          style={styles.userAvatar}
+                          placeholder={{ thumbhash: item?.friend?.photos[0]?.placeholder ?? '' }}
+                          source={{ uri: item?.friend?.photos[0]?.url ?? '' }}
+                        />
 
-                <View style={styles.textContainer}>
-                  <Text
-                    style={styles.userName}
-                    numberOfLines={1}
-                    ellipsizeMode='tail'
-                  >
-                    {item?.friend?.username}
-                  </Text>
-                  <Text>online</Text>
-                </View>
-              </View>
-            </Pressable>
+                        <View style={styles.textContainer}>
+                          <Text
+                            style={styles.userName}
+                            numberOfLines={1}
+                            ellipsizeMode='tail'
+                          >
+                            {item?.friend?.username}
+                          </Text>
+                          <Text>online</Text>
+                        </View>
+                      </View>
+                    </Pressable>
 
-            <AppButton
-              onPress={() => router.push(`/chat/${item?.friend?.id}`)}
-              text="CHAT"
-              btnColor='gray'
+                    <AppButton
+                      onPress={() => router.push(`/chat/${item?.friend?.id}`)}
+                      text="CHAT"
+                      btnColor='gray'
+                    />
+                  </View>
+                );
+              }}
             />
-          </View>
-        );
-      }}
+          )}
+        />
+      )}
     />
   );
 
@@ -261,7 +298,6 @@ export default function MatchedEventsScreen(): JSX.Element {
 
       <View style={styles.screenContainer}>
 
-        {/* MOVE TO A PARENT COMPONENT */}
         <Modal isVisible={toggleModal}>
           <View style={modalStyles.modalView}>
             <View style={modalStyles.avatarMatchContainer}>
@@ -318,33 +354,18 @@ export default function MatchedEventsScreen(): JSX.Element {
             </Pressable>
           </View>
         </Modal>
-        {/* MOVE TO A PARENT COMPONENT */}
 
         <TabsHeader />
 
-        {/* FRIENDS */}
-        {toggleTabs && (
-          <Animated.View
-            style={{ flex: 1 }}
-            entering={SlideInLeft.duration(240)}
-            exiting={SlideOutRight.duration(240)}
-          >
-            {/* flashlist fails to render because is empty on first mount */}
+        <If
+          condition={toggleTabs}
+          render={(
             <FriendsFlashList />
-          </Animated.View>
-        )}
-
-        {/* NEW PEOPLE */}
-        {!toggleTabs && (
-          <Animated.View
-            style={{ flex: 1 }}
-            entering={SlideInRight.duration(240)}
-            exiting={SlideOutLeft.duration(240)}
-          >
-            {/* flashlist fails to render because is empty on first mount */}
+          )}
+          elseRender={(
             <MeetNewPeopleFlashList />
-          </Animated.View>
-        )}
+          )}
+        />
       </View>
     </SafeAreaView>
   );
