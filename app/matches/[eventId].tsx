@@ -60,17 +60,8 @@ export default function MatchedEventsScreen(): JSX.Element {
   const newPeopleTargetUsers = useInfiteQueryGetUsersWhoLikedSameEventByID(+eventID);
   const newestFriendsTargetUsers = useInfiniteQueryGetLoggedInUserNewestFriends();
 
-  const memoizedFriendsList =
-    useMemo(() => (newestFriendsTargetUsers.data?.pages.flatMap(page => page?.friendships) ?? []),
-      [newestFriendsTargetUsers.data?.pages]
-    );
-  const memoizedMeetNewPeoplelist =
-    useMemo(() => (newPeopleTargetUsers.data?.pages?.flatMap(page => page.usersWhoLikedEvent) ?? []),
-      [newPeopleTargetUsers.data?.pages]
-    );
-
   // toggling tabs
-  const [toggleTabs, setToggleTabs] = useState(true); // shuould be store on phone
+  const [toggleTabs, setToggleTabs] = useState(false); // shuould be store on phone
 
   // mutations
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
@@ -158,12 +149,13 @@ export default function MatchedEventsScreen(): JSX.Element {
 
 
   const MeetNewPeopleFlashList: FC = () => (
+    newPeopleTargetUsers.isSuccess &&
     <FlashList
       estimatedItemSize={120}
       ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
       contentContainerStyle={styles.flatList}
       showsVerticalScrollIndicator={false}
-      data={memoizedMeetNewPeoplelist}
+      data={newPeopleTargetUsers.data?.pages.flatMap(page => page?.usersWhoLikedEvent) ?? []}
       renderItem={({ item: { user: targetUser } }) => {
         const isReceiver: boolean = targetUser?.incomingFriendships[0]?.status === 'PENDING';
         const isSender: boolean = targetUser?.outgoingFriendships[0]?.status === 'PENDING';
@@ -220,21 +212,22 @@ export default function MatchedEventsScreen(): JSX.Element {
 
 
   const FriendsFlashList: FC = () => (
+    newestFriendsTargetUsers.isSuccess &&
     <FlashList
       estimatedItemSize={120}
       ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
       contentContainerStyle={styles.flatList}
       showsVerticalScrollIndicator={false}
-      data={memoizedFriendsList}
-      renderItem={({ item: { friend: targetUser } }) => {
+      data={newestFriendsTargetUsers.data?.pages?.flatMap(page => page?.friendships) ?? []}
+      renderItem={({ item }) => {
         return (
-          <View key={targetUser.id} style={styles.user}>
-            <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?isFriend=true&eventId=${eventID}`)}>
+          <View key={item?.friend?.id} style={styles.user}>
+            <Pressable onPress={() => router.push(`/targetUserProfile/${item?.friend?.uid}?isFriend=true&eventId=${eventID}`)}>
               <View style={styles.avatarContainer}>
                 <Image
                   style={styles.userAvatar}
-                  placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
-                  source={{ uri: targetUser?.photos[0]?.url }}
+                  placeholder={{ thumbhash: item?.friend?.photos[0]?.placeholder }}
+                  source={{ uri: item?.friend?.photos[0]?.url }}
                 />
 
                 <View style={styles.textContainer}>
@@ -243,7 +236,7 @@ export default function MatchedEventsScreen(): JSX.Element {
                     numberOfLines={1}
                     ellipsizeMode='tail'
                   >
-                    {targetUser?.username}
+                    {item?.friend?.username}
                   </Text>
                   <Text>online</Text>
                 </View>
@@ -251,7 +244,7 @@ export default function MatchedEventsScreen(): JSX.Element {
             </Pressable>
 
             <AppButton
-              onPress={() => router.push(`/chat/${targetUser.id}`)}
+              onPress={() => router.push(`/chat/${item?.friend?.id}`)}
               text="CHAT"
               btnColor='gray'
             />

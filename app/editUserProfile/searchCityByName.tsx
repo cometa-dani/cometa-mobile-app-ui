@@ -125,7 +125,7 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
     return () => clearTimeout(timeOutId);
   }, [inputValue]);
 
-
+  // focus the input when the data is fetched
   useEffect(() => {
     const timeout = setTimeout(() => {
       inputRef.current?.focus();

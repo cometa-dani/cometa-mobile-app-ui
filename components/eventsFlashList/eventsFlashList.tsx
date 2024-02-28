@@ -27,10 +27,9 @@ interface EventsListProps {
   isLoading: boolean,
   hideLikeAndShareButtons?: boolean,
   targetUserId?: number,
-  dotsTopMargin?: number,
 }
 
-export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoading, items, hideLikeAndShareButtons, targetUserId, dotsTopMargin }) => {
+export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoading, items, hideLikeAndShareButtons, targetUserId }) => {
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
   // perform mutations
   const mutateEventLike = useMutationLikeOrDislikeEvent();
@@ -52,7 +51,6 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
           decelerationRate={'normal'}
           renderItem={({ item }) => (
             <MemoizedEventItem
-              dotsTopMargin={dotsTopMargin}
               hideLikeAndShareButtons={hideLikeAndShareButtons}
               key={item.id}
               item={item}
@@ -124,10 +122,9 @@ interface ListItemProps {
   layoutHeight: DimensionValue,
   hideLikeAndShareButtons?: boolean,
   onHandleLikeButtonPress: (id: number) => void,
-  dotsTopMargin?: number,
 }
 
-const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButtons = false, dotsTopMargin, onHandleLikeButtonPress }) => {
+const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButtons = false, onHandleLikeButtonPress }) => {
   // Get access to colors and store data
   const { red100, white50 } = useColors();
 
@@ -173,7 +170,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
           dotsLength={item?.photos?.length ?? 1}
           activeDotIndex={activeSlide}
           containerStyle={stylesEventItem.paginationContainer}
-          dotStyle={{ ...stylesEventItem.paginationDots, top: dotsTopMargin || -14 }}
+          dotStyle={{ ...stylesEventItem.paginationDots }}
           inactiveDotOpacity={0.5}
           inactiveDotScale={0.8}
         />
@@ -309,7 +306,7 @@ const stylesEventItem = StyleSheet.create({
   },
 
   eventInfoContainer: {
-    bottom: 24,
+    bottom: 34,
     gap: 12,
     left: 14,
     position: 'absolute',
@@ -325,11 +322,11 @@ const stylesEventItem = StyleSheet.create({
 
   paginationContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0)',
-    top: 0,
     position: 'absolute',
     padding: 0,
     margin: 0,
     width: '100%',
+    bottom: -14,
   },
 
   paginationDots: {
@@ -339,12 +336,11 @@ const stylesEventItem = StyleSheet.create({
     marginHorizontal: -2,
     width: 8,
     position: 'relative',
-    // top: -18,
   },
 
   positionedButtons: {
     alignItems: 'center',
-    bottom: 24,
+    bottom: 34,
     gap: 24,
     justifyContent: 'center',
     position: 'absolute',

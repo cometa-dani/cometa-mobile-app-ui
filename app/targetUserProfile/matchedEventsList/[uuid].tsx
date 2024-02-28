@@ -47,7 +47,6 @@ export default function MatchedEventsListScreen(): JSX.Element {
 
       <View style={styles.container}>
         <EventsFlashList
-          dotsTopMargin={8}
           hideLikeAndShareButtons={true}
           items={data?.pages.flatMap(page => page.events) || []}
           isLoading={isLoading}
