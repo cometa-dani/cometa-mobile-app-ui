@@ -19,7 +19,7 @@ import { db } from '../../firebase/firebase';
 import { IMessage, } from 'react-native-gifted-chat';
 import { defaultImgPlaceholder, nodeEnv } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
-import { gray_200, gray_500 } from '../../constants/colors';
+import { gray_200, gray_300, gray_500 } from '../../constants/colors';
 import { useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
@@ -162,7 +162,7 @@ export default function MatchedEventsScreen(): JSX.Element {
           condition={!newPeopleTargetUsers.data?.pages[0]?.totalUsers}
           render={(
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <Text>No new people</Text>
+              <Text style={{ ...styles.tab, color: gray_300 }}>No new people</Text>
             </View>
           )}
           elseRender={(
@@ -242,7 +242,7 @@ export default function MatchedEventsScreen(): JSX.Element {
           condition={!newestFriendsTargetUsers.data?.pages[0]?.totalFriendships}
           render={(
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <Text>No friends</Text>
+              <Text style={{ ...styles.tab, color: gray_300 }}>No friends</Text>
             </View>
           )}
           elseRender={(
