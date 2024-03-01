@@ -143,7 +143,6 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
           headerTitleAlign: 'left',
           headerTitle: () => (
             <TextInput
-              // ref={(input) => !input?.isFocused() && setTimeout(() => input?.focus(), 400)}
               style={{ fontSize: 16 }}
               placeholder={placeholder}
               value={inputValue}
@@ -185,10 +184,10 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
                         <Text style={{ fontWeight: '700' }}>{item.city}</Text>
                         <FontAwesome name='flag-o' size={20} />
                       </View>
-                      <Text>{item.iso2}</Text>
+                      <Text>{item.country}</Text>
                     </View>
 
-                    <Text style={{ opacity: pressed ? 0.6 : 1 }}>{item.iso2}</Text>
+                    <Text style={{ opacity: pressed ? 0.6 : 1 }}>{item.country}</Text>
                   </>
                 )}
               </Pressable>
