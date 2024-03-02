@@ -153,7 +153,7 @@ export default function MatchedEventsScreen(): JSX.Element {
 
   const MeetNewPeopleFlashList: FC = () => (
     <If
-      condition={newPeopleTargetUsers.isFetching}
+      condition={newPeopleTargetUsers.isLoading}
       render={(
         <SkeletonLoaderList height={80} gap={26} />
       )}
@@ -233,7 +233,7 @@ export default function MatchedEventsScreen(): JSX.Element {
 
   const FriendsFlashList: FC = () => (
     <If
-      condition={newestFriendsTargetUsers.isFetching}
+      condition={newestFriendsTargetUsers.isLoading}
       render={(
         <SkeletonLoaderList height={80} gap={26} />
       )}
