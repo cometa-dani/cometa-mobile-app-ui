@@ -211,7 +211,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const CarouselTargetUserBucketList: FC = () => (
     <AppCarousel
       onPress={(initialScrollIndex: number) => router.push(`/targetUserProfile/bucketList/${targetUserUrlParams.uuid}?eventId=${targetUserUrlParams.eventId}&initialScrollIndex=${initialScrollIndex}`)}
-      isLocked={targetUserUrlParams.isFriend}
+      isLocked={!targetUserUrlParams.isFriend}
       title='BucketList'
       list={memoizedLikedEvents}
     />
