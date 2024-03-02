@@ -132,7 +132,7 @@ export default function MatchedEventsScreen(): JSX.Element {
 
 
   const TabsHeader: FC = () => (
-    <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 26 }]}>
+    <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 20 }]}>
       <HeaderImage
         style={styles.imgHeader}
         source={{ uri: eventByIdCahed?.photos[0]?.url }}
@@ -472,6 +472,7 @@ const styles = StyleSheet.create({
 
   imgHeader: {
     borderRadius: 20,
+    objectFit: 'cover',
     height: 180,
     width: 'auto',
   },

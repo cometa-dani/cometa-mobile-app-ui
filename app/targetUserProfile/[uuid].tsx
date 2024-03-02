@@ -7,7 +7,7 @@ import { Text, View, useColors } from '../../components/Themed';
 import * as Yup from 'yup';
 import { profileStyles } from '../../components/profile/profileStyles';
 import { useQueryGetTargetUserPeopleProfileByUid } from '../../queries/targetUser/userProfileHooks';
-import { useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../queries/targetUser/eventHooks';
+import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser, useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../queries/targetUser/eventHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppCarousel } from '../../components/carousels/carousel';
 import { nodeEnv } from '../../constants/vars';
@@ -56,6 +56,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
 
   // queries
   const { data: targetUserProfile, isSuccess, isLoading } = useQueryGetTargetUserPeopleProfileByUid(targetUserUrlParams.uuid);
+  const { data: targetUserbucketList } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfile?.id);
   const { data: matchedEvents } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUserUrlParams.uuid);
 
   const memoizedMatchedEvents =
@@ -70,17 +71,16 @@ export default function TargerUserProfileScreen(): JSX.Element {
       || []), [matchedEvents?.pages]);
 
   const memoizedLikedEvents = useMemo(() => (
-    targetUserProfile?.likedEvents
-      .map(
-        (likedEvent) => ({
-          id: likedEvent.id,
-          img: likedEvent.event.photos[0]?.url,
-          placeholder: likedEvent.event.photos[0]?.placeholder
-        }))
-      .filter(event => event.id !== +targetUserUrlParams?.eventId)
-    ||
-    []
-  ), [targetUserProfile?.likedEvents, targetUserUrlParams?.eventId]);
+    targetUserbucketList?.pages.flatMap(
+      page => page.events.map(
+        event => ({
+          id: event.id,
+          img: event?.photos[0]?.url ?? '',
+          placeholder: event?.photos[0]?.placeholder ?? ''
+        })
+      )
+    ).filter(event => event?.id !== +targetUserUrlParams?.eventId) ?? []
+  ), [targetUserbucketList?.pages]);
 
 
   const isTargetUserFriendShipReceiver: boolean = targetUserProfile?.incomingFriendships[0]?.status === 'PENDING';
@@ -211,7 +211,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const CarouselTargetUserBucketList: FC = () => (
     <AppCarousel
       onPress={(initialScrollIndex: number) => router.push(`/targetUserProfile/bucketList/${targetUserUrlParams.uuid}?eventId=${targetUserUrlParams.eventId}&initialScrollIndex=${initialScrollIndex}`)}
-      isLocked={!targetUserUrlParams.isFriend}
+      isLocked={targetUserUrlParams.isFriend}
       title='BucketList'
       list={memoizedLikedEvents}
     />
