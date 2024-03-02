@@ -16,7 +16,7 @@ interface CustomHeaderProps {
 
 export const CustomHeader: FC<CustomHeaderProps> = ({ user1, user2 }) => {
   return (
-    <View style={{ height: 80, zIndex: 1, position: 'relative', justifyContent: 'center', alignItems: 'flex-start' }} >
+    <View style={{ height: 84, zIndex: 1, position: 'relative', justifyContent: 'center', alignItems: 'flex-start' }} >
       <BaseButton
         onPress={() => router.back()}
         style={{ position: 'relative', top: 14, left: 16, borderRadius: 50, padding: 1 }}

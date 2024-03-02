@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { AppCard } from '../card/card';
 import { Text, View, useColors } from '../Themed';
@@ -12,9 +12,10 @@ interface Props {
   list: Array<{ id: string | number, img: string, placeholder?: string }>
   isLocked?: boolean,
   isLoading?: boolean,
+  onPress?: (eventIndex: number) => void
 }
 
-export const AppCarousel: FC<Props> = ({ list, title, isLocked = false }) => {
+export const AppCarousel: FC<Props> = ({ list, title, isLocked = false, onPress }) => {
   const { gray50, gray200 } = useColors();
   return (
     isLocked ? (
@@ -40,15 +41,17 @@ export const AppCarousel: FC<Props> = ({ list, title, isLocked = false }) => {
               ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
               horizontal={true}
               data={list}
-              renderItem={({ item }) => {
+              renderItem={({ item, index }) => {
                 return (
                   item?.img ? (
-                    <Image
-                      placeholder={{ thumbhash: item.placeholder }}
-                      style={styles.bucketListImage}
-                      key={item.id}
-                      source={{ uri: item.img }}
-                    />
+                    <Pressable onPress={() => onPress && onPress(index)}>
+                      <Image
+                        placeholder={{ thumbhash: item.placeholder }}
+                        style={styles.bucketListImage}
+                        key={item.id}
+                        source={{ uri: item.img }}
+                      />
+                    </Pressable>
                   ) : (
                     <View key={item.id} style={[styles.bucketListImage, { backgroundColor: '#eee', padding: 12, alignItems: 'center', flex: 1 }]} >
                       <Text>Photo not available</Text>

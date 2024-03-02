@@ -14,7 +14,7 @@ export default function BucketListScreen(): JSX.Element {
   // colors
   const { background } = useColors();
 
-  const { uuid: targetUserUuid, eventId } = useLocalSearchParams<{ uuid: string, eventId: string }>();
+  const { uuid: targetUserUuid, eventId, initialScrollIndex } = useLocalSearchParams<{ uuid: string, eventId: string, initialScrollIndex: string }>();
   const queryClient = useQueryClient();
   const targetUserProfileCached = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUuid]);
 
@@ -47,6 +47,7 @@ export default function BucketListScreen(): JSX.Element {
           isLoading={isLoading}
           onInfiniteScroll={handleInfiniteFetch}
           targetUserId={targetUserProfileCached?.id}
+          initialScrollIndex={+initialScrollIndex}
         />
       </View>
     </SafeAreaView>
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     flex: 1,
     margin: 10,
-    marginBottom: 30,
+    marginBottom: 34,
     overflow: 'hidden',
     position: 'relative',
     zIndex: 0

@@ -1,5 +1,5 @@
 import { FC, useMemo } from 'react';
-import { Pressable, SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -162,27 +162,6 @@ export default function TargerUserProfileScreen(): JSX.Element {
   );
 
 
-  const MatchedEventsByLoggedInUserAndTargetUserCarousel: FC = () => (
-    <Pressable onPress={() => router.push(`/targetUserProfile/matchedEventsList/${targetUserUrlParams.uuid}`)}>
-      <AppCarousel
-        title='Matches'
-        list={memoizedMatchedEvents}
-      />
-    </Pressable>
-  );
-
-  // to block set to !isFriend
-  const TargetUserBucketListCarousel: FC = () => (
-    <Pressable onPress={targetUserUrlParams.isFriend ? undefined : () => router.push(`/targetUserProfile/bucketList/${targetUserUrlParams.uuid}?eventId=${targetUserUrlParams.eventId}`)}>
-      <AppCarousel
-        isLocked={targetUserUrlParams.isFriend}
-        title='BucketList'
-        list={memoizedLikedEvents}
-      />
-    </Pressable>
-  );
-
-
   const TargetUserFriendShipInvitationButtons: FC = () => (
     isSuccess && (
       targetUserUrlParams.isFriend ? (
@@ -217,6 +196,25 @@ export default function TargerUserProfileScreen(): JSX.Element {
         </>
       )
     )
+  );
+
+
+  const CarouselMatchedEventsByLoggedInUserAndTargetUser: FC = () => (
+    <AppCarousel
+      onPress={(initialScrollIndex: number) => router.push(`/targetUserProfile/matchedEventsList/${targetUserUrlParams.uuid}?initialScrollIndex=${initialScrollIndex}`)}
+      title='Matches'
+      list={memoizedMatchedEvents}
+    />
+  );
+
+  // to block set to !isFriend
+  const CarouselTargetUserBucketList: FC = () => (
+    <AppCarousel
+      onPress={(initialScrollIndex: number) => router.push(`/targetUserProfile/bucketList/${targetUserUrlParams.uuid}?eventId=${targetUserUrlParams.eventId}&initialScrollIndex=${initialScrollIndex}`)}
+      isLocked={!targetUserUrlParams.isFriend}
+      title='BucketList'
+      list={memoizedLikedEvents}
+    />
   );
 
 
@@ -272,9 +270,9 @@ export default function TargerUserProfileScreen(): JSX.Element {
 
           <TargetUserFriendShipInvitationButtons />
 
-          <MatchedEventsByLoggedInUserAndTargetUserCarousel />
+          <CarouselMatchedEventsByLoggedInUserAndTargetUser />
 
-          <TargetUserBucketListCarousel />
+          <CarouselTargetUserBucketList />
 
           <If condition={targetUserProfile?.languages?.length}
             render={

@@ -17,13 +17,15 @@ export default function MatchedEventsListScreen(): JSX.Element {
   const { background } = useColors();
   const loggedInUserUuid = useCometaStore(state => state.uid);
 
-  const targetUserUuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
+  // const targetUserUuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
+  const urlParams = useLocalSearchParams<{ uuid: string, initialScrollIndex: string }>();
+
   const queryClient = useQueryClient();
-  const targetUserProfileCached = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUuid]);
+  const targetUserProfileCached = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_TARGET_USER_INFO_PROFILE, urlParams.uuid]);
   const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
 
   // events & function to handle fetching more events when reaching the end
-  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUserUuid);
+  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(urlParams.uuid);
   // const memoizedMatchedEventsList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
@@ -48,6 +50,7 @@ export default function MatchedEventsListScreen(): JSX.Element {
       <View style={styles.container}>
         <EventsFlashList
           hideLikeAndShareButtons={true}
+          initialScrollIndex={+urlParams.initialScrollIndex}
           items={data?.pages.flatMap(page => page.events) || []}
           isLoading={isLoading}
           onInfiniteScroll={handleInfiniteFetch}
@@ -62,7 +65,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     flex: 1,
     margin: 10,
-    marginBottom: 30,
+    marginBottom: 34,
     overflow: 'hidden',
     position: 'relative',
   },

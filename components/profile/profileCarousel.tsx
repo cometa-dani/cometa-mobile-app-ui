@@ -39,11 +39,10 @@ export const ProfileCarousel: FC<ProfileCarouselProps> = ({ userPhotos, isLoadin
         render={<SkeletonLoader />}
         elseRender={
           <Carousel
-            layout='stack'
-            loop={true}
+            layout='default'
+            loop={false}
             vertical={false}
-            activeSlideOffset={0}
-            inactiveSlideScale={0.78}
+            inactiveSlideScale={1}
             sliderWidth={width}
             itemWidth={width}
             data={userPhotos}

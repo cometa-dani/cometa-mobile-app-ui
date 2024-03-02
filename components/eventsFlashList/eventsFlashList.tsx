@@ -17,7 +17,7 @@ import { Photo } from '../../models/Photo';
 import { ForEach } from '../utils/ForEach';
 
 
-const eventItemEstimatedHeight = Dimensions.get('window').height - 160;
+const eventItemEstimatedHeight = Dimensions.get('window').height - 128;
 const carouselEstimatedWidth = Dimensions.get('window').width - 20;
 
 
@@ -27,9 +27,10 @@ interface EventsListProps {
   isLoading: boolean,
   hideLikeAndShareButtons?: boolean,
   targetUserId?: number,
+  initialScrollIndex?: number,
 }
 
-export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoading, items, hideLikeAndShareButtons, targetUserId }) => {
+export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoading, items, hideLikeAndShareButtons, targetUserId, initialScrollIndex = 0 }) => {
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
   // perform mutations
   const mutateEventLike = useMutationLikeOrDislikeEvent();
@@ -44,6 +45,7 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
           onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
           showsVerticalScrollIndicator={false}
           estimatedItemSize={eventItemEstimatedHeight}
+          initialScrollIndex={initialScrollIndex}
           pagingEnabled={true}
           data={items}
           onEndReached={onInfiniteScroll}
@@ -74,7 +76,7 @@ const SkeletonLoader: FC = () => {
       <ContentLoader
         speed={1}
         width={width - 20}
-        height={height - 140}
+        height={height - 120}
         viewBox={`0 0 ${width - 20} ${height - 140}`}
         backgroundColor="#f3f3f3"
         foregroundColor="#ecebeb"
