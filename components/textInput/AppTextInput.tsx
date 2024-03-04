@@ -1,9 +1,10 @@
-import { FC, ReactNode } from 'react';
-import { TextInputProps, StyleSheet, View as TransparentView } from 'react-native';
+import { FC, ReactNode, useState } from 'react';
+import { TextInputProps, StyleSheet, View as TransparentView, Pressable } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { Text, View, useColors } from '../Themed';
 import { FontAwesome, } from '@expo/vector-icons';
 import { messages } from '../../constants/colors';
+import { If } from '../utils';
 
 
 interface AppTextInputProps extends TextInputProps {
@@ -12,19 +13,37 @@ interface AppTextInputProps extends TextInputProps {
 
 export const AppTextInput: FC<AppTextInputProps> = ({ iconName, ...props }) => {
   const { background: backgroundColor, altText } = useColors();
-  const { style, ...otherProps } = props;
+  const { style, secureTextEntry, ...otherProps } = props;
+
+  const [showText, setShowText] = useState(secureTextEntry);
+  const isPassword = secureTextEntry ? true : false;
+
   return (
     iconName ? (
       <View>
         <View style={textInputStyles.formFieldIconContainer}>
-          <FontAwesome
-            style={[textInputStyles.formFieldIcon, { color: altText }]}
-            name={iconName}
-            size={20}
+          <If
+            condition={isPassword}
+            render={(
+              <Pressable onPress={() => setShowText(prev => !prev)}>
+                <FontAwesome
+                  style={[textInputStyles.formFieldIcon, { color: altText }]}
+                  name={showText ? 'lock' : 'unlock-alt'}
+                  size={20}
+                />
+              </Pressable>
+            )}
+            elseRender={(
+              <FontAwesome
+                style={[textInputStyles.formFieldIcon, { color: altText }]}
+                name={iconName}
+                size={20}
+              />
+            )}
           />
         </View>
 
-        <TextInput {...otherProps} style={[textInputStyles.input, { backgroundColor, paddingLeft: 48 }, style]} />
+        <TextInput secureTextEntry={showText} {...otherProps} style={[textInputStyles.input, { backgroundColor, paddingLeft: 48 }, style]} />
       </View>
     )
       : (
