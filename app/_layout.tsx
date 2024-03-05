@@ -3,6 +3,7 @@ import { animationDuration, screenOptions } from '../constants/vars';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack, } from 'expo-router';
+import ToastManager from 'toastify-react-native';
 
 // hooks
 import { useFonts } from 'expo-font';
@@ -53,6 +54,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <QueryClientProvider client={new QueryClient()}>
+        <ToastManager duration={2800 * 2} animationOutTiming={800} animationInTiming={800} />
         <GestureHandlerRootView style={{ flex: 1 }}>
           <RootLayoutNav />
         </GestureHandlerRootView>

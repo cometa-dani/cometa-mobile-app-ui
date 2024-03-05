@@ -8,7 +8,7 @@ import { useMutationUploadLoggedInUserPhotos } from '../../queries/loggedInUser/
 import { Photo } from '../../models/Photo';
 import * as ImagePicker from 'expo-image-picker';
 import { useCometaStore } from '../../store/cometaStore';
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { BackHandler } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import userService from '../../services/userService';
@@ -16,6 +16,7 @@ import { auth } from '../../firebase/firebase';
 import uuid from 'react-native-uuid';
 import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
 import { If } from '../../components/utils';
+import ToastContainer, { Toast } from 'toastify-react-native';
 
 
 type UserPhoto = Pick<Photo, 'uuid' | 'url' | 'placeholder'>
@@ -28,6 +29,7 @@ export default function AddPhotosScreen(): JSX.Element {
   const onboarding = useCometaStore(state => state.onboarding);
   const setUserUid = useCometaStore(state => state.setUid);
   const setAccessToken = useCometaStore(state => state.setAccessToken);
+  const [isLoading, setIsLoading] = useState(false);
 
   // mutations
   const mutateUserPhotosUpload = useMutationUploadLoggedInUserPhotos(uid);
@@ -75,22 +77,45 @@ export default function AddPhotosScreen(): JSX.Element {
 
   const handleNextSlide = async () => {
     if (userPhotos.length === 0) return;
+    setIsLoading(true);
     try {
+      Toast.info('Creating your account', 'top');
       const newUser = await handleUserCreation();
       if (!newUser) {
         throw new Error('User not created');
       }
-      mutateUserPhotosUpload.mutate({
+      ToastContainer.__singletonRef?.hideToast();
+      await mutateUserPhotosUpload.mutateAsync({
         userID: newUser?.id,
         pickedImgFiles: userPhotos.map(({ url, uuid }) => ({ uri: url, assetId: uuid }))
       });
+      Toast.success('Creating your account', 'top');
 
       router.push('/(onboarding)/tellUsAboutYourself');
     }
     catch (error) {
-      //
+      Toast.error('Failed to create your account', 'top');
+    }
+    finally {
+      setIsLoading(false);
     }
   };
+
+  // useEffect(() => {
+  //   // Toast.success('Creating your account', 'top');
+
+  //   // new Promise((resolve) =>
+  //   //   setTimeout(() => resolve(ToastContainer.__singletonRef?.hideToast()), 6_000)
+  //   // ).then(() => {
+  //   //   new Promise((resolve) =>
+  //   //     setTimeout(() => resolve(Toast.info('Creating your account', 'top')), 1_000)
+  //   //   );
+  //   // });
+  //   // setTimeout(() => {
+  //   //   ;
+  //   //   Toast.info('Creating your account', 'top');
+  //   // }, 7_000);
+  // }, []);
 
 
   const handleUserCreation = async () => {
@@ -111,6 +136,15 @@ export default function AddPhotosScreen(): JSX.Element {
   };
 
 
+  const CometaLogo: FC = () => (
+    <View style={styles.figure}>
+      <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
+
+      <Text style={onBoardingStyles.title}>Add photos to your profile</Text>
+    </View>
+  );
+
+
   // prevents back button behavior for android
   useEffect(() => {
     const backAction = () => {
@@ -127,13 +161,8 @@ export default function AddPhotosScreen(): JSX.Element {
 
   return (
     <AppWrapperOnBoarding>
-      {/* logo */}
-      <View style={styles.figure}>
-        <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={onBoardingStyles.title}>Add photos to your profile</Text>
-      </View>
-      {/* logo */}
+      <CometaLogo />
 
       <AppPhotosGrid
         photosList={userPhotos}
@@ -154,7 +183,7 @@ export default function AddPhotosScreen(): JSX.Element {
       <AppButton
         onPress={handleNextSlide}
         btnColor='primary'
-        text='NEXT'
+        text={isLoading ? 'LOADING...' : 'NEXT'}
         style={{ width: '100%' }}
       />
     </AppWrapperOnBoarding>

@@ -8,11 +8,12 @@ import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboard
 // // auth services
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCometaStore } from '../../store/cometaStore';
 import { AppButton, LightButton } from '../../components/buttons/buttons';
 import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
 import { If } from '../../components/utils';
+import ToastManager, { Toast } from 'toastify-react-native';
 
 
 type UserForm = {
@@ -46,11 +47,17 @@ export default function LoginScreen(): JSX.Element {
       }
       catch (error) {
         setFirebaseError('credentials are invalid');
+        Toast.error('credentials are invalid', 'top');
+
+        setTimeout(() => {
+          ToastManager.__singletonRef?.hideToast();
+        }, 3_500);
       }
       finally {
         setIsLoading(false);
       }
     };
+
 
   return (
     <AppWrapperOnBoarding>
