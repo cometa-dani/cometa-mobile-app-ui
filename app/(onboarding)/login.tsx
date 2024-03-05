@@ -8,7 +8,7 @@ import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboard
 // // auth services
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useCometaStore } from '../../store/cometaStore';
 import { AppButton, LightButton } from '../../components/buttons/buttons';
 import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
@@ -47,7 +47,7 @@ export default function LoginScreen(): JSX.Element {
       }
       catch (error) {
         setFirebaseError('credentials are invalid');
-        Toast.error('credentials are invalid', 'top');
+        Toast.error('invalid credentials 🤯', 'top');
 
         setTimeout(() => {
           ToastManager.__singletonRef?.hideToast();

@@ -79,7 +79,7 @@ export default function AddPhotosScreen(): JSX.Element {
     if (userPhotos.length === 0) return;
     setIsLoading(true);
     try {
-      Toast.info('Creating your account', 'top');
+      Toast.info('Creating account 🚀', 'top');
       const newUser = await handleUserCreation();
       if (!newUser) {
         throw new Error('User not created');
@@ -89,33 +89,21 @@ export default function AddPhotosScreen(): JSX.Element {
         userID: newUser?.id,
         pickedImgFiles: userPhotos.map(({ url, uuid }) => ({ uri: url, assetId: uuid }))
       });
-      Toast.success('Creating your account', 'top');
+      Toast.success('Account created 🥳', 'top');
 
       router.push('/(onboarding)/tellUsAboutYourself');
     }
     catch (error) {
-      Toast.error('Failed to create your account', 'top');
+      Toast.error('Failed to create 🤯', 'top');
+
+      setTimeout(() => {
+        ToastContainer.__singletonRef?.hideToast();
+      }, 3_500);
     }
     finally {
       setIsLoading(false);
     }
   };
-
-  // useEffect(() => {
-  //   // Toast.success('Creating your account', 'top');
-
-  //   // new Promise((resolve) =>
-  //   //   setTimeout(() => resolve(ToastContainer.__singletonRef?.hideToast()), 6_000)
-  //   // ).then(() => {
-  //   //   new Promise((resolve) =>
-  //   //     setTimeout(() => resolve(Toast.info('Creating your account', 'top')), 1_000)
-  //   //   );
-  //   // });
-  //   // setTimeout(() => {
-  //   //   ;
-  //   //   Toast.info('Creating your account', 'top');
-  //   // }, 7_000);
-  // }, []);
 
 
   const handleUserCreation = async () => {

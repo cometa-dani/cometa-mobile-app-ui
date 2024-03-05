@@ -8,7 +8,7 @@ import ToastManager from 'toastify-react-native';
 // hooks
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
-import { useColorScheme, } from 'react-native';
+import { Dimensions, useColorScheme, } from 'react-native';
 
 // query client for server state
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -54,7 +54,11 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <QueryClientProvider client={new QueryClient()}>
-        <ToastManager duration={2800 * 2} animationOutTiming={800} animationInTiming={800} />
+        <ToastManager
+          duration={2800 * 2}
+          animationOutTiming={800}
+          animationInTiming={800}
+        />
         <GestureHandlerRootView style={{ flex: 1 }}>
           <RootLayoutNav />
         </GestureHandlerRootView>
