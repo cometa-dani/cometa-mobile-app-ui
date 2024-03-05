@@ -7,8 +7,9 @@ import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboard
 import { useCometaStore } from '../../store/cometaStore';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppLabelFeedbackMsg, AppLabelMsgOk, AppTextInput } from '../../components/textInput/AppTextInput';
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import userService from '../../services/userService';
+import ToastManager, { Toast } from 'toastify-react-native';
 
 
 type UserForm = {
@@ -43,7 +44,6 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
     };
 
 
-  // checking if @username is available to used for current user
   useEffect(() => {
     const timeOutId = setTimeout(async () => {
       if (email.includes('@')) {
@@ -56,29 +56,43 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
           else {
             setIsAvailableToUse(false);
           }
-          setIsFetching(false);
         }
         catch (error) {
-          // console.log(error);
-          setIsFetching(false);
+          Toast.error('Email not available 😔', 'top');
+          setTimeout(() => {
+            ToastManager.__singletonRef?.hideToast();
+          }, 3_500);
+
           setIsAvailableToUse(false);
         }
+        finally {
+          setIsFetching(false);
+        }
       }
-    }, 1_200);
+    }, 2_000);
 
     return () => clearTimeout(timeOutId);
   }, [email]);
 
 
+  const CometaLogo: FC = () => (
+    <View style={styles.figure}>
+      <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
+
+      <Text style={onBoardingStyles.title}>What is your email?</Text>
+    </View>
+  );
+
+
+  // const EmailInput: FC = () => (
+
+  // );
+
+
   return (
     <AppWrapperOnBoarding>
-      {/* logo */}
-      <View style={styles.figure}>
-        <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={onBoardingStyles.title}>What is your email?</Text>
-      </View>
-      {/* logo */}
+      <CometaLogo />
 
       <Formik
         initialValues={{ email: onboarding.email || '' }}
@@ -88,7 +102,6 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
         {({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
           <View style={styles.form}>
 
-            {/* email */}
             <View style={{ position: 'relative', justifyContent: 'center' }}>
               {touched.email && errors.email && (
                 <AppLabelFeedbackMsg position='bottom' text={errors.email} />
@@ -111,7 +124,6 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
                 placeholder='Email'
               />
             </View>
-            {/* email */}
 
             <AppButton
               onPress={() => handleSubmit()}
@@ -121,11 +133,11 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
           </View>
         )}
       </Formik>
-      {/* create user with email and password */}
 
     </AppWrapperOnBoarding>
   );
 }
+
 
 const styles = StyleSheet.create({
   figure: {

@@ -8,7 +8,7 @@ import ToastManager from 'toastify-react-native';
 // hooks
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
-import { Dimensions, useColorScheme, } from 'react-native';
+import { useColorScheme, } from 'react-native';
 
 // query client for server state
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

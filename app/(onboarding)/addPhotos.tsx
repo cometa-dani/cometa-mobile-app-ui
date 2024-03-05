@@ -85,11 +85,15 @@ export default function AddPhotosScreen(): JSX.Element {
         throw new Error('User not created');
       }
       ToastContainer.__singletonRef?.hideToast();
+
       await mutateUserPhotosUpload.mutateAsync({
         userID: newUser?.id,
         pickedImgFiles: userPhotos.map(({ url, uuid }) => ({ uri: url, assetId: uuid }))
       });
       Toast.success('Account created 🥳', 'top');
+      setTimeout(() => {
+        ToastContainer.__singletonRef?.hideToast();
+      }, 3_500);
 
       router.push('/(onboarding)/tellUsAboutYourself');
     }
