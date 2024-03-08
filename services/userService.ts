@@ -3,6 +3,7 @@ import { RestApiService } from './restService';
 import { ImagePickerAsset } from 'expo-image-picker';
 import FormData from 'form-data';
 import uuid from 'react-native-uuid';
+import { Photo } from '../models/Photo';
 
 
 class UsersService extends RestApiService {
@@ -71,23 +72,22 @@ class UsersService extends RestApiService {
   }
 
 
-  public uploadManyPhotosByLoggedInUserId(loggedInUserID: number, pickedImgFiles: Pick<ImagePickerAsset, 'uri' | 'assetId'>[]) {
+  public uploadManyPhotosByLoggedInUserId(loggedInUserID: number, pickedImgFiles: Pick<Photo, 'uuid' | 'url'>[]) {
     const formData = new FormData();
     const headers = { 'Content-Type': 'multipart/form-data', };
 
     pickedImgFiles.forEach((pickedImgFile) => {
-      const fileExtension = pickedImgFile.uri.split('.').at(-1);
+      const fileExtension = pickedImgFile.url.split('.').at(-1);
       const imgFile = ({
-        uri: pickedImgFile.uri,
+        uri: pickedImgFile.url,
         type: `image/${fileExtension}`,
-        name: pickedImgFile.assetId ?? uuid.v4(),
+        name: pickedImgFile.uuid ?? uuid.v4(),
       });
       // Include the order in the field name
       // formData.append(`files[${order}]`, imgFile);
 
       formData.append('files', imgFile);
     });
-    // console.log(formData);
     return this.http.post<GetBasicUserProfile>(`/users/${loggedInUserID}/photos`, formData, { headers });
   }
 

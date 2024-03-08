@@ -84,11 +84,6 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
   );
 
 
-  // const EmailInput: FC = () => (
-
-  // );
-
-
   return (
     <AppWrapperOnBoarding>
 

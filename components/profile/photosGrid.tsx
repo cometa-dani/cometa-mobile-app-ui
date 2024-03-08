@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import { FC } from 'react';
-import { Pressable, PressableProps, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
+import { Pressable, PressableProps, StyleSheet, Image } from 'react-native';
 import { View, useColors } from '../Themed';
 import { FontAwesome } from '@expo/vector-icons';
 import { gray_50 } from '../../constants/colors';
@@ -37,7 +36,7 @@ export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDele
   );
   const emptyPlaceholders = range(totalNumberOfPlaceholders);
   const gridPhotos = photosList?.slice(1).concat(emptyPlaceholders) ?? [];
-
+  // console.log(photosList);
 
   const CloseButton: FC<CloseBtnProps> = ({ size = 'large', ...props }) => {
     const { style, ...anotherProps } = props;
@@ -57,7 +56,7 @@ export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDele
         condition={photo?.url}
         render={(
           <>
-            <Image placeholder={{ thumbhash: photo?.placeholder }} style={[gridStyles.uploadPhoto1, { objectFit: 'contain' }]} source={{ uri: photo?.url }} />
+            <Image style={gridStyles.uploadPhoto1} source={{ uri: photo?.url }} />
             <CloseButton onPress={() => onDeleteImage && photo?.uuid && onDeleteImage(photo.uuid)} />
           </>
         )}
@@ -83,14 +82,15 @@ export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDele
       <ForEach items={gridPhotos}>
         {(photo, i) => (
           <View
-            key={photo?.uuid ?? i}
-            style={[gridStyles.item, { position: 'relative' }]}>
+            key={photo?.uuid || i}
+            style={[gridStyles.item, { position: 'relative' }]}
+          >
             <View style={{ flex: 1, position: 'relative' }}>
               <If
                 condition={photo?.url}
                 render={(
                   <>
-                    <Image placeholder={{ thumbhash: photo.placeholder }} style={[gridStyles.uploadPhotoGrid, { objectFit: 'contain' }]} source={{ uri: photo.url }} />
+                    <Image style={gridStyles.uploadPhotoGrid} source={{ uri: photo.url }} />
                     <CloseButton
                       size='small'
                       onPress={() => onDeleteImage && photo.uuid && onDeleteImage(photo.uuid)}

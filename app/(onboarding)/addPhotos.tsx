@@ -17,6 +17,7 @@ import uuid from 'react-native-uuid';
 import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
 import { If } from '../../components/utils';
 import ToastContainer, { Toast } from 'toastify-react-native';
+import { filterAllowedImages } from '../../components/utils/filterallowedImages';
 
 
 type UserPhoto = Pick<Photo, 'uuid' | 'url' | 'placeholder'>
@@ -47,7 +48,7 @@ export default function AddPhotosScreen(): JSX.Element {
         const pickedPhotos = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsMultipleSelection: true, // picks multiple images
-          selectionLimit: maximumPhotos, // only allows to select a number below the limit
+          selectionLimit: maximumPhotos - userPhotos.length, // only allows to select a number below the limit
           aspect: [4, 3],
           quality: 1,
         });
@@ -59,7 +60,7 @@ export default function AddPhotosScreen(): JSX.Element {
               uuid: uuid.v4().toString()
             })) ?? []
           );
-          setUserPhotos(prev => prev.concat(pickedImgFiles));
+          setUserPhotos(prev => prev.concat(filterAllowedImages(pickedImgFiles)));
         }
       }
       catch (error) {
@@ -88,7 +89,7 @@ export default function AddPhotosScreen(): JSX.Element {
 
       await mutateUserPhotosUpload.mutateAsync({
         userID: newUser?.id,
-        pickedImgFiles: userPhotos.map(({ url, uuid }) => ({ uri: url, assetId: uuid }))
+        pickedImgFiles: userPhotos
       });
       Toast.success('Account created 🥳', 'top');
       setTimeout(() => {

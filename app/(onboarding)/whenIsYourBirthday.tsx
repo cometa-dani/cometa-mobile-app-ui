@@ -24,7 +24,6 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
 
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date): void => {
     setToggleDatePicker(prev => !prev);
-
     // when date is set
     if (event.type === 'set') {
       setOnboarding({ birthday: selectedDate });
@@ -49,15 +48,18 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
     }
   };
 
+
+  const CometaLogo = () => (
+    <View style={styles.figure}>
+      <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
+
+      <Text style={onBoardingStyles.title}>When is your birthday?</Text>
+    </View>
+  );
+
   return (
     <AppWrapperOnBoarding>
-      {/* logo */}
-      <View style={styles.figure}>
-        <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
-
-        <Text style={onBoardingStyles.title}>When is your birthday?</Text>
-      </View>
-      {/* logo */}
+      <CometaLogo />
 
       {user.birthday && (
         <View>

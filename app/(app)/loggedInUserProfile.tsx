@@ -26,6 +26,9 @@ import { GetBasicUserProfile } from '../../models/User';
 import { ForEach, If, ON, OFF } from '../../components/utils';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
+import { maximunNumberOfPhotos } from '../../constants/vars';
+import uuid from 'react-native-uuid';
+import { filterAllowedImages } from '../../components/utils/filterallowedImages';
 
 
 type userAttributes = keyof GetBasicUserProfile
@@ -57,7 +60,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
   const { data: loggedInUserBucketList } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
   const { data: loggedInuserProfile, isLoading } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
   const userPhotos: Photo[] = loggedInuserProfile?.photos ?? [];
-  const selectionLimit: number = (loggedInuserProfile?.maxNumPhotos || 5) - (userPhotos?.length || 0);
+  const remainingPhotosToUpload: number = maximunNumberOfPhotos - (userPhotos?.length || 0);
 
   // toggle edit mode
   const [switchEditionModeForLoggedInUser, setSwitchEditionModeForLoggedInUser] = useState(ON);
@@ -84,7 +87,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
 
 
   const handlePickMultipleImages = async () => {
-    if (selectionLimit == 0) {
+    if (remainingPhotosToUpload === 0) {
       return;
     }
     else {
@@ -92,14 +95,16 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
         const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsMultipleSelection: true,
-          selectionLimit, // only allows to select a number below the limit
+          selectionLimit: remainingPhotosToUpload, // only allows to select a number below the limit
           aspect: [4, 3],
           quality: 1,
         });
         if (!result.canceled && loggedInuserProfile?.id) {
+          const pickedImages = (result.assets).map((asset) => ({ url: asset.uri, uuid: uuid.v4().toString() }));
+
           mutateLoggedInUserPhotosUpload.mutate({
             userID: loggedInuserProfile?.id,
-            pickedImgFiles: result.assets
+            pickedImgFiles: filterAllowedImages(pickedImages)
           });
         }
       }
@@ -208,7 +213,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
         photosList={userPhotos}
         onHandlePickImage={handlePickMultipleImages}
         onDeleteImage={handleDeleteImage}
-        placeholders={selectionLimit}
+        placeholders={remainingPhotosToUpload}
       />
       <View style={profileStyles.container}>
         <Formik

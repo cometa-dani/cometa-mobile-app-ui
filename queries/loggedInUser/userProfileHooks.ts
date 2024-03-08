@@ -9,7 +9,6 @@ import { ImagePickerAsset } from 'expo-image-picker';
 
 export const useQueryGetLoggedInUserProfileByUid = (dynamicParam: string) => {
   const accessToken = useCometaStore(state => state.accessToken);
-
   return (
     useQuery({
       enabled: !!dynamicParam,
@@ -68,7 +67,7 @@ export const useMutationLoggedInUserProfileById = () => {
 
 
 type PhotosParams = {
-  pickedImgFiles: Pick<ImagePickerAsset, 'uri' | 'assetId'>[],
+  pickedImgFiles: Pick<Photo, 'uuid' | 'url'>[],
   userID: number
 };
 
@@ -99,11 +98,10 @@ export const useMutationUploadLoggedInUserPhotos = (uuId: string) => {
         queryClient
           .setQueryData<GetDetailedUserProfile>
           ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuId], (oldState): GetDetailedUserProfile => {
-            const newPhotos: Partial<Photo>[] = pickedImgFiles.map(imgFile => ({ url: imgFile.uri, uuid: imgFile.assetId ?? '' })) || [];
 
             const optimisticState = {
               ...oldState,
-              photos: [...(oldState?.photos || []), ...newPhotos]
+              photos: [...(oldState?.photos || []), ...pickedImgFiles]
 
             } as GetDetailedUserProfile;
 
