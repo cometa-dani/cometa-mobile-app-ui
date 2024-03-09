@@ -76,7 +76,7 @@ class UsersService extends RestApiService {
     const formData = new FormData();
     const headers = { 'Content-Type': 'multipart/form-data', };
 
-    pickedImgFiles.forEach((pickedImgFile) => {
+    pickedImgFiles.forEach((pickedImgFile, index) => {
       const fileExtension = pickedImgFile.url.split('.').at(-1);
       const imgFile = ({
         uri: pickedImgFile.url,
@@ -86,7 +86,7 @@ class UsersService extends RestApiService {
       // Include the order in the field name
       // formData.append(`files[${order}]`, imgFile);
 
-      formData.append('files', imgFile);
+      formData.append(`files[${index}]`, imgFile);
     });
     return this.http.post<GetBasicUserProfile>(`/users/${loggedInUserID}/photos`, formData, { headers });
   }

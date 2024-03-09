@@ -17,7 +17,6 @@ import uuid from 'react-native-uuid';
 import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
 import { If } from '../../components/utils';
 import ToastContainer, { Toast } from 'toastify-react-native';
-import { filterAllowedImages } from '../../components/utils/filterallowedImages';
 
 
 type UserPhoto = Pick<Photo, 'uuid' | 'url' | 'placeholder'>
@@ -60,7 +59,7 @@ export default function AddPhotosScreen(): JSX.Element {
               uuid: uuid.v4().toString()
             })) ?? []
           );
-          setUserPhotos(prev => prev.concat(filterAllowedImages(pickedImgFiles)));
+          setUserPhotos(prev => prev.concat(pickedImgFiles));
         }
       }
       catch (error) {

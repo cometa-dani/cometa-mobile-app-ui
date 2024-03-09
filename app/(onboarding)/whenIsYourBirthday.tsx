@@ -7,10 +7,10 @@ import { AppButton, appButtonstyles } from '../../components/buttons/buttons';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useState } from 'react';
 import { calAge } from '../../helpers/calcAge';
-import { AppModal } from '../../components/modal/modal';
 import { buttonColors } from '../../constants/colors';
 import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
 import { If } from '../../components/utils';
+import ReactNativeModal from 'react-native-modal';
 
 
 const initialDate = new Date('1990');
@@ -27,18 +27,18 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
     // when date is set
     if (event.type === 'set') {
       setOnboarding({ birthday: selectedDate });
-      setToggleModal(true);
+      setTimeout(() => setToggleModal(true), 500);
     }
   };
 
   const handleEdit = (): void => {
     setToggleModal(false);
-    setTimeout(() => setToggleDatePicker(prev => !prev), 100);
+    setTimeout(() => setToggleDatePicker(prev => !prev), 400);
   };
 
   const handleConfirmation = (): void => {
     if (user.birthday) {
-      setToggleModal(false);
+      setTimeout(() => setToggleModal(false), 400);
     }
   };
 
@@ -101,7 +101,7 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
         style={{ width: '100%' }}
       />
 
-      <AppModal isOpen={toggleModal} setIsOpen={setToggleModal}>
+      <ReactNativeModal style={{ alignItems: 'center' }} isVisible={toggleModal}>
         <View style={modalStyles.modalView}>
           <Text style={{ textAlign: 'center' }}>Confirm your birthday</Text>
           <View>
@@ -135,7 +135,7 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
             </Pressable>
           </View>
         </View>
-      </AppModal>
+      </ReactNativeModal>
 
     </AppWrapperOnBoarding>
   );

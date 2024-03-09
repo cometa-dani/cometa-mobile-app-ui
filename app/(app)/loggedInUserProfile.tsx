@@ -28,7 +28,6 @@ import ContentLoader, { Rect } from 'react-content-loader/native';
 import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
 import { maximunNumberOfPhotos } from '../../constants/vars';
 import uuid from 'react-native-uuid';
-import { filterAllowedImages } from '../../components/utils/filterallowedImages';
 
 
 type userAttributes = keyof GetBasicUserProfile
@@ -104,7 +103,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
 
           mutateLoggedInUserPhotosUpload.mutate({
             userID: loggedInuserProfile?.id,
-            pickedImgFiles: filterAllowedImages(pickedImages)
+            pickedImgFiles: pickedImages
           });
         }
       }
