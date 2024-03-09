@@ -9,7 +9,6 @@ import { AppButton } from '../../components/buttons/buttons';
 import { AppLabelFeedbackMsg, AppLabelMsgOk, AppTextInput } from '../../components/textInput/AppTextInput';
 import { FC, useEffect, useState } from 'react';
 import userService from '../../services/userService';
-import ToastManager, { Toast } from 'toastify-react-native';
 
 
 type UserForm = {
@@ -58,12 +57,7 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
           }
         }
         catch (error) {
-          Toast.error('Email not available 😔', 'top');
-          setTimeout(() => {
-            ToastManager.__singletonRef?.hideToast();
-          }, 3_500);
-
-          setIsAvailableToUse(false);
+          //
         }
         finally {
           setIsFetching(false);
