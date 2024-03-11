@@ -18,10 +18,10 @@ export default function ChatScreen(): JSX.Element {
   const { text } = useColors();
 
   // chat
-  const friendID: number = +useLocalSearchParams()['friend'];
-  const { data: friendshipData } = useQueryGetFriendshipByReceiverAndSender(friendID);
-  const messageReceiver = friendID === friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
-  const messageSender = friendID !== friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
+  const targetFriendID: number = +useLocalSearchParams()['friend'];
+  const { data: friendshipData } = useQueryGetFriendshipByReceiverAndSender(targetFriendID);
+  const messageReceiver = targetFriendID === friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
+  const messageSender = targetFriendID !== friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
   const [messages, setMessages] = useState<IMessage[]>([]);
 
 
@@ -36,8 +36,8 @@ export default function ChatScreen(): JSX.Element {
         }
       };
       if (friendshipData?.id) {
-        const subCollection = collection(db, 'chats', `${friendshipData?.id}`, 'messages');
-        await addDoc(subCollection, messagePayload);
+        const messagesSubCollection = collection(db, 'chats', `${friendshipData?.id}`, 'messages');
+        await addDoc(messagesSubCollection, messagePayload);
       }
       else {
         throw new Error('frienship id undefined');
@@ -57,7 +57,6 @@ export default function ChatScreen(): JSX.Element {
         orderBy('createdAt', 'desc'),
         limit(10),
       );
-
       // TODO: just listen for the last message only
       unsubscribe = onSnapshot(queryCollRef, (querySnapshot) => {
         const myMessage: IMessage[] = [];

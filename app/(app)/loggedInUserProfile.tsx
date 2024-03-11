@@ -415,7 +415,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
         }}
       />
       <ScrollView
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
         style={{ backgroundColor: background }}
       >
 

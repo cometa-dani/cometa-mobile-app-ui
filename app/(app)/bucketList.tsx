@@ -33,7 +33,7 @@ export default function BuckectListScreen(): JSX.Element {
           <FlashList
             data={memoizedLoggedInUserBucketList}
             pagingEnabled={false}
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
             contentContainerStyle={{ paddingVertical: 26 }}
             onMomentumScrollEnd={handleInfiniteFetch}
             onEndReachedThreshold={1}
@@ -192,7 +192,6 @@ const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
     }>
       <Pressable
         onPress={() => router.push(`/matches/${item.id}?eventIndex=${index}`)}
-      // onPress={() => router.push(`/`)}
       >
         {({ pressed }) => (
           <View style={[styles.eventContainer, { opacity: pressed ? 0.8 : 1 }]}>

@@ -43,7 +43,7 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
       elseRender={(
         <FlashList
           onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
-          showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={true}
           estimatedItemSize={eventItemEstimatedHeight}
           initialScrollIndex={initialScrollIndex}
           pagingEnabled={true}

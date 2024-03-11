@@ -26,6 +26,7 @@ import { QueryKeys } from '../../queries/queryKeys';
 import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEvent';
 import { If } from '../../components/utils';
 import { SkeletonLoaderList } from '../(app)/bucketList';
+import uuid from 'react-native-uuid';
 
 
 type Message = { message: string };
@@ -106,11 +107,11 @@ export default function MatchedEventsScreen(): JSX.Element {
     async (values: Message, actions: FormikHelpers<Message>): Promise<void> => {
       // start chat with new friend
       const messagePayload: IMessage = {
-        _id: Math.round(Math.random() * 1_000_000),
+        _id: uuid.v4().toString(),
         text: values.message,
         createdAt: new Date(),
         user: {
-          avatar: loggedInUserProfile?.photos[0].url,
+          avatar: loggedInUserProfile?.photos[0]?.url,
           name: loggedInUserProfile?.username,
           _id: loggedInUserProfile?.id as number,
         }
@@ -121,8 +122,8 @@ export default function MatchedEventsScreen(): JSX.Element {
 
       const friendshipID = mutationAcceptFriendship.data?.id;
       if (friendshipID) {
-        const subCollection = collection(db, 'chats', `${friendshipID}`, 'messages');
-        await addDoc(subCollection, messagePayload);
+        const messagesSubCollection = collection(db, 'chats', `${friendshipID}`, 'messages');
+        await addDoc(messagesSubCollection, messagePayload);
         router.push(`/chat/${incommingFriendshipSenderForLoggedInUser.id}`);
       }
       else {
@@ -170,7 +171,7 @@ export default function MatchedEventsScreen(): JSX.Element {
               estimatedItemSize={100}
               ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
               contentContainerStyle={styles.flatList}
-              showsVerticalScrollIndicator={false}
+              showsVerticalScrollIndicator={true}
               data={memoizedNewPeopleTargetUsers}
               renderItem={({ item: { user: targetUser } }) => {
                 const isReceiver: boolean = targetUser?.incomingFriendships[0]?.status === 'PENDING';
@@ -250,7 +251,7 @@ export default function MatchedEventsScreen(): JSX.Element {
               estimatedItemSize={100}
               ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
               contentContainerStyle={styles.flatList}
-              showsVerticalScrollIndicator={false}
+              showsVerticalScrollIndicator={true}
               data={memoizedNewestFriendsTargetUsers}
               renderItem={({ item }) => {
                 return (
