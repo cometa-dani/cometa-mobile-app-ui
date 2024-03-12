@@ -109,6 +109,9 @@ export default function AddPhotosScreen(): JSX.Element {
         const { data: newCreatedUser } = await userService.create({ ...onboarding.user, uid: userCrendentials.uid }); // first checks if user exists
         const { photos } = await mutateUserPhotosUpload.mutateAsync({ userID: newCreatedUser?.id, pickedImgFiles: userPhotos });
 
+        // TODO
+        // create user in firebase
+
         setUserUid(userCrendentials.uid);
         setAccessToken(await userCrendentials.getIdToken());
 
