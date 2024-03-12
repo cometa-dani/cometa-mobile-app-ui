@@ -27,6 +27,7 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
   const [isFetching, setIsFetching] = useState(false);
   const [email, setEmail] = useState('');
 
+
   const handleNextSlide =
     (values: UserForm, actions: FormikHelpers<UserForm>): void => {
       if (!isAvaibleToUse || isFetching) return;
@@ -43,12 +44,13 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
     };
 
 
+  // check if user exists in our DB
   useEffect(() => {
     const timeOutId = setTimeout(async () => {
       if (email.includes('@')) {
         try {
           setIsFetching(true);
-          const res = await userService.getUsersWithFilters({ email });
+          const res = await userService.getUsersWithFilters({ email: email.trim() });
           if (res.status === 204) {
             setIsAvailableToUse(true);
           }

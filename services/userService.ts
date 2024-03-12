@@ -6,6 +6,15 @@ import uuid from 'react-native-uuid';
 import { Photo } from '../models/Photo';
 
 
+type CreateUser = Pick<LoggedUserClientState, (
+  'uid' |
+  'email' |
+  'username' |
+  'name' |
+  'birthday'
+)>
+
+
 class UsersService extends RestApiService {
 
   /**
@@ -19,9 +28,8 @@ class UsersService extends RestApiService {
   }
 
 
-  public create(payload: Partial<LoggedUserClientState>) {
-    const { email, username } = payload;
-    return this.http.post<GetBasicUserProfile>('/users', { email, username });
+  public create(payload: CreateUser) {
+    return this.http.post<GetBasicUserProfile>('/users', payload);
   }
 
 

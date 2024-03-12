@@ -6,6 +6,7 @@ export type UserSlice = {
   isAuthenticated: boolean,
   accessToken: string,
   uid: string,
+  // TODO: add userProfile info
 
   setIsAuthenticated: (isAuth: boolean) => void,
   setAccessToken: (authToken: string) => void,

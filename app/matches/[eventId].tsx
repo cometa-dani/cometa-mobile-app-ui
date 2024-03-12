@@ -82,6 +82,8 @@ export default function MatchedEventsScreen(): JSX.Element {
     setTimeout(() => setToggleModal(), 100);
     const friendshipID = targetUserAsSender.outgoingFriendships[0].id;
     mutationAcceptFriendship.mutate(friendshipID);
+
+    // TODO create the chatuuid in firestore
   };
 
   /**

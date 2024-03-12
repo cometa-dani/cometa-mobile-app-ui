@@ -76,33 +76,23 @@ export default function AddPhotosScreen(): JSX.Element {
 
 
   const handleNextSlide = async () => {
-    if (userPhotos.length === 0) return;
-    setIsLoading(true);
     try {
-      Toast.info('Creating account 🚀', 'top');
-      const newUser = await handleUserCreation();
-      if (!newUser) {
-        throw new Error('User not created');
-      }
-      ToastContainer.__singletonRef?.hideToast();
+      setIsLoading(true);
+      // const newUser = await handleUserCreation();
 
-      await mutateUserPhotosUpload.mutateAsync({
-        userID: newUser?.id,
-        pickedImgFiles: userPhotos
-      });
-      Toast.success('Account created 🥳', 'top');
-      setTimeout(() => {
-        ToastContainer.__singletonRef?.hideToast();
-      }, 3_500);
+      // if (!newUser) {
+      //   throw new Error('User not created');
+      // }
+      // ToastContainer.__singletonRef?.hideToast();
+      // Toast.success('Account created 🥳', 'top');
 
+      // setTimeout(() => ToastContainer.__singletonRef?.hideToast(), 3_500);
+      await handleUserCreation();
       router.push('/(onboarding)/tellUsAboutYourself');
     }
     catch (error) {
       Toast.error('Failed to create 🤯', 'top');
-
-      setTimeout(() => {
-        ToastContainer.__singletonRef?.hideToast();
-      }, 3_500);
+      setTimeout(() => ToastContainer.__singletonRef?.hideToast(), 3_500);
     }
     finally {
       setIsLoading(false);
@@ -111,18 +101,24 @@ export default function AddPhotosScreen(): JSX.Element {
 
 
   const handleUserCreation = async () => {
-    if (onboarding?.user) {
-      const { username, email, password, ...otherProperties } = onboarding.user;
-      const { data: newCreatedUser } = await userService.create({ username, email }); // first checks if user exists
+    if (onboarding?.user && userPhotos.length > 0) {
       try {
+        Toast.info('Creating account 🚀', 'top');
+        const { email, password } = onboarding.user;
         const { user: userCrendentials } = await createUserWithEmailAndPassword(auth, email, password); // firebase
-        await userService.updateById(newCreatedUser.id, { ...otherProperties, uid: userCrendentials.uid });
+        const { data: newCreatedUser } = await userService.create({ ...onboarding.user, uid: userCrendentials.uid }); // first checks if user exists
+        const { photos } = await mutateUserPhotosUpload.mutateAsync({ userID: newCreatedUser?.id, pickedImgFiles: userPhotos });
+
         setUserUid(userCrendentials.uid);
         setAccessToken(await userCrendentials.getIdToken());
-        return newCreatedUser;
+
+        ToastContainer.__singletonRef?.hideToast();
+        Toast.success('Account created 🥳', 'top');
+        setTimeout(() => ToastContainer.__singletonRef?.hideToast(), 3_500);
       }
       catch (error) {
-        // console.log(error);
+        Toast.error('Failed to create 🤯', 'top');
+        setTimeout(() => ToastContainer.__singletonRef?.hideToast(), 3_500);
       }
     }
   };

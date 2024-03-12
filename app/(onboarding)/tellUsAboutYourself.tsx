@@ -27,7 +27,7 @@ const validationSchemma = Yup.object<ProfileValues>({
 
 export default function TellUsAboutYourselfScreen(): JSX.Element {
   const uid = useCometaStore(state => state.uid);
-  const userProfile = useQueryGetLoggedInUserProfileByUid(uid);
+  const userProfile = useQueryGetLoggedInUserProfileByUid(uid); // TODO store loggedIn user in globalState
   const mutateUser = useMutationLoggedInUserProfileById();
 
   const navigate = () => router.push('/(onboarding)/showYourCurrentLocation');

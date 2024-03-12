@@ -16,7 +16,7 @@ export default function HowManyLanguagesScreen(): JSX.Element {
 
   const uid = useCometaStore(state => state.uid); // this can be abstracted
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
-  const { data: userProfile } = useQueryGetLoggedInUserProfileByUid(uid);
+  const { data: userProfile } = useQueryGetLoggedInUserProfileByUid(uid); // TODO store loggedIn user in globalState
 
   const pushToEditProfileScreen = (field: string): void => {
     router.push(`/editUserProfile/${field}?userId=${userProfile?.id}`);
