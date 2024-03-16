@@ -6,8 +6,8 @@ import { StyleSheet } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
-import { collection, addDoc, query, onSnapshot, orderBy, limit } from 'firebase/firestore';
-import { firestoreDB, realtimeDB } from '../../firebase/firebase';
+// import { collection, addDoc, query, onSnapshot, orderBy, limit } from 'firebase/firestore';
+import { realtimeDB } from '../../firebase/firebase';
 import { SafeAreaView } from 'react-native';
 import { Image as ImageWithPlaceholder } from 'expo-image';
 // import { useQueryGetFriendshipByReceiverAndSender } from '../../queries/loggedInUser/friendshipHooks';
@@ -39,7 +39,7 @@ export default function ChatScreen(): JSX.Element {
 
   // const targetUser = targetUserID=== friendshipData?.receiverId ||
 
-  const [messages, setMessages] = useState<IMessage[]>([]);
+  const [messages] = useState<IMessage[]>([]);
 
 
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
@@ -78,7 +78,7 @@ export default function ChatScreen(): JSX.Element {
 
       // fires everytime a new message is added
       unsubscribe = onChildAdded(chatsRef, (data) => {
-        console.log(data.val());
+        // console.log(data.val());
         // setMessages((previousMessages) => GiftedChat.append(previousMessages, data.val()));
         // addCommentElement(postElement, data.key, data.val().text, data.val().author);
       });
@@ -86,8 +86,9 @@ export default function ChatScreen(): JSX.Element {
       // fires only once and retrieves all the messages at once
       onValue(chatsRef, (snapshot) => {
         snapshot.forEach((childSnapshot) => {
-          const childKey = childSnapshot.key;
-          const childData = childSnapshot.val();
+          childSnapshot.val();
+          // const childKey = childSnapshot.key;
+          // const childData = childSnapshot.val();
           // ...
         });
 
