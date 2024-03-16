@@ -119,7 +119,7 @@ export default function AddPhotosScreen(): JSX.Element {
         setTimeout(() => ToastContainer.__singletonRef?.hideToast(), 3_500);
       }
       catch (error) {
-        console.log(error);
+        // console.log(error);
         Toast.error('Failed to create 🤯', 'top');
         setTimeout(() => ToastContainer.__singletonRef?.hideToast(), 3_500);
       }
