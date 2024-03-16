@@ -11,7 +11,7 @@ export const storageBucket = process.env?.EXPO_PUBLIC_STORAGE_BUCKET || 'cometa-
 export const messagingSenderId = process.env?.EXPO_PUBLIC_MESAGING_SENDER_ID || '1018637932302';
 export const appId = process.env?.EXPO_PUBLIC_APP_ID || '1:1018637932302:web:4e1c21f6d236d2aedda95f';
 export const measurementId = process.env?.EXPO_PUBLIC_MEASURING_ID || 'G-G4W08CQPBL';
-
+export const databaseURL = process.env?.EXPO_PUBLIC_DATABASE_URL || 'https://cometa-e5dd5-default-rtdb.europe-west1.firebasedatabase.app';
 
 export const animationDuration = 290;
 export const screenOptions = { headerShown: false, animation: 'slide_from_right', animationDuration } as ScreenProps;

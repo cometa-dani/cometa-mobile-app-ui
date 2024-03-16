@@ -6,11 +6,13 @@ import {
   measurementId,
   messagingSenderId,
   projectId,
-  storageBucket
+  storageBucket,
+  databaseURL,
 } from '../constants/vars';
 import { initializeApp } from 'firebase/app';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getDatabase } from 'firebase/database';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -22,6 +24,7 @@ const firebaseConfig = {
   messagingSenderId,
   appId,
   measurementId,
+  databaseURL
 };
 
 // Initialize Firebase
@@ -31,7 +34,8 @@ export const auth = initializeAuth(firebaseApp, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });
 
-export const db = getFirestore(firebaseApp);
+export const firestoreDB = getFirestore(firebaseApp);
+export const realtimeDB = getDatabase(firebaseApp);
 
 // facebook uri
 // https://cometa-e5dd5.firebaseapp.com/__/auth/handler

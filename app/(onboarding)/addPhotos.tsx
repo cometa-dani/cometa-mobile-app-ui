@@ -12,11 +12,12 @@ import { FC, useEffect, useState } from 'react';
 import { BackHandler } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import userService from '../../services/userService';
-import { auth } from '../../firebase/firebase';
+import { auth, firestoreDB } from '../../firebase/firebase';
 import uuid from 'react-native-uuid';
 import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
 import { If } from '../../components/utils';
 import ToastContainer, { Toast } from 'toastify-react-native';
+import { doc, setDoc } from 'firebase/firestore';
 
 
 type UserPhoto = Pick<Photo, 'uuid' | 'url' | 'placeholder'>
@@ -78,15 +79,6 @@ export default function AddPhotosScreen(): JSX.Element {
   const handleNextSlide = async () => {
     try {
       setIsLoading(true);
-      // const newUser = await handleUserCreation();
-
-      // if (!newUser) {
-      //   throw new Error('User not created');
-      // }
-      // ToastContainer.__singletonRef?.hideToast();
-      // Toast.success('Account created 🥳', 'top');
-
-      // setTimeout(() => ToastContainer.__singletonRef?.hideToast(), 3_500);
       await handleUserCreation();
       router.push('/(onboarding)/tellUsAboutYourself');
     }
@@ -108,10 +100,17 @@ export default function AddPhotosScreen(): JSX.Element {
         const { user: userCrendentials } = await createUserWithEmailAndPassword(auth, email, password); // firebase
         const { data: newCreatedUser } = await userService.create({ ...onboarding.user, uid: userCrendentials.uid }); // first checks if user exists
         const { photos } = await mutateUserPhotosUpload.mutateAsync({ userID: newCreatedUser?.id, pickedImgFiles: userPhotos });
-
-        // TODO
         // create user in firebase
-
+        await setDoc(doc(firestoreDB, 'users', userCrendentials.uid), {
+          id: newCreatedUser.id,
+          uid: newCreatedUser.uid,
+          email: newCreatedUser.email,
+          name: newCreatedUser.name,
+          photo: {
+            url: photos[0].url,
+            placeholder: photos[0].placeholder
+          }
+        });
         setUserUid(userCrendentials.uid);
         setAccessToken(await userCrendentials.getIdToken());
 
@@ -120,6 +119,7 @@ export default function AddPhotosScreen(): JSX.Element {
         setTimeout(() => ToastContainer.__singletonRef?.hideToast(), 3_500);
       }
       catch (error) {
+        console.log(error);
         Toast.error('Failed to create 🤯', 'top');
         setTimeout(() => ToastContainer.__singletonRef?.hideToast(), 3_500);
       }

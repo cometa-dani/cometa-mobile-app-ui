@@ -7,72 +7,109 @@ import { Text, View, useColors } from '../../components/Themed';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { collection, addDoc, query, onSnapshot, orderBy, limit } from 'firebase/firestore';
-import { db } from '../../firebase/firebase';
+import { firestoreDB, realtimeDB } from '../../firebase/firebase';
 import { SafeAreaView } from 'react-native';
 import { Image as ImageWithPlaceholder } from 'expo-image';
-import { useQueryGetFriendshipByReceiverAndSender } from '../../queries/loggedInUser/friendshipHooks';
+// import { useQueryGetFriendshipByReceiverAndSender } from '../../queries/loggedInUser/friendshipHooks';
 import { Unsubscribe } from 'firebase/auth';
+import { useCometaStore } from '../../store/cometaStore';
+import { onChildAdded, onValue, push, ref, set } from 'firebase/database';
+import { useQueryGetFriendshipByTargetUserID } from '../../queries/loggedInUser/friendshipHooks';
 
 
 export default function ChatScreen(): JSX.Element {
   const { text } = useColors();
 
-  // chat
-  const targetFriendID: number = +useLocalSearchParams()['friend'];
-  const { data: friendshipData } = useQueryGetFriendshipByReceiverAndSender(targetFriendID);
-  const messageReceiver = targetFriendID === friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
-  const messageSender = targetFriendID !== friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
+  // chat users
+  const targetUserID = +useLocalSearchParams()['friend'];
+  const loggedInUserUuid = useCometaStore(state => state.uid);
+
+  // IDEA: I am thinking of just using postgres for storing the chatUuid and userProfiles only
+  // and RealtimeDB for storing the messages only
+
+  const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(targetUserID);
+  const sender = friendshipData?.sender;
+  const receiver = friendshipData?.receiver;
+
+  const targetUser = sender?.id === targetUserID ? sender : receiver;
+  const loggedInUser = sender?.id !== targetUserID ? sender : receiver;
+
+  // const messageReceiver = targetUserID === friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
+  // const messageSender = targetUserID !== friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
+
+  // const targetUser = targetUserID=== friendshipData?.receiverId ||
+
   const [messages, setMessages] = useState<IMessage[]>([]);
 
 
-  const onSend = useCallback(async (messages: IMessage[] = []) => {
+  const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
     try {
       const senderMessage = messages[0];
       const messagePayload: IMessage = {
         ...senderMessage,
         user: {
-          ...senderMessage.user,
-          _id: messageSender?.id as number,
+          _id: loggedInUserUuid,
         }
       };
-      if (friendshipData?.id) {
-        const messagesSubCollection = collection(db, 'chats', `${friendshipData?.id}`, 'messages');
-        await addDoc(messagesSubCollection, messagePayload);
-      }
-      else {
-        throw new Error('frienship id undefined');
+      if (friendshipData?.chatuuid) {
+        const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}`);
+        const chatListRef = push(chatsRef);
+        await set(chatListRef, messagePayload);
+        // const messagesSubCollection = collection(firestoreDB, 'chats', `${friendshipData?.id}`, 'messages');
+        // await addDoc(messagesSubCollection, messagePayload);
       }
     }
     catch (error) {
       // console.log(error);
     }
-  }, [friendshipData?.id]);
+  }, [friendshipData?.chatuuid]);
 
 
   useEffect(() => {
     let unsubscribe!: Unsubscribe;
-    if (friendshipData?.id) {
-      const queryCollRef = query(
-        collection(db, 'chats', `${friendshipData?.id}`, 'messages'),
-        orderBy('createdAt', 'desc'),
-        limit(10),
-      );
-      // TODO: just listen for the last message only
-      unsubscribe = onSnapshot(queryCollRef, (querySnapshot) => {
-        const myMessage: IMessage[] = [];
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          const createdAt = new Date(data['createdAt']['seconds'] * 1000);
-          const message = { ...data, createdAt } as IMessage;
-          myMessage.push({ ...message });
-        });
+    if (friendshipData?.chatuuid) {
+      const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}`);
 
-        setMessages(myMessage);
+      // fires everytime a new message is added
+      unsubscribe = onChildAdded(chatsRef, (data) => {
+        console.log(data.val());
+        // setMessages((previousMessages) => GiftedChat.append(previousMessages, data.val()));
+        // addCommentElement(postElement, data.key, data.val().text, data.val().author);
       });
+
+      // fires only once and retrieves all the messages at once
+      onValue(chatsRef, (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          const childKey = childSnapshot.key;
+          const childData = childSnapshot.val();
+          // ...
+        });
+      }, {
+        onlyOnce: true
+      });
+
+
+      // const queryCollRef = query(
+      //   collection(firestoreDB, 'chats', `${friendshipData?.id}`, 'messages'),
+      //   orderBy('createdAt', 'desc'),
+      //   limit(10),
+      // );
+      // // TODO: just listen for the last message only
+      // unsubscribe = onSnapshot(queryCollRef, (querySnapshot) => {
+      //   const myMessage: IMessage[] = [];
+      //   querySnapshot.forEach((doc) => {
+      //     const data = doc.data();
+      //     const createdAt = new Date(data['createdAt']['seconds'] * 1000);
+      //     const message = { ...data, createdAt } as IMessage;
+      //     myMessage.push({ ...message });
+      //   });
+
+      //   setMessages(myMessage);
+      // });
     }
 
     return () => unsubscribe && unsubscribe();
-  }, [friendshipData?.id]);
+  }, [friendshipData?.chatuuid]);
 
 
   return (
@@ -93,12 +130,12 @@ export default function ChatScreen(): JSX.Element {
               <FontAwesome name='arrow-down' size={24} onPress={() => router.back()} />
               <ImageWithPlaceholder
                 style={styles.avatarImg}
-                source={{ uri: messageReceiver?.photos[0]?.url }}
-                placeholder={{ thumbhash: messageReceiver?.photos[0]?.placeholder }}
+                source={{ uri: targetUser?.photos[0]?.url }}
+                placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
               />
 
               <View>
-                <Text style={styles.avatarName}>{messageReceiver?.username}</Text>
+                <Text style={styles.avatarName}>{targetUser?.username}</Text>
                 <Text>online</Text>
               </View>
             </View>
@@ -123,12 +160,12 @@ export default function ChatScreen(): JSX.Element {
           )}
           isTyping={true}
           messages={messages}
-          onSend={(messages) => onSend(messages)}
+          onSend={(messages) => onSendMessage(messages)}
           showUserAvatar={true}
           user={{
-            _id: messageSender?.id as number,
-            name: messageSender?.username,
-            avatar: messageSender?.photos[0]?.url
+            _id: loggedInUserUuid,
+            name: loggedInUser?.username,
+            avatar: loggedInUser?.photos[0]?.url
           }}
         />
       </View>

@@ -6,9 +6,8 @@ export interface Friendship {
   createdAt: string;
   updatedAt: string;
   senderId: number;
-  sender: GetBasicUserProfile;
   receiverId: number;
-  receiver: GetBasicUserProfile
+  chatuuid: string;
   status: FriendShipStatus;
   friend: GetBasicUserProfile
 }
@@ -20,4 +19,19 @@ export interface GetLatestFriendships {
   totalFriendships: number;
   nextCursor: number;
   friendshipsPerPage: number;
+}
+
+export type MutateFrienship = Pick<Friendship, (
+  'id' |
+  'senderId' |
+  'receiverId' |
+  'status' |
+  'chatuuid' |
+  'createdAt' |
+  'updatedAt'
+)>
+
+export interface GetFriendShipWithSenderAndReceiver extends Omit<Friendship, 'friend'> {
+  sender: GetBasicUserProfile;
+  receiver: GetBasicUserProfile;
 }

@@ -45,7 +45,7 @@ const searchParamsSchemma = Yup.object({
 export default function TargerUserProfileScreen(): JSX.Element {
   // client state
   const setToggleModal = useCometaStore(state => state.setToggleModal);
-  const setTargetUserAsIncommginFriendshipSender = useCometaStore(state => state.setIncommginFriendshipSender);
+  const setTargetUserAsFriendshipSender = useCometaStore(state => state.setIncommginFriendshipSender);
 
   // colors
   const { background } = useColors();
@@ -97,9 +97,9 @@ export default function TargerUserProfileScreen(): JSX.Element {
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
   * @param {GetBasicUserProfile} targetUserAsSender the sender of the friendship invitation
   */
-  const handleLoggedInUserHasAPendingInvitation = (targetUserAsSender: GetDetailedUserProfile): void => {
-    setTargetUserAsIncommginFriendshipSender(targetUserAsSender);
-    setTimeout(() => setToggleModal(), 100);
+  const acceptPendingInvitation = (targetUserAsSender: GetDetailedUserProfile): void => {
+    setTargetUserAsFriendshipSender(targetUserAsSender);
+    setTimeout(() => setToggleModal(), 200);
     const friendshipID = targetUserAsSender.outgoingFriendships[0].id;
     mutationAcceptFriendship.mutate(friendshipID, {
       onSuccess() {
@@ -113,7 +113,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   * @description for a receiver user, sends a friendship invitation with status 'PENDING'
   * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const handleLoggedInUserHasNoPendingInvitations = (targetUserAsReceiver: GetDetailedUserProfile): void => {
+  const sentFriendshipInvitation = (targetUserAsReceiver: GetDetailedUserProfile): void => {
     mutationSentFriendship.mutate(targetUserAsReceiver.id, {
       onSuccess() {
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE] });
@@ -126,7 +126,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   * @description cancels a friendship invitation with status 'PENDING'
   * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const handleLoggedInUserCancelFriendshipInvitation = (targetUserAsReceiver: GetDetailedUserProfile): void => {
+  const cancelFriendshipInvitation = (targetUserAsReceiver: GetDetailedUserProfile): void => {
     mutationCancelFriendship.mutate(targetUserAsReceiver.id, {
       onSuccess() {
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE] });
@@ -174,21 +174,21 @@ export default function TargerUserProfileScreen(): JSX.Element {
         <>
           {isTargetUserFriendShipReceiver && (
             <AppButton
-              onPress={() => handleLoggedInUserCancelFriendshipInvitation(targetUserProfile)}
+              onPress={() => cancelFriendshipInvitation(targetUserProfile)}
               text="PENDING"
               btnColor='blue'
             />
           )}
           {isTargetUserFriendShipSender && (
             <AppButton
-              onPress={() => handleLoggedInUserHasAPendingInvitation(targetUserProfile)}
+              onPress={() => acceptPendingInvitation(targetUserProfile)}
               text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
               btnColor='black'
             />
           )}
           {!isTargetUserFriendShipReceiver && !isTargetUserFriendShipSender && (
             <AppButton
-              onPress={() => handleLoggedInUserHasNoPendingInvitations(targetUserProfile)}
+              onPress={() => sentFriendshipInvitation(targetUserProfile)}
               text="JOIN"
               btnColor='black'
             />

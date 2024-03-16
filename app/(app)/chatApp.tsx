@@ -1,7 +1,7 @@
 import { StyleSheet, SafeAreaView, TextInput, Pressable, Image, View as TransparentView } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { BaseButton, TouchableOpacity } from 'react-native-gesture-handler';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { blue_100 } from '../../constants/colors';
 import { useState } from 'react';
@@ -101,7 +101,10 @@ export default function ChatAppScreen(): JSX.Element {
           data={chatData}
           estimatedItemSize={100}
           renderItem={({ item }) => (
-            <BaseButton style={styles.baseButton}>
+            <BaseButton
+              // onPress={() => router.push(`/chat/${item.id}`)}
+              style={styles.baseButton}
+            >
               <TransparentView style={styles.transparentView1}>
 
                 <TransparentView style={styles.transparentView2}>

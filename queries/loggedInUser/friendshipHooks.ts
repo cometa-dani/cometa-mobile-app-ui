@@ -36,14 +36,14 @@ export const useInfiniteQueryGetLoggedInUserNewestFriends = () => {
 };
 
 
-export const useQueryGetFriendshipByReceiverAndSender = (receiverID: number) => {
+export const useQueryGetFriendshipByTargetUserID = (targetUserID: number) => {
   const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
 
   return (
     useQuery({
       queryKey: [QueryKeys.GET_FRIENDSHIP_BY_RECEIVER_ID_AND_SENDER_ID],
       queryFn: async () => {
-        const res = await friendshipService.getFriendShipByReceiverID(receiverID, loggedInUserAccessToken);
+        const res = await friendshipService.getFriendShipWithSenderAndReceiver(targetUserID, loggedInUserAccessToken);
         if (res.status === 200) {
           return res.data;
         }

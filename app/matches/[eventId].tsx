@@ -1,4 +1,4 @@
-import { FC, useMemo, useReducer, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import Modal from 'react-native-modal';
 import { SafeAreaView, StyleSheet, Pressable, Image as HeaderImage } from 'react-native';
 import { Text, View } from '../../components/Themed';
@@ -14,8 +14,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import { GetBasicUserProfile } from '../../models/User';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import { addDoc, collection } from 'firebase/firestore';
-import { db } from '../../firebase/firebase';
+import { realtimeDB } from '../../firebase/firebase';
+import { push, ref, set } from 'firebase/database';
 import { IMessage, } from 'react-native-gifted-chat';
 import { defaultImgPlaceholder, nodeEnv } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
@@ -39,10 +39,11 @@ const messageSchemmaValidation = Yup.object<Message>({
 export default function MatchedEventsScreen(): JSX.Element {
   // client state
   const loggedInUserUuid = useCometaStore(state => state.uid);
-  const [toggleModal, setToggleModal] = useReducer((prev) => !prev, false);
+  const setToggleModal = useCometaStore(state => state.setToggleModal);
+  const toggleModal = useCometaStore(state => state.toggleModal);
 
-  const incommingFriendshipSenderForLoggedInUser = useCometaStore(state => state.incommginFriendshipSender);
-  const setIncommingFriendshipSenderForLoggedInUser = useCometaStore(state => state.setIncommginFriendshipSender);
+  const setTargetUserAsFriendShipSender = useCometaStore(state => state.setIncommginFriendshipSender);
+  const targetUserAsFriendshipSender = useCometaStore(state => state.incommginFriendshipSender);
 
   // queries
   const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
@@ -50,10 +51,9 @@ export default function MatchedEventsScreen(): JSX.Element {
 
   // cached data
   const queryClient = useQueryClient();
-  const queryData = queryClient.getQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION]);
+  const bucketListCahedData = queryClient.getQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION]);
 
-  // TODO: should not be read from cache
-  const eventByIdCahed = queryData?.pages.flatMap(page => page?.events)[+urlParams.eventIndex] ?? null;
+  const eventByIdCachedData = bucketListCahedData?.pages.flatMap(page => page?.events)[+urlParams.eventIndex] ?? null;
 
   // fetching data
   const newPeopleTargetUsers = useInfiteQueryGetUsersWhoLikedSameEventByID(+urlParams.eventId);
@@ -77,13 +77,11 @@ export default function MatchedEventsScreen(): JSX.Element {
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
   * @param {GetBasicUserProfile} targetUserAsSender the sender of the friendship invitation
   */
-  const handleLoggedInUserHasAPendingInvitation = (targetUserAsSender: GetBasicUserProfile): void => {
-    setIncommingFriendshipSenderForLoggedInUser(targetUserAsSender);
+  const acceptPendingInvitation = (targetUserAsSender: GetBasicUserProfile) => {
+    setTargetUserAsFriendShipSender(targetUserAsSender);
     setTimeout(() => setToggleModal(), 100);
-    const friendshipID = targetUserAsSender.outgoingFriendships[0].id;
-    mutationAcceptFriendship.mutate(friendshipID);
-
-    // TODO create the chatuuid in firestore
+    const friendshipID = targetUserAsSender.outgoingFriendships[0]?.id;
+    mutationAcceptFriendship.mutate(friendshipID); // set status to 'ACCEPTED' and create chat uuid
   };
 
   /**
@@ -91,7 +89,7 @@ export default function MatchedEventsScreen(): JSX.Element {
   * @description for a receiver user, sends a friendship invitation with status 'PENDING'
   * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const handleLoggedInUserHasNoPendingInvitations = (targetUserAsReceiver: GetBasicUserProfile): void => {
+  const sentFriendshipInvitation = (targetUserAsReceiver: GetBasicUserProfile): void => {
     mutationSentFriendship.mutate(targetUserAsReceiver.id);
   };
 
@@ -100,36 +98,39 @@ export default function MatchedEventsScreen(): JSX.Element {
   * @description cancels a friendship invitation with status 'PENDING'
   * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const handleCancelFriendshipInvitation = (targetUserAsReceiver: GetBasicUserProfile): void => {
+  const cancelFriendshipInvitation = (targetUserAsReceiver: GetBasicUserProfile): void => {
     mutationCancelFriendship.mutate(targetUserAsReceiver.id);
   };
 
-
+  /**
+   *
+   * @description start chat with new friend
+   */
   const handleSentMessageToTargetUserAsNewFriend =
     async (values: Message, actions: FormikHelpers<Message>): Promise<void> => {
-      // start chat with new friend
       const messagePayload: IMessage = {
         _id: uuid.v4().toString(),
         text: values.message,
         createdAt: new Date(),
         user: {
-          avatar: loggedInUserProfile?.photos[0]?.url,
-          name: loggedInUserProfile?.username,
-          _id: loggedInUserProfile?.id as number,
+          _id: loggedInUserUuid,
         }
       };
-      actions.resetForm();
-      setToggleModal();
-      actions.setSubmitting(false);
-
-      const friendshipID = mutationAcceptFriendship.data?.id;
-      if (friendshipID) {
-        const messagesSubCollection = collection(db, 'chats', `${friendshipID}`, 'messages');
-        await addDoc(messagesSubCollection, messagePayload);
-        router.push(`/chat/${incommingFriendshipSenderForLoggedInUser.id}`);
+      try {
+        if (mutationAcceptFriendship.data?.chatuuid) {
+          const { chatuuid } = mutationAcceptFriendship.data;
+          // TODO: store chatuuids in globalState as a list
+          const chatsRef = ref(realtimeDB, `chats/${chatuuid}`);
+          const chatListRef = push(chatsRef);
+          await set(chatListRef, messagePayload);
+          router.push(`/chat/${targetUserAsFriendshipSender?.id}`);
+        }
+        actions.resetForm();
+        setToggleModal();
+        actions.setSubmitting(true);
       }
-      else {
-        throw new Error('frienship id undefined');
+      catch (error) {
+        // console.log(error);
       }
     };
 
@@ -138,7 +139,7 @@ export default function MatchedEventsScreen(): JSX.Element {
     <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 20 }]}>
       <HeaderImage
         style={styles.imgHeader}
-        source={{ uri: eventByIdCahed?.photos[0]?.url }}
+        source={{ uri: eventByIdCachedData?.photos[0]?.url }}
       />
 
       <View style={styles.tabs}>
@@ -202,27 +203,28 @@ export default function MatchedEventsScreen(): JSX.Element {
                       </View>
                     </Pressable>
 
-                    {isReceiver && (
-                      <AppButton
-                        onPress={() => handleCancelFriendshipInvitation(targetUser)}
-                        text="PENDING"
-                        btnColor='blue'
-                      />
-                    )}
                     {isSender && (
                       <AppButton
-                        onPress={() => handleLoggedInUserHasAPendingInvitation(targetUser)}
+                        onPress={() => acceptPendingInvitation(targetUser)}
                         text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
                         btnColor='black'
                       />
                     )}
                     {!isReceiver && !isSender && (
                       <AppButton
-                        onPress={() => handleLoggedInUserHasNoPendingInvitations(targetUser)}
+                        onPress={() => sentFriendshipInvitation(targetUser)}
                         text="JOIN"
                         btnColor='black'
                       />
                     )}
+                    {isReceiver && (
+                      <AppButton
+                        onPress={() => cancelFriendshipInvitation(targetUser)}
+                        text="PENDING"
+                        btnColor='blue'
+                      />
+                    )}
+
                   </View>
                 );
               }}
@@ -310,11 +312,11 @@ export default function MatchedEventsScreen(): JSX.Element {
                 source={{ uri: loggedInUserProfile?.photos[0]?.url }}
               />
 
-              {incommingFriendshipSenderForLoggedInUser?.photos?.[0]?.url && (
+              {targetUserAsFriendshipSender?.photos?.[0]?.url && (
                 <Image
                   style={modalStyles.avatarMatch}
-                  placeholder={{ thumbhash: incommingFriendshipSenderForLoggedInUser.photos[0]?.placeholder }}
-                  source={{ uri: incommingFriendshipSenderForLoggedInUser.photos[0]?.url }}
+                  placeholder={{ thumbhash: targetUserAsFriendshipSender.photos[0]?.placeholder }}
+                  source={{ uri: targetUserAsFriendshipSender.photos[0]?.url }}
                 />
               )}
             </View>
@@ -329,7 +331,7 @@ export default function MatchedEventsScreen(): JSX.Element {
               initialValues={{ message: '' }}
               onSubmit={handleSentMessageToTargetUserAsNewFriend}
             >
-              {({ handleSubmit, handleBlur, handleChange, values }) => (
+              {({ handleSubmit, handleBlur, handleChange, values, isSubmitting }) => (
                 <View style={modalStyles.inputContainer}>
                   <TextInput
                     numberOfLines={1}
@@ -337,9 +339,10 @@ export default function MatchedEventsScreen(): JSX.Element {
                     onChangeText={handleChange('message')}
                     onBlur={handleBlur('message')}
                     value={values.message}
-                    placeholder={`Mesage ${incommingFriendshipSenderForLoggedInUser.username} to join together`}
+                    placeholder={`Mesage ${targetUserAsFriendshipSender?.username} to join together`}
                   />
                   <Pressable
+                    disabled={isSubmitting}
                     style={modalStyles.btnSubmit}
                     onPress={() => handleSubmit()}
                   >
