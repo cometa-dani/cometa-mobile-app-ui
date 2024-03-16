@@ -114,6 +114,9 @@ export default function MatchedEventsScreen(): JSX.Element {
         createdAt: new Date(),
         user: {
           _id: loggedInUserUuid,
+          // later remove the following lines
+          name: loggedInUserProfile?.username,
+          avatar: loggedInUserProfile?.photos[0]?.url
         }
       };
       try {

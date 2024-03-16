@@ -49,6 +49,9 @@ export default function ChatScreen(): JSX.Element {
         ...senderMessage,
         user: {
           _id: loggedInUserUuid,
+          // later remove the following lines
+          name: loggedInUser?.username,
+          avatar: loggedInUser?.photos[0]?.url
         }
       };
       if (friendshipData?.chatuuid) {
@@ -64,6 +67,9 @@ export default function ChatScreen(): JSX.Element {
     }
   }, [friendshipData?.chatuuid]);
 
+
+  // TODO:
+  // We should merge user's photo and name into the message object in every iteration
 
   useEffect(() => {
     let unsubscribe!: Unsubscribe;
@@ -84,6 +90,8 @@ export default function ChatScreen(): JSX.Element {
           const childData = childSnapshot.val();
           // ...
         });
+
+        // setMessages(snapshot.val());
       }, {
         onlyOnce: true
       });
