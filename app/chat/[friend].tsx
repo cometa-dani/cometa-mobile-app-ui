@@ -20,28 +20,22 @@ import { useQueryGetFriendshipByTargetUserID } from '../../queries/loggedInUser/
 export default function ChatScreen(): JSX.Element {
   const { text } = useColors();
 
-  // chat users
-  const targetUserID = +useLocalSearchParams()['friend'];
+  // users ids
+  const targetUserID = +useLocalSearchParams()['friend']; // TODO: can be uuid
   const loggedInUserUuid = useCometaStore(state => state.uid);
-
-  // IDEA: I am thinking of just using postgres for storing the chatUuid and userProfiles only
-  // and RealtimeDB for storing the messages only
 
   const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(targetUserID);
   const sender = friendshipData?.sender;
   const receiver = friendshipData?.receiver;
 
+  // users profiles
   const targetUser = sender?.id === targetUserID ? sender : receiver;
   const loggedInUser = sender?.id !== targetUserID ? sender : receiver;
+  const [messages, setMessages] = useState<IMessage[]>([]);
+  const [isFisrtReadComplete, setIsFirstReadComplete] = useState(false);
 
   // const messageReceiver = targetUserID === friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
   // const messageSender = targetUserID !== friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
-
-  // const targetUser = targetUserID=== friendshipData?.receiverId ||
-
-  const [messages] = useState<IMessage[]>([]);
-
-
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
     try {
       const senderMessage = messages[0];
@@ -51,19 +45,25 @@ export default function ChatScreen(): JSX.Element {
           _id: loggedInUserUuid,
           // later remove the following lines
           name: loggedInUser?.username,
-          avatar: loggedInUser?.photos[0]?.url
+          avatar: loggedInUser?.photos[0]?.url,
         }
       };
       if (friendshipData?.chatuuid) {
-        const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}`);
+        const { chatuuid } = friendshipData;
+        const chatsRef = ref(realtimeDB, `chats/${chatuuid}`);
         const chatListRef = push(chatsRef);
-        await set(chatListRef, messagePayload);
+        const latestMessageRef = ref(realtimeDB, `latestMessages/${targetUser?.uid}/${chatuuid}`);
+
+        await Promise.all([
+          set(chatListRef, messagePayload),
+          set(latestMessageRef, messagePayload) // overwrite the latest message if present
+        ]);
         // const messagesSubCollection = collection(firestoreDB, 'chats', `${friendshipData?.id}`, 'messages');
         // await addDoc(messagesSubCollection, messagePayload);
       }
     }
-    catch (error) {
-      // console.log(error);
+    catch {
+      return null;
     }
   }, [friendshipData?.chatuuid]);
 
@@ -71,28 +71,28 @@ export default function ChatScreen(): JSX.Element {
   // TODO:
   // We should merge user's photo and name into the message object in every iteration
 
+  // first read
   useEffect(() => {
-    let unsubscribe!: Unsubscribe;
     if (friendshipData?.chatuuid) {
       const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}`);
 
       // fires everytime a new message is added
-      unsubscribe = onChildAdded(chatsRef, (data) => {
-        // console.log(data.val());
-        // setMessages((previousMessages) => GiftedChat.append(previousMessages, data.val()));
-        // addCommentElement(postElement, data.key, data.val().text, data.val().author);
-      });
+      // unsubscribe = onChildAdded(chatsRef, (data) => {
+      // console.log(data.val());
+      // setMessages((previousMessages) => GiftedChat.append(previousMessages, data.val()));
+      // addCommentElement(postElement, data.key, data.val().text, data.val().author);
+      // });
 
       // fires only once and retrieves all the messages at once
       onValue(chatsRef, (snapshot) => {
+        const messagesList: IMessage[] = [];
         snapshot.forEach((childSnapshot) => {
-          childSnapshot.val();
-          // const childKey = childSnapshot.key;
-          // const childData = childSnapshot.val();
-          // ...
+          const messageData = childSnapshot.val() as IMessage;
+          messagesList.push(messageData);
         });
 
-        // setMessages(snapshot.val());
+        setMessages(messagesList); // snapshot.val();
+        setIsFirstReadComplete(true);
       }, {
         onlyOnce: true
       });
@@ -116,9 +116,29 @@ export default function ChatScreen(): JSX.Element {
       //   setMessages(myMessage);
       // });
     }
-
-    return () => unsubscribe && unsubscribe();
   }, [friendshipData?.chatuuid]);
+
+
+  // listen for new added messages
+  useEffect(() => {
+    let unsubscribe!: Unsubscribe;
+    if (friendshipData?.chatuuid && isFisrtReadComplete) {
+      const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}`);
+
+      unsubscribe = onChildAdded(chatsRef, (data) => {
+        const newMessage = data.val() as IMessage;
+        const addLatestMessage = (messages: IMessage[]) => {
+          const foundMessage = messages.find((message) => message._id === newMessage._id);
+          if (!foundMessage) {
+            return messages.concat(newMessage);
+          }
+          return messages;
+        };
+        setMessages(addLatestMessage);
+      });
+    }
+    return () => unsubscribe && unsubscribe();
+  }, [friendshipData?.chatuuid, isFisrtReadComplete]);
 
 
   return (
@@ -153,6 +173,8 @@ export default function ChatScreen(): JSX.Element {
 
       <View style={styles.container}>
         <GiftedChat
+          alwaysShowSend={true}
+          inverted={false}
           renderBubble={(props) => (
             <Bubble
               {...props}
@@ -167,7 +189,7 @@ export default function ChatScreen(): JSX.Element {
               }}
             />
           )}
-          isTyping={true}
+          // isTyping={true} // shows typing indicator
           messages={messages}
           onSend={(messages) => onSendMessage(messages)}
           showUserAvatar={true}
@@ -204,6 +226,7 @@ const styles = StyleSheet.create({
   },
 
   container: {
+    paddingTop: 20,
     flex: 1,
   }
 });

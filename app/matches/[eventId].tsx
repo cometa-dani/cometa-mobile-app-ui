@@ -104,7 +104,7 @@ export default function MatchedEventsScreen(): JSX.Element {
 
   /**
    *
-   * @description start chat with new friend
+   * @description start chat with new friend on modal open
    */
   const handleSentMessageToTargetUserAsNewFriend =
     async (values: Message, actions: FormikHelpers<Message>): Promise<void> => {
@@ -122,11 +122,19 @@ export default function MatchedEventsScreen(): JSX.Element {
       try {
         if (mutationAcceptFriendship.data?.chatuuid) {
           const { chatuuid } = mutationAcceptFriendship.data;
-          // TODO: store chatuuids in globalState as a list
           const chatsRef = ref(realtimeDB, `chats/${chatuuid}`);
           const chatListRef = push(chatsRef);
-          await set(chatListRef, messagePayload);
+          const latestMessageRef = ref(realtimeDB, `latestMessages/${targetUserAsFriendshipSender?.uid}/${chatuuid}`);
+
+          await Promise.all([
+            set(chatListRef, messagePayload),
+            set(latestMessageRef, messagePayload) // overwrite the latest message if present
+          ]);
           router.push(`/chat/${targetUserAsFriendshipSender?.id}`);
+        }
+        else {
+          // TODO:
+          // should fetch the chatuuid from the server again
         }
         actions.resetForm();
         setToggleModal();

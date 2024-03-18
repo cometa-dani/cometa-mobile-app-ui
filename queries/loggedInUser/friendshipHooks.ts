@@ -41,9 +41,9 @@ export const useQueryGetFriendshipByTargetUserID = (targetUserID: number) => {
 
   return (
     useQuery({
-      queryKey: [QueryKeys.GET_FRIENDSHIP_BY_RECEIVER_ID_AND_SENDER_ID],
+      queryKey: [QueryKeys.GET_FRIENDSHIP_BY_TARGET_USER_ID],
       queryFn: async () => {
-        const res = await friendshipService.getFriendShipWithSenderAndReceiver(targetUserID, loggedInUserAccessToken);
+        const res = await friendshipService.getFriendShipByTargetUserID(targetUserID, loggedInUserAccessToken);
         if (res.status === 200) {
           return res.data;
         }

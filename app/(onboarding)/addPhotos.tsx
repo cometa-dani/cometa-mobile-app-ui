@@ -12,12 +12,12 @@ import { FC, useEffect, useState } from 'react';
 import { BackHandler } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import userService from '../../services/userService';
-import { auth, firestoreDB } from '../../firebase/firebase';
+import { auth } from '../../firebase/firebase';
 import uuid from 'react-native-uuid';
 import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
 import { If } from '../../components/utils';
 import ToastContainer, { Toast } from 'toastify-react-native';
-import { doc, setDoc } from 'firebase/firestore';
+// import { doc, setDoc } from 'firebase/firestore';
 
 
 type UserPhoto = Pick<Photo, 'uuid' | 'url' | 'placeholder'>
@@ -99,18 +99,19 @@ export default function AddPhotosScreen(): JSX.Element {
         const { email, password } = onboarding.user;
         const { user: userCrendentials } = await createUserWithEmailAndPassword(auth, email, password); // firebase
         const { data: newCreatedUser } = await userService.create({ ...onboarding.user, uid: userCrendentials.uid }); // first checks if user exists
-        const { photos } = await mutateUserPhotosUpload.mutateAsync({ userID: newCreatedUser?.id, pickedImgFiles: userPhotos });
+        await mutateUserPhotosUpload.mutateAsync({ userID: newCreatedUser?.id, pickedImgFiles: userPhotos });
+        // const { photos } =
         // create user in firebase
-        await setDoc(doc(firestoreDB, 'users', userCrendentials.uid), {
-          id: newCreatedUser.id,
-          uid: newCreatedUser.uid,
-          email: newCreatedUser.email,
-          name: newCreatedUser.name,
-          photo: {
-            url: photos[0].url,
-            placeholder: photos[0].placeholder
-          }
-        });
+        // await setDoc(doc(firestoreDB, 'users', userCrendentials.uid), {
+        //   id: newCreatedUser.id,
+        //   uid: newCreatedUser.uid,
+        //   email: newCreatedUser.email,
+        //   name: newCreatedUser.name,
+        //   photo: {
+        //     url: photos[0].url,
+        //     placeholder: photos[0].placeholder
+        //   }
+        // });
         setUserUid(userCrendentials.uid);
         setAccessToken(await userCrendentials.getIdToken());
 
