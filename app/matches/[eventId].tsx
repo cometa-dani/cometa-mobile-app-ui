@@ -16,7 +16,6 @@ import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { realtimeDB } from '../../firebase/firebase';
 import { push, ref, set } from 'firebase/database';
-import { IMessage, } from 'react-native-gifted-chat';
 import { defaultImgPlaceholder, nodeEnv } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { gray_200, gray_300, gray_500 } from '../../constants/colors';
@@ -108,15 +107,12 @@ export default function MatchedEventsScreen(): JSX.Element {
    */
   const handleSentMessageToTargetUserAsNewFriend =
     async (values: Message, actions: FormikHelpers<Message>): Promise<void> => {
-      const messagePayload: IMessage = {
+      const messagePayload = {
         _id: uuid.v4().toString(),
         text: values.message,
-        createdAt: new Date(),
+        createdAt: new Date().toString(),
         user: {
           _id: loggedInUserUuid,
-          // later remove the following lines
-          name: loggedInUserProfile?.username,
-          avatar: loggedInUserProfile?.photos[0]?.url
         }
       };
       try {
@@ -125,10 +121,18 @@ export default function MatchedEventsScreen(): JSX.Element {
           const chatsRef = ref(realtimeDB, `chats/${chatuuid}`);
           const chatListRef = push(chatsRef);
           const latestMessageRef = ref(realtimeDB, `latestMessages/${targetUserAsFriendshipSender?.uid}/${chatuuid}`);
+          const latestMessagePayload = {
+            ...messagePayload,
+            user: {
+              ...messagePayload.user,
+              name: loggedInUserProfile?.name,
+              avatar: loggedInUserProfile?.photos[0]?.url
+            }
+          };
 
           await Promise.all([
             set(chatListRef, messagePayload),
-            set(latestMessageRef, messagePayload) // overwrite the latest message if present
+            set(latestMessageRef, latestMessagePayload) // overwrite the latest message if present
           ]);
           router.push(`/chat/${targetUserAsFriendshipSender?.id}`);
         }

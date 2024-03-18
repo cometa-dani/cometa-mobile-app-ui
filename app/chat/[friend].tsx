@@ -1,20 +1,19 @@
 /* eslint-disable react/prop-types */
 import { useCallback, useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Bubble, GiftedChat, IMessage } from 'react-native-gifted-chat';
+import { Bubble, GiftedChat, IMessage, Avatar } from 'react-native-gifted-chat';
 import { StyleSheet } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
-// import { collection, addDoc, query, onSnapshot, orderBy, limit } from 'firebase/firestore';
-import { realtimeDB } from '../../firebase/firebase';
 import { SafeAreaView } from 'react-native';
 import { Image as ImageWithPlaceholder } from 'expo-image';
-// import { useQueryGetFriendshipByReceiverAndSender } from '../../queries/loggedInUser/friendshipHooks';
 import { Unsubscribe } from 'firebase/auth';
 import { useCometaStore } from '../../store/cometaStore';
-import { onChildAdded, onValue, push, ref, set } from 'firebase/database';
 import { useQueryGetFriendshipByTargetUserID } from '../../queries/loggedInUser/friendshipHooks';
+// firebase
+import { realtimeDB } from '../../firebase/firebase';
+import { limitToLast, onChildAdded, push, query, ref, set } from 'firebase/database';
 
 
 export default function ChatScreen(): JSX.Element {
@@ -32,20 +31,18 @@ export default function ChatScreen(): JSX.Element {
   const targetUser = sender?.id === targetUserID ? sender : receiver;
   const loggedInUser = sender?.id !== targetUserID ? sender : receiver;
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [isFisrtReadComplete, setIsFirstReadComplete] = useState(false);
+  // const [isFisrtReadComplete, setIsFirstReadComplete] = useState(false);
 
   // const messageReceiver = targetUserID === friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
   // const messageSender = targetUserID !== friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
     try {
       const senderMessage = messages[0];
-      const messagePayload: IMessage = {
+      const messagePayload = {
         ...senderMessage,
+        createdAt: new Date().toString(),
         user: {
           _id: loggedInUserUuid,
-          // later remove the following lines
-          name: loggedInUser?.username,
-          avatar: loggedInUser?.photos[0]?.url,
         }
       };
       if (friendshipData?.chatuuid) {
@@ -53,13 +50,19 @@ export default function ChatScreen(): JSX.Element {
         const chatsRef = ref(realtimeDB, `chats/${chatuuid}`);
         const chatListRef = push(chatsRef);
         const latestMessageRef = ref(realtimeDB, `latestMessages/${targetUser?.uid}/${chatuuid}`);
+        const latestMessagePayload = {
+          ...messagePayload,
+          user: {
+            ...messagePayload.user,
+            name: loggedInUser?.name,
+            avatar: loggedInUser?.photos[0]?.url
+          }
+        };
 
         await Promise.all([
           set(chatListRef, messagePayload),
-          set(latestMessageRef, messagePayload) // overwrite the latest message if present
+          set(latestMessageRef, latestMessagePayload) // overwrite the latest message if present
         ]);
-        // const messagesSubCollection = collection(firestoreDB, 'chats', `${friendshipData?.id}`, 'messages');
-        // await addDoc(messagesSubCollection, messagePayload);
       }
     }
     catch {
@@ -68,77 +71,23 @@ export default function ChatScreen(): JSX.Element {
   }, [friendshipData?.chatuuid]);
 
 
-  // TODO:
-  // We should merge user's photo and name into the message object in every iteration
-
-  // first read
-  useEffect(() => {
-    if (friendshipData?.chatuuid) {
-      const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}`);
-
-      // fires everytime a new message is added
-      // unsubscribe = onChildAdded(chatsRef, (data) => {
-      // console.log(data.val());
-      // setMessages((previousMessages) => GiftedChat.append(previousMessages, data.val()));
-      // addCommentElement(postElement, data.key, data.val().text, data.val().author);
-      // });
-
-      // fires only once and retrieves all the messages at once
-      onValue(chatsRef, (snapshot) => {
-        const messagesList: IMessage[] = [];
-        snapshot.forEach((childSnapshot) => {
-          const messageData = childSnapshot.val() as IMessage;
-          messagesList.push(messageData);
-        });
-
-        setMessages(messagesList); // snapshot.val();
-        setIsFirstReadComplete(true);
-      }, {
-        onlyOnce: true
-      });
-
-
-      // const queryCollRef = query(
-      //   collection(firestoreDB, 'chats', `${friendshipData?.id}`, 'messages'),
-      //   orderBy('createdAt', 'desc'),
-      //   limit(10),
-      // );
-      // // TODO: just listen for the last message only
-      // unsubscribe = onSnapshot(queryCollRef, (querySnapshot) => {
-      //   const myMessage: IMessage[] = [];
-      //   querySnapshot.forEach((doc) => {
-      //     const data = doc.data();
-      //     const createdAt = new Date(data['createdAt']['seconds'] * 1000);
-      //     const message = { ...data, createdAt } as IMessage;
-      //     myMessage.push({ ...message });
-      //   });
-
-      //   setMessages(myMessage);
-      // });
-    }
-  }, [friendshipData?.chatuuid]);
-
-
   // listen for new added messages
   useEffect(() => {
     let unsubscribe!: Unsubscribe;
-    if (friendshipData?.chatuuid && isFisrtReadComplete) {
+    if (friendshipData?.chatuuid) {
       const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}`);
+      const queryMessages = query(chatsRef, limitToLast(12));
 
-      unsubscribe = onChildAdded(chatsRef, (data) => {
+      unsubscribe = onChildAdded(queryMessages, (data) => {
         const newMessage = data.val() as IMessage;
-        const addLatestMessage = (messages: IMessage[]) => {
-          const foundMessage = messages.find((message) => message._id === newMessage._id);
-          if (!foundMessage) {
-            return messages.concat(newMessage);
-          }
-          return messages;
-        };
-        setMessages(addLatestMessage);
+        setMessages(prev => prev.concat(newMessage));
       });
     }
-    return () => unsubscribe && unsubscribe();
-  }, [friendshipData?.chatuuid, isFisrtReadComplete]);
+    return () => {
+      messages && setMessages([]);
+      unsubscribe && unsubscribe();
+    };
+  }, [friendshipData?.chatuuid]);
 
 
   return (
@@ -178,17 +127,39 @@ export default function ChatScreen(): JSX.Element {
           renderBubble={(props) => (
             <Bubble
               {...props}
+              user={props.user}
               key={props.currentMessage?._id}
               textStyle={{
                 right: { color: text },
                 left: { color: text }
               }}
               wrapperStyle={{
-                right: { backgroundColor: '#ead4fa', padding: 8, borderRadius: 24 },
+                right: { backgroundColor: '#ead4fa', padding: 8, borderRadius: 24, marginRight: -10, minWidth: '50%', maxWidth: '85%' },
                 left: { backgroundColor: '#f0f0f0', padding: 8, borderRadius: 24 }
               }}
             />
           )}
+          renderAvatar={(props) => {
+            const avatarProps = {
+              ...props,
+              currentMessage: {
+                ...props.currentMessage,
+                user: {
+                  ...props.currentMessage?.user,
+                  avatar:
+                    props.currentMessage?.user._id === targetUser?.uid ?
+                      targetUser?.photos[0]?.url : loggedInUser?.photos[0]?.url
+                }
+              } as IMessage
+            };
+
+            return (
+              <Avatar
+                key={props.currentMessage?._id ?? -1}
+                {...avatarProps}
+              />
+            );
+          }}
           // isTyping={true} // shows typing indicator
           messages={messages}
           onSend={(messages) => onSendMessage(messages)}
@@ -226,7 +197,7 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    paddingTop: 20,
+    // paddingTop: 20,
     flex: 1,
   }
 });
