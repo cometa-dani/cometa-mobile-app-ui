@@ -5,12 +5,12 @@ import { GetBasicUserProfile } from '../models/User';
 
 type UserData = Pick<GetBasicUserProfile, ('uid' | 'name' | 'photos')>;
 
-export async function writeToRealTimeDB(chatuuid: string, messagePayload: object, loggedInUser: UserData, targetUserUUID: string) {
+export async function writeToRealTimeDB(chatuuid: string, messagePayload: object, loggedInUser: UserData, targetUser: UserData) {
   const chatsRef = ref(realtimeDB, `chats/${chatuuid}`);
   const chatListRef = push(chatsRef);
 
   const latestMessageRef = ref(realtimeDB, 'latestMessages');
-  const latestMessagePayload = {
+  const loggedInUserLatestMessagePayload = {
     ...messagePayload,
     user: {
       _id: loggedInUser?.uid,
@@ -18,17 +18,25 @@ export async function writeToRealTimeDB(chatuuid: string, messagePayload: object
       avatar: loggedInUser?.photos[0]?.url
     }
   };
+  const targetUserLatestMessagePayload = {
+    ...messagePayload,
+    user: {
+      _id: targetUser?.uid,
+      name: targetUser?.name,
+      avatar: targetUser?.photos[0]?.url
+    }
+  };
 
   // update different locations in the database and keeps them in sync
-  const latestMessageUpdates = {
-    [`/${loggedInUser.uid}/${chatuuid}`]: latestMessagePayload,
-    [`/${targetUserUUID}/${chatuuid}`]: latestMessagePayload
+  const latestMessagesPayload = {
+    [`/${loggedInUser.uid}/${chatuuid}`]: targetUserLatestMessagePayload,
+    [`/${targetUser.uid}/${chatuuid}`]: loggedInUserLatestMessagePayload
   };
 
   return (
     await Promise.all([
       set(chatListRef, messagePayload),
-      update(latestMessageRef, latestMessageUpdates) // overwrite the latest message if present
+      update(latestMessageRef, latestMessagesPayload) // overwrite the latest message if present
     ])
   );
 }

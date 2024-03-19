@@ -87,7 +87,7 @@ export default function ChatAppScreen(): JSX.Element {
         });
 
         setFriendsList(messages);
-        console.log('data', messages);
+        // console.log('data', messages);
       });
     }
 

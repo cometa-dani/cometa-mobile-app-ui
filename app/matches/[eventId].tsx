@@ -115,13 +115,13 @@ export default function MatchedEventsScreen(): JSX.Element {
         }
       };
       try {
-        if (mutationAcceptFriendship.data?.chatuuid && loggedInUserProfile) {
+        if (mutationAcceptFriendship.data?.chatuuid && loggedInUserProfile && targetUserAsFriendshipSender) {
           const { chatuuid } = mutationAcceptFriendship.data;
           await writeToRealTimeDB(
             chatuuid,
             messagePayload,
             loggedInUserProfile,
-            targetUserAsFriendshipSender?.uid
+            targetUserAsFriendshipSender
           );
           router.push(`/chat/${targetUserAsFriendshipSender?.uid}`);
         }

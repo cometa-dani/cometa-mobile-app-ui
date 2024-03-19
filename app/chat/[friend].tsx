@@ -43,12 +43,12 @@ export default function ChatScreen(): JSX.Element {
           _id: loggedInUserUuid,
         }
       };
-      if (friendshipData?.chatuuid && loggedInUser) {
+      if (friendshipData?.chatuuid && loggedInUser && targetUser) {
         await writeToRealTimeDB(
           friendshipData.chatuuid,
           messagePayload,
           loggedInUser,
-          targetUserUUID
+          targetUser
         );
       }
     }
