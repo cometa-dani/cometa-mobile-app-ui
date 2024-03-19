@@ -20,21 +20,18 @@ export default function ChatScreen(): JSX.Element {
   const { text } = useColors();
 
   // users ids
-  const targetUserID = +useLocalSearchParams()['friend']; // TODO: can be uuid
+  const targetUserUUID = useLocalSearchParams<{ friend: string }>()['friend']; // TODO: can be uuid
   const loggedInUserUuid = useCometaStore(state => state.uid);
-
-  const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(targetUserID);
+  const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(targetUserUUID);
   const sender = friendshipData?.sender;
   const receiver = friendshipData?.receiver;
 
   // users profiles
-  const targetUser = sender?.id === targetUserID ? sender : receiver;
-  const loggedInUser = sender?.id !== targetUserID ? sender : receiver;
+  const targetUser = sender?.uid === targetUserUUID ? sender : receiver;
+  const loggedInUser = sender?.uid !== targetUserUUID ? sender : receiver;
   const [messages, setMessages] = useState<IMessage[]>([]);
-  // const [isFisrtReadComplete, setIsFirstReadComplete] = useState(false);
 
-  // const messageReceiver = targetUserID === friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
-  // const messageSender = targetUserID !== friendshipData?.receiver.id ? friendshipData?.receiver : friendshipData?.sender;
+
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
     try {
       const senderMessage = messages[0];

@@ -134,7 +134,7 @@ export default function MatchedEventsScreen(): JSX.Element {
             set(chatListRef, messagePayload),
             set(latestMessageRef, latestMessagePayload) // overwrite the latest message if present
           ]);
-          router.push(`/chat/${targetUserAsFriendshipSender?.id}`);
+          router.push(`/chat/${targetUserAsFriendshipSender?.uid}`);
         }
         else {
           // TODO:
@@ -297,7 +297,7 @@ export default function MatchedEventsScreen(): JSX.Element {
                     </Pressable>
 
                     <AppButton
-                      onPress={() => router.push(`/chat/${item?.friend?.id}`)}
+                      onPress={() => router.push(`/chat/${item?.friend?.uid}`)}
                       text="CHAT"
                       btnColor='gray'
                     />

@@ -166,7 +166,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
     isSuccess && (
       targetUserUrlParams.isFriend ? (
         <AppButton
-          onPress={() => router.push(`/chat/${targetUserProfile?.id}`)}
+          onPress={() => router.push(`/chat/${targetUserProfile?.uid}`)}
           btnColor='gray'
           text='CHAT'
         />

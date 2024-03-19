@@ -17,7 +17,6 @@ import uuid from 'react-native-uuid';
 import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
 import { If } from '../../components/utils';
 import ToastContainer, { Toast } from 'toastify-react-native';
-// import { doc, setDoc } from 'firebase/firestore';
 
 
 type UserPhoto = Pick<Photo, 'uuid' | 'url' | 'placeholder'>
