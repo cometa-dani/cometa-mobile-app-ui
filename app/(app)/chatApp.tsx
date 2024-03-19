@@ -1,68 +1,99 @@
 import { StyleSheet, SafeAreaView, TextInput, Pressable, Image, View as TransparentView } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { BaseButton, TouchableOpacity } from 'react-native-gesture-handler';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { blue_100 } from '../../constants/colors';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
+import { IMessage } from 'react-native-gifted-chat';
+import { onValue, ref } from 'firebase/database';
+import { realtimeDB } from '../../firebase/firebase';
+import { useCometaStore } from '../../store/cometaStore';
+import { defaultImgPlaceholder } from '../../constants/vars';
 
 
-const chatData = [
-  {
-    id: 1,
-    name: 'John',
-    message: 'Dude!',
-    time: '10:00 AM',
-    avatar: 'https://randomuser.me/api/portraits/men/7.jpg',
-  },
-  {
-    id: 2,
-    name: 'Ramon',
-    message: 'Will you be there?',
-    time: '10:00 AM',
-    avatar: 'https://randomuser.me/api/portraits/men/35.jpg',
-  },
-  {
-    id: 3,
-    name: 'Marco Vizanti',
-    message: 'hi',
-    time: '10:00 AM',
-    avatar: 'https://randomuser.me/api/portraits/men/30.jpg',
-  },
-  {
-    id: 4,
-    name: 'Maria Smith',
-    message: 'Hello, how are you?',
-    time: '10:00 AM',
-    avatar: 'https://randomuser.me/api/portraits/women/30.jpg',
-  },
-  {
-    id: 5,
-    name: 'Karlota Jaramillo',
-    message: 'Hi',
-    time: '10:00 AM',
-    avatar: 'https://randomuser.me/api/portraits/women/3.jpg',
-  },
-  {
-    id: 7,
-    name: 'Emma Brown',
-    message: 'I missed you',
-    time: '10:00 AM',
-    avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
-  },
-  {
-    id: 8,
-    name: 'Jackie Chan',
-    message: 'Hey mate',
-    time: '10:00 AM',
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-  }
-];
+// const chatData = [
+//   {
+//     id: 1,
+//     name: 'John',
+//     message: 'Dude!',
+//     time: '10:00 AM',
+//     avatar: 'https://randomuser.me/api/portraits/men/7.jpg',
+//   },
+//   {
+//     id: 2,
+//     name: 'Ramon',
+//     message: 'Will you be there?',
+//     time: '10:00 AM',
+//     avatar: 'https://randomuser.me/api/portraits/men/35.jpg',
+//   },
+//   {
+//     id: 3,
+//     name: 'Marco Vizanti',
+//     message: 'hi',
+//     time: '10:00 AM',
+//     avatar: 'https://randomuser.me/api/portraits/men/30.jpg',
+//   },
+//   {
+//     id: 4,
+//     name: 'Maria Smith',
+//     message: 'Hello, how are you?',
+//     time: '10:00 AM',
+//     avatar: 'https://randomuser.me/api/portraits/women/30.jpg',
+//   },
+//   {
+//     id: 5,
+//     name: 'Karlota Jaramillo',
+//     message: 'Hi',
+//     time: '10:00 AM',
+//     avatar: 'https://randomuser.me/api/portraits/women/3.jpg',
+//   },
+//   {
+//     id: 7,
+//     name: 'Emma Brown',
+//     message: 'I missed you',
+//     time: '10:00 AM',
+//     avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
+//   },
+//   {
+//     id: 8,
+//     name: 'Jackie Chan',
+//     message: 'Hey mate',
+//     time: '10:00 AM',
+//     avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+//   }
+// ];
 
+
+type UserData = Pick<IMessage, 'user' | 'text' | 'createdAt'>;
 
 export default function ChatAppScreen(): JSX.Element {
+  const loggedInUserUUID = useCometaStore(state => state.uid);
   const [textInput, setTextInput] = useState('');
+  const [friendsList, setFriendsList] = useState<UserData[]>([]);
+
+
+  useEffect(() => {
+    // let unsubscribe!: Unsubscribe;
+    if (loggedInUserUUID) {
+      const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}`);
+
+      onValue(latestMessageRef, (snapshot) => {
+        const messages: IMessage[] = [];
+        snapshot.forEach((child) => {
+          const data = child.val() as IMessage;
+          messages.push(data);
+        });
+
+        setFriendsList(messages);
+        console.log('data', messages);
+      });
+    }
+
+    // return unsubscribe && unsubscribe();
+  }, [loggedInUserUUID]);
+
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -98,27 +129,28 @@ export default function ChatAppScreen(): JSX.Element {
         </View>
 
         <FlashList
-          data={chatData}
+          data={friendsList}
           estimatedItemSize={100}
           renderItem={({ item }) => (
             <BaseButton
-              // onPress={() => router.push(`/chat/${item.id}`)}
+              // TODO: fix this... _id is equal to yourself (logged in user)
+              onPress={() => router.push(`/chat/${item.user._id}`)}
               style={styles.baseButton}
             >
               <TransparentView style={styles.transparentView1}>
 
                 <TransparentView style={styles.transparentView2}>
-                  <Image source={{ uri: item.avatar }} style={styles.image} />
+                  <Image source={{ uri: item.user?.avatar?.toString() ?? defaultImgPlaceholder }} style={styles.image} />
                 </TransparentView>
 
                 <TransparentView style={styles.transparentView3}>
                   <TransparentView>
-                    <Text style={styles.textBold}>{item.name}</Text>
-                    <Text style={styles.textGray}>{item.message}</Text>
+                    <Text style={styles.textBold}>{item.user.name}</Text>
+                    <Text style={styles.textGray}>{item.text}</Text>
                   </TransparentView>
 
                   <TransparentView style={styles.transparentView4}>
-                    <Text style={styles.textGray}>{item.time}</Text>
+                    <Text style={styles.textGray}>{item.createdAt.toString() ?? ''}</Text>
                   </TransparentView>
                 </TransparentView>
               </TransparentView>

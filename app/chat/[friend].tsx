@@ -13,7 +13,8 @@ import { useCometaStore } from '../../store/cometaStore';
 import { useQueryGetFriendshipByTargetUserID } from '../../queries/loggedInUser/friendshipHooks';
 // firebase
 import { realtimeDB } from '../../firebase/firebase';
-import { limitToLast, onChildAdded, push, query, ref, set } from 'firebase/database';
+import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
+import { writeToRealTimeDB } from '../../firebase/writeToRealTimeDB';
 
 
 export default function ChatScreen(): JSX.Element {
@@ -42,24 +43,13 @@ export default function ChatScreen(): JSX.Element {
           _id: loggedInUserUuid,
         }
       };
-      if (friendshipData?.chatuuid) {
-        const { chatuuid } = friendshipData;
-        const chatsRef = ref(realtimeDB, `chats/${chatuuid}`);
-        const chatListRef = push(chatsRef);
-        const latestMessageRef = ref(realtimeDB, `latestMessages/${targetUser?.uid}/${chatuuid}`);
-        const latestMessagePayload = {
-          ...messagePayload,
-          user: {
-            ...messagePayload.user,
-            name: loggedInUser?.name,
-            avatar: loggedInUser?.photos[0]?.url
-          }
-        };
-
-        await Promise.all([
-          set(chatListRef, messagePayload),
-          set(latestMessageRef, latestMessagePayload) // overwrite the latest message if present
-        ]);
+      if (friendshipData?.chatuuid && loggedInUser) {
+        await writeToRealTimeDB(
+          friendshipData.chatuuid,
+          messagePayload,
+          loggedInUser,
+          targetUserUUID
+        );
       }
     }
     catch {
@@ -171,6 +161,7 @@ export default function ChatScreen(): JSX.Element {
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
 

@@ -14,8 +14,6 @@ import { FontAwesome } from '@expo/vector-icons';
 import { GetBasicUserProfile } from '../../models/User';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import { realtimeDB } from '../../firebase/firebase';
-import { push, ref, set } from 'firebase/database';
 import { defaultImgPlaceholder, nodeEnv } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { gray_200, gray_300, gray_500 } from '../../constants/colors';
@@ -26,6 +24,7 @@ import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEve
 import { If } from '../../components/utils';
 import { SkeletonLoaderList } from '../(app)/bucketList';
 import uuid from 'react-native-uuid';
+import { writeToRealTimeDB } from '../../firebase/writeToRealTimeDB';
 
 
 type Message = { message: string };
@@ -116,24 +115,14 @@ export default function MatchedEventsScreen(): JSX.Element {
         }
       };
       try {
-        if (mutationAcceptFriendship.data?.chatuuid) {
+        if (mutationAcceptFriendship.data?.chatuuid && loggedInUserProfile) {
           const { chatuuid } = mutationAcceptFriendship.data;
-          const chatsRef = ref(realtimeDB, `chats/${chatuuid}`);
-          const chatListRef = push(chatsRef);
-          const latestMessageRef = ref(realtimeDB, `latestMessages/${targetUserAsFriendshipSender?.uid}/${chatuuid}`);
-          const latestMessagePayload = {
-            ...messagePayload,
-            user: {
-              ...messagePayload.user,
-              name: loggedInUserProfile?.name,
-              avatar: loggedInUserProfile?.photos[0]?.url
-            }
-          };
-
-          await Promise.all([
-            set(chatListRef, messagePayload),
-            set(latestMessageRef, latestMessagePayload) // overwrite the latest message if present
-          ]);
+          await writeToRealTimeDB(
+            chatuuid,
+            messagePayload,
+            loggedInUserProfile,
+            targetUserAsFriendshipSender?.uid
+          );
           router.push(`/chat/${targetUserAsFriendshipSender?.uid}`);
         }
         else {

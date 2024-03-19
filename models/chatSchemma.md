@@ -31,7 +31,7 @@ Realtime Database
     |   |-- ...
 
     |-- userId2
-    |   |-- user1__user2: { latestMessage }
+    |   |-- user5__user2: { latestMessage }
     |   |-- user2__user4: { latestMessage }
     |   |-- ...
     |   |-- groupId1: { latestMessage }
