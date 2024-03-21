@@ -11,6 +11,7 @@ import { onValue, ref } from 'firebase/database';
 import { realtimeDB } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
 import { defaultImgPlaceholder } from '../../constants/vars';
+import { titles } from '../../constants/assets';
 
 
 // const chatData = [
@@ -87,7 +88,6 @@ export default function ChatAppScreen(): JSX.Element {
         });
 
         setFriendsList(messages);
-        // console.log('data', messages);
       });
     }
 
@@ -100,7 +100,9 @@ export default function ChatAppScreen(): JSX.Element {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: 'Chat',
+          headerTitle: () => (
+            <Image style={{ height: 24, width: 76 }} source={titles.chat} />
+          ),
           headerTitleAlign: 'center',
           headerRight() {
             return (

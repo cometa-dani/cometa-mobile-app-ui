@@ -4,8 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Bubble, GiftedChat, IMessage, Avatar } from 'react-native-gifted-chat';
 import { StyleSheet } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
-import { Stack, router, useLocalSearchParams } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native';
 import { Image as ImageWithPlaceholder } from 'expo-image';
 import { Unsubscribe } from 'firebase/auth';
@@ -87,24 +86,39 @@ export default function ChatScreen(): JSX.Element {
           gestureDirection: 'vertical',
           fullScreenGestureEnabled: true,
           presentation: 'modal',
-          animation: 'slide_from_bottom',
-          headerTitle: '',
-          headerBackVisible: false,
-          headerLeft: () => (
-            <View style={styles.avatarReciever}>
-              <FontAwesome name='arrow-down' size={24} onPress={() => router.back()} />
-              <ImageWithPlaceholder
-                style={styles.avatarImg}
-                source={{ uri: targetUser?.photos[0]?.url }}
-                placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
-              />
+          headerTitle: () => {
+            return (
+              <View style={styles.targetUser}>
+                {/* <FontAwesome name='arrow-down' size={24} onPress={() => router.back()} /> */}
+                <ImageWithPlaceholder
+                  style={styles.avatarImg}
+                  source={{ uri: targetUser?.photos[0]?.url }}
+                  placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
+                />
 
-              <View>
-                <Text style={styles.avatarName}>{targetUser?.username}</Text>
-                <Text>online</Text>
+                <View>
+                  <Text style={styles.avatarName}>{targetUser?.username}</Text>
+                  <Text>online</Text>
+                </View>
               </View>
-            </View>
-          )
+            );
+          },
+          // headerBackVisible: false,
+          // headerLeft: () => (
+          //   <View style={styles.avatarReciever}>
+          //     <FontAwesome name='arrow-down' size={24} onPress={() => router.back()} />
+          //     <ImageWithPlaceholder
+          //       style={styles.avatarImg}
+          //       source={{ uri: targetUser?.photos[0]?.url }}
+          //       placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
+          //     />
+
+          //     <View>
+          //       <Text style={styles.avatarName}>{targetUser?.username}</Text>
+          //       <Text>online</Text>
+          //     </View>
+          //   </View>
+          // )
         }} />
 
       <View style={styles.container}>
@@ -178,14 +192,14 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize'
   },
 
-  avatarReciever: {
+  targetUser: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 14
+    gap: 10,
+    marginLeft: -16
   },
 
   container: {
-    // paddingTop: 20,
     flex: 1,
   }
 });

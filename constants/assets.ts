@@ -20,5 +20,6 @@ export const icons = {
 export const titles = {
   matches: require('../assets/images/matches.png'),
   cometa: require('../assets/images/letters_cometa.webp'),
-  bucketList: require('../assets/images/bucketList.webp')
+  bucketList: require('../assets/images/bucketList.webp'),
+  chat: require('../assets/images/chat.png'),
 };
