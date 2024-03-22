@@ -12,15 +12,12 @@ import { titles } from '../../constants/assets';
 import { markLastMessageAsSeen } from '../../firebase/writeToRealTimeDB';
 import { If } from '../../components/utils';
 import { UserMessagesData } from '../../store/slices/messagesSlices';
-// import friendshipService from '../../services/friendshipService';
 import { useInfiniteQuerySearchFriendsByUserName } from '../../queries/loggedInUser/friendshipHooks';
-// import { set } from 'firebase/database';
 
 
 export default function ChatAppScreen(): JSX.Element {
   const friendsMessagesList = useCometaStore(state => state.friendsMessagesList);
   const [showSearchFriends, setShowSearchFriends] = useState(false);
-  // const setFriendsMessagesList = useCometaStore(state => state.setFriendsMessagesList);
 
   // search user by username
   const [textInput, setTextInput] = useState('');
@@ -39,7 +36,7 @@ export default function ChatAppScreen(): JSX.Element {
 
 
   const [debouncedTextInput, setDebouncedTextInput] = useState('');
-  const { data: searchedFriendsData, isLoading, isFetching, isSuccess } = useInfiniteQuerySearchFriendsByUserName(debouncedTextInput);
+  const { data: searchedFriendsData, isSuccess } = useInfiniteQuerySearchFriendsByUserName(debouncedTextInput);
 
   const memoizedSearchedFriendsData = useMemo(() => (
     searchedFriendsData?.pages
@@ -54,6 +51,7 @@ export default function ChatAppScreen(): JSX.Element {
               name: frindshipd.friend.name,
               avatar: frindshipd.friend.photos[0]?.url
             },
+            createdAt: new Date()
           }) as UserMessagesData
         )
       ) ?? []
@@ -72,11 +70,12 @@ export default function ChatAppScreen(): JSX.Element {
 
   const handleNavigateToChatWithFriend = (targetUser: UserMessagesData) => {
     const { user, chatUUID, createdAt, text } = targetUser;
-    const messagePayload = { createdAt, text, user };
-    router.push(`/chat/${user._id}`);
+    const messagePayload = { createdAt: createdAt.toString(), text, user };
+
     if (targetUser?.newMessagesCount !== 0 || showSearchFriends) {
       markLastMessageAsSeen(user._id, chatUUID, messagePayload);
     }
+    router.push(`/chat/${user._id}`);
   };
 
 
@@ -117,8 +116,6 @@ export default function ChatAppScreen(): JSX.Element {
         </View>
 
         <FlashList
-          // TODO
-          // merge this two arrays in order to get the messagesCount of new messages
           data={showSearchFriends ? memoizedSearchedFriendsData : friendsMessagesList}
           estimatedItemSize={100}
           renderItem={({ item }) => (
