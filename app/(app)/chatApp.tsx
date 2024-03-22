@@ -6,8 +6,6 @@ import { FontAwesome } from '@expo/vector-icons';
 import { blue_100, messages } from '../../constants/colors';
 import { useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
-// import { onValue, ref } from 'firebase/database';
-// import { realtimeDB } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
 import { defaultImgPlaceholder } from '../../constants/vars';
 import { titles } from '../../constants/assets';
@@ -16,18 +14,10 @@ import { If } from '../../components/utils';
 import { UserMessagesData } from '../../store/slices/messagesSlices';
 
 
-// interface UserData extends Pick<IMessage, 'user' | 'text' | 'createdAt'> {
-//   newMessagesCount?: number,
-//   chatUUID: string
-// }
-
 export default function ChatAppScreen(): JSX.Element {
-  // const loggedInUserUUID = useCometaStore(state => state.uid);
   const [textInput, setTextInput] = useState('');
-  // const [friendsMessagesList, setFriendsMessagesList] = useState<UserData[]>([]);
   const friendsMessagesList = useCometaStore(state => state.friendsMessagesList);
-  // const setFriendsMessagesList = useCometaStore(state => state.setFriendsMessagesList);
-  // const newestFriendsTargetUsers = useInfiniteQueryGetLoggedInUserNewestFriends();
+
 
   const handleNavigateToChatWithFriend = (targetUser: UserMessagesData) => {
     const { user, chatUUID, createdAt, text } = targetUser;
@@ -37,31 +27,6 @@ export default function ChatAppScreen(): JSX.Element {
 
     markLastMessageAsSeen(user._id, chatUUID, messagePayload);
   };
-
-
-  // useEffect(() => {
-  //   // let unsubscribe!: Unsubscribe;
-  //   if (loggedInUserUUID) {
-  //     const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}`);
-
-  //     onValue(latestMessageRef, (snapshot) => {
-  //       const messages: UserMessagesData[] = [];
-  //       snapshot.forEach((child) => {
-  //         const data = {
-  //           ...child.val(),
-  //           chatUUID: child.key
-  //         } as UserMessagesData;
-  //         // const key = child.key
-  //         messages.push(data);
-  //       });
-
-  //       // console.log(messages);
-  //       setFriendsMessagesList(messages);
-  //     });
-  //   }
-
-  //   // return unsubscribe && unsubscribe();
-  // }, [loggedInUserUUID]);
 
 
   return (
@@ -115,8 +80,20 @@ export default function ChatAppScreen(): JSX.Element {
 
                 <TransparentView style={styles.transparentView3}>
                   <TransparentView>
-                    <Text style={styles.textBold}>{item.user.name}</Text>
-                    <Text style={styles.textGray}>{item.text}</Text>
+                    <Text
+                      numberOfLines={1}
+                      ellipsizeMode='tail'
+                      style={styles.textBold}
+                    >
+                      {item.user.name}
+                    </Text>
+                    <Text
+                      numberOfLines={1}
+                      ellipsizeMode='tail'
+                      style={styles.textGray}
+                    >
+                      {item.text}
+                    </Text>
                   </TransparentView>
 
                   <TransparentView style={styles.transparentView4}>
@@ -203,6 +180,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     position: 'relative',
     height: '100%',
+    gap: 14
   },
   messagesCount: {
     backgroundColor: messages.ok,
@@ -220,7 +198,7 @@ const styles = StyleSheet.create({
   },
   textBold: {
     fontSize: 20,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   textGray: {
     color: 'gray'

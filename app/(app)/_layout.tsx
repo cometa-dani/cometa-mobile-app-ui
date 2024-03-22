@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-raw-text */
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs, router } from 'expo-router';
-import { Pressable, Text as TransparentText } from 'react-native';
+import { Pressable, StyleSheet, Text as TransparentText } from 'react-native';
 import { View, useColors, Text } from '../../components/Themed';
 import { StatusBar } from 'expo-status-bar';
 import { FC, ReactNode, useEffect, useMemo, useState } from 'react';
@@ -32,7 +32,7 @@ export function TabBarIcon(props: {
 }
 
 const TabButton: FC<{ children: ReactNode }> = ({ children }) => (
-  <RectButton style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+  <RectButton style={styles.tabButton}>
     {children}
   </RectButton>
 );
@@ -47,9 +47,11 @@ export default function AppLayout() {
   const [toggleModal, setToggleModal] = useState(false);
   const { data } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
 
+
   const totalNewMessages = useMemo(() => (
     friendsMessagesList.map(({ newMessagesCount }) => newMessagesCount ?? 0).reduce((prev, curr) => prev + curr, 0)
-  ), friendsMessagesList);
+  ), [friendsMessagesList.length]);
+
 
   // listens only for log-out event
   useEffect(() => {
@@ -71,11 +73,11 @@ export default function AppLayout() {
       <StatusBar style={'auto'} />
 
       <ReactNativeModal isVisible={toggleModal}>
-        <View style={{ minHeight: 200, width: 300, alignItems: 'center', justifyContent: 'center', padding: 20, borderRadius: 20, alignSelf: 'center' }}>
+        <View style={styles.modalContainer}>
           <View style={{ gap: 20 }}>
             <View>
-              <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', }}>Bucket List is Empty</Text>
-              <Text style={{ textAlign: 'center' }}>No events liked yet</Text>
+              <Text style={styles.modalTitle}>Bucket List is Empty</Text>
+              <Text style={styles.modalText}>No events liked yet</Text>
             </View>
 
             <Pressable
@@ -146,7 +148,7 @@ export default function AppLayout() {
             },
             headerRight: () => (
               // <Link href="/bucketList" asChild>
-              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginRight: 18, gap: 8 }}>
+              <View style={styles.headerRightContainer}>
                 <Pressable>
                   {({ pressed }) => (
                     <Image style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }} source={icons.notifications} />
@@ -166,12 +168,11 @@ export default function AppLayout() {
           options={{
             tabBarIcon: ({ focused }) => (
               <TabButton>
-
                 <If
                   condition={totalNewMessages}
                   render={(
-                    <View style={{ position: 'absolute', top: 6, right: 6, backgroundColor: red_100, width: 20, height: 20, borderRadius: 50, alignItems: 'center', justifyContent: 'center' }}>
-                      <Text style={{ color: white_50, fontWeight: '900', fontSize: 14 }}>{totalNewMessages}</Text>
+                    <View style={styles.newMessagesIndicator}>
+                      <Text style={styles.newMessagesText}>{totalNewMessages}</Text>
                     </View>
                   )}
                 />
@@ -246,3 +247,55 @@ export default function AppLayout() {
     </>
   );
 }
+
+
+// Styles object
+const styles = StyleSheet.create({
+  tabButton: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative'
+  },
+  modalContainer: {
+    minHeight: 200,
+    width: 300,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    borderRadius: 20,
+    alignSelf: 'center'
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+  modalText: {
+    textAlign: 'center'
+  },
+  headerRightContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 18,
+    gap: 8
+  },
+  newMessagesIndicator: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    backgroundColor: red_100,
+    width: 20,
+    height: 20,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  newMessagesText: {
+    color: white_50,
+    fontWeight: '900',
+    fontSize: 14
+  }
+});

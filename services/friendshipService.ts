@@ -11,9 +11,9 @@ class FrienshipService extends RestApiService {
     return this.http.get<GetLatestFriendships>('/friendships', config);
   }
 
-  searchFriendsByName(cursor: number, limit: number, friendName: string, accessToken: string) {
+  searchFriendsByName(cursor: number, limit: number, friendUserName: string, accessToken: string) {
     const config = {
-      params: { cursor, limit, friendName },
+      params: { cursor, limit, friendUserName },
       ...this.configAuthHeader(accessToken)
     };
     return this.http.get<GetLatestFriendships>('/friendships/search', config);
