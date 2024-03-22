@@ -38,22 +38,23 @@ export default function ChatAppScreen(): JSX.Element {
   const [debouncedTextInput, setDebouncedTextInput] = useState('');
   const { data: searchedFriendsData, isSuccess } = useInfiniteQuerySearchFriendsByUserName(debouncedTextInput);
 
-  const memoizedSearchedFriendsData = useMemo(() => (
+  const memoizedSearchedFriendsData: UserMessagesData[] = useMemo(() => (
     searchedFriendsData?.pages
       ?.flatMap(
-        page => page.friendships.map(
-          frindshipd => ({
-            chatUUID: frindshipd.chatuuid,
-            text: frindshipd.friend.username,
-            newMessagesCount: 0,
-            user: {
-              _id: frindshipd.friend.uid,
-              name: frindshipd.friend.name,
-              avatar: frindshipd.friend.photos[0]?.url
-            },
-            createdAt: new Date()
-          }) as UserMessagesData
-        )
+        page => page.friendships
+          .map(
+            friendship => ({
+              chatUUID: friendship.chatuuid,
+              text: friendship.friend.username,
+              newMessagesCount: 0,
+              user: {
+                _id: friendship.friend.uid,
+                name: friendship.friend.name,
+                avatar: friendship.friend.photos[0]?.url
+              },
+              createdAt: new Date()
+            })
+          )
       ) ?? []
   ), [searchedFriendsData?.pages]);
 
@@ -70,7 +71,7 @@ export default function ChatAppScreen(): JSX.Element {
 
   const handleNavigateToChatWithFriend = (targetUser: UserMessagesData) => {
     const { user, chatUUID, createdAt, text } = targetUser;
-    const messagePayload = { createdAt: createdAt.toString(), text, user };
+    const messagePayload = { createdAt: createdAt?.toString(), text, user };
 
     if (targetUser?.newMessagesCount !== 0 || showSearchFriends) {
       markLastMessageAsSeen(user._id, chatUUID, messagePayload);
