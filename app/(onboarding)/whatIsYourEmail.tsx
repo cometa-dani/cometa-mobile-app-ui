@@ -50,7 +50,7 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
       if (email.includes('@')) {
         try {
           setIsFetching(true);
-          const res = await userService.getUsersWithFilters({ email: email.trim() });
+          const res = await userService.searchUsers({ email: email.trim() });
           if (res.status === 204) {
             setIsAvailableToUse(true);
           }

@@ -62,7 +62,7 @@ export default function ChatScreen(): JSX.Element {
     let unsubscribe!: Unsubscribe;
     if (friendshipData?.chatuuid) {
       const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}`);
-      const queryMessages = query(chatsRef, limitToLast(12));
+      const queryMessages = query(chatsRef, limitToLast(18));
 
       unsubscribe = onChildAdded(queryMessages, (data) => {
         const newMessage = data.val() as IMessage;
@@ -103,22 +103,6 @@ export default function ChatScreen(): JSX.Element {
               </View>
             );
           },
-          // headerBackVisible: false,
-          // headerLeft: () => (
-          //   <View style={styles.avatarReciever}>
-          //     <FontAwesome name='arrow-down' size={24} onPress={() => router.back()} />
-          //     <ImageWithPlaceholder
-          //       style={styles.avatarImg}
-          //       source={{ uri: targetUser?.photos[0]?.url }}
-          //       placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
-          //     />
-
-          //     <View>
-          //       <Text style={styles.avatarName}>{targetUser?.username}</Text>
-          //       <Text>online</Text>
-          //     </View>
-          //   </View>
-          // )
         }} />
 
       <View style={styles.container}>

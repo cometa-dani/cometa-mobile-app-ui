@@ -51,7 +51,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
       if (username.length >= 3) {
         try {
           setIsFetching(true);
-          const res = await userService.getUsersWithFilters({ username: username.trim() });
+          const res = await userService.searchUsers({ username: username.trim() });
           if (res.status === 204) {
             setIsAvailableToUse(true);
           }

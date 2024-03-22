@@ -11,7 +11,6 @@ export default function HomeScreen(): JSX.Element {
 
   // eventsData
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetLatestEventsByLoggedInUser();
-  // const memoizedLoggedInUserLatestEventsList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
 
   // handling fetch when reaching the end
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();

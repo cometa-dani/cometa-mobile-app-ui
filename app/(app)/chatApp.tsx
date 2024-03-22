@@ -12,67 +12,27 @@ import { realtimeDB } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
 import { defaultImgPlaceholder } from '../../constants/vars';
 import { titles } from '../../constants/assets';
+import { markLastMessageAsSeen } from '../../firebase/writeToRealTimeDB';
 
 
-// const chatData = [
-//   {
-//     id: 1,
-//     name: 'John',
-//     message: 'Dude!',
-//     time: '10:00 AM',
-//     avatar: 'https://randomuser.me/api/portraits/men/7.jpg',
-//   },
-//   {
-//     id: 2,
-//     name: 'Ramon',
-//     message: 'Will you be there?',
-//     time: '10:00 AM',
-//     avatar: 'https://randomuser.me/api/portraits/men/35.jpg',
-//   },
-//   {
-//     id: 3,
-//     name: 'Marco Vizanti',
-//     message: 'hi',
-//     time: '10:00 AM',
-//     avatar: 'https://randomuser.me/api/portraits/men/30.jpg',
-//   },
-//   {
-//     id: 4,
-//     name: 'Maria Smith',
-//     message: 'Hello, how are you?',
-//     time: '10:00 AM',
-//     avatar: 'https://randomuser.me/api/portraits/women/30.jpg',
-//   },
-//   {
-//     id: 5,
-//     name: 'Karlota Jaramillo',
-//     message: 'Hi',
-//     time: '10:00 AM',
-//     avatar: 'https://randomuser.me/api/portraits/women/3.jpg',
-//   },
-//   {
-//     id: 7,
-//     name: 'Emma Brown',
-//     message: 'I missed you',
-//     time: '10:00 AM',
-//     avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
-//   },
-//   {
-//     id: 8,
-//     name: 'Jackie Chan',
-//     message: 'Hey mate',
-//     time: '10:00 AM',
-//     avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-//   }
-// ];
-
-
-type UserData = Pick<IMessage, 'user' | 'text' | 'createdAt'>;
+interface UserData extends Pick<IMessage, 'user' | 'text' | 'createdAt'> {
+  newMessagesCount?: number,
+  chatUUID: string
+}
 
 export default function ChatAppScreen(): JSX.Element {
   const loggedInUserUUID = useCometaStore(state => state.uid);
   const [textInput, setTextInput] = useState('');
-  const [friendsList, setFriendsList] = useState<UserData[]>([]);
+  const [friendsMessagesList, setFriendsMessagesList] = useState<UserData[]>([]);
+  // const newestFriendsTargetUsers = useInfiniteQueryGetLoggedInUserNewestFriends();
+
+  const handleNavigateToChatWithFriend = (targetUser: UserData) => {
+    const { user, chatUUID, createdAt, text } = targetUser;
+    const messagePayload = { createdAt, text, user };
+    router.push(`/chat/${user._id}`);
+
+    markLastMessageAsSeen(loggedInUserUUID, chatUUID, messagePayload);
+  };
 
 
   useEffect(() => {
@@ -81,13 +41,17 @@ export default function ChatAppScreen(): JSX.Element {
       const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}`);
 
       onValue(latestMessageRef, (snapshot) => {
-        const messages: IMessage[] = [];
+        const messages: UserData[] = [];
         snapshot.forEach((child) => {
-          const data = child.val() as IMessage;
+          const data = {
+            ...child.val(),
+            chatUUID: child.key
+          } as UserData;
+          // const key = child.key
           messages.push(data);
         });
 
-        setFriendsList(messages);
+        setFriendsMessagesList(messages);
       });
     }
 
@@ -131,12 +95,11 @@ export default function ChatAppScreen(): JSX.Element {
         </View>
 
         <FlashList
-          data={friendsList}
+          data={friendsMessagesList}
           estimatedItemSize={100}
           renderItem={({ item }) => (
             <BaseButton
-              // TODO: fix this... _id is equal to yourself (logged in user)
-              onPress={() => router.push(`/chat/${item.user._id}`)}
+              onPress={() => handleNavigateToChatWithFriend(item)}
               style={styles.baseButton}
             >
               <TransparentView style={styles.transparentView1}>
@@ -163,6 +126,7 @@ export default function ChatAppScreen(): JSX.Element {
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   safeArea: {

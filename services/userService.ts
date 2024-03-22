@@ -18,11 +18,12 @@ type CreateUser = Pick<LoggedUserClientState, (
 class UsersService extends RestApiService {
 
   /**
+   * TODO:
    *
    * @param userFields  can be either the loggedInUser or the targetUser
    * @returns
    */
-  public getUsersWithFilters(userFields: Partial<LoggedUserClientState>) {
+  public searchUsers(userFields: Partial<LoggedUserClientState>) {
     type Res = GetBasicUserProfile[] | GetBasicUserProfile | null;
     return this.http.get<Res>('/users', { params: userFields });
   }
