@@ -31,8 +31,9 @@ export const useInfiniteQueryGetLatestEventsByLoggedInUser = () => {
         }
         return lastPage.nextCursor;
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6,
+      refetchInterval: 1_000 * 60 * 10
     }));
 };
 
@@ -64,9 +65,8 @@ export const useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser = () => {
         }
         return lastPage.nextCursor;
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3,
-      refetchInterval: 1_000 * 60 * 15
+      retry: 2,
+      retryDelay: 1_000 * 6,
     })
   );
 };

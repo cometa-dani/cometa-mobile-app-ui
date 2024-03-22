@@ -4,7 +4,7 @@ import { BaseButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { blue_100, messages } from '../../constants/colors';
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { useCometaStore } from '../../store/cometaStore';
 import { defaultImgPlaceholder } from '../../constants/vars';
@@ -12,20 +12,71 @@ import { titles } from '../../constants/assets';
 import { markLastMessageAsSeen } from '../../firebase/writeToRealTimeDB';
 import { If } from '../../components/utils';
 import { UserMessagesData } from '../../store/slices/messagesSlices';
+// import friendshipService from '../../services/friendshipService';
+import { useInfiniteQuerySearchFriendsByUserName } from '../../queries/loggedInUser/friendshipHooks';
+// import { set } from 'firebase/database';
 
 
 export default function ChatAppScreen(): JSX.Element {
-  const [textInput, setTextInput] = useState('');
   const friendsMessagesList = useCometaStore(state => state.friendsMessagesList);
+  const [showSearchFriends, setShowSearchFriends] = useState(false);
+  // const setFriendsMessagesList = useCometaStore(state => state.setFriendsMessagesList);
+
+  // search user by username
+  const [textInput, setTextInput] = useState('');
+  const inputRef = useRef<TextInput>(null);
+
+  // listen for search input changes
+  useEffect(() => {
+    const timeOutId = setTimeout(() => {
+      if (textInput.length) {
+        setDebouncedTextInput(textInput);
+      }
+    }, 1_400);
+
+    return () => clearTimeout(timeOutId);
+  }, [textInput]);
+
+
+  const [debouncedTextInput, setDebouncedTextInput] = useState('');
+  const { data: searchedFriendsData, isLoading, isFetching, isSuccess } = useInfiniteQuerySearchFriendsByUserName(debouncedTextInput);
+
+  const memoizedSearchedFriendsData = useMemo(() => (
+    searchedFriendsData?.pages
+      ?.flatMap(
+        page => page.friendships.map(
+          frindshipd => ({
+            chatUUID: frindshipd.chatuuid,
+            text: frindshipd.friend.username,
+            newMessagesCount: 0,
+            user: {
+              _id: frindshipd.friend.uid,
+              name: frindshipd.friend.name,
+              avatar: frindshipd.friend.photos[0]?.url
+            },
+          }) as UserMessagesData
+        )
+      ) ?? []
+  ), [searchedFriendsData?.pages]);
+
+
+  useEffect(() => {
+    if (isSuccess && textInput.length) {
+      setShowSearchFriends(true);
+    }
+    else {
+      setShowSearchFriends(false);
+    }
+  }, [memoizedSearchedFriendsData, textInput]);
 
 
   const handleNavigateToChatWithFriend = (targetUser: UserMessagesData) => {
     const { user, chatUUID, createdAt, text } = targetUser;
     const messagePayload = { createdAt, text, user };
     router.push(`/chat/${user._id}`);
-    if (targetUser?.newMessagesCount === 0) return;
-
-    markLastMessageAsSeen(user._id, chatUUID, messagePayload);
+    if (targetUser?.newMessagesCount !== 0 || showSearchFriends) {
+      markLastMessageAsSeen(user._id, chatUUID, messagePayload);
+    }
   };
 
 
@@ -51,10 +102,11 @@ export default function ChatAppScreen(): JSX.Element {
         <View style={styles.innerView}>
           <View style={styles.relativeView}>
             <TextInput
+              ref={inputRef}
               style={styles.input}
               value={textInput}
               onChangeText={setTextInput}
-              placeholder='buscar...'
+              placeholder='type @ to search all your friends...'
             />
             <Pressable style={styles.pressable}>
               {({ pressed }) => (
@@ -65,7 +117,9 @@ export default function ChatAppScreen(): JSX.Element {
         </View>
 
         <FlashList
-          data={friendsMessagesList}
+          // TODO
+          // merge this two arrays in order to get the messagesCount of new messages
+          data={showSearchFriends ? memoizedSearchedFriendsData : friendsMessagesList}
           estimatedItemSize={100}
           renderItem={({ item }) => (
             <BaseButton
@@ -96,21 +150,28 @@ export default function ChatAppScreen(): JSX.Element {
                     </Text>
                   </TransparentView>
 
-                  <TransparentView style={styles.transparentView4}>
-                    <Text style={[styles.textGray, { color: item.newMessagesCount ? messages.ok : undefined }]}>
-                      {new Date(item.createdAt.toString() ?? '').toLocaleTimeString()}
-                    </Text>
-
-                    <If condition={item?.newMessagesCount}
-                      render={(
-                        <TransparentView style={styles.messagesCount}>
-                          <Text style={styles.messagesCountText}>
-                            {item.newMessagesCount}
-                          </Text>
-                        </TransparentView>
-                      )}
-                    />
-                  </TransparentView>
+                  <If
+                    condition={item?.createdAt}
+                    render={(
+                      <TransparentView style={styles.transparentView4}>
+                        <Text style={[styles.textGray, { color: item.newMessagesCount ? messages.ok : undefined }]}>
+                          {new Date(item.createdAt?.toString()).toLocaleTimeString()}
+                        </Text>
+                        <If condition={item?.newMessagesCount}
+                          render={(
+                            <TransparentView style={styles.messagesCount}>
+                              <Text style={styles.messagesCountText}>
+                                {item.newMessagesCount}
+                              </Text>
+                            </TransparentView>
+                          )}
+                        />
+                      </TransparentView>
+                    )}
+                    elseRender={(
+                      <FontAwesome style={{ alignSelf: 'center', color: messages.ok }} name='send-o' size={23} />
+                    )}
+                  />
                 </TransparentView>
               </TransparentView>
             </BaseButton>

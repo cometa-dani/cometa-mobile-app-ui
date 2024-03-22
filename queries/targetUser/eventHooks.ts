@@ -31,8 +31,8 @@ export const useInfiniteQueryGetLikedEventsForBucketListByTargerUser = (targetUs
         }
         return lastPage.nextCursor;
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6
     })
   );
 };
@@ -64,8 +64,9 @@ export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => 
         }
         return lastPage.nextCursor;
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6,
+      refetchInterval: 1_000 * 60 * 10
     })
   );
 };
@@ -94,8 +95,8 @@ export const useInfiniteQueryGetSameMatchedEventsByTwoUsers = (targetUserToken: 
         }
         return lastPage.nextCursor;
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6
     })
   );
 };

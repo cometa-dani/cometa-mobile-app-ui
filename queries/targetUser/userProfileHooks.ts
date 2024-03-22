@@ -21,8 +21,8 @@ export const useQueryGetTargetUserPeopleProfileByUid = (dynamicParam: string) =>
           throw new Error('failed to fetched');
         }
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6
     })
   );
 };

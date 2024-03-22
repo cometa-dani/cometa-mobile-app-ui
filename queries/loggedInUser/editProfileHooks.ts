@@ -27,8 +27,8 @@ export const useInfiniteQueryGetCities = (prefixName: string, limit = 10) => {
         return lastPage.nextCursor;
       }
     },
-    retry: 3,
-    retryDelay: 1_000 * 60 * 3
+    retry: 2,
+    retryDelay: 1_000 * 6
   });
 };
 
@@ -45,7 +45,7 @@ export const useQueryGetAllLanguages = () => {
         throw new Error('failed to request data');
       }
     },
-    retry: 3,
-    retryDelay: 1_000 * 60 * 3
+    retry: 2,
+    retryDelay: 1_000 * 6
   });
 };

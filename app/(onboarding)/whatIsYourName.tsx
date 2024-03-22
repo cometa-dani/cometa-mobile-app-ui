@@ -66,7 +66,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
           setIsAvailableToUse(false);
         }
       }
-    }, 1_200);
+    }, 1_600);
 
     return () => clearTimeout(timeOutId);
   }, [username]);

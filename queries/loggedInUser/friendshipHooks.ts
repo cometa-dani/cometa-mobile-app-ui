@@ -24,13 +24,45 @@ export const useInfiniteQueryGetLoggedInUserNewestFriends = () => {
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (!lastPage.nextCursor) {
+        if (!lastPage.nextCursor || lastPage.friendships.length < 5) {
           return null; // makes hasNextPage evalutes to false
         }
         return lastPage.nextCursor;
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6,
+    })
+  );
+};
+
+
+export const useInfiniteQuerySearchFriendsByUserName = (friendUserName: string) => {
+  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
+
+  return (
+    useInfiniteQuery({
+      queryKey: [QueryKeys.SEARCH_FRIENDS_BY_USERNAME, friendUserName],
+      enabled: !!friendUserName,
+      initialPageParam: -1,
+      queryFn: async ({ pageParam }) => {
+        const res = await friendshipService.searchFriendsByName(friendUserName, pageParam, 10, loggedInUserAccessToken);
+        if (res.status == 200) {
+          return res.data;
+        }
+        else {
+          throw new Error('failed to fetch');
+        }
+      },
+      // Define when to stop refetching
+      getNextPageParam: (lastPage) => {
+        // stops incrementing next page because there no more events left
+        if (!lastPage.nextCursor || lastPage.friendships.length < 10) {
+          return null; // makes hasNextPage evalutes to false
+        }
+        return lastPage.nextCursor;
+      },
+      retry: 2,
+      retryDelay: 1_000 * 6,
     })
   );
 };
@@ -51,8 +83,8 @@ export const useQueryGetFriendshipByTargetUserID = (targetUserUUID: string) => {
           throw new Error('failed to fetch');
         }
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6,
     })
   );
 };
@@ -78,8 +110,8 @@ export const useMutationSentFriendshipInvitation = () => {
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION] });
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6,
     })
   );
 };
@@ -105,8 +137,8 @@ export const useMutationCancelFriendshipInvitation = () => {
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION] });
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6,
     })
   );
 };
@@ -135,8 +167,8 @@ export const useMutationAcceptFriendshipInvitation = () => {
           queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION] })
         ]);
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6,
     })
   );
 };

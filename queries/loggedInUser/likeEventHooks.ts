@@ -100,8 +100,8 @@ export const useMutationLikeOrDislikeEvent = () => {
           ]);
         }
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6
     })
   );
 };
@@ -170,8 +170,8 @@ export const useMutationDeleteLikedEventFromBucketList = () => {
             pageParams: oldData?.pageParams || []
           }));
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6
     })
   );
 };

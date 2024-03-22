@@ -22,8 +22,8 @@ export const useQueryGetLoggedInUserProfileByUid = (dynamicParam: string) => {
           throw new Error('failed to fetched');
         }
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6
     })
   );
 };
@@ -59,8 +59,8 @@ export const useMutationLoggedInUserProfileById = () => {
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE] });
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6
     })
   );
 };
@@ -112,8 +112,8 @@ export const useMutationUploadLoggedInUserPhotos = (uuId: string) => {
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuId] });
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6
     })
   );
 };
@@ -158,8 +158,8 @@ export const useMutationDeleteLoggedInUserPhotoByUuid = (dynamicParam: string) =
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam] });
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6
     })
   );
 };
@@ -203,8 +203,8 @@ export const useMutationUpdateLoggedInUserAvatar = (dynamicParam: string) => {
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam] });
       },
-      retry: 3,
-      retryDelay: 1_000 * 60 * 3
+      retry: 2,
+      retryDelay: 1_000 * 6
     })
   );
 };
