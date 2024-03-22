@@ -4,14 +4,14 @@ import { Tabs, router } from 'expo-router';
 import { Pressable, Text as TransparentText } from 'react-native';
 import { View, useColors, Text } from '../../components/Themed';
 import { StatusBar } from 'expo-status-bar';
-import { FC, ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
 import { Image } from 'expo-image';
 import { icons, titles } from '../../constants/assets';
 import { RectButton } from 'react-native-gesture-handler';
-import { gray_900, white_50 } from '../../constants/colors';
+import { gray_900, red_100, white_50 } from '../../constants/colors';
 import { If } from '../../components/utils/ifElse';
 import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
 import ReactNativeModal from 'react-native-modal';
@@ -32,7 +32,7 @@ export function TabBarIcon(props: {
 }
 
 const TabButton: FC<{ children: ReactNode }> = ({ children }) => (
-  <RectButton style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+  <RectButton style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
     {children}
   </RectButton>
 );
@@ -41,11 +41,15 @@ export default function AppLayout() {
   const { gray300 } = useColors();
   const isCurrentUserAuthenticated = useCometaStore(state => state.isAuthenticated);
   const setIsCurrentUserAuthenticated = useCometaStore(state => state.setIsAuthenticated);
+  const friendsMessagesList = useCometaStore(state => state.friendsMessagesList) ?? [];
 
   // bucket list empty modal
   const [toggleModal, setToggleModal] = useState(false);
   const { data } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
 
+  const totalNewMessages = useMemo(() => (
+    friendsMessagesList.map(({ newMessagesCount }) => newMessagesCount ?? 0).reduce((prev, curr) => prev + curr, 0)
+  ), friendsMessagesList);
 
   // listens only for log-out event
   useEffect(() => {
@@ -162,6 +166,15 @@ export default function AppLayout() {
           options={{
             tabBarIcon: ({ focused }) => (
               <TabButton>
+
+                <If
+                  condition={totalNewMessages}
+                  render={(
+                    <View style={{ position: 'absolute', top: 6, right: 6, backgroundColor: red_100, width: 20, height: 20, borderRadius: 50, alignItems: 'center', justifyContent: 'center' }}>
+                      <Text style={{ color: white_50, fontWeight: '900', fontSize: 14 }}>{totalNewMessages}</Text>
+                    </View>
+                  )}
+                />
                 <If condition={focused}
                   render={(
                     <Image style={{ width: 30, height: 30 }} source={icons.commentRed} />

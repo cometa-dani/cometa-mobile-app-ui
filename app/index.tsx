@@ -3,8 +3,10 @@ import { router } from 'expo-router';
 import { LightButton } from '../components/buttons/buttons';
 import { useEffect } from 'react';
 import { Unsubscribe, onAuthStateChanged } from 'firebase/auth'; // Import Firebase authentication functions.
-import { auth } from '../firebase/firebase'; // Import Firebase authentication instance.
+import { auth, realtimeDB } from '../firebase/firebase'; // Import Firebase authentication instance.
 import { useCometaStore } from '../store/cometaStore';
+import { onValue, ref } from 'firebase/database';
+import { UserMessagesData } from '../store/slices/messagesSlices';
 
 
 export default function WelcomeScreen(): JSX.Element {
@@ -12,6 +14,8 @@ export default function WelcomeScreen(): JSX.Element {
   const setAccessToken = useCometaStore(state => state.setAccessToken);
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const setUserUid = useCometaStore(state => state.setUid);
+  const loggedInUserUUID = useCometaStore(state => state.uid);
+  const setFriendsMessagesList = useCometaStore(state => state.setFriendsMessagesList);
   let unsubscribe!: Unsubscribe;
 
   // Function to handle navigation when "Get Started" button is pressed.
@@ -67,6 +71,30 @@ export default function WelcomeScreen(): JSX.Element {
     return () => unsubscribe && unsubscribe();
   }, []); // The empty dependency array ensures this code runs only once, like componentDidMount.
 
+
+  useEffect(() => {
+    // let unsubscribe!: Unsubscribe;
+    if (loggedInUserUUID) {
+      const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}`);
+
+      onValue(latestMessageRef, (snapshot) => {
+        const messages: UserMessagesData[] = [];
+        snapshot.forEach((child) => {
+          const data = {
+            ...child.val(),
+            chatUUID: child.key
+          } as UserMessagesData;
+          // const key = child.key
+          messages.push(data);
+        });
+
+        // console.log(messages);
+        setFriendsMessagesList(messages);
+      });
+    }
+
+    // return unsubscribe && unsubscribe();
+  }, [loggedInUserUUID]);
 
   return (
     <ImageBackground style={styles.imageBackground} source={require('../assets/images/welcome-image.jpeg')}>

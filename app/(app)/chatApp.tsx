@@ -3,60 +3,65 @@ import { Text, View } from '../../components/Themed';
 import { BaseButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
-import { blue_100 } from '../../constants/colors';
-import { useEffect, useState } from 'react';
+import { blue_100, messages } from '../../constants/colors';
+import { useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
-import { IMessage } from 'react-native-gifted-chat';
-import { onValue, ref } from 'firebase/database';
-import { realtimeDB } from '../../firebase/firebase';
+// import { onValue, ref } from 'firebase/database';
+// import { realtimeDB } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
 import { defaultImgPlaceholder } from '../../constants/vars';
 import { titles } from '../../constants/assets';
 import { markLastMessageAsSeen } from '../../firebase/writeToRealTimeDB';
+import { If } from '../../components/utils';
+import { UserMessagesData } from '../../store/slices/messagesSlices';
 
 
-interface UserData extends Pick<IMessage, 'user' | 'text' | 'createdAt'> {
-  newMessagesCount?: number,
-  chatUUID: string
-}
+// interface UserData extends Pick<IMessage, 'user' | 'text' | 'createdAt'> {
+//   newMessagesCount?: number,
+//   chatUUID: string
+// }
 
 export default function ChatAppScreen(): JSX.Element {
-  const loggedInUserUUID = useCometaStore(state => state.uid);
+  // const loggedInUserUUID = useCometaStore(state => state.uid);
   const [textInput, setTextInput] = useState('');
-  const [friendsMessagesList, setFriendsMessagesList] = useState<UserData[]>([]);
+  // const [friendsMessagesList, setFriendsMessagesList] = useState<UserData[]>([]);
+  const friendsMessagesList = useCometaStore(state => state.friendsMessagesList);
+  // const setFriendsMessagesList = useCometaStore(state => state.setFriendsMessagesList);
   // const newestFriendsTargetUsers = useInfiniteQueryGetLoggedInUserNewestFriends();
 
-  const handleNavigateToChatWithFriend = (targetUser: UserData) => {
+  const handleNavigateToChatWithFriend = (targetUser: UserMessagesData) => {
     const { user, chatUUID, createdAt, text } = targetUser;
     const messagePayload = { createdAt, text, user };
     router.push(`/chat/${user._id}`);
+    if (targetUser?.newMessagesCount === 0) return;
 
-    markLastMessageAsSeen(loggedInUserUUID, chatUUID, messagePayload);
+    markLastMessageAsSeen(user._id, chatUUID, messagePayload);
   };
 
 
-  useEffect(() => {
-    // let unsubscribe!: Unsubscribe;
-    if (loggedInUserUUID) {
-      const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}`);
+  // useEffect(() => {
+  //   // let unsubscribe!: Unsubscribe;
+  //   if (loggedInUserUUID) {
+  //     const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}`);
 
-      onValue(latestMessageRef, (snapshot) => {
-        const messages: UserData[] = [];
-        snapshot.forEach((child) => {
-          const data = {
-            ...child.val(),
-            chatUUID: child.key
-          } as UserData;
-          // const key = child.key
-          messages.push(data);
-        });
+  //     onValue(latestMessageRef, (snapshot) => {
+  //       const messages: UserMessagesData[] = [];
+  //       snapshot.forEach((child) => {
+  //         const data = {
+  //           ...child.val(),
+  //           chatUUID: child.key
+  //         } as UserMessagesData;
+  //         // const key = child.key
+  //         messages.push(data);
+  //       });
 
-        setFriendsMessagesList(messages);
-      });
-    }
+  //       // console.log(messages);
+  //       setFriendsMessagesList(messages);
+  //     });
+  //   }
 
-    // return unsubscribe && unsubscribe();
-  }, [loggedInUserUUID]);
+  //   // return unsubscribe && unsubscribe();
+  // }, [loggedInUserUUID]);
 
 
   return (
@@ -115,7 +120,19 @@ export default function ChatAppScreen(): JSX.Element {
                   </TransparentView>
 
                   <TransparentView style={styles.transparentView4}>
-                    <Text style={styles.textGray}>{item.createdAt.toString() ?? ''}</Text>
+                    <Text style={[styles.textGray, { color: item.newMessagesCount ? messages.ok : undefined }]}>
+                      {new Date(item.createdAt.toString() ?? '').toLocaleTimeString()}
+                    </Text>
+
+                    <If condition={item?.newMessagesCount}
+                      render={(
+                        <TransparentView style={styles.messagesCount}>
+                          <Text style={styles.messagesCountText}>
+                            {item.newMessagesCount}
+                          </Text>
+                        </TransparentView>
+                      )}
+                    />
                   </TransparentView>
                 </TransparentView>
               </TransparentView>
@@ -168,7 +185,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 20,
     alignItems: 'center',
-    flex: 1
+    flex: 1,
   },
   transparentView2: {
     width: 60,
@@ -183,7 +200,23 @@ const styles = StyleSheet.create({
   transparentView3: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    flexGrow: 1
+    flexGrow: 1,
+    position: 'relative',
+    height: '100%',
+  },
+  messagesCount: {
+    backgroundColor: messages.ok,
+    width: 22,
+    height: 22,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center'
+  },
+  messagesCountText: {
+    color: '#fff',
+    fontWeight: '900',
+
   },
   textBold: {
     fontSize: 20,
@@ -193,6 +226,8 @@ const styles = StyleSheet.create({
     color: 'gray'
   },
   transparentView4: {
-    alignSelf: 'center'
+    alignSelf: 'center',
+    gap: 4,
+    height: '100%'
   }
 });

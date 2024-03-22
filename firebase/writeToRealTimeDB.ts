@@ -10,29 +10,29 @@ export async function writeToRealTimeDB(chatuuid: string, messagePayload: object
   const latestMessageRef = ref(realtimeDB, 'latestMessages');
   const chatListRef = push(chatsRef);
 
-  const loggedInUserLatestMessagePayload = {
+  const targetUserLatestMessagePayload = {
     ...messagePayload,
     user: {
       _id: loggedInUser?.uid,
       name: loggedInUser?.name,
       avatar: loggedInUser?.photos[0]?.url,
     },
-    newMessagesCount: 0   // your own written message
+    newMessagesCount: increment(1) // sent messages to target user
   };
-  const targetUserLatestMessagePayload = {
+  const loggedInUserOwnLatestMessagePayload = {
     ...messagePayload,
     user: {
       _id: targetUser?.uid,
       name: targetUser?.name,
       avatar: targetUser?.photos[0]?.url,
     },
-    newMessagesCount: increment(1) // sent messages to target user
+    newMessagesCount: 0  // your own written messages
   };
 
   // update different locations in the database and keeps them in sync
   const latestMessagesPayload = {
-    [`/${loggedInUser.uid}/${chatuuid}`]: targetUserLatestMessagePayload,
-    [`/${targetUser.uid}/${chatuuid}`]: loggedInUserLatestMessagePayload
+    [`/${loggedInUser.uid}/${chatuuid}`]: loggedInUserOwnLatestMessagePayload,
+    [`/${targetUser.uid}/${chatuuid}`]: targetUserLatestMessagePayload
   };
 
   return (
