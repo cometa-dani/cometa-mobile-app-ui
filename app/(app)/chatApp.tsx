@@ -18,6 +18,7 @@ import { useInfiniteQuerySearchFriendsByUserName } from '../../queries/loggedInU
 export default function ChatAppScreen(): JSX.Element {
   const friendsMessagesList = useCometaStore(state => state.friendsMessagesList);
   const [showSearchFriends, setShowSearchFriends] = useState(false);
+  const loggedInUserUUID = useCometaStore(state => state.uid);
 
   // search user by username
   const [textInput, setTextInput] = useState('');
@@ -72,11 +73,11 @@ export default function ChatAppScreen(): JSX.Element {
   const handleNavigateToChatWithFriend = (targetUser: UserMessagesData) => {
     const { user, chatUUID, createdAt, text } = targetUser;
     const messagePayload = { createdAt: createdAt?.toString(), text, user };
-
-    if (targetUser?.newMessagesCount !== 0 || showSearchFriends) {
-      markLastMessageAsSeen(user._id, chatUUID, messagePayload);
-    }
     router.push(`/chat/${user._id}`);
+    setTimeout(() => setTextInput(''), 200);
+    if (!targetUser?.newMessagesCount) return;
+
+    markLastMessageAsSeen(loggedInUserUUID, chatUUID, messagePayload);
   };
 
 
@@ -149,7 +150,7 @@ export default function ChatAppScreen(): JSX.Element {
                   </TransparentView>
 
                   <If
-                    condition={item?.createdAt}
+                    condition={!showSearchFriends}
                     render={(
                       <TransparentView style={styles.transparentView4}>
                         <Text style={[styles.textGray, { color: item.newMessagesCount ? messages.ok : undefined }]}>
