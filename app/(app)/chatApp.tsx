@@ -72,12 +72,17 @@ export default function ChatAppScreen(): JSX.Element {
 
   const handleNavigateToChatWithFriend = (targetUser: UserMessagesData) => {
     const { user, chatUUID, createdAt, text } = targetUser;
-    const messagePayload = { createdAt: createdAt?.toString(), text, user };
     router.push(`/chat/${user._id}`);
-    setTimeout(() => setTextInput(''), 200);
-    if (!targetUser?.newMessagesCount) return;
 
-    markLastMessageAsSeen(loggedInUserUUID, chatUUID, messagePayload);
+    setTimeout(() => setTextInput(''), 200);
+    if (targetUser?.newMessagesCount) {
+      const messagePayload = { createdAt: createdAt?.toString(), text, user };
+      markLastMessageAsSeen(loggedInUserUUID, chatUUID, messagePayload);
+    }
+    else if (showSearchFriends) {
+      const messagePayload = { createdAt: createdAt?.toString(), text: friendsMessagesList.find(friend => friend.user._id === user._id)?.text, user };
+      markLastMessageAsSeen(loggedInUserUUID, chatUUID, messagePayload);
+    }
   };
 
 
