@@ -50,7 +50,7 @@ export default function AppLayout() {
 
   const totalNewMessages = useMemo(() => (
     friendsMessagesList.map(({ newMessagesCount }) => newMessagesCount ?? 0).reduce((prev, curr) => prev + curr, 0)
-  ), [friendsMessagesList.length]);
+  ), [friendsMessagesList]);
 
 
   // listens only for log-out event
