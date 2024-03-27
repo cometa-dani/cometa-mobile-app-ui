@@ -65,7 +65,7 @@ export default function ChatScreen(): JSX.Element {
       const queryMessages = query(chatsRef, limitToLast(18));
 
       unsubscribe = onChildAdded(queryMessages, (data) => {
-        const newMessage = data.val() as IMessage;
+        const newMessage = data?.val() as IMessage;
         setMessages(prev => prev.concat(newMessage));
       });
     }

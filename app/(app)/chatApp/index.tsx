@@ -1,21 +1,21 @@
 import { StyleSheet, SafeAreaView, TextInput, Pressable, Image, View as TransparentView } from 'react-native';
-import { Text, View } from '../../components/Themed';
+import { Text, View } from '../../../components/Themed';
 import { BaseButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
-import { blue_100, messages } from '../../constants/colors';
+import { blue_100, messages } from '../../../constants/colors';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
-import { useCometaStore } from '../../store/cometaStore';
-import { defaultImgPlaceholder } from '../../constants/vars';
-import { titles } from '../../constants/assets';
-import { markLastMessageAsSeen } from '../../firebase/writeToRealTimeDB';
-import { If } from '../../components/utils';
-import { UserMessagesData } from '../../store/slices/messagesSlices';
-import { useInfiniteQuerySearchFriendsByUserName } from '../../queries/loggedInUser/friendshipHooks';
+import { useCometaStore } from '../../../store/cometaStore';
+import { defaultImgPlaceholder } from '../../../constants/vars';
+import { titles } from '../../../constants/assets';
+import { markLastMessageAsSeen } from '../../../firebase/writeToRealTimeDB';
+import { If } from '../../../components/utils';
+import { UserMessagesData } from '../../../store/slices/messagesSlices';
+import { useInfiniteQuerySearchFriendsByUserName } from '../../../queries/loggedInUser/friendshipHooks';
 
 
-export default function ChatAppScreen(): JSX.Element {
+export default function ChatLatestMessagesScreen(): JSX.Element {
   const friendsMessagesList = useCometaStore(state => state.friendsMessagesList);
   const [showSearchFriends, setShowSearchFriends] = useState(false);
   const loggedInUserUUID = useCometaStore(state => state.uid);
@@ -34,7 +34,6 @@ export default function ChatAppScreen(): JSX.Element {
 
     return () => clearTimeout(timeOutId);
   }, [textInput]);
-
 
   const [debouncedTextInput, setDebouncedTextInput] = useState('');
   const { data: searchedFriendsData, isSuccess } = useInfiniteQuerySearchFriendsByUserName(debouncedTextInput);
@@ -97,7 +96,7 @@ export default function ChatAppScreen(): JSX.Element {
           headerTitleAlign: 'center',
           headerRight() {
             return (
-              <TouchableOpacity style={{ marginRight: 24 }}>
+              <TouchableOpacity onPress={() => router.push('/(app)/chatApp/(chatGroup)/addFriendsScreen')} style={{ marginRight: 16 }}>
                 <FontAwesome size={30} color={blue_100} name='plus-circle' />
               </TouchableOpacity>
             );
@@ -195,8 +194,8 @@ const styles = StyleSheet.create({
     flex: 1
   },
   innerView: {
-    padding: 20,
-    paddingVertical: 10
+    paddingHorizontal: 20,
+    paddingBottom: 12,
   },
   relativeView: {
     position: 'relative',
