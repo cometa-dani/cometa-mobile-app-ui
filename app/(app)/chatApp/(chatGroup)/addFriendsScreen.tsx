@@ -3,19 +3,18 @@ import { Text, View } from '../../../../components/Themed';
 import { BaseButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
 // import { FontAwesome } from '@expo/vector-icons';
-import { blue_100, gray_900, red_100 } from '../../../../constants/colors';
+import { blue_100, red_100 } from '../../../../constants/colors';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { useCometaStore } from '../../../../store/cometaStore';
 import { defaultImgPlaceholder } from '../../../../constants/vars';
 import { UserMessagesData } from '../../../../store/slices/messagesSlices';
 import { useInfiniteQuerySearchFriendsByUserName } from '../../../../queries/loggedInUser/friendshipHooks';
-import Checkbox from 'expo-checkbox';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { If } from '../../../../components/utils';
 
-export default function AddFriendsScreen(): JSX.Element {
 
+export default function AddFriendsScreen(): JSX.Element {
   const chatGroupMembers = useCometaStore(state => state.chatGroupMembers);
   const setChatGroupMembers = useCometaStore(state => state.setChatGroupMembers);
   const [textInput, setTextInput] = useState('');

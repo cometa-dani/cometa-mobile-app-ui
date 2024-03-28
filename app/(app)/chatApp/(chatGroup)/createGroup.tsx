@@ -12,7 +12,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 
 export default function CreateChatGroupScreen(): JSX.Element {
-
   const chatGroupMembers = useCometaStore(state => state.chatGroupMembers);
 
   // const [textInput, setTextInput] = useState('');
