@@ -5,7 +5,7 @@ import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboard
 import { AppButton } from '../../components/buttons/buttons';
 import { AppPhotosGrid } from '../../components/profile/photosGrid';
 import { useMutationUploadLoggedInUserPhotos } from '../../queries/loggedInUser/userProfileHooks';
-import { Photo } from '../../models/Photo';
+import { PhotoRef } from '../../models/Photo';
 import * as ImagePicker from 'expo-image-picker';
 import { useCometaStore } from '../../store/cometaStore';
 import { FC, useEffect, useState } from 'react';
@@ -19,7 +19,6 @@ import { If } from '../../components/utils';
 import ToastContainer, { Toast } from 'toastify-react-native';
 
 
-type UserPhoto = Pick<Photo, 'uuid' | 'url' | 'placeholder'>
 
 const maximumPhotos = 5;
 
@@ -35,7 +34,7 @@ export default function AddPhotosScreen(): JSX.Element {
   const mutateUserPhotosUpload = useMutationUploadLoggedInUserPhotos(uid);
 
   // photos presentation
-  const [userPhotos, setUserPhotos] = useState<UserPhoto[]>([]);
+  const [userPhotos, setUserPhotos] = useState<PhotoRef[]>([]);
 
 
   const handlePickMultipleImages = async () => {
@@ -53,12 +52,12 @@ export default function AddPhotosScreen(): JSX.Element {
         });
 
         if (!pickedPhotos.canceled) {
-          const pickedImgFiles = (
+          const pickedImgFiles =
             pickedPhotos.assets?.map((asset) => ({
               url: asset.uri,
               uuid: uuid.v4().toString()
-            })) ?? []
-          );
+            })) ?? [];
+
           setUserPhotos(prev => prev.concat(pickedImgFiles));
         }
       }
@@ -71,7 +70,7 @@ export default function AddPhotosScreen(): JSX.Element {
 
   const handleDeleteImage = async (photoUuid: string) => {
     setUserPhotos(prev => prev.filter(excludePhoto));
-    const excludePhoto = (photo: UserPhoto): boolean => photo.uuid !== photoUuid;
+    const excludePhoto = (photo: PhotoRef): boolean => photo.uuid !== photoUuid;
   };
 
 
@@ -99,18 +98,6 @@ export default function AddPhotosScreen(): JSX.Element {
         const { user: userCrendentials } = await createUserWithEmailAndPassword(auth, email, password); // firebase
         const { data: newCreatedUser } = await userService.create({ ...onboarding.user, uid: userCrendentials.uid }); // first checks if user exists
         await mutateUserPhotosUpload.mutateAsync({ userID: newCreatedUser?.id, pickedImgFiles: userPhotos });
-        // const { photos } =
-        // create user in firebase
-        // await setDoc(doc(firestoreDB, 'users', userCrendentials.uid), {
-        //   id: newCreatedUser.id,
-        //   uid: newCreatedUser.uid,
-        //   email: newCreatedUser.email,
-        //   name: newCreatedUser.name,
-        //   photo: {
-        //     url: photos[0].url,
-        //     placeholder: photos[0].placeholder
-        //   }
-        // });
         setUserUid(userCrendentials.uid);
         setAccessToken(await userCrendentials.getIdToken());
 

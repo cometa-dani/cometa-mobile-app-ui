@@ -7,3 +7,5 @@ export interface Photo {
   placeholder?: string;
   order: number;
 }
+
+export type PhotoRef = Pick<Photo, 'uuid' | 'url' | 'placeholder'>

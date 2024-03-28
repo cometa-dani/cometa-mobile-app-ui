@@ -97,8 +97,8 @@ export const AppLabelFeedbackMsg: FC<AppLabelProps> = ({ text, position = 'top' 
   return (
     position === 'top' ? (
       <TransparentView style={formFieldStyles.formLabelTop}>
-        <TransparentView style={{ ...formFieldStyles.cirle, position: 'static', right: 0 }}>
-          <FontAwesome name='exclamation' color={messages.error} size={16} />
+        <TransparentView style={{ ...formFieldStyles.cirle, width: 18, height: 18, position: 'static', right: 0 }}>
+          <FontAwesome name='exclamation' color={messages.error} size={12} />
         </TransparentView>
 
         <Text style={{ color: messages.error, fontSize: 14 }}>{text}</Text>

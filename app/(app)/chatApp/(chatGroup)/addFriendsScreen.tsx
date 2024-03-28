@@ -2,7 +2,6 @@ import { StyleSheet, SafeAreaView, TextInput, Pressable, Image, View as Transpar
 import { Text, View } from '../../../../components/Themed';
 import { BaseButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
-// import { FontAwesome } from '@expo/vector-icons';
 import { blue_100, red_100 } from '../../../../constants/colors';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
@@ -52,7 +51,7 @@ export default function AddFriendsScreen(): JSX.Element {
             })
           )
       ) ?? []
-  ), [searchedFriendsData?.pages, chatGroupMembers.length]);
+  ), [searchedFriendsData?.pages, chatGroupMembers.size]);
 
 
   return (
@@ -93,7 +92,7 @@ export default function AddFriendsScreen(): JSX.Element {
           data={memoizedSearchedFriendsData}
           estimatedItemSize={100}
           renderItem={({ item }) => {
-            const checked = chatGroupMembers.some(member => member.user._id === item.user._id);
+            const checked: boolean = chatGroupMembers.has(item.user._id);
             return (
               <BaseButton
                 onPress={() => setChatGroupMembers(item)}

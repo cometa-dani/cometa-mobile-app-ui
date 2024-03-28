@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, TextInput, Pressable, Image, View as TransparentView } from 'react-native';
+import { StyleSheet, SafeAreaView, TextInput, Image, View as TransparentView } from 'react-native';
 import { Text, View } from '../../../../components/Themed';
 import { BaseButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
@@ -7,48 +7,50 @@ import { blue_100, red_100 } from '../../../../constants/colors';
 import { FlashList } from '@shopify/flash-list';
 import { useCometaStore } from '../../../../store/cometaStore';
 import { defaultImgPlaceholder } from '../../../../constants/vars';
-import { If } from '../../../../components/utils';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useMemo, useRef } from 'react';
+import { UserMessagesData } from '../../../../store/slices/messagesSlices';
+import { Formik, FormikProps } from 'formik';
+import * as Yup from 'yup';
+import { If } from '../../../../components/utils';
+import { AppLabelFeedbackMsg } from '../../../../components/textInput/AppTextInput';
+import * as ImagePicker from 'expo-image-picker';
 
+
+type Value = { name: string }
+
+const validationSchemma = Yup.object<Value>({
+  name: Yup.string().required('Required group name'),
+});
 
 export default function CreateChatGroupScreen(): JSX.Element {
   const chatGroupMembers = useCometaStore(state => state.chatGroupMembers);
+  const setChatGroupMembers = useCometaStore(state => state.setChatGroupMembers);
+  const imageRef = useCometaStore(state => state.imageRef);
+  const setImageRef = useCometaStore(state => state.setImageRef);
+  const formikRef = useRef<FormikProps<Value>>(null);
 
-  // const [textInput, setTextInput] = useState('');
-  // const inputRef = useRef<TextInput>(null);
+  const memoizedSearchedFriendsData: UserMessagesData[] = useMemo(() => (
+    [...chatGroupMembers.values()]
+  ), [chatGroupMembers.size]);
 
-  // listen for search input changes
-  // useEffect(() => {
-  //   const timeOutId = setTimeout(() => {
-  //     setDebouncedTextInput(textInput);
-  //     // if (textInput.length) {
-  //     // }
-  //   }, 1_400);
-
-  //   return () => clearTimeout(timeOutId);
-  // }, [textInput]);
-
-  // const [debouncedTextInput, setDebouncedTextInput] = useState('');
-  // const { data: searchedFriendsData, isSuccess } = useInfiniteQuerySearchFriendsByUserName(debouncedTextInput || '@');
-  // const memoizedSearchedFriendsData: UserMessagesData[] = useMemo(() => (
-  //   searchedFriendsData?.pages
-  //     ?.flatMap(
-  //       page => page.friendships
-  //         .map(
-  //           friendship => ({
-  //             chatUUID: friendship.chatuuid,
-  //             text: friendship.friend.username,
-  //             newMessagesCount: 0,
-  //             user: {
-  //               _id: friendship.friend.uid,
-  //               name: friendship.friend.name,
-  //               avatar: friendship.friend.photos[0]?.url
-  //             },
-  //             createdAt: new Date()
-  //           })
-  //         )
-  //     ) ?? []
-  // ), [searchedFriendsData?.pages]);
+  // No permissions request is necessary for launching the image library
+  const handlePickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 4],
+        quality: 1,
+      });
+      if (!result.canceled) {
+        setImageRef({ url: result.assets[0].uri, uuid: result.assets[0].uri });
+      }
+    }
+    catch (error) {
+      // console.log(error);
+    }
+  };
 
 
   return (
@@ -60,7 +62,10 @@ export default function CreateChatGroupScreen(): JSX.Element {
           headerTitleAlign: 'center',
           headerRight() {
             return (
-              <TouchableOpacity style={{ marginRight: 16 }}>
+              <TouchableOpacity
+                style={{ marginRight: 16 }}
+                onPress={() => formikRef.current?.handleSubmit()}
+              >
                 <Text style={{ fontSize: 17, fontWeight: '700', color: red_100 }}>Create</Text>
               </TouchableOpacity>
             );
@@ -72,26 +77,67 @@ export default function CreateChatGroupScreen(): JSX.Element {
           <View style={styles.relativeView}>
 
             <BaseButton
+              onPress={handlePickImage}
               style={{ backgroundColor: '#545454', borderRadius: 16, width: 68, height: 68, alignItems: 'center', justifyContent: 'center' }}
             >
-              <MaterialCommunityIcons
-                name="camera-plus-outline"
-                size={50}
-                color={blue_100}
+              <If
+                condition={imageRef?.url}
+                render={(
+                  <Image
+                    source={{ uri: imageRef.url }}
+                    style={{ width: 68, height: 68, borderRadius: 16 }}
+                  />
+                )}
+                elseRender={(
+                  <MaterialCommunityIcons
+                    name="camera-plus-outline"
+                    size={50}
+                    color={blue_100}
+                  />
+                )}
               />
             </BaseButton>
 
-            <TextInput style={{ flex: 1 }} placeholder='Nombre del grupo (optional)' />
+            <Formik
+              style={{ width: '100%', flex: 1 }}
+              innerRef={formikRef}
+              onSubmit={(values) => console.log(values)}
+              validationSchema={validationSchemma}
+              initialValues={{ name: '' }}
+            >
+              {({ touched, errors, handleBlur, handleChange, values }) => (
+                <TransparentView style={{ position: 'relative', width: '100%' }}>
+                  <TextInput
+                    style={{ width: '100%' }}
+                    keyboardType="ascii-capable"
+                    onChangeText={handleChange('name')}
+                    onBlur={handleBlur('name')}
+                    value={values.name}
+                    placeholder='Nombre del grupo'
+                  />
+                  <If
+                    condition={touched.name && errors.name}
+                    render={(
+                      <TransparentView style={{ top: -23 }}>
+                        <AppLabelFeedbackMsg text={errors.name} />
+                      </TransparentView>
+                    )}
+                  />
+                </TransparentView>
+              )}
+            </Formik>
           </View>
         </View>
 
         <FlashList
-          data={chatGroupMembers}
+          data={memoizedSearchedFriendsData}
           estimatedItemSize={100}
           renderItem={({ item }) => {
-            const checked = chatGroupMembers.some(member => member.user._id === item.user._id);
             return (
-              <BaseButton style={styles.baseButton}>
+              <BaseButton
+                onPress={() => setChatGroupMembers(item)}
+                style={styles.baseButton}
+              >
                 <TransparentView style={styles.transparentView1}>
 
                   <TransparentView style={styles.transparentView2}>
@@ -118,16 +164,7 @@ export default function CreateChatGroupScreen(): JSX.Element {
                         {item.text}
                       </Text>
                     </TransparentView>
-
-                    <If
-                      condition={!checked}
-                      render={(
-                        <FontAwesome5 style={[styles.checkbox, { marginRight: 8 }]} name="user" size={20} color="black" />
-                      )}
-                      elseRender={(
-                        <FontAwesome5 style={styles.checkbox} name="user-check" size={20} color="black" />
-                      )}
-                    />
+                    <FontAwesome5 style={styles.checkbox} name="user-check" size={20} color="black" />
                   </TransparentView>
                 </TransparentView>
               </BaseButton>
