@@ -1,6 +1,28 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import chatGroupService from '../../services/chatGroupService';
 import { useCometaStore } from '../../store/cometaStore';
+
+
+export const useQueryGetChatGroupByID = (chatGroupID: string) => {
+  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
+
+  return (
+    useQuery({
+      queryKey: ['chatGroup', chatGroupID],
+      queryFn: async () => {
+        const res = await chatGroupService.getById(chatGroupID, loggedInUserAccessToken);
+        if (res.status === 200) {
+          return res.data;
+        }
+        else {
+          throw new Error('failed to request data');
+        }
+      },
+      retry: 2,
+      retryDelay: 1_000 * 6
+    })
+  );
+};
 
 
 type MutationArgs = {

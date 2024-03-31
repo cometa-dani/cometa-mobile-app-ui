@@ -16,11 +16,11 @@ import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
 import { writeToRealTimeDB } from '../../firebase/writeToRealTimeDB';
 
 
-export default function ChatScreen(): JSX.Element {
+export default function ChatWithFriendScreen(): JSX.Element {
   const { text } = useColors();
 
   // users ids
-  const targetUserUUID = useLocalSearchParams<{ friend: string }>()['friend']; // TODO: can be uuid
+  const targetUserUUID = useLocalSearchParams<{ friendUuid: string }>()['friendUuid']; // TODO: can be uuid
   const loggedInUserUuid = useCometaStore(state => state.uid);
   const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(targetUserUUID);
   const sender = friendshipData?.sender;

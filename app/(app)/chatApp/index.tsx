@@ -108,7 +108,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
           headerTitleAlign: 'center',
           headerRight() {
             return (
-              <TouchableOpacity onPress={() => router.push('/(app)/chatApp/(chatGroup)/addFriendsScreen')} style={{ marginRight: 16 }}>
+              <TouchableOpacity onPress={() => router.push('/(app)/chatApp/(createChatGroup)/addFriendsScreen')} style={{ marginRight: 16 }}>
                 <FontAwesome size={30} color={blue_100} name='plus-circle' />
               </TouchableOpacity>
             );

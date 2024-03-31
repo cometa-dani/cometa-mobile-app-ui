@@ -23,7 +23,13 @@ export interface ChatGroup {
   description?: string;
   photo?: Photo;
   chatGroupPhotoId?: number;
-  members: GetBasicUserProfile[];
+  // members: GetBasicUserProfile[];
   admin: GetBasicUserProfile;
   adminId: number;
+}
+
+export interface GetChatGroupById extends ChatGroup {
+  members: {
+    [key: string]: GetBasicUserProfile
+  }
 }

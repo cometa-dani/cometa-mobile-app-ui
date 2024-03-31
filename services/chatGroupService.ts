@@ -1,4 +1,4 @@
-import { ChatGroup } from '../models/ChatGroup';
+import { ChatGroup, GetChatGroupById } from '../models/ChatGroup';
 import { RestApiService } from './restService';
 
 
@@ -14,6 +14,15 @@ class ChatGroupService extends RestApiService {
       this.http.post<ChatGroup>(
         '/chat-groups',
         { groupName, members },
+        this.configAuthHeader(loggedInUserAccessToken)
+      )
+    );
+  }
+
+  getById(id: string, loggedInUserAccessToken: string) {
+    return (
+      this.http.get<GetChatGroupById>(
+        `/chat-groups/${id}`,
         this.configAuthHeader(loggedInUserAccessToken)
       )
     );

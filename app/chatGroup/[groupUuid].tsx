@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Bubble, GiftedChat, IMessage, Avatar } from 'react-native-gifted-chat';
 import { StyleSheet } from 'react-native';
@@ -9,27 +9,30 @@ import { SafeAreaView } from 'react-native';
 import { Image as ImageWithPlaceholder } from 'expo-image';
 import { Unsubscribe } from 'firebase/auth';
 import { useCometaStore } from '../../store/cometaStore';
-import { useQueryGetFriendshipByTargetUserID } from '../../queries/loggedInUser/friendshipHooks';
+import { useQueryGetChatGroupByID } from '../../queries/loggedInUser/chatGroupsHooks';
+import { useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
+import { If } from '../../components/utils';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { gray_900 } from '../../constants/colors';
 // firebase
 import { realtimeDB } from '../../firebase/firebase';
 import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
-import { writeToRealTimeDB } from '../../firebase/writeToRealTimeDB';
+import { writeToChatGroup } from '../../firebase/writeToRealTimeDB';
+import { GetBasicUserProfile } from '../../models/User';
 
 
-export default function ChatScreen(): JSX.Element {
+export default function ChatGroupScreen(): JSX.Element {
   const { text } = useColors();
 
-  // users ids
-  const targetUserUUID = useLocalSearchParams<{ friend: string }>()['friend']; // TODO: can be uuid
+  const chatgroupUUID = useLocalSearchParams<{ groupUuid: string }>()['groupUuid']; // TODO: can be uuid
   const loggedInUserUuid = useCometaStore(state => state.uid);
-  const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(targetUserUUID);
-  const sender = friendshipData?.sender;
-  const receiver = friendshipData?.receiver;
-
-  // users profiles
-  const targetUser = sender?.uid === targetUserUUID ? sender : receiver;
-  const loggedInUser = sender?.uid !== targetUserUUID ? sender : receiver;
+  const { data: loggedInUser } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
+  const { data: targetChatGroup } = useQueryGetChatGroupByID(chatgroupUUID);
   const [messages, setMessages] = useState<IMessage[]>([]);
+
+  const targetChatGroupMembers: Map<string, GetBasicUserProfile> = useMemo(() => (
+    new Map(Object.entries(targetChatGroup?.members ?? {}))
+  ), [targetChatGroup?.members]);
 
 
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
@@ -42,26 +45,31 @@ export default function ChatScreen(): JSX.Element {
           _id: loggedInUserUuid,
         }
       };
-      if (friendshipData?.chatuuid && loggedInUser && targetUser) {
-        await writeToRealTimeDB(
-          friendshipData.chatuuid,
+      if (loggedInUser && targetChatGroup?.members) {
+        const chatGroupData = {
+          name: targetChatGroup?.name,
+          photo: targetChatGroup?.photo?.url ?? '',
+          uuid: targetChatGroup?.id
+        };
+        await writeToChatGroup(
           messagePayload,
           loggedInUser,
-          targetUser
+          [...targetChatGroupMembers.keys()],
+          chatGroupData
         );
       }
     }
     catch {
       return null;
     }
-  }, [friendshipData?.chatuuid]);
+  }, [targetChatGroup?.id, targetChatGroupMembers.size]);
 
 
   // listen for new added messages
   useEffect(() => {
     let unsubscribe!: Unsubscribe;
-    if (friendshipData?.chatuuid) {
-      const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}`);
+    if (targetChatGroup?.id) {
+      const chatsRef = ref(realtimeDB, `chats/${targetChatGroup.id}`);
       const queryMessages = query(chatsRef, limitToLast(18));
 
       unsubscribe = onChildAdded(queryMessages, (data) => {
@@ -73,7 +81,7 @@ export default function ChatScreen(): JSX.Element {
       messages && setMessages([]);
       unsubscribe && unsubscribe();
     };
-  }, [friendshipData?.chatuuid]);
+  }, [targetChatGroup?.id]);
 
 
   return (
@@ -89,21 +97,33 @@ export default function ChatScreen(): JSX.Element {
           headerTitle: () => {
             return (
               <View style={styles.targetUser}>
-                {/* <FontAwesome name='arrow-down' size={24} onPress={() => router.back()} /> */}
-                <ImageWithPlaceholder
-                  style={styles.avatarImg}
-                  source={{ uri: targetUser?.photos[0]?.url }}
-                  placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
+                <If
+                  condition={targetChatGroup?.photo?.url}
+                  render={(
+                    <ImageWithPlaceholder
+                      style={styles.avatarImg}
+                      source={{ uri: targetChatGroup?.photo?.url }}
+                    />
+                  )}
+                  elseRender={(
+                    <FontAwesome5
+                      style={styles.avatarImg}
+                      name="users"
+                      size={40}
+                      color={gray_900}
+                    />
+                  )}
                 />
 
                 <View>
-                  <Text style={styles.avatarName}>{targetUser?.username}</Text>
+                  <Text style={styles.avatarName}>{targetChatGroup?.name}</Text>
                   <Text>online</Text>
                 </View>
               </View>
             );
           },
-        }} />
+        }}
+      />
 
       <View style={styles.container}>
         <GiftedChat
@@ -125,15 +145,18 @@ export default function ChatScreen(): JSX.Element {
             />
           )}
           renderAvatar={(props) => {
+            const currentMessage = props.currentMessage;
+            const currUserID = currentMessage?.user?._id as string;
             const avatarProps = {
               ...props,
               currentMessage: {
-                ...props.currentMessage,
+                ...currentMessage,
                 user: {
-                  ...props.currentMessage?.user,
+                  ...currentMessage?.user,
                   avatar:
-                    props.currentMessage?.user._id === targetUser?.uid ?
-                      targetUser?.photos[0]?.url : loggedInUser?.photos[0]?.url
+                    currUserID !== loggedInUser?.uid ?
+                      targetChatGroupMembers.get(currUserID)?.photos[0]?.url
+                      : loggedInUser?.photos[0]?.url
                 }
               } as IMessage
             };
