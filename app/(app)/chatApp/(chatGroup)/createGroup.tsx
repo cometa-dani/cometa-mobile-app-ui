@@ -3,7 +3,7 @@ import { Text, View } from '../../../../components/Themed';
 import { BaseButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { blue_100, red_100 } from '../../../../constants/colors';
+import { blue_100, gray_900, red_100 } from '../../../../constants/colors';
 import { FlashList } from '@shopify/flash-list';
 import { useCometaStore } from '../../../../store/cometaStore';
 import { defaultImgPlaceholder } from '../../../../constants/vars';
@@ -18,6 +18,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { useMutationCreateChatGroup } from '../../../../queries/loggedInUser/chatGroupsHooks';
 import { writeToChatGroup } from '../../../../firebase/writeToRealTimeDB';
 import uuid from 'react-native-uuid';
+import { useQueryGetLoggedInUserProfileByUid } from '../../../../queries/loggedInUser/userProfileHooks';
+import { ChatGroup } from '../../../../models/ChatGroup';
 
 
 type Value = { name: string }
@@ -32,8 +34,9 @@ export default function CreateChatGroupScreen(): JSX.Element {
   const imageRef = useCometaStore(state => state.imageRef);
   const setImageRef = useCometaStore(state => state.setImageRef);
   const formikRef = useRef<FormikProps<Value>>(null);
-  const loggedInUser = useCometaStore(state => state.uid);
+  const loggedInUserUUID = useCometaStore(state => state.uid);
   const createChatGroup = useMutationCreateChatGroup();
+  const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUUID);
 
   const memoizedSearchedFriendsData: UserMessagesData[] = useMemo(() => (
     [...chatGroupMembers.values()]
@@ -63,7 +66,7 @@ export default function CreateChatGroupScreen(): JSX.Element {
     try {
       // 1 create the group in database
       const chatGroupMembersUUIDs = chatGroupMembers.keys();
-      const res = await createChatGroup.mutateAsync({ groupName: values.name, members: [...chatGroupMembersUUIDs, loggedInUser] });
+      const res = await createChatGroup.mutateAsync({ groupName: values.name, members: [...chatGroupMembersUUIDs, loggedInUserUUID] }) as ChatGroup;
 
       // 2 create the group in firebase
       const groupUUID = res?.id;
@@ -72,11 +75,13 @@ export default function CreateChatGroupScreen(): JSX.Element {
         text: 'Bienvenido al grupo',
         createdAt: new Date().toString(),
       };
-      const chatGroupInfo = { uuid: groupUUID, name: res?.name, photo: res?.photo?.url };
+      const chatGroupInfo = { uuid: groupUUID, name: res?.name ?? '', photo: res?.photo?.url ?? '' };
 
-      // TODO: save the loggedInUser in the global state
-      await writeToChatGroup(messagePayload, loggedInUser, chatGroupMembersUUIDs, chatGroupInfo);
-      router.push(`/chat/${groupUUID}`);
+      if (loggedInUserProfile) {
+        await writeToChatGroup(messagePayload, loggedInUserProfile, [...chatGroupMembersUUIDs], chatGroupInfo);
+        router.push(`/chatGroup/${groupUUID}`);
+      }
+      actions.setSubmitting(false);
     }
     catch (error) {
       // con
@@ -195,7 +200,7 @@ export default function CreateChatGroupScreen(): JSX.Element {
                         {item.text}
                       </Text>
                     </TransparentView>
-                    <FontAwesome5 style={styles.checkbox} name="user-check" size={20} color="black" />
+                    <FontAwesome5 style={styles.checkbox} name="user-check" size={20} color={gray_900} />
                   </TransparentView>
                 </TransparentView>
               </BaseButton>

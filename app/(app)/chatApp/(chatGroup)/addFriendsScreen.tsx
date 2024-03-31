@@ -2,7 +2,7 @@ import { StyleSheet, SafeAreaView, TextInput, Pressable, Image, View as Transpar
 import { Text, View } from '../../../../components/Themed';
 import { BaseButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
-import { blue_100, red_100 } from '../../../../constants/colors';
+import { blue_100, gray_900, red_100 } from '../../../../constants/colors';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { useCometaStore } from '../../../../store/cometaStore';
@@ -42,6 +42,7 @@ export default function AddFriendsScreen(): JSX.Element {
               chatUUID: friendship.chatuuid,
               text: friendship.friend.username,
               newMessagesCount: 0,
+              isChatGroup: false,
               user: {
                 _id: friendship.friend.uid,
                 name: friendship.friend.name,
@@ -125,10 +126,10 @@ export default function AddFriendsScreen(): JSX.Element {
                     <If
                       condition={!checked}
                       render={(
-                        <FontAwesome5 style={[styles.checkbox, { marginRight: 8 }]} name="user" size={20} color="black" />
+                        <FontAwesome5 style={[styles.checkbox, { marginRight: 8 }]} name="user" size={20} color={gray_900} />
                       )}
                       elseRender={(
-                        <FontAwesome5 style={styles.checkbox} name="user-check" size={20} color="black" />
+                        <FontAwesome5 style={styles.checkbox} name="user-check" size={20} color={gray_900} />
                       )}
                     />
 

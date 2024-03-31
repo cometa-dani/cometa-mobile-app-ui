@@ -3,7 +3,7 @@ import { Text, View } from '../../../components/Themed';
 import { BaseButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
-import { blue_100, messages } from '../../../constants/colors';
+import { blue_100, gray_900, messages } from '../../../constants/colors';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { useCometaStore } from '../../../store/cometaStore';
@@ -13,11 +13,12 @@ import { markLastMessageAsSeen } from '../../../firebase/writeToRealTimeDB';
 import { If } from '../../../components/utils';
 import { UserMessagesData } from '../../../store/slices/messagesSlices';
 import { useInfiniteQuerySearchFriendsByUserName } from '../../../queries/loggedInUser/friendshipHooks';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 
 export default function ChatLatestMessagesScreen(): JSX.Element {
   const friendsMessagesList = useCometaStore(state => state.friendsMessagesList);
-  const [showSearchFriends, setShowSearchFriends] = useState(false);
+  const [showSearchedFriends, setShowSearchedFriends] = useState(false);
   const loggedInUserUUID = useCometaStore(state => state.uid);
 
   // search user by username
@@ -47,6 +48,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
               chatUUID: friendship.chatuuid,
               text: friendship.friend.username,
               newMessagesCount: 0,
+              isChatGroup: false,
               user: {
                 _id: friendship.friend.uid,
                 name: friendship.friend.name,
@@ -61,25 +63,35 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
 
   useEffect(() => {
     if (isSuccess && textInput.length) {
-      setShowSearchFriends(true);
+      setShowSearchedFriends(true);
     }
     else {
-      setShowSearchFriends(false);
+      setShowSearchedFriends(false);
     }
   }, [memoizedSearchedFriendsData, textInput]);
 
 
-  const handleNavigateToChatWithFriend = (targetUser: UserMessagesData) => {
-    const { user, chatUUID, createdAt, text } = targetUser;
-    router.push(`/chat/${user._id}`);
+  const handleNavigateToChatWithFriendOrGroup = (receivedMessage: UserMessagesData) => {
+    const { user, chatUUID, createdAt, text } = receivedMessage;
+
+    if (receivedMessage?.isChatGroup) {
+      router.push(`/chatGroup/${chatUUID}`);
+    }
+    else {
+      router.push(`/chat/${user._id}`);
+    }
 
     setTimeout(() => setTextInput(''), 200);
-    if (targetUser?.newMessagesCount) {
+    if (receivedMessage?.newMessagesCount) {
       const messagePayload = { createdAt: createdAt?.toString(), text, user };
       markLastMessageAsSeen(loggedInUserUUID, chatUUID, messagePayload);
     }
-    else if (showSearchFriends) {
-      const messagePayload = { createdAt: createdAt?.toString(), text: friendsMessagesList.find(friend => friend.user._id === user._id)?.text, user };
+    else if (showSearchedFriends) {
+      const messagePayload = {
+        createdAt: createdAt?.toString(),
+        text: friendsMessagesList.find(friend => friend.user._id === user._id)?.text, // change to O(1) using new Map instead
+        user
+      };
       markLastMessageAsSeen(loggedInUserUUID, chatUUID, messagePayload);
     }
   };
@@ -122,17 +134,28 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
         </View>
 
         <FlashList
-          data={showSearchFriends ? memoizedSearchedFriendsData : friendsMessagesList}
+          data={showSearchedFriends ? memoizedSearchedFriendsData : friendsMessagesList}
           estimatedItemSize={100}
           renderItem={({ item }) => (
             <BaseButton
-              onPress={() => handleNavigateToChatWithFriend(item)}
+              onPress={() => handleNavigateToChatWithFriendOrGroup(item)}
               style={styles.baseButton}
             >
               <TransparentView style={styles.transparentView1}>
 
                 <TransparentView style={styles.transparentView2}>
-                  <Image source={{ uri: item.user?.avatar?.toString() ?? defaultImgPlaceholder }} style={styles.image} />
+                  <If
+                    condition={item?.isChatGroup && !item.user?.avatar}
+                    render={(
+                      <FontAwesome5 name="users" size={40} color={gray_900} />
+                    )}
+                    elseRender={(
+                      <Image
+                        source={{ uri: item.user?.avatar?.toString() ?? defaultImgPlaceholder }}
+                        style={styles.image}
+                      />
+                    )}
+                  />
                 </TransparentView>
 
                 <TransparentView style={styles.transparentView3}>
@@ -154,7 +177,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
                   </TransparentView>
 
                   <If
-                    condition={!showSearchFriends}
+                    condition={!showSearchedFriends}
                     render={(
                       <TransparentView style={styles.transparentView4}>
                         <Text style={[styles.textGray, { color: item.newMessagesCount ? messages.ok : undefined }]}>
