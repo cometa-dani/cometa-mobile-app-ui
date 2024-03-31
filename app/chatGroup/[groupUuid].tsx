@@ -89,6 +89,7 @@ export default function ChatScreen(): JSX.Element {
           headerTitle: () => {
             return (
               <View style={styles.targetUser}>
+                {/* <FontAwesome name='arrow-down' size={24} onPress={() => router.back()} /> */}
                 <ImageWithPlaceholder
                   style={styles.avatarImg}
                   source={{ uri: targetUser?.photos[0]?.url }}

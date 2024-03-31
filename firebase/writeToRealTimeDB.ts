@@ -5,13 +5,15 @@ import { GetBasicUserProfile } from '../models/User';
 
 type UserData = Pick<GetBasicUserProfile, ('uid' | 'name' | 'photos')>;
 
+
 export async function writeToRealTimeDB(chatuuid: string, messagePayload: object, loggedInUser: UserData, targetUser: UserData) {
   const chatsRef = ref(realtimeDB, `chats/${chatuuid}`);
   const latestMessageRef = ref(realtimeDB, 'latestMessages');
   const chatListRef = push(chatsRef);
 
-  const targetUserLatestMessagePayload = {
+  const toTargetUserLatestMessagePayload = {
     ...messagePayload,
+    isChatGroup: false,
     user: {
       _id: loggedInUser?.uid,
       name: loggedInUser?.name,
@@ -19,8 +21,9 @@ export async function writeToRealTimeDB(chatuuid: string, messagePayload: object
     },
     newMessagesCount: increment(1) // sent messages to target user
   };
-  const loggedInUserOwnLatestMessagePayload = {
+  const fromLoggedInUserOwnLatestMessagePayload = {
     ...messagePayload,
+    isChatGroup: false,
     user: {
       _id: targetUser?.uid,
       name: targetUser?.name,
@@ -31,8 +34,8 @@ export async function writeToRealTimeDB(chatuuid: string, messagePayload: object
 
   // update different locations in the database and keeps them in sync
   const latestMessagesPayload = {
-    [`/${loggedInUser.uid}/${chatuuid}`]: loggedInUserOwnLatestMessagePayload,
-    [`/${targetUser.uid}/${chatuuid}`]: targetUserLatestMessagePayload
+    [`/${loggedInUser.uid}/${chatuuid}`]: fromLoggedInUserOwnLatestMessagePayload,
+    [`/${targetUser.uid}/${chatuuid}`]: toTargetUserLatestMessagePayload
   };
 
   return (
@@ -42,6 +45,7 @@ export async function writeToRealTimeDB(chatuuid: string, messagePayload: object
     ])
   );
 }
+
 
 export const markLastMessageAsSeen = async (loggedInUserUUID: string | number, chatuuid: string, prevMessage: object) => {
   const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}/${chatuuid}`);
@@ -53,3 +57,63 @@ export const markLastMessageAsSeen = async (loggedInUserUUID: string | number, c
 
   return await set(latestMessageRef, messagePayload);
 };
+
+
+type ChatGroup = {
+  uuid: string;
+  name: string;
+  photo: string;
+};
+
+export async function writeToChatGroup(messagePayload: object, loggedInUser: UserData, targetUsers: string[], chatGroup: ChatGroup) {
+  const chatsRef = ref(realtimeDB, `chats/${chatGroup?.uuid}`);
+  const latestMessageRef = ref(realtimeDB, 'latestMessages');
+  const chatListRef = push(chatsRef);
+
+  const toTargetUsersLatestMessagePayload = {
+    ...messagePayload,
+    isChatGroup: true,
+    user: {
+      _id: loggedInUser?.uid,
+      name: loggedInUser?.name,
+      avatar: loggedInUser?.photos[0]?.url,
+    },
+    newMessagesCount: increment(1)// sent messages to target user
+  };
+
+  const fromLoggedInUserOwnLatestMessagePayload = {
+    ...messagePayload,
+    isChatGroup: true,
+    user: {
+      _id: chatGroup?.uuid,  // chat group UUID
+      name: chatGroup?.name, // chat group name
+      avatar: chatGroup?.photo, // chat group photo
+    },
+    newMessagesCount: 0  // your own written messages
+  };
+
+  const targetUsersMessages =
+    targetUsers
+      .reduce((prev, targetUserUUID) => ({
+        ...prev,
+        [`/${targetUserUUID}/${chatGroup.uuid}`]: toTargetUsersLatestMessagePayload
+      }),
+        new Object()
+      );
+
+  // update different locations in the database and keeps them in sync
+  const latestMessagesPayload = {
+    [`/${loggedInUser.uid}/${chatGroup.uuid}`]: fromLoggedInUserOwnLatestMessagePayload,
+    ...targetUsersMessages
+    // user1...
+    // user2...
+  };
+
+
+  return (
+    await Promise.all([
+      set(chatListRef, messagePayload),
+      update(latestMessageRef, latestMessagesPayload) // overwrite the latest message if present
+    ])
+  );
+}

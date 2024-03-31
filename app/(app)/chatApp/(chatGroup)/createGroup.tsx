@@ -16,6 +16,8 @@ import { If } from '../../../../components/utils';
 import { AppLabelFeedbackMsg } from '../../../../components/textInput/AppTextInput';
 import * as ImagePicker from 'expo-image-picker';
 import { useMutationCreateChatGroup } from '../../../../queries/loggedInUser/chatGroupsHooks';
+import { writeToChatGroup } from '../../../../firebase/writeToRealTimeDB';
+import uuid from 'react-native-uuid';
 
 
 type Value = { name: string }
@@ -60,11 +62,21 @@ export default function CreateChatGroupScreen(): JSX.Element {
   const handleCreateGroup = async (values: Value, actions: FormikHelpers<Value>) => {
     try {
       // 1 create the group in database
-      const res = await createChatGroup.mutateAsync({ groupName: values.name, members: [...chatGroupMembers.keys(), loggedInUser] });
+      const chatGroupMembersUUIDs = chatGroupMembers.keys();
+      const res = await createChatGroup.mutateAsync({ groupName: values.name, members: [...chatGroupMembersUUIDs, loggedInUser] });
 
       // 2 create the group in firebase
       const groupUUID = res?.id;
-      // router.push(`/chat/${groupUUID}`);
+      const messagePayload = {
+        _id: uuid.v4().toString(),
+        text: 'Bienvenido al grupo',
+        createdAt: new Date().toString(),
+      };
+      const chatGroupInfo = { uuid: groupUUID, name: res?.name, photo: res?.photo?.url };
+
+      // TODO: save the loggedInUser in the global state
+      await writeToChatGroup(messagePayload, loggedInUser, chatGroupMembersUUIDs, chatGroupInfo);
+      router.push(`/chat/${groupUUID}`);
     }
     catch (error) {
       // con

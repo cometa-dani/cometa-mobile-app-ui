@@ -73,7 +73,6 @@ export default function WelcomeScreen(): JSX.Element {
 
 
   useEffect(() => {
-    // let unsubscribe!: Unsubscribe;
     if (loggedInUserUUID) {
       const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}`);
 
@@ -84,11 +83,9 @@ export default function WelcomeScreen(): JSX.Element {
             ...child.val(),
             chatUUID: child.key
           } as UserMessagesData;
-          // const key = child.key
           messages.push(data);
         });
 
-        // console.log(messages);
         setFriendsMessagesList(messages);
       });
     }
