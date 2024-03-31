@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   innerView: {
     paddingHorizontal: 20,
-    paddingBottom: 12,
+    paddingVertical: 12,
   },
   relativeView: {
     position: 'relative',

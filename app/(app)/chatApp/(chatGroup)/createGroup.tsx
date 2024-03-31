@@ -10,17 +10,18 @@ import { defaultImgPlaceholder } from '../../../../constants/vars';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMemo, useRef } from 'react';
 import { UserMessagesData } from '../../../../store/slices/messagesSlices';
-import { Formik, FormikProps } from 'formik';
+import { Formik, FormikHelpers, FormikProps } from 'formik';
 import * as Yup from 'yup';
 import { If } from '../../../../components/utils';
 import { AppLabelFeedbackMsg } from '../../../../components/textInput/AppTextInput';
 import * as ImagePicker from 'expo-image-picker';
+import { useMutationCreateChatGroup } from '../../../../queries/loggedInUser/chatGroupsHooks';
 
 
 type Value = { name: string }
 
 const validationSchemma = Yup.object<Value>({
-  name: Yup.string().required('Required group name'),
+  name: Yup.string().required('required group name'),
 });
 
 export default function CreateChatGroupScreen(): JSX.Element {
@@ -29,10 +30,13 @@ export default function CreateChatGroupScreen(): JSX.Element {
   const imageRef = useCometaStore(state => state.imageRef);
   const setImageRef = useCometaStore(state => state.setImageRef);
   const formikRef = useRef<FormikProps<Value>>(null);
+  const loggedInUser = useCometaStore(state => state.uid);
+  const createChatGroup = useMutationCreateChatGroup();
 
   const memoizedSearchedFriendsData: UserMessagesData[] = useMemo(() => (
     [...chatGroupMembers.values()]
   ), [chatGroupMembers.size]);
+
 
   // No permissions request is necessary for launching the image library
   const handlePickImage = async () => {
@@ -49,6 +53,21 @@ export default function CreateChatGroupScreen(): JSX.Element {
     }
     catch (error) {
       // console.log(error);
+    }
+  };
+
+
+  const handleCreateGroup = async (values: Value, actions: FormikHelpers<Value>) => {
+    try {
+      // 1 create the group in database
+      const res = await createChatGroup.mutateAsync({ groupName: values.name, members: [...chatGroupMembers.keys(), loggedInUser] });
+
+      // 2 create the group in firebase
+      const groupUUID = res?.id;
+      // router.push(`/chat/${groupUUID}`);
+    }
+    catch (error) {
+      // con
     }
   };
 
@@ -101,7 +120,7 @@ export default function CreateChatGroupScreen(): JSX.Element {
             <Formik
               style={{ width: '100%', flex: 1 }}
               innerRef={formikRef}
-              onSubmit={(values) => console.log(values)}
+              onSubmit={handleCreateGroup}
               validationSchema={validationSchemma}
               initialValues={{ name: '' }}
             >
@@ -194,7 +213,7 @@ const styles = StyleSheet.create({
   },
   innerView: {
     paddingHorizontal: 20,
-    paddingBottom: 12,
+    paddingVertical: 12,
   },
   relativeView: {
     position: 'relative',
@@ -206,21 +225,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     flexDirection: 'row'
   },
-  // input: {
-  //   backgroundColor: '#F4F4F4',
-  //   borderRadius: 50,
-  //   paddingVertical: 10,
-  //   paddingHorizontal: 20,
-  //   paddingLeft: 56
-  // },
-  // pressable: {
-  //   position: 'absolute',
-  //   zIndex: 30,
-  //   left: 20,
-  //   backgroundColor: blue_100,
-  //   borderRadius: 50,
-  //   padding: 4.4
-  // },
   baseButton: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -251,20 +255,6 @@ const styles = StyleSheet.create({
     height: '100%',
     gap: 14
   },
-  // messagesCount: {
-  //   backgroundColor: messages.ok,
-  //   width: 22,
-  //   height: 22,
-  //   borderRadius: 50,
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  //   alignSelf: 'center'
-  // },
-  // messagesCountText: {
-  //   color: '#fff',
-  //   fontWeight: '900',
-
-  // },
   textBold: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -272,9 +262,4 @@ const styles = StyleSheet.create({
   textGray: {
     color: 'gray'
   },
-  // transparentView4: {
-  //   alignSelf: 'center',
-  //   gap: 4,
-  //   height: '100%'
-  // }
 });
