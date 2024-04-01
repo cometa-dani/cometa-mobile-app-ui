@@ -76,16 +76,12 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
 
     if (receivedMessage?.isChatGroup) {
       router.push(`/chatGroup/${chatUUID}`);
-      markMessageAsSeenByLoggedInUserO();
     }
     else {
       router.push(`/chat/${user._id}`);
-      markMessageAsSeenByLoggedInUserO();
     }
+    markMessageAsSeenByLoggedInUserO();
 
-    // ************************************************
-    // debug for chat groups
-    // ************************************************
     function markMessageAsSeenByLoggedInUserO() {
       setTimeout(() => setTextInput(''), 200);
       if (receivedMessage?.newMessagesCount) {
@@ -167,7 +163,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
                 </TransparentView>
 
                 <TransparentView style={styles.transparentView3}>
-                  <TransparentView>
+                  <TransparentView style={{ flex: 2 / 3 }}>
                     <Text
                       numberOfLines={1}
                       ellipsizeMode='tail'
