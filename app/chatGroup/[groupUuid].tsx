@@ -109,7 +109,7 @@ export default function ChatGroupScreen(): JSX.Element {
                     <FontAwesome5
                       style={styles.avatarImg}
                       name="users"
-                      size={40}
+                      size={26}
                       color={gray_900}
                     />
                   )}

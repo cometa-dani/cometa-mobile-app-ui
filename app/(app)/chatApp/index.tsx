@@ -81,6 +81,9 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
       router.push(`/chat/${user._id}`);
     }
 
+    // ************************************************
+    // debug for chat groups
+    // ************************************************
     setTimeout(() => setTextInput(''), 200);
     if (receivedMessage?.newMessagesCount) {
       const messagePayload = { createdAt: createdAt?.toString(), text, user };

@@ -75,8 +75,8 @@ export async function writeToChatGroup(messagePayload: object, loggedInUser: Use
     isChatGroup: true,
     user: {
       _id: loggedInUser?.uid,
-      name: loggedInUser?.name,
-      avatar: chatGroup?.photo, // chat group photo
+      name: chatGroup?.name,
+      avatar: chatGroup?.photo ?? '', // chat group photo
     },
     newMessagesCount: increment(1)// sent messages to target user
   };
