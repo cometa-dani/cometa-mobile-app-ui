@@ -64,7 +64,7 @@ export default function AddFriendsScreen(): JSX.Element {
           headerTitleAlign: 'center',
           headerRight() {
             return (
-              <TouchableOpacity onPress={() => router.push('/(app)/chatApp/(chatGroup)/createGroup')} style={{ marginRight: 16 }}>
+              <TouchableOpacity onPress={() => router.push('/(app)/chatApp/(createChatGroup)/createGroup')} style={{ marginRight: 16 }}>
                 <Text style={{ fontSize: 17, fontWeight: '700', color: red_100 }}>Next</Text>
               </TouchableOpacity>
             );

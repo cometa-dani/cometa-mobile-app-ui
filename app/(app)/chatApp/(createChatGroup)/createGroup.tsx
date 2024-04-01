@@ -72,8 +72,11 @@ export default function CreateChatGroupScreen(): JSX.Element {
       const groupUUID = res?.id;
       const messagePayload = {
         _id: uuid.v4().toString(),
-        text: 'Bienvenido al grupo',
+        text: 'Bienvenidos al grupo',
         createdAt: new Date().toString(),
+        user: {
+          _id: loggedInUserUUID,
+        }
       };
       const chatGroupInfo = { uuid: groupUUID, name: res?.name ?? '', photo: res?.photo?.url ?? '' };
 
