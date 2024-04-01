@@ -65,7 +65,7 @@ type ChatGroup = {
   photo: string;
 };
 
-export async function writeToChatGroup(messagePayload: object, loggedInUser: UserData, targetUsers: (string | number)[], chatGroup: ChatGroup) {
+export async function writeToChatGroup(messagePayload: object, loggedInUserUUID: string, targetUsers: (string | number)[], chatGroup: ChatGroup) {
   const chatsRef = ref(realtimeDB, `chats/${chatGroup?.uuid}`);
   const latestMessageRef = ref(realtimeDB, 'latestMessages');
   const chatListRef = push(chatsRef);
@@ -103,7 +103,7 @@ export async function writeToChatGroup(messagePayload: object, loggedInUser: Use
 
   // update different locations in the database and keeps them in sync
   const latestMessagesPayload = {
-    [`/${loggedInUser.uid}/${chatGroup.uuid}`]: fromLoggedInUserOwnLatestMessagePayload,
+    [`/${loggedInUserUUID}/${chatGroup.uuid}`]: fromLoggedInUserOwnLatestMessagePayload,
     ...allTargetUsersMessages
     // user1...
     // user2...

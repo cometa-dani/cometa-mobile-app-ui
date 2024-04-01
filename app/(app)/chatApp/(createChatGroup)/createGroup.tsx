@@ -18,7 +18,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { useMutationCreateChatGroup } from '../../../../queries/loggedInUser/chatGroupsHooks';
 import { writeToChatGroup } from '../../../../firebase/writeToRealTimeDB';
 import uuid from 'react-native-uuid';
-import { useQueryGetLoggedInUserProfileByUid } from '../../../../queries/loggedInUser/userProfileHooks';
 import { ChatGroup } from '../../../../models/ChatGroup';
 
 
@@ -36,7 +35,6 @@ export default function CreateChatGroupScreen(): JSX.Element {
   const formikRef = useRef<FormikProps<Value>>(null);
   const loggedInUserUUID = useCometaStore(state => state.uid);
   const createChatGroup = useMutationCreateChatGroup();
-  const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUUID);
 
   const memoizedSearchedFriendsData: UserMessagesData[] = useMemo(() => (
     [...chatGroupMembers.values()]
@@ -80,8 +78,8 @@ export default function CreateChatGroupScreen(): JSX.Element {
       };
       const chatGroupInfo = { uuid: groupUUID, name: res?.name ?? '', photo: res?.photo?.url ?? '' };
 
-      if (loggedInUserProfile) {
-        await writeToChatGroup(messagePayload, loggedInUserProfile, [...chatGroupMembersUUIDs], chatGroupInfo);
+      if (loggedInUserUUID) {
+        await writeToChatGroup(messagePayload, loggedInUserUUID, [...chatGroupMembersUUIDs], chatGroupInfo);
         router.push(`/chatGroup/${groupUUID}`);
       }
       actions.setSubmitting(false);

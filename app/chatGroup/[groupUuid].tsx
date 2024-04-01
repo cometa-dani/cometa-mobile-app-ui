@@ -45,7 +45,7 @@ export default function ChatGroupScreen(): JSX.Element {
           _id: loggedInUserUuid,
         }
       };
-      if (loggedInUser && targetChatGroup?.members) {
+      if (loggedInUserUuid && targetChatGroup?.members) {
         const chatGroupData = {
           name: targetChatGroup?.name,
           photo: targetChatGroup?.photo?.url ?? '',
@@ -53,7 +53,7 @@ export default function ChatGroupScreen(): JSX.Element {
         };
         await writeToChatGroup(
           messagePayload,
-          loggedInUser,
+          loggedInUserUuid,
           [...targetChatGroupMembers.keys()],
           chatGroupData
         );
@@ -154,7 +154,7 @@ export default function ChatGroupScreen(): JSX.Element {
                 user: {
                   ...currentMessage?.user,
                   avatar:
-                    currUserID !== loggedInUser?.uid ?
+                    currUserID !== loggedInUserUuid ?
                       targetChatGroupMembers.get(currUserID)?.photos[0]?.url
                       : loggedInUser?.photos[0]?.url
                 }
