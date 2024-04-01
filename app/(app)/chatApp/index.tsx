@@ -9,7 +9,7 @@ import { FlashList } from '@shopify/flash-list';
 import { useCometaStore } from '../../../store/cometaStore';
 import { defaultImgPlaceholder } from '../../../constants/vars';
 import { titles } from '../../../constants/assets';
-import { markLastMessageAsSeen } from '../../../firebase/writeToRealTimeDB';
+import { markLastMessageAsSeen as writeLastMessageAsSeenIntoDB } from '../../../firebase/writeToRealTimeDB';
 import { If } from '../../../components/utils';
 import { UserMessagesData } from '../../../store/slices/messagesSlices';
 import { useInfiniteQuerySearchFriendsByUserName } from '../../../queries/loggedInUser/friendshipHooks';
@@ -72,30 +72,35 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
 
 
   const handleNavigateToChatWithFriendOrGroup = (receivedMessage: UserMessagesData) => {
-    const { user, chatUUID, createdAt, text } = receivedMessage;
+    const { user, chatUUID, createdAt, text, isChatGroup } = receivedMessage;
 
     if (receivedMessage?.isChatGroup) {
       router.push(`/chatGroup/${chatUUID}`);
+      markMessageAsSeenByLoggedInUserO();
     }
     else {
       router.push(`/chat/${user._id}`);
+      markMessageAsSeenByLoggedInUserO();
     }
 
     // ************************************************
     // debug for chat groups
     // ************************************************
-    setTimeout(() => setTextInput(''), 200);
-    if (receivedMessage?.newMessagesCount) {
-      const messagePayload = { createdAt: createdAt?.toString(), text, user };
-      markLastMessageAsSeen(loggedInUserUUID, chatUUID, messagePayload);
-    }
-    else if (showSearchedFriends) {
-      const messagePayload = {
-        createdAt: createdAt?.toString(),
-        text: friendsMessagesList.find(friend => friend.user._id === user._id)?.text, // change to O(1) using new Map instead
-        user
-      };
-      markLastMessageAsSeen(loggedInUserUUID, chatUUID, messagePayload);
+    function markMessageAsSeenByLoggedInUserO() {
+      setTimeout(() => setTextInput(''), 200);
+      if (receivedMessage?.newMessagesCount) {
+        const messagePayload = { createdAt: createdAt?.toString(), text, user, isChatGroup };
+        writeLastMessageAsSeenIntoDB(loggedInUserUUID, chatUUID, messagePayload);
+      }
+      else if (showSearchedFriends) {
+        const messagePayload = {
+          createdAt: createdAt?.toString(),
+          text: friendsMessagesList.find(friend => friend.user._id === user._id)?.text, // change to O(1) using new Map instead
+          user,
+          isChatGroup
+        };
+        writeLastMessageAsSeenIntoDB(loggedInUserUUID, chatUUID, messagePayload);
+      }
     }
   };
 
