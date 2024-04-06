@@ -89,9 +89,12 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
         writeLastMessageAsSeenIntoDB(loggedInUserUUID, chatUUID, messagePayload);
       }
       else if (showSearchedFriends) {
+        const currentFriend = friendsLatestMessagesList.find(friend => friend.user._id === user._id);
+        if (!currentFriend || !currentFriend.text) return;
+
         const messagePayload = {
           createdAt: createdAt?.toString(),
-          text: friendsLatestMessagesList.find(friend => friend.user._id === user._id)?.text, // change to O(1) using new Map instead
+          text: currentFriend.text, // change to O(1) using new Map instead
           user,
           isChatGroup
         };
