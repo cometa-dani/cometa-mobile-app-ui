@@ -38,7 +38,7 @@ const searchParamsSchemma = Yup.object({
       }),
 
   uuid: Yup.string().required(),
-  eventId: Yup.string().required()
+  eventId: Yup.string()
 });
 
 
@@ -71,16 +71,27 @@ export default function TargerUserProfileScreen(): JSX.Element {
       || []), [matchedEvents?.pages]);
 
   const memoizedLikedEvents = useMemo(() => (
-    targetUserbucketList?.pages.flatMap(
-      page => page.events.map(
-        event => ({
-          id: event.id,
-          img: event?.photos[0]?.url ?? '',
-          placeholder: event?.photos[0]?.placeholder ?? ''
-        })
+    targetUserUrlParams?.eventId ?
+      targetUserbucketList?.pages.flatMap(
+        page => page.events.map(
+          event => ({
+            id: event.id,
+            img: event?.photos[0]?.url ?? '',
+            placeholder: event?.photos[0]?.placeholder ?? ''
+          })
+        )
       )
-    ).filter(event => event?.id !== +targetUserUrlParams?.eventId) ?? []
-  ), [targetUserbucketList?.pages]);
+        .filter(event => event?.id !== +(targetUserUrlParams?.eventId ?? -1))
+      :
+      targetUserbucketList?.pages.flatMap(
+        page => page.events.map(
+          event => ({
+            id: event.id,
+            img: event?.photos[0]?.url ?? '',
+            placeholder: event?.photos[0]?.placeholder ?? ''
+          })
+        )
+      )), [targetUserbucketList?.pages, targetUserUrlParams.eventId]);
 
 
   const isTargetUserFriendShipReceiver: boolean = targetUserProfile?.incomingFriendships[0]?.status === 'PENDING';
@@ -213,7 +224,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
       onPress={(initialScrollIndex: number) => router.push(`/targetUserProfile/bucketList/${targetUserUrlParams.uuid}?eventId=${targetUserUrlParams.eventId}&initialScrollIndex=${initialScrollIndex}`)}
       isLocked={!targetUserUrlParams.isFriend}
       title='BucketList'
-      list={memoizedLikedEvents}
+      list={memoizedLikedEvents ?? []}
     />
   );
 

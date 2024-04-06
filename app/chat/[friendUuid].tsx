@@ -2,9 +2,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Bubble, GiftedChat, IMessage, Avatar } from 'react-native-gifted-chat';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, router } from 'expo-router';
 import { SafeAreaView } from 'react-native';
 import { Image as ImageWithPlaceholder } from 'expo-image';
 import { Unsubscribe } from 'firebase/auth';
@@ -88,18 +88,20 @@ export default function ChatWithFriendScreen(): JSX.Element {
           presentation: 'modal',
           headerTitle: () => {
             return (
-              <View style={styles.targetUser}>
-                <ImageWithPlaceholder
-                  style={styles.avatarImg}
-                  source={{ uri: targetUser?.photos[0]?.url }}
-                  placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
-                />
+              <TouchableOpacity onPress={() => router.push(`/targetUserProfile/${targetUser?.uid}?isFriend=true`)}>
+                <View style={styles.targetUser}>
+                  <ImageWithPlaceholder
+                    style={styles.avatarImg}
+                    source={{ uri: targetUser?.photos[0]?.url }}
+                    placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
+                  />
 
-                <View>
-                  <Text style={styles.avatarName}>{targetUser?.username}</Text>
-                  <Text>online</Text>
+                  <View>
+                    <Text style={styles.avatarName}>{targetUser?.username}</Text>
+                    <Text>online</Text>
+                  </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             );
           },
         }} />

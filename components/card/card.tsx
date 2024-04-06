@@ -23,8 +23,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     elevation: 3,
     padding: 20,
-    // paddingHorizontal: 24,
-    // paddingVertical: 12,
+    paddingRight: 0,
     shadowColor: '#171717', // add shadow for iOS
     shadowOffset: {
       width: 0,

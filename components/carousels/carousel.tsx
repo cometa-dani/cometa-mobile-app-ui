@@ -38,6 +38,7 @@ export const AppCarousel: FC<Props> = ({ list, title, isLocked = false, onPress 
             <FlashList
               showsHorizontalScrollIndicator={false}
               estimatedItemSize={130}
+              ListFooterComponent={() => <View style={{ width: 20 }} />}
               ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
               horizontal={true}
               data={list}
