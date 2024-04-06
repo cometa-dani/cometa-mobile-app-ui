@@ -1,9 +1,9 @@
 import { StyleSheet, SafeAreaView, TextInput, Pressable, Image, View as TransparentView } from 'react-native';
 import { Text, View } from '../../../components/Themed';
-import { BaseButton, TouchableOpacity } from 'react-native-gesture-handler';
+import { BaseButton, RectButton, Swipeable } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons';
-import { blue_100, gray_900, messages } from '../../../constants/colors';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { gray_50, gray_900, messages, red_100, white_50 } from '../../../constants/colors';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { useCometaStore } from '../../../store/cometaStore';
@@ -110,13 +110,13 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
             <Image style={{ height: 24, width: 76 }} source={titles.chat} />
           ),
           headerTitleAlign: 'center',
-          headerRight() {
-            return (
-              <TouchableOpacity onPress={() => router.push('/(app)/chatApp/(createChatGroup)/addFriendsScreen')} style={{ marginRight: 16 }}>
-                <FontAwesome size={30} color={blue_100} name='plus-circle' />
-              </TouchableOpacity>
-            );
-          },
+          // headerRight() {
+          //   return (
+          //     <TouchableOpacity onPress={() => router.push('/(app)/chatApp/(createChatGroup)/addFriendsScreen')} style={{ marginRight: 16 }}>
+          //       <FontAwesome size={30}  color="#83C9DD" name='plus-circle' />
+          //     </TouchableOpacity>
+          //   );
+          // },
         }}
       />
       <View style={styles.mainView}>
@@ -131,7 +131,12 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
             />
             <Pressable style={styles.pressable}>
               {({ pressed }) => (
-                <FontAwesome style={{ opacity: pressed ? 0.5 : 1 }} size={18} color={'#fff'} name='search' />
+                <Ionicons
+                  name="search-circle"
+                  size={34}
+                  style={{ opacity: pressed ? 0.5 : 1 }}
+                  color="#83C9DD"
+                />
               )}
             </Pressable>
           </View>
@@ -141,70 +146,78 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
           data={showSearchedFriends ? memoizedSearchedFriendsData : friendsMessagesList}
           estimatedItemSize={100}
           renderItem={({ item }) => (
-            <BaseButton
-              onPress={() => handleNavigateToChatWithFriendOrGroup(item)}
-              style={styles.baseButton}
-            >
-              <TransparentView style={styles.transparentView1}>
+            <Swipeable renderRightActions={
+              () => (
+                <RectButton onPress={() => console.log(item)} style={styles.deleteButton}>
+                  <FontAwesome name='trash-o' size={32} color={red_100} />
+                </RectButton>
+              )
+            }>
+              <BaseButton
+                onPress={() => handleNavigateToChatWithFriendOrGroup(item)}
+                style={styles.baseButton}
+              >
+                <TransparentView style={styles.transparentView1}>
 
-                <TransparentView style={styles.transparentView2}>
-                  <If
-                    condition={item?.isChatGroup && !item.user?.avatar}
-                    render={(
-                      <FontAwesome5 name="users" size={40} color={gray_900} />
-                    )}
-                    elseRender={(
-                      <Image
-                        source={{ uri: item.user?.avatar?.toString() ?? defaultImgPlaceholder }}
-                        style={styles.image}
-                      />
-                    )}
-                  />
-                </TransparentView>
-
-                <TransparentView style={styles.transparentView3}>
-                  <TransparentView style={{ flex: 2 / 3 }}>
-                    <Text
-                      numberOfLines={1}
-                      ellipsizeMode='tail'
-                      style={styles.textBold}
-                    >
-                      {item.user.name}
-                    </Text>
-                    <Text
-                      numberOfLines={1}
-                      ellipsizeMode='tail'
-                      style={styles.textGray}
-                    >
-                      {item.text}
-                    </Text>
+                  <TransparentView style={styles.transparentView2}>
+                    <If
+                      condition={item?.isChatGroup && !item.user?.avatar}
+                      render={(
+                        <FontAwesome5 name="users" size={40} color={gray_900} />
+                      )}
+                      elseRender={(
+                        <Image
+                          source={{ uri: item.user?.avatar?.toString() ?? defaultImgPlaceholder }}
+                          style={styles.image}
+                        />
+                      )}
+                    />
                   </TransparentView>
 
-                  <If
-                    condition={!showSearchedFriends}
-                    render={(
-                      <TransparentView style={styles.transparentView4}>
-                        <Text style={[styles.textGray, { color: item.newMessagesCount ? messages.ok : undefined }]}>
-                          {new Date(item.createdAt?.toString()).toLocaleTimeString()}
-                        </Text>
-                        <If condition={item?.newMessagesCount}
-                          render={(
-                            <TransparentView style={styles.messagesCount}>
-                              <Text style={styles.messagesCountText}>
-                                {item.newMessagesCount}
-                              </Text>
-                            </TransparentView>
-                          )}
-                        />
-                      </TransparentView>
-                    )}
-                    elseRender={(
-                      <FontAwesome style={{ alignSelf: 'center', color: messages.ok }} name='send-o' size={23} />
-                    )}
-                  />
+                  <TransparentView style={styles.transparentView3}>
+                    <TransparentView style={{ flex: 2 / 3 }}>
+                      <Text
+                        numberOfLines={1}
+                        ellipsizeMode='tail'
+                        style={styles.textBold}
+                      >
+                        {item.user.name}
+                      </Text>
+                      <Text
+                        numberOfLines={1}
+                        ellipsizeMode='tail'
+                        style={styles.textGray}
+                      >
+                        {item.text}
+                      </Text>
+                    </TransparentView>
+
+                    <If
+                      condition={!showSearchedFriends}
+                      render={(
+                        <TransparentView style={styles.transparentView4}>
+                          <Text style={[styles.textGray, { color: item.newMessagesCount ? messages.ok : undefined }]}>
+                            {new Date(item.createdAt?.toString()).toLocaleTimeString()}
+                          </Text>
+                          <If condition={item?.newMessagesCount}
+                            render={(
+                              <TransparentView style={styles.messagesCount}>
+                                <Text style={styles.messagesCountText}>
+                                  {item.newMessagesCount}
+                                </Text>
+                              </TransparentView>
+                            )}
+                          />
+                        </TransparentView>
+                      )}
+                      elseRender={(
+                        <FontAwesome style={{ alignSelf: 'center', color: messages.ok }} name='send-o' size={23} />
+                      )}
+                    />
+                  </TransparentView>
                 </TransparentView>
-              </TransparentView>
-            </BaseButton>
+              </BaseButton>
+            </Swipeable>
           )}
         />
       </View>
@@ -235,15 +248,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingLeft: 56
   },
+
+  deleteButton: {
+    backgroundColor: gray_50,
+    borderRadius: 20,
+    justifyContent: 'center',
+    marginRight: 20,
+    padding: 24
+  },
+
   pressable: {
     position: 'absolute',
     zIndex: 30,
-    left: 20,
-    backgroundColor: blue_100,
+    left: 10,
     borderRadius: 50,
     padding: 4.4
   },
   baseButton: {
+    backgroundColor: white_50,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 20,

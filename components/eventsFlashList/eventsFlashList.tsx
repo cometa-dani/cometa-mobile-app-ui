@@ -4,18 +4,18 @@ import { StyleSheet, DimensionValue, Pressable, Dimensions, View as TransParentV
 import { FlashList } from '@shopify/flash-list';
 import { Text, View, useColors } from '../Themed';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import { FontAwesome } from '@expo/vector-icons';
 import { useMutationLikeOrDislikeEvent } from '../../queries/loggedInUser/likeEventHooks';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 import { gray_200, white_50 } from '../../constants/colors';
-import { icons } from '../../constants/assets';
 import { If } from '../utils/ifElse';
 import { Photo } from '../../models/Photo';
 import { ForEach } from '../utils/ForEach';
-
+//icons
+import { FontAwesome6 } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
 const eventItemEstimatedHeight = Dimensions.get('window').height - 128;
 const carouselEstimatedWidth = Dimensions.get('window').width - 20;
@@ -199,7 +199,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
                 <TransParentView style={{ alignItems: 'center', gap: 2 }}>
                   <Pressable>
                     {() => (
-                      <Image style={{ width: 28, height: 28 }} source={icons.share} />
+                      <FontAwesome name="share" size={28} color="white" />        // <Image style={{ width: 28, height: 28 }} source={icons.share} />
                     )}
                   </Pressable>
                   <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 16 }}>{3612}</Text>
@@ -210,7 +210,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
 
           <Pressable>
             {() => (
-              <Image style={{ width: 28, height: 28 }} source={icons.locationMarker} />
+              <FontAwesome6 name="location-dot" size={28} color="white" />
             )}
           </Pressable>
         </TransParentView>

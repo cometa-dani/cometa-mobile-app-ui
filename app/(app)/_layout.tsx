@@ -1,5 +1,4 @@
 /* eslint-disable react-native/no-raw-text */
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs, router } from 'expo-router';
 import { Pressable, StyleSheet, Text as TransparentText } from 'react-native';
 import { View, useColors, Text } from '../../components/Themed';
@@ -19,9 +18,8 @@ import { appButtonstyles } from '../../components/buttons/buttons';
 // icons
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-// import { FontAwesome6 } from '@expo/vector-icons';
-// import Ionicons from '@expo/vector-icons/Ionicons';
-
+import { FontAwesome6 } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
 
 /**
@@ -123,17 +121,17 @@ export default function AppLayout() {
           options={{
             headerTitleAlign: 'center',
             headerShown: true,
-            tabBarIcon: ({ focused, color }) => (
+            tabBarIcon: ({ color }) => (
               <TabButton>
-                <MaterialCommunityIcons name="home-circle-outline" size={44} color={color} />
+                <MaterialCommunityIcons name="home-circle-outline" size={45} color={color} />
               </TabButton>
             ),
             headerLeft: () => (
               <Pressable>
                 {({ pressed }) => (
-                  <FontAwesome
+                  <Ionicons
                     name="search"
-                    size={28}
+                    size={32}
                     color={gray300}
                     style={{ marginLeft: 18, opacity: pressed ? 0.5 : 1 }}
                   />
@@ -150,7 +148,7 @@ export default function AppLayout() {
               <View style={styles.headerRightContainer}>
                 <Pressable>
                   {({ pressed }) => (
-                    <Image style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }} source={icons.notifications} />
+                    <Ionicons style={{ opacity: pressed ? 0.5 : 1 }} name="notifications" size={30} color={gray300} />
                   )}
                 </Pressable>
                 <Pressable>
@@ -165,7 +163,7 @@ export default function AppLayout() {
         <Tabs.Screen
           name="chatApp"
           options={{
-            tabBarIcon: ({ focused, color }) => (
+            tabBarIcon: ({ color }) => (
               <TabButton>
                 <If
                   condition={totalNewMessages}
@@ -175,7 +173,7 @@ export default function AppLayout() {
                     </View>
                   )}
                 />
-                <Ionicons name="chatbubble" size={34} color={color} />
+                <Ionicons style={{ transform: [{ rotateY: '180deg' }] }} name="chatbubble" size={34} color={color} />
               </TabButton>
             ),
           }}
@@ -192,16 +190,9 @@ export default function AppLayout() {
           options={{
             headerTitleAlign: 'center',
             headerShown: true,
-            tabBarIcon: ({ focused }) => (
+            tabBarIcon: ({ color }) => (
               <TabButton>
-                <If condition={focused}
-                  render={(
-                    <Image style={{ width: 38, height: 38 }} source={icons.bucketListRed} />
-                  )}
-                  elseRender={(
-                    <Image style={{ width: 38, height: 38 }} source={icons.bucketList} />
-                  )}
-                />
+                <FontAwesome6 name="heart-circle-check" size={34} color={color} />
               </TabButton>
             ),
             headerTitle() {
@@ -221,16 +212,9 @@ export default function AppLayout() {
         <Tabs.Screen
           name='loggedInUserProfile'
           options={{
-            tabBarIcon: ({ focused }) => (
+            tabBarIcon: ({ color }) => (
               <TabButton>
-                <If condition={focused}
-                  render={(
-                    <Image style={{ width: 34, height: 34 }} source={icons.profileRed} />
-                  )}
-                  elseRender={(
-                    <Image style={{ width: 34, height: 34 }} source={icons.profile} />
-                  )}
-                />
+                <FontAwesome name="user-circle-o" size={34} color={color} />
               </TabButton>
             ),
           }}
