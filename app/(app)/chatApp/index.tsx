@@ -9,7 +9,7 @@ import { FlashList } from '@shopify/flash-list';
 import { useCometaStore } from '../../../store/cometaStore';
 import { defaultImgPlaceholder } from '../../../constants/vars';
 import { titles } from '../../../constants/assets';
-import { markLastMessageAsSeen as writeLastMessageAsSeenIntoDB } from '../../../firebase/writeToRealTimeDB';
+import { deleteLatestMessage, markLastMessageAsSeen as writeLastMessageAsSeenIntoDB } from '../../../firebase/realTimeDdCruds';
 import { If } from '../../../components/utils';
 import { UserMessagesData } from '../../../store/slices/messagesSlices';
 import { useInfiniteQuerySearchFriendsByUserName } from '../../../queries/loggedInUser/friendshipHooks';
@@ -17,7 +17,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 
 
 export default function ChatLatestMessagesScreen(): JSX.Element {
-  const friendsMessagesList = useCometaStore(state => state.friendsMessagesList);
+  const friendsLatestMessagesList = useCometaStore(state => state.friendsLatestMessagesList);
   const [showSearchedFriends, setShowSearchedFriends] = useState(false);
   const loggedInUserUUID = useCometaStore(state => state.uid);
 
@@ -39,13 +39,13 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
   const [debouncedTextInput, setDebouncedTextInput] = useState('');
   const { data: searchedFriendsData, isSuccess } = useInfiniteQuerySearchFriendsByUserName(debouncedTextInput);
 
-  const memoizedSearchedFriendsData: UserMessagesData[] = useMemo(() => (
+  const memoizedSearchedFriendsList: UserMessagesData[] = useMemo(() => (
     searchedFriendsData?.pages
       ?.flatMap(
         page => page.friendships
           .map(
             friendship => ({
-              chatUUID: friendship.chatuuid,
+              chatUUID: friendship?.chatuuid,
               text: friendship.friend.username,
               newMessagesCount: 0,
               isChatGroup: false,
@@ -68,7 +68,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
     else {
       setShowSearchedFriends(false);
     }
-  }, [memoizedSearchedFriendsData, textInput]);
+  }, [memoizedSearchedFriendsList, textInput]);
 
 
   const handleNavigateToChatWithFriendOrGroup = (receivedMessage: UserMessagesData) => {
@@ -91,7 +91,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
       else if (showSearchedFriends) {
         const messagePayload = {
           createdAt: createdAt?.toString(),
-          text: friendsMessagesList.find(friend => friend.user._id === user._id)?.text, // change to O(1) using new Map instead
+          text: friendsLatestMessagesList.find(friend => friend.user._id === user._id)?.text, // change to O(1) using new Map instead
           user,
           isChatGroup
         };
@@ -143,16 +143,21 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
         </View>
 
         <FlashList
-          data={showSearchedFriends ? memoizedSearchedFriendsData : friendsMessagesList}
+          data={showSearchedFriends ? memoizedSearchedFriendsList : friendsLatestMessagesList}
           estimatedItemSize={100}
           renderItem={({ item }) => (
-            <Swipeable renderRightActions={
-              () => (
-                <RectButton onPress={() => console.log(item)} style={styles.deleteButton}>
+            <Swipeable
+              renderRightActions={(_a, _b, swipeable) => (
+                <RectButton
+                  onPress={() => {
+                    swipeable?.close();
+                    setTimeout(() => deleteLatestMessage(loggedInUserUUID, item.chatUUID), 0);
+                  }}
+                  style={styles.deleteButton}
+                >
                   <FontAwesome name='trash-o' size={32} color={red_100} />
                 </RectButton>
-              )
-            }>
+              )}>
               <BaseButton
                 onPress={() => handleNavigateToChatWithFriendOrGroup(item)}
                 style={styles.baseButton}

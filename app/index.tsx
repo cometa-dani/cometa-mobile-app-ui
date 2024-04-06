@@ -15,7 +15,7 @@ export default function WelcomeScreen(): JSX.Element {
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const setUserUid = useCometaStore(state => state.setUid);
   const loggedInUserUUID = useCometaStore(state => state.uid);
-  const setFriendsMessagesList = useCometaStore(state => state.setFriendsMessagesList);
+  const setFriendsMessagesList = useCometaStore(state => state.setFriendsLatestMessagesList);
   let unsubscribe!: Unsubscribe;
 
   // Function to handle navigation when "Get Started" button is pressed.
@@ -32,17 +32,14 @@ export default function WelcomeScreen(): JSX.Element {
         try {
           if (user) {
             const accessToken = await user.getIdToken();
-            // console.log(accessToken);
             setAccessToken(accessToken);
             setIsAuthenticated(true);
             setUserUid(user.uid);
             // console.log(accessToken);
-            // console.log(`${user.email} is authenticated`);
             resolve(true);
           }
           else {
             setIsAuthenticated(false);
-            // console.log('user is logged out');
             resolve(false);
           }
         }
@@ -73,15 +70,19 @@ export default function WelcomeScreen(): JSX.Element {
 
 
   useEffect(() => {
+    // let unsubscribe!: Unsubscribe;
     if (loggedInUserUUID) {
       const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}`);
 
-      onValue(latestMessageRef, (snapshot) => {
+      unsubscribe = onValue(latestMessageRef, (snapshot) => {
         const messages: UserMessagesData[] = [];
         snapshot.forEach((child) => {
           const data = {
             ...child.val(),
-            chatUUID: child.key
+            chatUUID: child.key,
+            text: child.val()?.text ?? '',
+            newMessagesCount: child.val()?.newMessagesCount ?? 0,
+            isChatGroup: child.val()?.isChatGroup ?? false,
           } as UserMessagesData;
           messages.push(data);
         });
@@ -92,6 +93,7 @@ export default function WelcomeScreen(): JSX.Element {
 
     // return unsubscribe && unsubscribe();
   }, [loggedInUserUUID]);
+
 
   return (
     <ImageBackground style={styles.imageBackground} source={require('../assets/images/welcome-image.jpeg')}>

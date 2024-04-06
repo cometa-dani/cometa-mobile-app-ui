@@ -3,10 +3,10 @@ import { realtimeDB } from './firebase';
 import { GetBasicUserProfile } from '../models/User';
 
 
-type UserData = Pick<GetBasicUserProfile, ('uid' | 'name' | 'photos')>;
+export type UserData = Pick<GetBasicUserProfile, ('uid' | 'name' | 'photos')>;
 
 
-export async function writeToRealTimeDB(chatuuid: string, messagePayload: object, loggedInUser: UserData, targetUser: UserData) {
+export async function writeToRealTimeDbFriendMessage(chatuuid: string, messagePayload: object, loggedInUser: UserData, targetUser: UserData) {
   const chatsRef = ref(realtimeDB, `chats/${chatuuid}`);
   const latestMessageRef = ref(realtimeDB, 'latestMessages');
   const chatListRef = push(chatsRef);
@@ -44,6 +44,12 @@ export async function writeToRealTimeDB(chatuuid: string, messagePayload: object
       update(latestMessageRef, latestMessagesPayload) // overwrite the latest message if present
     ])
   );
+}
+
+
+export async function deleteLatestMessage(loggedInUserUUID: string | number, chatuuid: string) {
+  const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}/${chatuuid}`);
+  return await set(latestMessageRef, null);
 }
 
 

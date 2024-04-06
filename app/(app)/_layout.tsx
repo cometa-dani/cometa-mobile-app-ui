@@ -45,7 +45,7 @@ export default function AppLayout() {
   const { gray300, red100 } = useColors();
   const isCurrentUserAuthenticated = useCometaStore(state => state.isAuthenticated);
   const setIsCurrentUserAuthenticated = useCometaStore(state => state.setIsAuthenticated);
-  const friendsMessagesList = useCometaStore(state => state.friendsMessagesList) ?? [];
+  const friendsLatestMessagesList = useCometaStore(state => state.friendsLatestMessagesList) ?? [];
 
   // bucket list empty modal
   const [toggleModal, setToggleModal] = useState(false);
@@ -53,8 +53,8 @@ export default function AppLayout() {
 
 
   const totalNewMessages = useMemo(() => (
-    friendsMessagesList.map(({ newMessagesCount }) => newMessagesCount ?? 0).reduce((prev, curr) => prev + curr, 0)
-  ), [friendsMessagesList]);
+    friendsLatestMessagesList.map(({ newMessagesCount }) => newMessagesCount ?? 0).reduce((prev, curr) => prev + curr, 0)
+  ), [friendsLatestMessagesList]);
 
 
   // listens only for log-out event

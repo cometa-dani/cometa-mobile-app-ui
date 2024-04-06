@@ -24,7 +24,7 @@ import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEve
 import { If } from '../../components/utils';
 import { SkeletonLoaderList } from '../(app)/bucketList';
 import uuid from 'react-native-uuid';
-import { writeToRealTimeDB } from '../../firebase/writeToRealTimeDB';
+import { writeToRealTimeDbFriendMessage } from '../../firebase/realTimeDdCruds';
 
 
 type Message = { message: string };
@@ -117,7 +117,7 @@ export default function MatchedEventsScreen(): JSX.Element {
       try {
         if (mutationAcceptFriendship.data?.chatuuid && loggedInUserProfile && targetUserAsFriendshipSender) {
           const { chatuuid } = mutationAcceptFriendship.data;
-          await writeToRealTimeDB(
+          await writeToRealTimeDbFriendMessage(
             chatuuid,
             messagePayload,
             loggedInUserProfile,

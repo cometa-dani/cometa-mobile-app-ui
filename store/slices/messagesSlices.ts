@@ -9,16 +9,16 @@ export interface UserMessagesData extends Pick<IMessage, 'user' | 'text' | 'crea
   isChatGroup: boolean
 }
 
-export type MessagesSlice = {
-  friendsMessagesList: UserMessagesData[],
-  setFriendsMessagesList: (messages: UserMessagesData[]) => void
+export type LatestMessagesSlice = {
+  friendsLatestMessagesList: UserMessagesData[],
+  setFriendsLatestMessagesList: (messages: UserMessagesData[]) => void
 }
 
-export const createMessagesSlice: StateCreator<MessagesSlice> = (set) => {
+export const createLatestMessagesSlice: StateCreator<LatestMessagesSlice> = (set) => {
   return ({
-    friendsMessagesList: [],
-    setFriendsMessagesList: (messages) => {
-      set({ friendsMessagesList: messages });
+    friendsLatestMessagesList: [],
+    setFriendsLatestMessagesList: (messages) => {
+      set({ friendsLatestMessagesList: messages });
     }
   });
 };

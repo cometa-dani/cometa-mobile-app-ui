@@ -17,7 +17,7 @@ import { gray_900 } from '../../constants/colors';
 // firebase
 import { realtimeDB } from '../../firebase/firebase';
 import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
-import { writeToChatGroup } from '../../firebase/writeToRealTimeDB';
+import { writeToChatGroup } from '../../firebase/realTimeDdCruds';
 import { GetBasicUserProfile } from '../../models/User';
 
 

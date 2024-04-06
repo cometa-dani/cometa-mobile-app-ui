@@ -16,7 +16,7 @@ import { If } from '../../../../components/utils';
 import { AppLabelFeedbackMsg } from '../../../../components/textInput/AppTextInput';
 import * as ImagePicker from 'expo-image-picker';
 import { useMutationCreateChatGroup } from '../../../../queries/loggedInUser/chatGroupsHooks';
-import { writeToChatGroup } from '../../../../firebase/writeToRealTimeDB';
+import { writeToChatGroup } from '../../../../firebase/realTimeDdCruds';
 import uuid from 'react-native-uuid';
 import { ChatGroup } from '../../../../models/ChatGroup';
 
