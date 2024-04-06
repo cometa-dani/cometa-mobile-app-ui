@@ -16,6 +16,12 @@ import { If } from '../../components/utils/ifElse';
 import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
 import ReactNativeModal from 'react-native-modal';
 import { appButtonstyles } from '../../components/buttons/buttons';
+// icons
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+// import { FontAwesome6 } from '@expo/vector-icons';
+// import Ionicons from '@expo/vector-icons/Ionicons';
+
 
 
 /**
@@ -38,7 +44,7 @@ const TabButton: FC<{ children: ReactNode }> = ({ children }) => (
 );
 
 export default function AppLayout() {
-  const { gray300 } = useColors();
+  const { gray300, red100 } = useColors();
   const isCurrentUserAuthenticated = useCometaStore(state => state.isAuthenticated);
   const setIsCurrentUserAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const friendsMessagesList = useCometaStore(state => state.friendsMessagesList) ?? [];
@@ -108,7 +114,7 @@ export default function AppLayout() {
             headerShown: false,
             tabBarInactiveTintColor: gray300,
             tabBarShowLabel: false,
-            tabBarActiveTintColor: gray_900,
+            tabBarActiveTintColor: red100,
             tabBarActiveBackgroundColor: '#eee',
           });
         }}>
@@ -117,16 +123,9 @@ export default function AppLayout() {
           options={{
             headerTitleAlign: 'center',
             headerShown: true,
-            tabBarIcon: ({ focused }) => (
+            tabBarIcon: ({ focused, color }) => (
               <TabButton>
-                <If condition={focused}
-                  render={(
-                    <Image style={{ width: 34, height: 34 }} source={icons.homeRed} />
-                  )}
-                  elseRender={(
-                    <Image style={{ width: 34, height: 34 }} source={icons.home} />
-                  )}
-                />
+                <MaterialCommunityIcons name="home-circle-outline" size={44} color={color} />
               </TabButton>
             ),
             headerLeft: () => (
@@ -166,7 +165,7 @@ export default function AppLayout() {
         <Tabs.Screen
           name="chatApp"
           options={{
-            tabBarIcon: ({ focused }) => (
+            tabBarIcon: ({ focused, color }) => (
               <TabButton>
                 <If
                   condition={totalNewMessages}
@@ -176,14 +175,7 @@ export default function AppLayout() {
                     </View>
                   )}
                 />
-                <If condition={focused}
-                  render={(
-                    <Image style={{ width: 30, height: 30 }} source={icons.commentRed} />
-                  )}
-                  elseRender={(
-                    <Image style={{ width: 30, height: 30 }} source={icons.comment} />
-                  )}
-                />
+                <Ionicons name="chatbubble" size={34} color={color} />
               </TabButton>
             ),
           }}
