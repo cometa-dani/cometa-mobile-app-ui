@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Bubble, GiftedChat, IMessage, Avatar } from 'react-native-gifted-chat';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { Stack, useLocalSearchParams, router } from 'expo-router';
 import { SafeAreaView } from 'react-native';
@@ -30,6 +30,7 @@ export default function ChatWithFriendScreen(): JSX.Element {
   const targetUser = sender?.uid === targetUserUUID ? sender : receiver;
   const loggedInUser = sender?.uid !== targetUserUUID ? sender : receiver;
   const [messages, setMessages] = useState<IMessage[]>([]);
+  const chatRef = useRef<FlatList<IMessage>>(null);
 
 
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
@@ -76,6 +77,13 @@ export default function ChatWithFriendScreen(): JSX.Element {
   }, [friendshipData?.chatuuid]);
 
 
+  useEffect(() => {
+    setTimeout(() => {
+      chatRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+  }, [messages]);
+
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
 
@@ -108,8 +116,13 @@ export default function ChatWithFriendScreen(): JSX.Element {
 
       <View style={styles.container}>
         <GiftedChat
+          scrollToBottom={true}
+          messageContainerRef={chatRef}
           alwaysShowSend={true}
           inverted={false}
+          renderFooter={() => (
+            <View style={{ height: 30 }} />
+          )}
           renderBubble={(props) => (
             <Bubble
               {...props}
@@ -119,9 +132,20 @@ export default function ChatWithFriendScreen(): JSX.Element {
                 right: { color: text },
                 left: { color: text }
               }}
+              // bottomContainerStyle={{ right: { height: 30, marginBottom: 20 }, left: { height: 30, marginBottom: 20 } }}
               wrapperStyle={{
-                right: { backgroundColor: '#ead4fa', padding: 8, borderRadius: 24, marginRight: -10, minWidth: '50%', maxWidth: '85%' },
-                left: { backgroundColor: '#f0f0f0', padding: 8, borderRadius: 24 }
+                right: {
+                  backgroundColor: '#ead4fa',
+                  padding: 8,
+                  borderRadius: 24,
+                  marginRight: -10,
+                  minWidth: '50%',
+                  maxWidth: '85%',
+                  // marginBottom: 20
+                },
+                left: {
+                  backgroundColor: '#f0f0f0', padding: 8, borderRadius: 24
+                }
               }}
             />
           )}
