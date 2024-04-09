@@ -1,7 +1,7 @@
 import { ScrollView, SafeAreaView, Dimensions, View as TransparentView } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
-// import { signOut } from 'firebase/auth';
-// import { auth } from '../../firebase/firebase';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
 import { useMutationDeleteLoggedInUserPhotoByUuid, useMutationUploadLoggedInUserPhotos, useMutationLoggedInUserProfileById, useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
 import { AppButton } from '../../components/buttons/buttons';
@@ -12,7 +12,7 @@ import { AppCarousel } from '../../components/carousels/carousel';
 import { profileStyles } from '../../components/profile/profileStyles';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-// import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { Badges, badgesStyles } from '../../components/profile/badges';
 import { ProfileCarousel } from '../../components/profile/profileCarousel';
 import { ProfileTitle } from '../../components/profile/profileTitle';
@@ -26,7 +26,7 @@ import { GetBasicUserProfile } from '../../models/User';
 import { ForEach, If, ON, OFF } from '../../components/utils';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
-import { maximunNumberOfPhotos } from '../../constants/vars';
+import { maximunNumberOfPhotos, nodeEnv } from '../../constants/vars';
 import uuid from 'react-native-uuid';
 
 
@@ -46,7 +46,7 @@ const validationSchemma = Yup.object<ProfileValues>({
 
 export default function LoggedInUserProfileScreen(): JSX.Element {
 
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   const { background } = useColors();
   const loggedInUserUuid = useCometaStore(state => state.uid); // this can be abstracted
 
@@ -124,12 +124,12 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
   };
 
 
-  // const handleLogout = (): void => {
-  //   queryClient.clear();
-  //   queryClient.removeQueries();
-  //   queryClient.cancelQueries();
-  //   signOut(auth);
-  // };
+  const handleLogout = (): void => {
+    queryClient.clear();
+    queryClient.removeQueries();
+    queryClient.cancelQueries();
+    signOut(auth);
+  };
 
 
   const LoggedInUserProfile: FC = () => (
@@ -404,7 +404,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
             </View>
           )}
         </Formik>
-      </View >
+      </View>
     </>
   );
 
@@ -433,9 +433,13 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
           )}
         />
 
-        {/* <View style={{ padding: 20 }}>
-          <AppButton btnColor='black' onPress={() => handleLogout()} text='LOG OUT' />
-        </View> */}
+        <If condition={nodeEnv === 'development'}
+          render={(
+            <View style={{ padding: 20 }}>
+              <AppButton btnColor='black' onPress={() => handleLogout()} text='LOG OUT' />
+            </View>
+          )}
+        />
 
       </ScrollView>
     </SafeAreaView>

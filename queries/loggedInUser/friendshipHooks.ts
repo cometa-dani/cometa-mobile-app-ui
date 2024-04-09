@@ -1,8 +1,9 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import friendshipService from '../../services/friendshipService';
 import { GetLatestFriendships } from '../../models/Friendship';
 import { useCometaStore } from '../../store/cometaStore';
 import { QueryKeys } from '../queryKeys';
+import { GetMatchedUsersWhoLikedEventWithPagination } from '../../models/User';
 
 
 export const useInfiniteQueryGetLoggedInUserNewestFriends = () => {
@@ -90,13 +91,18 @@ export const useQueryGetFriendshipByTargetUserID = (targetUserUUID: string) => {
 };
 
 
+type FriendshipInvitationArgs = {
+  receiverID: number;
+  eventID: number
+};
+
 export const useMutationSentFriendshipInvitation = () => {
   const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
   const queryClient = useQueryClient();
 
   return (
     useMutation({
-      mutationFn: async (receiverID: number) => {
+      mutationFn: async ({ receiverID }: FriendshipInvitationArgs) => {
         const res =
           await friendshipService.sentFriendShipInvitation(receiverID, loggedInUserAccessToken);
         if (res.status === 201) {
@@ -106,7 +112,46 @@ export const useMutationSentFriendshipInvitation = () => {
           throw new Error('failed fech');
         }
       },
-      onMutate: async () => { },
+      onMutate: async ({ eventID, receiverID }) => {
+
+        // ********************************
+        // MAYBE TODO: optimistic update
+        // ********************************
+
+        // const prevState =
+        // queryClient
+        //   .setQueryData<InfiniteData<GetMatchedUsersWhoLikedEventWithPagination>>(
+        //     [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, eventID],
+        //     (olData) => {
+        //       return {
+        //         pages: olData?.pages.flatMap(page => (
+        //           {
+        //             ...page,
+        //             usersWhoLikedEvent: page.usersWhoLikedEvent.map(event => {
+        //               if (event.userId !== receiverID) {
+        //                 return event;
+        //               }
+        //               return {
+        //                 ...event,
+        //                 user: {
+        //                   ...event.user,
+        //                   outgoingFriendships: [
+        //                     {
+        //                       ...event.user?.outgoingFriendships[0],
+        //                       id: 0,
+        //                       status: 'PENDING',
+        //                     }
+        //                   ]
+        //                 }
+        //               };
+        //             })
+        //           }
+        //         )) ?? [],
+        //         pageParams: olData?.pageParams ?? []
+        //       };
+        //     }
+        //   );
+      },
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION] });
       },
@@ -133,7 +178,11 @@ export const useMutationCancelFriendshipInvitation = () => {
           throw new Error('failed fech');
         }
       },
-      onMutate: async () => { },
+      onMutate: async (receiverID) => {
+        const prevState = queryClient.getQueryData<InfiniteData<GetMatchedUsersWhoLikedEventWithPagination>>([QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, receiverID]);
+
+        prevState?.pages.flatMap(page => page.usersWhoLikedEvent);
+      },
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION] });
       },

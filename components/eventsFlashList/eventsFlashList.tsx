@@ -13,6 +13,7 @@ import { gray_200, white_50 } from '../../constants/colors';
 import { If } from '../utils/ifElse';
 import { Photo } from '../../models/Photo';
 import { ForEach } from '../utils/ForEach';
+
 //icons
 import { FontAwesome6 } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
@@ -185,11 +186,11 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
               <>
                 <TransParentView style={{ alignItems: 'center', gap: 2 }}>
                   <Pressable onPress={() => onHandleLikeButtonPress(item.id)}>
-                    {({ hovered, pressed }) => (
+                    {({ pressed }) => (
                       (item.isLiked) ? (
-                        <FontAwesome name='heart' size={28} style={{ color: (hovered && pressed) ? white50 : red100 }} />
+                        <FontAwesome name='heart' size={28} style={{ color: (pressed) ? white50 : red100 }} />
                       ) : (
-                        <FontAwesome name='heart-o' size={28} style={{ color: (hovered && pressed) ? red100 : white50 }} />
+                        <FontAwesome name='heart-o' size={28} style={{ color: (pressed) ? red100 : white50 }} />
                       )
                     )}
                   </Pressable>

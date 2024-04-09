@@ -129,15 +129,15 @@ export const useMutationDeleteLikedEventFromBucketList = () => {
         // Update the cache with the new liked state
         queryClient
           .setQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>
-          ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION], (data) => ({
-            pages: data?.pages.map(
+          ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION], (oldData) => ({
+            pages: oldData?.pages.map(
               (page) => (
                 {
                   ...page,
                   events: page.events.filter(event => eventID !== event.id)
                 }
               )) || [],
-            pageParams: data?.pageParams || []
+            pageParams: oldData?.pageParams || []
           }));
 
         return eventID;
