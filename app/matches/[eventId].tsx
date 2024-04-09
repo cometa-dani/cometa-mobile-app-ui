@@ -166,21 +166,21 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
       };
       try {
         if (mutationAcceptFriendship.data?.chatuuid && loggedInUserProfile && targetUserAsFriendshipSender) {
+          setToggleModal();
           const { chatuuid } = mutationAcceptFriendship.data;
+          router.push(`/chat/${targetUserAsFriendshipSender?.uid}`);
           await writeToRealTimeDbFriendMessage(
             chatuuid,
             messagePayload,
             loggedInUserProfile,
             targetUserAsFriendshipSender
           );
-          router.push(`/chat/${targetUserAsFriendshipSender?.uid}`);
         }
         else {
           // TODO:
           // should fetch the chatuuid from the server again
         }
         actions.resetForm();
-        setToggleModal();
         actions.setSubmitting(true);
       }
       catch (error) {
