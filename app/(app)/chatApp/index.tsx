@@ -19,7 +19,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 export default function ChatLatestMessagesScreen(): JSX.Element {
   const friendsLatestMessagesList = useCometaStore(state => state.friendsLatestMessagesList);
   const [showSearchedFriends, setShowSearchedFriends] = useState(false);
-  const loggedInUserUUID = useCometaStore(state => state.uid);
+  const loggedInUserUUID: string = useCometaStore(state => state.uid);
 
   // search user by username
   const [textInput, setTextInput] = useState('');
@@ -71,38 +71,83 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
   }, [memoizedSearchedFriendsList, textInput]);
 
 
-  const handleNavigateToChatWithFriendOrGroup = (receivedMessage: UserMessagesData) => {
-    const { user, chatUUID, createdAt, text, isChatGroup } = receivedMessage;
+  const navigateToChatWithFriend = async (receivedMessage: UserMessagesData) => {
+    let messagePayload!: UserMessagesData;
+    const { user } = receivedMessage;
+    router.push(`/chat/${user._id}`);
 
-    if (receivedMessage?.isChatGroup) {
-      router.push(`/chatGroup/${chatUUID}`);
+    if (showSearchedFriends) {
+      const currentFriendMessage = friendsLatestMessagesList.find(friend => friend.user._id === user._id);
+      if (!currentFriendMessage) {
+        return;
+      }
+      messagePayload = currentFriendMessage;
     }
     else {
-      router.push(`/chat/${user._id}`);
+      messagePayload = receivedMessage;
     }
-    markMessageAsSeenByLoggedInUserO();
-
-    function markMessageAsSeenByLoggedInUserO() {
-      setTimeout(() => setTextInput(''), 200);
-      if (receivedMessage?.newMessagesCount) {
-        const messagePayload = { createdAt: createdAt?.toString(), text, user, isChatGroup };
-        writeLastMessageAsSeenIntoDB(loggedInUserUUID, chatUUID, messagePayload);
-      }
-      else if (showSearchedFriends) {
-        const currentFriend = friendsLatestMessagesList.find(friend => friend.user._id === user._id);
-        if (!currentFriend || !currentFriend.text) return;
-
-        const messagePayload = {
-          createdAt: createdAt?.toString(),
-          text: currentFriend.text, // change to O(1) using new Map instead
-          user,
-          isChatGroup
-        };
-        writeLastMessageAsSeenIntoDB(loggedInUserUUID, chatUUID, messagePayload);
-      }
-    }
+    if (!messagePayload.newMessagesCount) return;
+    writeLastMessageAsSeenIntoDB(loggedInUserUUID, messagePayload);
   };
 
+
+  const navigateToChatWithGroup = async (receivedMessage: UserMessagesData) => {
+    const { chatUUID, user } = receivedMessage;
+    router.push(`/chatGroup/${chatUUID}`);
+    const currentFriend = friendsLatestMessagesList.find(friend => friend.user._id === user._id);
+    const messagePayload = { ...receivedMessage, user: { ...receivedMessage.user, text: currentFriend?.text ?? '' } };
+    writeLastMessageAsSeenIntoDB(loggedInUserUUID, messagePayload);
+  };
+
+
+  const handlePressOnUserMessage = (receivedMessage: UserMessagesData) => {
+    if (receivedMessage?.isChatGroup) {
+      navigateToChatWithGroup(receivedMessage);
+    }
+    else {
+      navigateToChatWithFriend(receivedMessage);
+    }
+    setTimeout(() => setTextInput(''), 200);
+  };
+
+
+  // ****************************************************
+  // TODO:
+  // create two funciones one for chatGroup and one for chat
+  // ****************************************************
+  // const handleNavigateToChatWithFriendOrGroup = (receivedMessage: UserMessagesData) => {
+  //   const { user, chatUUID, createdAt, text, isChatGroup } = receievedMessage;
+
+  //   if (receivedMessage?.isChatGroup) {
+  //     router.push(`/chatGroup/${chatUUID}`);
+  //   }
+  //   else {
+  //     router.push(`/chat/${user._id}`);
+  //   }
+  //   // markMessageAsSeenByLoggedInUserO();
+
+  //   function markMessageAsSeenByLoggedInUserO(receivedMessage: UserMessagesData) {
+  //     setTimeout(() => setTextInput(''), 200);
+  //     if (receivedMessage?.newMessagesCount) {
+  //       const messagePayload = { createdAt: createdAt?.toString(), text, user, isChatGroup };
+  //       writeLastMessageAsSeenIntoDB(loggedInUserUUID, receivedMessage);
+  //       // writeLastMessageAsSeenIntoDB(loggedInUserUUID, chatUUID, messagePayload);
+  //     }
+  //     else if (showSearchedFriends) {
+  //       const currentFriend = friendsLatestMessagesList.find(friend => friend.user._id === user._id);
+  //       if (!currentFriend || !currentFriend.text) return;
+
+  //       const messagePayload = {
+  //         createdAt: createdAt?.toString(),
+  //         text: currentFriend.text ?? '', // change to O(1) using new Map instead
+  //         user,
+  //         isChatGroup,
+  //       };
+  //       writeLastMessageAsSeenIntoDB(loggedInUserUUID, re);
+  //       // writeLastMessageAsSeenIntoDB(loggedInUserUUID, chatUUID, messagePayload);
+  //     }
+  //   }
+  // };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -148,13 +193,13 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
         <FlashList
           data={showSearchedFriends ? memoizedSearchedFriendsList : friendsLatestMessagesList}
           estimatedItemSize={100}
-          renderItem={({ item }) => (
+          renderItem={({ item: message }) => (
             <Swipeable
               renderRightActions={(_a, _b, swipeable) => (
                 <RectButton
                   onPress={() => {
                     swipeable?.close();
-                    setTimeout(() => deleteLatestMessage(loggedInUserUUID, item.chatUUID), 0);
+                    setTimeout(() => deleteLatestMessage(loggedInUserUUID, message.chatUUID), 0);
                   }}
                   style={styles.deleteButton}
                 >
@@ -162,20 +207,20 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
                 </RectButton>
               )}>
               <BaseButton
-                onPress={() => handleNavigateToChatWithFriendOrGroup(item)}
+                onPress={() => handlePressOnUserMessage(message)}
                 style={styles.baseButton}
               >
                 <TransparentView style={styles.transparentView1}>
 
                   <TransparentView style={styles.transparentView2}>
                     <If
-                      condition={item?.isChatGroup && !item.user?.avatar}
+                      condition={message?.isChatGroup && !message.user?.avatar}
                       render={(
                         <FontAwesome5 name="users" size={40} color={gray_900} />
                       )}
                       elseRender={(
                         <Image
-                          source={{ uri: item.user?.avatar?.toString() ?? defaultImgPlaceholder }}
+                          source={{ uri: message.user?.avatar?.toString() ?? defaultImgPlaceholder }}
                           style={styles.image}
                         />
                       )}
@@ -189,14 +234,14 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
                         ellipsizeMode='tail'
                         style={styles.textBold}
                       >
-                        {item.user.name}
+                        {message.user.name}
                       </Text>
                       <Text
                         numberOfLines={1}
                         ellipsizeMode='tail'
                         style={styles.textGray}
                       >
-                        {item.text}
+                        {message.text}
                       </Text>
                     </TransparentView>
 
@@ -204,14 +249,14 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
                       condition={!showSearchedFriends}
                       render={(
                         <TransparentView style={styles.transparentView4}>
-                          <Text style={[styles.textGray, { color: item.newMessagesCount ? messages.ok : undefined }]}>
-                            {new Date(item.createdAt?.toString()).toLocaleTimeString()}
+                          <Text style={[styles.textGray, { color: message.newMessagesCount ? messages.ok : undefined }]}>
+                            {new Date(message.createdAt?.toString()).toLocaleTimeString()}
                           </Text>
-                          <If condition={item?.newMessagesCount}
+                          <If condition={message?.newMessagesCount}
                             render={(
                               <TransparentView style={styles.messagesCount}>
                                 <Text style={styles.messagesCountText}>
-                                  {item.newMessagesCount}
+                                  {message.newMessagesCount}
                                 </Text>
                               </TransparentView>
                             )}

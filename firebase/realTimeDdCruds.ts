@@ -1,6 +1,7 @@
 import { push, ref, set, update, increment } from 'firebase/database';
 import { realtimeDB } from './firebase';
 import { GetBasicUserProfile } from '../models/User';
+import { UserMessagesData } from '../store/slices/messagesSlices';
 
 
 export type UserData = Pick<GetBasicUserProfile, ('uid' | 'name' | 'photos')>;
@@ -53,8 +54,8 @@ export async function deleteLatestMessage(loggedInUserUUID: string | number, cha
 }
 
 
-export const markLastMessageAsSeen = async (loggedInUserUUID: string | number, chatuuid: string, prevMessage: object) => {
-  const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}/${chatuuid}`);
+export const markLastMessageAsSeen = async (loggedInUserUUID: string | number, prevMessage: UserMessagesData) => {
+  const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}/${prevMessage.chatUUID}`);
   const messagePayload = {
     ...prevMessage,
     newMessagesCount: 0,
