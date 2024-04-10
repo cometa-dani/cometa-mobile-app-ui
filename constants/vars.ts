@@ -1,7 +1,7 @@
 import { ScreenProps } from 'react-native-screens';
 
 export const apiUrl = process.env?.EXPO_PUBLIC_API_URL || 'https://qfrzp2ntmv.eu-west-3.awsapprunner.com/api/v1';
-export const nodeEnv = process.env?.NODE_ENV || 'development';
+export const nodeEnv = process.env?.EXPO_NODE_ENV || 'development';
 
 // firebase
 export const apiKey = process.env?.EXPO_PUBLIC_API_KEY || 'AIzaSyCraiiYgLG1BU3GDGNFuCheu2OknqUw24Y';

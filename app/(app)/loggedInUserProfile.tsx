@@ -26,7 +26,7 @@ import { GetBasicUserProfile } from '../../models/User';
 import { ForEach, If, ON, OFF } from '../../components/utils';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
-import { maximunNumberOfPhotos, nodeEnv } from '../../constants/vars';
+import { maximunNumberOfPhotos } from '../../constants/vars';
 import uuid from 'react-native-uuid';
 
 
@@ -200,6 +200,10 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
             />
           )}
         />
+
+        <View style={{ paddingVertical: 20 }}>
+          <AppButton btnColor='black' onPress={() => handleLogout()} text='LOG OUT' />
+        </View>
       </View>
     </>
   );
@@ -391,9 +395,8 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
               </View>
               {/* hometown */}
 
-
               <AppButton
-                style={{ marginTop: 20 }}
+                style={{ marginVertical: 20 }}
                 onPress={() => {
                   dirty && handleSubmit();
                   setSwitchEditionModeForLoggedInUser(ON);
@@ -432,15 +435,6 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
             <EditLoggedInUserProfile />
           )}
         />
-
-        <If condition={nodeEnv === 'development'}
-          render={(
-            <View style={{ padding: 20 }}>
-              <AppButton btnColor='black' onPress={() => handleLogout()} text='LOG OUT' />
-            </View>
-          )}
-        />
-
       </ScrollView>
     </SafeAreaView>
   );
