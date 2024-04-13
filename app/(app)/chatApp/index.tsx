@@ -127,7 +127,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
 
   const handleDeleteMessage = async () => {
     if (chatuuidToDelete.current && deleteMedia) {
-      // delete media from the device gallery
+      // await chatWithFriendService.deleteLocalMessages();
     }
     else if (chatuuidToDelete.current && !deleteMedia) {
       await chatWithFriendService.deleteLatestMessage(loggedInUserUUID, chatuuidToDelete.current);

@@ -68,7 +68,7 @@ class ChatWithFriendService {
   }
 
 
-  async deleteLocalMessages() { }
+  async deleteLocalMessagesWithMedia() { }
 }
 
 
