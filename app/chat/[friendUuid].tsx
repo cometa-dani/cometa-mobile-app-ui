@@ -14,8 +14,9 @@ import { useQueryGetFriendshipByTargetUserID } from '../../queries/loggedInUser/
 import { realtimeDB } from '../../firebase/firebase';
 import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
 import chatWithFriendService from '../../services/chatWithFriendService';
-// import { writeToRealTimeDbFriendMessage } from '../../firebase/realTimeDdCruds';
+// import { MMKV } from 'react-native-mmkv';
 
+// const mmkvStorage = new MMKV();
 
 export default function ChatWithFriendScreen(): JSX.Element {
   const { text } = useColors();
@@ -76,6 +77,13 @@ export default function ChatWithFriendScreen(): JSX.Element {
       unsubscribe && unsubscribe();
     };
   }, [friendshipData?.chatuuid]);
+
+
+  // useEffect(() => {
+  //   if (friendshipData?.chatuuid) {
+  //     mmkvStorage.set(friendshipData?.chatuuid, JSON.stringify(messages));
+  //   }
+  // }, [friendshipData?.chatuuid]);
 
 
   useEffect(() => {
