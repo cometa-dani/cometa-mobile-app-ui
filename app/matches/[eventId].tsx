@@ -24,8 +24,8 @@ import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEve
 import { If } from '../../components/utils';
 import { SkeletonLoaderList } from '../(app)/bucketList';
 import uuid from 'react-native-uuid';
-import { writeToRealTimeDbFriendMessage } from '../../firebase/realTimeDdCruds';
 import { GetLatestFriendships } from '../../models/Friendship';
+import chatWithFriendService from '../../services/chatWithFriendService';
 
 
 type Message = { message: string };
@@ -169,7 +169,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
           setToggleModal();
           const { chatuuid } = mutationAcceptFriendship.data;
           router.push(`/chat/${targetUserAsFriendshipSender?.uid}`);
-          await writeToRealTimeDbFriendMessage(
+          await chatWithFriendService.writeMessage(
             chatuuid,
             messagePayload,
             loggedInUserProfile,

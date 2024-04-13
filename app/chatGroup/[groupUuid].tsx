@@ -17,8 +17,8 @@ import { gray_900 } from '../../constants/colors';
 // firebase
 import { realtimeDB } from '../../firebase/firebase';
 import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
-import { writeToChatGroup } from '../../firebase/realTimeDdCruds';
 import { GetBasicUserProfile } from '../../models/User';
+import chatWithGroupService from '../../services/chatWithGroupService';
 
 
 export default function ChatGroupScreen(): JSX.Element {
@@ -51,7 +51,7 @@ export default function ChatGroupScreen(): JSX.Element {
           photo: targetChatGroup?.photo?.url ?? '',
           uuid: targetChatGroup?.id
         };
-        await writeToChatGroup(
+        await chatWithGroupService.writeMessage(
           messagePayload,
           loggedInUserUuid,
           [...targetChatGroupMembers.keys()],

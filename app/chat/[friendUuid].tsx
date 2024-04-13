@@ -13,7 +13,8 @@ import { useQueryGetFriendshipByTargetUserID } from '../../queries/loggedInUser/
 // firebase
 import { realtimeDB } from '../../firebase/firebase';
 import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
-import { writeToRealTimeDbFriendMessage } from '../../firebase/realTimeDdCruds';
+import chatWithFriendService from '../../services/chatWithFriendService';
+// import { writeToRealTimeDbFriendMessage } from '../../firebase/realTimeDdCruds';
 
 
 export default function ChatWithFriendScreen(): JSX.Element {
@@ -44,7 +45,7 @@ export default function ChatWithFriendScreen(): JSX.Element {
         }
       };
       if (friendshipData?.chatuuid && loggedInUser && targetUser) {
-        await writeToRealTimeDbFriendMessage(
+        await chatWithFriendService.writeMessage(
           friendshipData.chatuuid,
           messagePayload,
           loggedInUser,

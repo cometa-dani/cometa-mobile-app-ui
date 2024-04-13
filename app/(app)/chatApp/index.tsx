@@ -9,7 +9,7 @@ import { FlashList } from '@shopify/flash-list';
 import { useCometaStore } from '../../../store/cometaStore';
 import { defaultImgPlaceholder } from '../../../constants/vars';
 import { titles } from '../../../constants/assets';
-import { deleteLatestMessage, markLastMessageAsSeen as writeLastMessageAsSeenIntoDB } from '../../../firebase/realTimeDdCruds';
+import chatWithFriendService from '../../../services/chatWithFriendService';
 import { If } from '../../../components/utils';
 import { UserMessagesData } from '../../../store/slices/messagesSlices';
 import { useInfiniteQuerySearchFriendsByUserName } from '../../../queries/loggedInUser/friendshipHooks';
@@ -87,20 +87,22 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
       messagePayload = receivedMessage;
     }
     if (!messagePayload.newMessagesCount) return;
-    writeLastMessageAsSeenIntoDB(loggedInUserUUID, messagePayload);
+
+    chatWithFriendService.markLastMessageAsSeen(loggedInUserUUID, messagePayload);
   };
 
 
   const navigateToChatWithGroup = async (receivedMessage: UserMessagesData) => {
-    const { chatUUID, user } = receivedMessage;
+    const { chatUUID } = receivedMessage;
     router.push(`/chatGroups/${chatUUID}/messages`);
-    const currentFriend = friendsLatestMessagesList.find(friend => friend.user._id === user._id);
-    const messagePayload = { ...receivedMessage, user: { ...receivedMessage.user, text: currentFriend?.text ?? '' } };
-    writeLastMessageAsSeenIntoDB(loggedInUserUUID, messagePayload);
+    // const currentFriend = friendsLatestMessagesList.find(friend => friend.user._id === user._id);
+    // const messagePayload = { ...receivedMessage, user: { ...receivedMessage.user, text: currentFriend?.text ?? '' } };
+
+    // chatWithFriendService.markLastMessageAsSeen(loggedInUserUUID, messagePayload);
   };
 
 
-  const handlePressOnUserMessage = (receivedMessage: UserMessagesData) => {
+  const handlePressOnUserLatestMessage = (receivedMessage: UserMessagesData) => {
     if (receivedMessage?.isChatGroup) {
       navigateToChatWithGroup(receivedMessage);
     }
@@ -110,44 +112,6 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
     setTimeout(() => setTextInput(''), 200);
   };
 
-
-  // ****************************************************
-  // TODO:
-  // create two funciones one for chatGroup and one for chat
-  // ****************************************************
-  // const handleNavigateToChatWithFriendOrGroup = (receivedMessage: UserMessagesData) => {
-  //   const { user, chatUUID, createdAt, text, isChatGroup } = receievedMessage;
-
-  //   if (receivedMessage?.isChatGroup) {
-  //     router.push(`/chatGroup/${chatUUID}`);
-  //   }
-  //   else {
-  //     router.push(`/chat/${user._id}`);
-  //   }
-  //   // markMessageAsSeenByLoggedInUserO();
-
-  //   function markMessageAsSeenByLoggedInUserO(receivedMessage: UserMessagesData) {
-  //     setTimeout(() => setTextInput(''), 200);
-  //     if (receivedMessage?.newMessagesCount) {
-  //       const messagePayload = { createdAt: createdAt?.toString(), text, user, isChatGroup };
-  //       writeLastMessageAsSeenIntoDB(loggedInUserUUID, receivedMessage);
-  //       // writeLastMessageAsSeenIntoDB(loggedInUserUUID, chatUUID, messagePayload);
-  //     }
-  //     else if (showSearchedFriends) {
-  //       const currentFriend = friendsLatestMessagesList.find(friend => friend.user._id === user._id);
-  //       if (!currentFriend || !currentFriend.text) return;
-
-  //       const messagePayload = {
-  //         createdAt: createdAt?.toString(),
-  //         text: currentFriend.text ?? '', // change to O(1) using new Map instead
-  //         user,
-  //         isChatGroup,
-  //       };
-  //       writeLastMessageAsSeenIntoDB(loggedInUserUUID, re);
-  //       // writeLastMessageAsSeenIntoDB(loggedInUserUUID, chatUUID, messagePayload);
-  //     }
-  //   }
-  // };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -199,7 +163,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
                 <RectButton
                   onPress={() => {
                     swipeable?.close();
-                    setTimeout(() => deleteLatestMessage(loggedInUserUUID, message.chatUUID), 0);
+                    setTimeout(() => chatWithFriendService.deleteLatestMessage(loggedInUserUUID, message.chatUUID), 0);
                   }}
                   style={styles.deleteButton}
                 >
@@ -207,7 +171,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
                 </RectButton>
               )}>
               <BaseButton
-                onPress={() => handlePressOnUserMessage(message)}
+                onPress={() => handlePressOnUserLatestMessage(message)}
                 style={styles.baseButton}
               >
                 <TransparentView style={styles.transparentView1}>
