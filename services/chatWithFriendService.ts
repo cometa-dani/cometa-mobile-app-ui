@@ -66,6 +66,9 @@ class ChatWithFriendService {
     const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}/${chatuuid}`);
     return await set(latestMessageRef, null);
   }
+
+
+  async deleteLocalMessages() { }
 }
 
 

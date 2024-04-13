@@ -1,5 +1,3 @@
-import { ScreenProps } from 'react-native-screens';
-
 export const apiUrl = process.env?.EXPO_PUBLIC_API_URL || 'https://qfrzp2ntmv.eu-west-3.awsapprunner.com/api/v1';
 export const nodeEnv = process.env?.EXPO_NODE_ENV || 'development';
 
@@ -14,7 +12,7 @@ export const measurementId = process.env?.EXPO_PUBLIC_MEASURING_ID || 'G-G4W08CQ
 export const databaseURL = process.env?.EXPO_PUBLIC_DATABASE_URL || 'https://cometa-e5dd5-default-rtdb.europe-west1.firebasedatabase.app';
 
 export const animationDuration = 290;
-export const screenOptions = { headerShown: false, animation: 'slide_from_right', animationDuration } as ScreenProps;
+export const screenOptions = { headerShown: false, animation: 'slide_from_right', animationDuration };
 
 export const defaultImgPlaceholder = 'https://placehold.co/400';
 export const maximunNumberOfPhotos = 5;

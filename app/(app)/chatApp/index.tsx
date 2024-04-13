@@ -1,4 +1,5 @@
-import { StyleSheet, SafeAreaView, TextInput, Pressable, Image, View as TransparentView } from 'react-native';
+/* eslint-disable react-native/no-raw-text */
+import { StyleSheet, SafeAreaView, TextInput, Pressable, Image, View as TransparentView, Text as TransparentText } from 'react-native';
 import { Text, View } from '../../../components/Themed';
 import { BaseButton, RectButton, Swipeable } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
@@ -14,6 +15,9 @@ import { If } from '../../../components/utils';
 import { UserMessagesData } from '../../../store/slices/messagesSlices';
 import { useInfiniteQuerySearchFriendsByUserName } from '../../../queries/loggedInUser/friendshipHooks';
 import { FontAwesome5 } from '@expo/vector-icons';
+import ReactNativeModal from 'react-native-modal';
+import { appButtonstyles } from '../../../components/buttons/buttons';
+import Checkbox from 'expo-checkbox';
 
 
 export default function ChatLatestMessagesScreen(): JSX.Element {
@@ -24,6 +28,12 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
   // search user by username
   const [textInput, setTextInput] = useState('');
   const inputRef = useRef<TextInput>(null);
+
+  // modal
+  const [toggleModal, setToggleModal] = useState(false);
+  const [deleteMedia, setDeleteMedia] = useState(true);
+  const chatuuidToDelete = useRef('');
+
 
   // listen for search input changes
   useEffect(() => {
@@ -36,8 +46,10 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
     return () => clearTimeout(timeOutId);
   }, [textInput]);
 
+
   const [debouncedTextInput, setDebouncedTextInput] = useState('');
   const { data: searchedFriendsData, isSuccess } = useInfiniteQuerySearchFriendsByUserName(debouncedTextInput);
+
 
   const memoizedSearchedFriendsList: UserMessagesData[] = useMemo(() => (
     searchedFriendsData?.pages
@@ -113,6 +125,17 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
   };
 
 
+  const handleDeleteMessage = async () => {
+    if (chatuuidToDelete.current && deleteMedia) {
+      // delete media from the device gallery
+    }
+    else if (chatuuidToDelete.current && !deleteMedia) {
+      await chatWithFriendService.deleteLatestMessage(loggedInUserUUID, chatuuidToDelete.current);
+    }
+    setToggleModal(false);
+  };
+
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <Stack.Screen
@@ -131,6 +154,45 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
           // },
         }}
       />
+
+      <ReactNativeModal isVisible={toggleModal}>
+        <View style={styles.modalContainer}>
+          <View style={{ gap: 20 }}>
+            <View>
+              <Text style={styles.modalTitle}>Delete this chat?</Text>
+            </View>
+
+            <View style={styles.modalCheckboxContainer}>
+              <Checkbox
+                onValueChange={(val) => setDeleteMedia(val)}
+                value={deleteMedia}
+                color={gray_900}
+                style={{ borderRadius: 5 }}
+              />
+              <Text onPress={() => setDeleteMedia(prev => !prev)} style={{ width: '70%' }}>Also delete media received in this chat from the device gallery?</Text>
+            </View>
+
+            <View style={styles.modalButtonsContainer}>
+              <Pressable
+                style={{ ...appButtonstyles.button, backgroundColor: gray_900 }}
+                onPress={() => setToggleModal(false)}>
+                <TransparentText style={{ ...appButtonstyles.buttonText, color: white_50 }}>
+                  Close
+                </TransparentText>
+              </Pressable>
+
+              <Pressable
+                style={{ ...appButtonstyles.button, backgroundColor: gray_900 }}
+                onPress={handleDeleteMessage} >
+                <TransparentText style={{ ...appButtonstyles.buttonText, color: white_50 }}>
+                  Delete chat
+                </TransparentText>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </ReactNativeModal>
+
       <View style={styles.mainView}>
         <View style={styles.innerView}>
           <View style={styles.relativeView}>
@@ -163,7 +225,8 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
                 <RectButton
                   onPress={() => {
                     swipeable?.close();
-                    setTimeout(() => chatWithFriendService.deleteLatestMessage(loggedInUserUUID, message.chatUUID), 0);
+                    // chatuuidToDelete.current = message.chatUUID;
+                    setTimeout(() => setToggleModal(true), 100);
                   }}
                   style={styles.deleteButton}
                 >
@@ -244,6 +307,30 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
 
 
 const styles = StyleSheet.create({
+  modalContainer: {
+    minHeight: 200,
+    width: 300,
+    padding: 24,
+    borderRadius: 20,
+    alignSelf: 'center'
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+  modalCheckboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    justifyContent: 'center',
+    width: '100%'
+  },
+  modalButtonsContainer: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    width: '100%'
+  },
   safeArea: {
     flex: 1
   },

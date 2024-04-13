@@ -1,5 +1,5 @@
 // components
-import { animationDuration, screenOptions } from '../constants/vars';
+import { animationDuration } from '../constants/vars';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack, } from 'expo-router';
@@ -71,11 +71,11 @@ export default function RootLayout() {
 function RootLayoutNav(): JSX.Element {
   return (
     <Stack>
-      <Stack.Screen name='index' options={screenOptions} />
+      <Stack.Screen name='index' options={{ headerShown: false, animation: 'slide_from_right', animationDuration: 290 }} />
 
-      <Stack.Screen name="(onboarding)" options={{ ...screenOptions }} />
+      <Stack.Screen name="(onboarding)" options={{ headerShown: false, animation: 'slide_from_right', animationDuration: 290 }} />
 
-      <Stack.Screen name="(app)" options={screenOptions} />
+      <Stack.Screen name="(app)" options={{ headerShown: false, animation: 'slide_from_right', animationDuration: 290 }} />
 
       <Stack.Screen
         name="matches/[eventId]"
