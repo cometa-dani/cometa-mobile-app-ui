@@ -93,7 +93,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
 
   const navigateToChatWithGroup = async (receivedMessage: UserMessagesData) => {
     const { chatUUID, user } = receivedMessage;
-    router.push(`/chatGroups/${chatUUID}`);
+    router.push(`/chatGroups/${chatUUID}/messages`);
     const currentFriend = friendsLatestMessagesList.find(friend => friend.user._id === user._id);
     const messagePayload = { ...receivedMessage, user: { ...receivedMessage.user, text: currentFriend?.text ?? '' } };
     writeLastMessageAsSeenIntoDB(loggedInUserUUID, messagePayload);

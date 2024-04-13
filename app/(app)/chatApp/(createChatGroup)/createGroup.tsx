@@ -16,7 +16,7 @@ import { If } from '../../../../components/utils';
 import { AppLabelFeedbackMsg } from '../../../../components/textInput/AppTextInput';
 import * as ImagePicker from 'expo-image-picker';
 import { useMutationCreateChatGroup } from '../../../../queries/loggedInUser/chatGroupsHooks';
-import { writeToChatGroup } from '../../../../firebase/realTimeDdCruds';
+import { addMembersToChatGroup, writeToChatGroup } from '../../../../firebase/realTimeDdCruds';
 import uuid from 'react-native-uuid';
 import { ChatGroup } from '../../../../models/ChatGroup';
 
@@ -79,6 +79,7 @@ export default function CreateChatGroupScreen(): JSX.Element {
       const chatGroupInfo = { uuid: groupUUID, name: res?.name ?? '', photo: res?.photo?.url ?? '' };
 
       if (loggedInUserUUID) {
+        await addMembersToChatGroup(groupUUID, [...chatGroupMembersUUIDs, loggedInUserUUID]);
         await writeToChatGroup(messagePayload, loggedInUserUUID, [...chatGroupMembersUUIDs], chatGroupInfo);
         router.push(`/chatGroup/${groupUUID}`);
       }

@@ -72,8 +72,15 @@ type ChatGroup = {
   photo: string;
 };
 
-export async function writeToChatGroup(messagePayload: object, loggedInUserUUID: string, targetUsers: (string | number)[], chatGroup: ChatGroup) {
-  const chatsRef = ref(realtimeDB, `chatGroups/${chatGroup?.uuid}`);
+
+export const addMembersToChatGroup = async (chatGroupUUID: string, membersUUID: (string | number)[]) => {
+  const chatGroupRef = ref(realtimeDB, `chatGroups/${chatGroupUUID}/members`);
+  return await update(chatGroupRef, membersUUID);
+};
+
+
+export async function writeToChatGroup(messagePayload: object, loggedInUserUUID: string, targetUsersAsMembers: (string | number)[], chatGroup: ChatGroup) {
+  const chatsRef = ref(realtimeDB, `chatGroups/${chatGroup?.uuid}/messages`);
   const latestMessageRef = ref(realtimeDB, 'latestMessages');
   const chatListRef = push(chatsRef);
 
@@ -100,7 +107,7 @@ export async function writeToChatGroup(messagePayload: object, loggedInUserUUID:
   };
 
   const allTargetUsersMessages =
-    targetUsers
+    targetUsersAsMembers
       .reduce((prev, targetUserUUID) => ({
         ...prev,
         [`/${targetUserUUID}/${chatGroup.uuid}`]: toTargetUsersLatestMessagePayload
