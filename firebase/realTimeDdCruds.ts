@@ -73,7 +73,7 @@ type ChatGroup = {
 };
 
 export async function writeToChatGroup(messagePayload: object, loggedInUserUUID: string, targetUsers: (string | number)[], chatGroup: ChatGroup) {
-  const chatsRef = ref(realtimeDB, `chats/${chatGroup?.uuid}`);
+  const chatsRef = ref(realtimeDB, `chatGroups/${chatGroup?.uuid}`);
   const latestMessageRef = ref(realtimeDB, 'latestMessages');
   const chatListRef = push(chatsRef);
 
