@@ -14,9 +14,10 @@ import { useQueryGetFriendshipByTargetUserID } from '../../queries/loggedInUser/
 import { realtimeDB } from '../../firebase/firebase';
 import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
 import chatWithFriendService from '../../services/chatWithFriendService';
-// import { MMKV } from 'react-native-mmkv';
+// import { MMKV, useMMKVListener } from 'react-native-mmkv';
 
 // const mmkvStorage = new MMKV();
+
 
 export default function ChatWithFriendScreen(): JSX.Element {
   const { text } = useColors();
@@ -65,19 +66,37 @@ export default function ChatWithFriendScreen(): JSX.Element {
     let unsubscribe!: Unsubscribe;
     if (friendshipData?.chatuuid) {
       const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}`);
-      const queryMessages = query(chatsRef, limitToLast(18));
+      const queryMessages = query(chatsRef, limitToLast(1));
 
       unsubscribe = onChildAdded(queryMessages, (data) => {
         const newMessage = data?.val() as IMessage;
-        setMessages(prev => prev.concat(newMessage));
+        // setMessages(prev => prev.concat(newMessage));
+
+        // store messages in mmkv
       });
     }
     return () => {
-      messages && setMessages([]);
+      // messages && setMessages([]);
       unsubscribe && unsubscribe();
     };
   }, [friendshipData?.chatuuid]);
 
+
+  // useEffect(() => {
+  //   if (friendshipData?.chatuuid) {
+  //     mmkvStorage.addOnValueChangedListener((key: string) => {
+  //       if (key === friendshipData?.chatuuid) {
+  //         console.log('chatuuid changed');
+  //       }
+  //     });
+  //   }
+  // }, [friendshipData?.chatuuid]);
+
+  // useMMKVListener((key: string) => {
+  //   if (key === friendshipData?.chatuuid) {
+  //     console.log('chatuuid changed');
+  //   }
+  // });
 
   // useEffect(() => {
   //   if (friendshipData?.chatuuid) {
