@@ -57,6 +57,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
         page => page.friendships
           .map(
             friendship => ({
+              _id: friendship.id,
               chatUUID: friendship?.chatuuid,
               text: friendship.friend.username,
               newMessagesCount: 0,

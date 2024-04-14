@@ -10,9 +10,31 @@ export type UserData = Pick<GetBasicUserProfile, ('uid' | 'name' | 'photos')>;
 class ChatWithFriendService {
 
   async writeMessage(chatuuid: string, messagePayload: object, loggedInUser: UserData, targetUser: UserData) {
-    const chatsRef = ref(realtimeDB, `chats/${chatuuid}`);
+    return (
+      await Promise.all([
+        this._writeChatHistory(chatuuid, messagePayload, loggedInUser, targetUser),
+        this._writeLatestMessages(chatuuid, messagePayload, loggedInUser, targetUser)
+      ])
+    );
+  }
+
+
+  private async _writeChatHistory(chatuuid: string, messagePayload: object, loggedInUser: UserData, targetUser: UserData) {
+    const chatsRootRef = ref(realtimeDB, `chats/${chatuuid}`);
+    const chatsRefUser1 = ref(realtimeDB, `chats/${chatuuid}/${loggedInUser.uid}`);
+    const newMessageKey1 = (await push(chatsRefUser1)).key;
+
+    const chatPayload = {
+      [`/${loggedInUser.uid}/${newMessageKey1}`]: messagePayload,
+      [`/${targetUser.uid}/${newMessageKey1}`]: messagePayload
+    };
+
+    return update(chatsRootRef, chatPayload);
+  }
+
+
+  private async _writeLatestMessages(chatuuid: string, messagePayload: object, loggedInUser: UserData, targetUser: UserData) {
     const latestMessagesRef = ref(realtimeDB, 'latestMessages');
-    const chatListRef = push(chatsRef);
 
     const toTargetUserLatestMessagePayload = {
       ...messagePayload,
@@ -41,12 +63,7 @@ class ChatWithFriendService {
       [`/${targetUser.uid}/${chatuuid}`]: toTargetUserLatestMessagePayload
     };
 
-    return (
-      await Promise.all([
-        set(chatListRef, messagePayload),
-        update(latestMessagesRef, latestMessagesPayload) // overwrite the latest message if present
-      ])
-    );
+    return update(latestMessagesRef, latestMessagesPayload);
   }
 
 
@@ -68,7 +85,10 @@ class ChatWithFriendService {
   }
 
 
-  async deleteLocalMessagesWithMedia() { }
+  async deleteChatHistory(loggedInUserUUID: string | number, chatuuid: string) {
+    const chatRef = ref(realtimeDB, `chats/${chatuuid}/${loggedInUserUUID}`);
+    return await set(chatRef, null);
+  }
 }
 
 

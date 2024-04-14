@@ -14,13 +14,13 @@ import { useQueryGetFriendshipByTargetUserID } from '../../queries/loggedInUser/
 import { realtimeDB } from '../../firebase/firebase';
 import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
 import chatWithFriendService from '../../services/chatWithFriendService';
-// import { MMKV, useMMKVListener } from 'react-native-mmkv';
-
-// const mmkvStorage = new MMKV();
+import { useMMKVListener, useMMKV } from 'react-native-mmkv';
+import { UserMessagesData } from '../../store/slices/messagesSlices';
 
 
 export default function ChatWithFriendScreen(): JSX.Element {
   const { text } = useColors();
+  const mmkvStorage = useMMKV();
 
   // users ids
   const targetUserUUID = useLocalSearchParams<{ friendUuid: string }>()['friendUuid']; // TODO: can be uuid
@@ -34,6 +34,14 @@ export default function ChatWithFriendScreen(): JSX.Element {
   const loggedInUser = sender?.uid !== targetUserUUID ? sender : receiver;
   const [messages, setMessages] = useState<IMessage[]>([]);
   const chatRef = useRef<FlatList<IMessage>>(null);
+  const [messagesHaveBeenRead, setMessagesHaveBeenRead] = useState(false);
+
+  // listen only for chatuuid changes
+  useMMKVListener((key: string) => {
+    if (key === friendshipData?.chatuuid) {
+      setMessages(JSON.parse(mmkvStorage.getString(friendshipData?.chatuuid) ?? '[]'));
+    }
+  });
 
 
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
@@ -61,48 +69,39 @@ export default function ChatWithFriendScreen(): JSX.Element {
   }, [friendshipData?.chatuuid]);
 
 
-  // listen for new added messages
+  // load messages from local storage on first render
   useEffect(() => {
-    let unsubscribe!: Unsubscribe;
-    if (friendshipData?.chatuuid) {
-      const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}`);
-      const queryMessages = query(chatsRef, limitToLast(1));
-
-      unsubscribe = onChildAdded(queryMessages, (data) => {
-        const newMessage = data?.val() as IMessage;
-        // setMessages(prev => prev.concat(newMessage));
-
-        // store messages in mmkv
-      });
+    if (friendshipData?.chatuuid && !messagesHaveBeenRead) {
+      const localMessages: UserMessagesData[] = JSON.parse(mmkvStorage.getString(friendshipData?.chatuuid) ?? '[]');
+      setMessages(localMessages);
+      setMessagesHaveBeenRead(true);
     }
-    return () => {
-      // messages && setMessages([]);
-      unsubscribe && unsubscribe();
-    };
   }, [friendshipData?.chatuuid]);
 
 
-  // useEffect(() => {
-  //   if (friendshipData?.chatuuid) {
-  //     mmkvStorage.addOnValueChangedListener((key: string) => {
-  //       if (key === friendshipData?.chatuuid) {
-  //         console.log('chatuuid changed');
-  //       }
-  //     });
-  //   }
-  // }, [friendshipData?.chatuuid]);
+  // listen for new added messages in real-time DB
+  useEffect(() => {
+    if (!messagesHaveBeenRead) return;
 
-  // useMMKVListener((key: string) => {
-  //   if (key === friendshipData?.chatuuid) {
-  //     console.log('chatuuid changed');
-  //   }
-  // });
+    let unsubscribe!: Unsubscribe;
+    if (friendshipData?.chatuuid) {
+      const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}/${loggedInUserUuid}`);
+      const queryMessages = query(chatsRef, limitToLast(20)); // we can use the number of new messages
 
-  // useEffect(() => {
-  //   if (friendshipData?.chatuuid) {
-  //     mmkvStorage.set(friendshipData?.chatuuid, JSON.stringify(messages));
-  //   }
-  // }, [friendshipData?.chatuuid]);
+      unsubscribe = onChildAdded(queryMessages, (data) => {
+        const newMessage = data?.val() as UserMessagesData;
+        const localMessages = messages;
+        // change for a map
+        if (localMessages.some(msg => msg._id === newMessage._id)) return;
+
+        const addNewMessage = () => JSON.stringify(localMessages.concat(newMessage));
+        mmkvStorage.set(friendshipData?.chatuuid, addNewMessage());
+      });
+    }
+    return () => {
+      unsubscribe && unsubscribe();
+    };
+  }, [messagesHaveBeenRead]);
 
 
   useEffect(() => {
