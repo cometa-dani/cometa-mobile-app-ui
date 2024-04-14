@@ -94,9 +94,8 @@ export default function ChatWithFriendScreen(): JSX.Element {
       unsubscribe = onChildAdded(queryMessages, (data) => {
         const newMessage = data?.val() as UserMessagesData;
         const localMessages: [] = JSON.parse(mmkvStorage.getString(friendshipData?.chatuuid) ?? '[]');
-        // if (new Map(localMessages).has(newMessage._id)) return;
-
         const addNewMessage = () => JSON.stringify([...localMessages, [newMessage._id, newMessage]]);
+
         mmkvStorage.set(friendshipData?.chatuuid, addNewMessage());
       });
     }
@@ -109,7 +108,7 @@ export default function ChatWithFriendScreen(): JSX.Element {
   useEffect(() => {
     setTimeout(() => {
       chatRef.current?.scrollToEnd({ animated: true });
-    }, 100);
+    }, 80);
   }, [messages.size]);
 
 
