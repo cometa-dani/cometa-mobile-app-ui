@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
-import { useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 
 
 export default function SearchScreen(): JSX.Element {
@@ -12,9 +12,17 @@ export default function SearchScreen(): JSX.Element {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
+
+      <Stack.Screen
+        options={{
+          headerShadowVisible: false,
+          headerTitle: 'Search',
+          headerTitleAlign: 'center'
+        }}
+      />
       <View style={styles.container}>
 
-        <Text>Notifications {uuid}</Text>
+        <Text>Search {uuid}</Text>
 
       </View>
     </SafeAreaView>

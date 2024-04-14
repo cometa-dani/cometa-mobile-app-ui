@@ -128,7 +128,7 @@ export default function AppLayout() {
               </TabButton>
             ),
             headerLeft: () => (
-              <Pressable>
+              <Pressable onPress={() => router.push(`/search/${loggedInUserUUID}`)}>
                 {({ pressed }) => (
                   <Ionicons
                     name="search"
@@ -151,7 +151,7 @@ export default function AppLayout() {
                     <Ionicons style={{ opacity: pressed ? 0.5 : 1 }} name="notifications" size={30} color={gray300} />
                   )}
                 </Pressable>
-                <Pressable>
+                <Pressable onPress={() => router.push(`/settings/${loggedInUserUUID}`)}>
                   {({ pressed }) => (
                     <Image style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }} source={icons.filter} />
                   )}

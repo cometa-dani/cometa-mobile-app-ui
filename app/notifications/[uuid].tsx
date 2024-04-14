@@ -70,7 +70,6 @@ export default function NotificationsScreen(): JSX.Element {
 
               <Text>{item.message}</Text>
             </BaseButton>
-
           </Swipeable>
         )}
       />
