@@ -125,7 +125,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
   const sentFriendshipInvitation = (targetUserAsReceiver: GetDetailedUserProfile): void => {
-    mutationSentFriendship.mutate(targetUserAsReceiver.id, {
+    mutationSentFriendship.mutate({ receiverID: targetUserAsReceiver.id }, {
       onSuccess() {
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE] });
       },

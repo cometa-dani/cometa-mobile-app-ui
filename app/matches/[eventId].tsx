@@ -138,7 +138,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
   const sentFriendshipInvitation = (targetUserAsReceiver: GetBasicUserProfile): void => {
-    mutationSentFriendship.mutate({ receiverID: targetUserAsReceiver.id, eventID: +urlParams.eventId });
+    mutationSentFriendship.mutate({ receiverID: targetUserAsReceiver.id });
   };
 
   /**

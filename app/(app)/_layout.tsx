@@ -44,6 +44,7 @@ const TabButton: FC<{ children: ReactNode }> = ({ children }) => (
 export default function AppLayout() {
   const { gray300, red100 } = useColors();
   const isCurrentUserAuthenticated = useCometaStore(state => state.isAuthenticated);
+  const loggedInUserUUID = useCometaStore(state => state.uid);
   const setIsCurrentUserAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const friendsLatestMessagesList = useCometaStore(state => state.friendsLatestMessagesList) ?? [];
 
@@ -144,9 +145,8 @@ export default function AppLayout() {
               );
             },
             headerRight: () => (
-              // <Link href="/bucketList" asChild>
               <View style={styles.headerRightContainer}>
-                <Pressable>
+                <Pressable onPress={() => router.push(`/notifications/${loggedInUserUUID}`)}>
                   {({ pressed }) => (
                     <Ionicons style={{ opacity: pressed ? 0.5 : 1 }} name="notifications" size={30} color={gray300} />
                   )}

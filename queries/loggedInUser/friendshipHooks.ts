@@ -93,7 +93,7 @@ export const useQueryGetFriendshipByTargetUserID = (targetUserUUID: string) => {
 
 type FriendshipInvitationArgs = {
   receiverID: number;
-  eventID: number
+  // eventID: number
 };
 
 export const useMutationSentFriendshipInvitation = () => {
@@ -112,7 +112,7 @@ export const useMutationSentFriendshipInvitation = () => {
           throw new Error('failed fech');
         }
       },
-      onMutate: async ({ eventID, receiverID }) => {
+      onMutate: async ({ receiverID }) => {
 
         // ********************************
         // MAYBE TODO: optimistic update
