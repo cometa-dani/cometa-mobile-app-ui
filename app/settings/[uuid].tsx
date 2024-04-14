@@ -17,6 +17,12 @@ const filterOptions = [
   'Option 6',
   'Option 7',
   'Option 8',
+  'Option 9',
+  'Option 10',
+  'Option 11',
+  'Option 12',
+  'Option 13',
+  'Option 14',
 ];
 
 
@@ -34,8 +40,9 @@ export default function SettingsScreen(): JSX.Element {
           headerTitleAlign: 'center'
         }}
       />
+      <Text style={{ paddingHorizontal: 24, paddingVertical: 16, fontSize: 18, fontWeight: '700' }}>Category</Text>
       <FlashList
-        contentContainerStyle={{ paddingVertical: 20 }}
+        contentContainerStyle={{ paddingBottom: 20 }}
         stickyHeaderHiddenOnScroll={true}
         estimatedItemSize={70}
         data={filterOptions}
@@ -55,50 +62,40 @@ interface ItemProps {
 const Item: FC<ItemProps> = ({ title }) => {
   const [isChecked, setIsChecked] = useState(false);
   return (
-    <View style={styles.optionContainer}>
+    <RectButton
+      onPress={() => setIsChecked(prev => !prev)}
+      style={styles.option}
+    >
       <Checkbox
         style={styles.checkbox}
         value={isChecked}
-        onValueChange={(val) => setIsChecked(val)}
         color={isChecked ? gray_900 : undefined}
       />
-
-      <RectButton
-        onPress={() => setIsChecked(prev => !prev)}
-        style={styles.language}
-      >
-        <View style={styles.titleContainer}>
-          <Text style={{ fontWeight: '700' }}>
-            {title}
-          </Text>
-        </View>
-      </RectButton>
-    </View>
+      <View style={styles.titleContainer}>
+        <Text style={{ fontWeight: '700' }}>
+          {title}
+        </Text>
+      </View>
+    </RectButton>
   );
 };
 
 
 const styles = StyleSheet.create({
-  language: {
-    height: 70,
+  option: {
+    paddingHorizontal: 24,
     width: '100%',
-    paddingVertical: 24,
-    paddingHorizontal: 20,
-  },
-
-  optionContainer: {
-    justifyContent: 'center',
+    height: 70,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 20,
   },
 
   checkbox: {
     borderRadius: 5,
-    zIndex: 10,
-    position: 'absolute',
-    left: 24,
   },
 
   titleContainer: {
-    // flexDirection: 'row',
     alignItems: 'center',
     gap: 8
   }
