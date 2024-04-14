@@ -5,7 +5,7 @@ import { auth } from '../../firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
 import { useMutationDeleteLoggedInUserPhotoByUuid, useMutationUploadLoggedInUserPhotos, useMutationLoggedInUserProfileById, useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
 import { AppButton } from '../../components/buttons/buttons';
-import { FC, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { Stack, router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { AppCarousel } from '../../components/carousels/carousel';
@@ -45,7 +45,7 @@ const validationSchemma = Yup.object<ProfileValues>({
 
 
 export default function LoggedInUserProfileScreen(): JSX.Element {
-
+  const scrollViewRef = useRef<ScrollView>(null);
   const queryClient = useQueryClient();
   const { background } = useColors();
   const loggedInUserUuid = useCometaStore(state => state.uid); // this can be abstracted
@@ -401,7 +401,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
                   dirty && handleSubmit();
                   setSwitchEditionModeForLoggedInUser(ON);
                 }}
-                btnColor='black'
+                btnColor='blue'
                 text='SAVE PROFILE'
               />
             </View>
@@ -410,6 +410,13 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
       </View>
     </>
   );
+
+
+  useEffect(() => {
+    if (switchEditionModeForLoggedInUser) {
+      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    }
+  }, [switchEditionModeForLoggedInUser]);
 
 
   return (
@@ -422,6 +429,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
         }}
       />
       <ScrollView
+        ref={scrollViewRef}
         showsVerticalScrollIndicator={true}
         style={{ backgroundColor: background }}
       >
