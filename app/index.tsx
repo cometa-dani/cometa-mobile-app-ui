@@ -5,8 +5,9 @@ import { useEffect } from 'react';
 import { Unsubscribe, onAuthStateChanged } from 'firebase/auth'; // Import Firebase authentication functions.
 import { auth, realtimeDB } from '../firebase/firebase'; // Import Firebase authentication instance.
 import { useCometaStore } from '../store/cometaStore';
-import { onValue, ref } from 'firebase/database';
+import { onValue, ref, set } from 'firebase/database';
 import { UserMessagesData } from '../store/slices/messagesSlices';
+import { INotificationData } from '../store/slices/notificationSlice';
 
 
 export default function WelcomeScreen(): JSX.Element {
@@ -16,6 +17,7 @@ export default function WelcomeScreen(): JSX.Element {
   const setUserUid = useCometaStore(state => state.setUid);
   const loggedInUserUUID = useCometaStore(state => state.uid);
   const setFriendsMessagesList = useCometaStore(state => state.setFriendsLatestMessagesList);
+  const setNotificationsList = useCometaStore(state => state.setNotificationsList);
   let unsubscribe!: Unsubscribe;
 
   // Function to handle navigation when "Get Started" button is pressed.
@@ -73,6 +75,7 @@ export default function WelcomeScreen(): JSX.Element {
     // let unsubscribe!: Unsubscribe;
     if (loggedInUserUUID) {
       const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}`);
+      const notificationsRef = ref(realtimeDB, `notifications/${loggedInUserUUID}`);
 
       unsubscribe = onValue(latestMessageRef, (snapshot) => {
         const messages: UserMessagesData[] = [];
@@ -86,12 +89,25 @@ export default function WelcomeScreen(): JSX.Element {
           } as UserMessagesData;
           messages.push(data);
         });
-
         setFriendsMessagesList(messages);
       });
-    }
 
-    // return unsubscribe && unsubscribe();
+      onValue(notificationsRef, (snapshot) => {
+        const notifications: INotificationData[] = [];
+        snapshot.forEach((child) => {
+          const data = {
+            ...child.val(),
+            chatUUID: child.key
+          } as INotificationData;
+          notifications.push(data);
+        });
+        setNotificationsList(notifications);
+      });
+
+      return () => {
+        unsubscribe && unsubscribe();
+      };
+    }
   }, [loggedInUserUUID]);
 
 

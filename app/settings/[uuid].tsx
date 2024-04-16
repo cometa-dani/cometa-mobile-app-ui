@@ -40,7 +40,7 @@ export default function SettingsScreen(): JSX.Element {
           headerTitleAlign: 'center'
         }}
       />
-      <Text style={{ paddingHorizontal: 24, paddingVertical: 16, fontSize: 18, fontWeight: '700' }}>Category</Text>
+      <Text style={{ paddingHorizontal: 24, paddingVertical: 10, fontSize: 18, fontWeight: '700' }}>Category</Text>
       <FlashList
         contentContainerStyle={{ paddingBottom: 20 }}
         stickyHeaderHiddenOnScroll={true}

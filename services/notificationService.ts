@@ -1,0 +1,18 @@
+import { ref, set } from 'firebase/database';
+import { realtimeDB } from '../firebase/firebase';
+
+
+class NotificationService {
+  sentNotificationToTargetUser = async (notificationPayload: object, targetUserUUID: string, chatUUID: string) => {
+    const notificationsRef = ref(realtimeDB, `notifications/${targetUserUUID}/${chatUUID}`);
+    return await set(notificationsRef, notificationPayload);
+  };
+
+  deleteNotification = async (chatUUID: string, loggedInUserUUID: string) => {
+    const notificationRef = ref(realtimeDB, `notifications/${loggedInUserUUID}/${chatUUID}`);
+    return await set(notificationRef, null);
+  };
+}
+
+
+export default new NotificationService();

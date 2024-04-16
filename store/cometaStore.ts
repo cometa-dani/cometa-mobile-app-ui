@@ -4,9 +4,10 @@ import { createUserSlice, UserSlice } from './slices/userSlice';
 import { createNewPeopleSlice, NewPeopleSlice } from './slices/newPeopleSlice';
 import { LatestMessagesSlice, createLatestMessagesSlice } from './slices/messagesSlices';
 import { createChatGroupSlice, ChatGroupSlice } from './slices/chatGroupSlice';
+import { createNotificationsSlice, NotificationsSlice } from './slices/notificationSlice';
 
 
-type StoreSlices = OnboardingSlice & UserSlice & NewPeopleSlice & LatestMessagesSlice & ChatGroupSlice;
+type StoreSlices = OnboardingSlice & UserSlice & NewPeopleSlice & LatestMessagesSlice & ChatGroupSlice & NotificationsSlice;
 
 export const useCometaStore = create<StoreSlices>(
   (...args) => ({
@@ -14,6 +15,7 @@ export const useCometaStore = create<StoreSlices>(
     ...createUserSlice(...args),
     ...createNewPeopleSlice(...args),
     ...createLatestMessagesSlice(...args),
-    ...createChatGroupSlice(...args)
+    ...createChatGroupSlice(...args),
+    ...createNotificationsSlice(...args)
   })
 );

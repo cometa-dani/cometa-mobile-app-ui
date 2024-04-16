@@ -10,7 +10,6 @@ import {
 } from '../constants/vars';
 import { initializeApp } from 'firebase/app';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
 import { getDatabase } from 'firebase/database';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -33,7 +32,6 @@ export const auth = initializeAuth(firebaseApp, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });
 
-export const firestoreDB = getFirestore(firebaseApp);
 export const realtimeDB = getDatabase(firebaseApp);
 
 // facebook uri

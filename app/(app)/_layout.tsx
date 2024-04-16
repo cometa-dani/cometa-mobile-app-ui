@@ -47,6 +47,7 @@ export default function AppLayout() {
   const loggedInUserUUID = useCometaStore(state => state.uid);
   const setIsCurrentUserAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const friendsLatestMessagesList = useCometaStore(state => state.friendsLatestMessagesList) ?? [];
+  const notificationsList = useCometaStore(state => state.notificationsList) ?? [];
 
   // bucket list empty modal
   const [toggleModal, setToggleModal] = useState(false);
@@ -56,6 +57,11 @@ export default function AppLayout() {
   const totalNewMessages = useMemo(() => (
     friendsLatestMessagesList.map(({ newMessagesCount }) => newMessagesCount ?? 0).reduce((prev, curr) => prev + curr, 0)
   ), [friendsLatestMessagesList]);
+
+
+  const totalNotifications = useMemo(() => (
+    notificationsList.length
+  ), [notificationsList.length]);
 
 
   // listens only for log-out event
@@ -146,9 +152,17 @@ export default function AppLayout() {
             },
             headerRight: () => (
               <View style={styles.headerRightContainer}>
-                <Pressable onPress={() => router.push(`/notifications/${loggedInUserUUID}`)}>
+                <Pressable style={{ position: 'relative' }} onPress={() => router.push(`/notifications/${loggedInUserUUID}`)}>
                   {({ pressed }) => (
-                    <Ionicons style={{ opacity: pressed ? 0.5 : 1 }} name="notifications" size={30} color={gray300} />
+                    <>
+                      <If
+                        condition={totalNotifications}
+                        render={(
+                          <View style={styles.notificationIndicator} />
+                        )}
+                      />
+                      <Ionicons style={{ opacity: pressed ? 0.5 : 1 }} name="notifications" size={30} color={gray300} />
+                    </>
                   )}
                 </Pressable>
                 <Pressable onPress={() => router.push(`/settings/${loggedInUserUUID}`)}>
@@ -227,6 +241,16 @@ export default function AppLayout() {
 
 // Styles object
 const styles = StyleSheet.create({
+
+  notificationIndicator: {
+    borderRadius: 50,
+    width: 8,
+    height: 8,
+    backgroundColor: red_100,
+    position: 'absolute',
+    top: -2
+  },
+
   tabButton: {
     width: '100%',
     height: '100%',

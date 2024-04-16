@@ -24,8 +24,10 @@ import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEve
 import { If } from '../../components/utils';
 import { SkeletonLoaderList } from '../(app)/bucketList';
 import uuid from 'react-native-uuid';
-import { GetLatestFriendships } from '../../models/Friendship';
+import { GetLatestFriendships, MutateFrienship } from '../../models/Friendship';
 import chatWithFriendService from '../../services/chatWithFriendService';
+import notificationService from '../../services/notificationService';
+import { INotificationData } from '../../store/slices/notificationSlice';
 
 
 type Message = { message: string };
@@ -111,6 +113,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   const setTargetUserAsFriendShipSender = useCometaStore(state => state.setIncommginFriendshipSender);
   const targetUserAsFriendshipSender = useCometaStore(state => state.incommginFriendshipSender);
   const urlParams = useGlobalSearchParams<{ eventId: string, eventIndex: string }>();
+  const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
 
   // mutations
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
@@ -125,11 +128,31 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
   * @param {GetBasicUserProfile} targetUserAsSender the sender of the friendship invitation
   */
-  const acceptPendingInvitation = (targetUserAsSender: GetBasicUserProfile) => {
-    setTargetUserAsFriendShipSender(targetUserAsSender);
-    setTimeout(() => setToggleModal(), 100);
-    const friendshipID = targetUserAsSender.outgoingFriendships[0]?.id;
-    mutationAcceptFriendship.mutate(friendshipID); // set status to 'ACCEPTED' and create chat uuid
+  const acceptPendingInvitation = async (targetUserAsSender: GetBasicUserProfile) => {
+    try {
+      setTargetUserAsFriendShipSender(targetUserAsSender);
+      setTimeout(() => setToggleModal(), 100);
+      const friendshipID = targetUserAsSender.outgoingFriendships[0]?.id;
+      const newFriendship = await mutationAcceptFriendship.mutateAsync(friendshipID); // set status to 'ACCEPTED' and create chat uuid
+      setNewFriendShip(newFriendship);
+      const messagePayload = {
+        createdAt: new Date().toString(),
+        user: {
+          _id: loggedInUserUuid,
+          avatar: loggedInUserProfile?.photos[0]?.url,
+          name: loggedInUserProfile?.username
+        }
+      } as INotificationData;
+      await
+        notificationService.sentNotificationToTargetUser(
+          messagePayload,
+          targetUserAsSender.uid,
+          newFriendship.chatuuid
+        );
+    }
+    catch (error) {
+      return null;
+    }
   };
 
   /**
@@ -165,9 +188,9 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
         }
       };
       try {
-        if (mutationAcceptFriendship.data?.chatuuid && loggedInUserProfile && targetUserAsFriendshipSender) {
+        if (newFriendShip?.chatuuid && loggedInUserProfile && targetUserAsFriendshipSender) {
           setToggleModal();
-          const { chatuuid } = mutationAcceptFriendship.data;
+          const { chatuuid } = newFriendShip;
           router.push(`/chat/${targetUserAsFriendshipSender?.uid}`);
           await chatWithFriendService.writeMessage(
             chatuuid,
@@ -298,14 +321,14 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
                       {isSender && (
                         <AppButton
                           onPress={() => acceptPendingInvitation(targetUser)}
-                          text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
+                          text={nodeEnv === 'development' ? 'FOLLOW 2' : 'FOLLOW'}
                           btnColor='black'
                         />
                       )}
                       {!isReceiver && !isSender && (
                         <AppButton
                           onPress={() => sentFriendshipInvitation(targetUser)}
-                          text="JOIN"
+                          text="FOLLOW"
                           btnColor='black'
                         />
                       )}

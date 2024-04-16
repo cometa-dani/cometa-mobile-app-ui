@@ -1,40 +1,46 @@
 import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
 import { useColors } from '../../components/Themed';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import { BaseButton, RectButton, Swipeable } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { gray_50, red_100 } from '../../constants/colors';
+import { useCometaStore } from '../../store/cometaStore';
+import notificationService from '../../services/notificationService';
+import { INotificationData } from '../../store/slices/notificationSlice';
 
 
-const data = [
-  {
-    img: 'https://randomuser.me/api/portraits/women/2.jpg',
-    message: 'Cristina is your new match',
-  },
-  {
-    img: 'https://randomuser.me/api/portraits/men/81.jpg',
-    message: 'Mark is your new match',
-  },
-  {
-    img: 'https://randomuser.me/api/portraits/women/21.jpg',
-    message: 'Camila is your new match',
-  },
-  {
-    img: 'https://randomuser.me/api/portraits/men/37.jpg',
-    message: 'Johnny is your new match',
-  }
-];
+// const data = [
+//   {
+//     img: 'https://randomuser.me/api/portraits/women/2.jpg',
+//     message: 'Cristina is your new match',
+//   },
+//   {
+//     img: 'https://randomuser.me/api/portraits/men/81.jpg',
+//     message: 'Mark is your new match',
+//   },
+//   {
+//     img: 'https://randomuser.me/api/portraits/women/21.jpg',
+//     message: 'Camila is your new match',
+//   },
+//   {
+//     img: 'https://randomuser.me/api/portraits/men/37.jpg',
+//     message: 'Johnny is your new match',
+//   }
+// ];
 
 
 export default function NotificationsScreen(): JSX.Element {
   // colors
   const { background } = useColors();
   const uuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
-  // const [toggleModal, setToggleModal] = useState(false);
+  const notificationsList = useCometaStore(state => state.notificationsList) ?? [];
 
-  const handleDeleteNotification = () => { };
+  const handleDeleteNotification = (notification: INotificationData) => {
+    if (!notification?.chatUUID) return;
+    notificationService.deleteNotification(notification?.chatUUID, uuid);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
@@ -46,7 +52,7 @@ export default function NotificationsScreen(): JSX.Element {
         }}
       />
       <FlashList
-        data={data}
+        data={notificationsList}
         contentContainerStyle={{ paddingVertical: 20 }}
         keyExtractor={(item, index) => index.toString()}
         estimatedItemSize={77}
@@ -56,19 +62,25 @@ export default function NotificationsScreen(): JSX.Element {
               <RectButton
                 onPress={() => {
                   swipeable?.close();
-                  handleDeleteNotification();
+                  handleDeleteNotification(item);
                 }}
                 style={styles.deleteButton}
               >
                 <FontAwesome name='trash-o' size={26} color={red_100} />
               </RectButton>
             )}>
-            <BaseButton style={styles.container}>
+            <BaseButton
+              onPress={() => router.push(`/chat/${item.user._id}`)}
+              style={styles.container}
+            >
               <View style={styles.imageContainer}>
-                <Image source={{ uri: item.img }} style={styles.image} />
+                <Image source={{ uri: item.user?.avatar }} style={styles.image} />
               </View>
 
-              <Text>{item.message}</Text>
+              <Text>
+                <Text style={{ fontWeight: '700' }}>{item.user.name}</Text>
+                is your new match
+              </Text>
             </BaseButton>
           </Swipeable>
         )}
