@@ -12,28 +12,7 @@ import { INotificationData } from '../../store/slices/notificationSlice';
 import { If } from '../../components/utils';
 
 
-// const data = [
-//   {
-//     img: 'https://randomuser.me/api/portraits/women/2.jpg',
-//     message: 'Cristina is your new match',
-//   },
-//   {
-//     img: 'https://randomuser.me/api/portraits/men/81.jpg',
-//     message: 'Mark is your new match',
-//   },
-//   {
-//     img: 'https://randomuser.me/api/portraits/women/21.jpg',
-//     message: 'Camila is your new match',
-//   },
-//   {
-//     img: 'https://randomuser.me/api/portraits/men/37.jpg',
-//     message: 'Johnny is your new match',
-//   }
-// ];
-
-
 export default function NotificationsScreen(): JSX.Element {
-  // colors
   const { background } = useColors();
   const loggedInUserUUID = useLocalSearchParams<{ uuid: string }>()['uuid'];
   const notificationsList = useCometaStore(state => state.notificationsList) ?? [];
@@ -54,9 +33,9 @@ export default function NotificationsScreen(): JSX.Element {
       />
 
       <If
-        condition={!notificationsList.length}
+        condition={notificationsList.length === 0}
         render={(
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginBottom: 24 }}>
+          <View style={styles.titleContainer}>
             <Text style={{ fontWeight: '500', fontSize: 16 }}>No notifications yet</Text>
           </View>
         )}
@@ -66,13 +45,13 @@ export default function NotificationsScreen(): JSX.Element {
             contentContainerStyle={{ paddingVertical: 20 }}
             keyExtractor={(item, index) => index.toString()}
             estimatedItemSize={77}
-            renderItem={({ item }) => (
+            renderItem={({ item: notification }) => (
               <Swipeable
                 renderRightActions={(_a, _b, swipeable) => (
                   <RectButton
                     onPress={() => {
                       swipeable?.close();
-                      handleDeleteNotification(item);
+                      handleDeleteNotification(notification);
                     }}
                     style={styles.deleteButton}
                   >
@@ -80,15 +59,15 @@ export default function NotificationsScreen(): JSX.Element {
                   </RectButton>
                 )}>
                 <BaseButton
-                  onPress={() => router.push(`/chat/${item.user._id}`)}
+                  onPress={() => router.push(`/chat/${notification.user._id}`)}
                   style={styles.container}
                 >
                   <View style={styles.imageContainer}>
-                    <Image source={{ uri: item.user?.avatar }} style={styles.image} />
+                    <Image source={{ uri: notification.user?.avatar }} style={styles.image} />
                   </View>
 
                   <Text>
-                    <Text style={{ fontWeight: '700' }}>{item.user.name}</Text>
+                    <Text style={{ fontWeight: '600' }}>{notification.user.name}</Text>
                     is your new match
                   </Text>
                 </BaseButton>
@@ -97,12 +76,21 @@ export default function NotificationsScreen(): JSX.Element {
           />
         )}
       />
+
     </SafeAreaView>
   );
 }
 
 
 const styles = StyleSheet.create({
+
+  titleContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24
+  },
+
   container: {
     flexDirection: 'row',
     alignItems: 'center',
