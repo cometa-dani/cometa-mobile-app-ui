@@ -67,7 +67,7 @@ export default function NotificationsScreen(): JSX.Element {
                   </View>
 
                   <Text>
-                    <Text style={{ fontWeight: '600' }}>{notification.user.name}</Text>
+                    <Text style={{ fontWeight: '600' }}>{notification.user.name} </Text>
                     is your new match
                   </Text>
                 </BaseButton>

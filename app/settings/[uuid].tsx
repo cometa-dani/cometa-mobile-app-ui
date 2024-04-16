@@ -23,6 +23,7 @@ const filterOptions = [
   'Option 12',
   'Option 13',
   'Option 14',
+  'Option 15',
 ];
 
 
