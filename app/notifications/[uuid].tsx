@@ -9,6 +9,7 @@ import { gray_50, red_100 } from '../../constants/colors';
 import { useCometaStore } from '../../store/cometaStore';
 import notificationService from '../../services/notificationService';
 import { INotificationData } from '../../store/slices/notificationSlice';
+import { If } from '../../components/utils';
 
 
 // const data = [
@@ -34,12 +35,12 @@ import { INotificationData } from '../../store/slices/notificationSlice';
 export default function NotificationsScreen(): JSX.Element {
   // colors
   const { background } = useColors();
-  const uuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
+  const loggedInUserUUID = useLocalSearchParams<{ uuid: string }>()['uuid'];
   const notificationsList = useCometaStore(state => state.notificationsList) ?? [];
 
   const handleDeleteNotification = (notification: INotificationData) => {
     if (!notification?.chatUUID) return;
-    notificationService.deleteNotification(notification?.chatUUID, uuid);
+    notificationService.deleteNotification(notification?.chatUUID, loggedInUserUUID);
   };
 
   return (
@@ -51,38 +52,49 @@ export default function NotificationsScreen(): JSX.Element {
           headerTitleAlign: 'center'
         }}
       />
-      <FlashList
-        data={notificationsList}
-        contentContainerStyle={{ paddingVertical: 20 }}
-        keyExtractor={(item, index) => index.toString()}
-        estimatedItemSize={77}
-        renderItem={({ item }) => (
-          <Swipeable
-            renderRightActions={(_a, _b, swipeable) => (
-              <RectButton
-                onPress={() => {
-                  swipeable?.close();
-                  handleDeleteNotification(item);
-                }}
-                style={styles.deleteButton}
-              >
-                <FontAwesome name='trash-o' size={26} color={red_100} />
-              </RectButton>
-            )}>
-            <BaseButton
-              onPress={() => router.push(`/chat/${item.user._id}`)}
-              style={styles.container}
-            >
-              <View style={styles.imageContainer}>
-                <Image source={{ uri: item.user?.avatar }} style={styles.image} />
-              </View>
 
-              <Text>
-                <Text style={{ fontWeight: '700' }}>{item.user.name}</Text>
-                is your new match
-              </Text>
-            </BaseButton>
-          </Swipeable>
+      <If
+        condition={!notificationsList.length}
+        render={(
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginBottom: 24 }}>
+            <Text style={{ fontWeight: '500', fontSize: 16 }}>No notifications yet</Text>
+          </View>
+        )}
+        elseRender={(
+          <FlashList
+            data={notificationsList}
+            contentContainerStyle={{ paddingVertical: 20 }}
+            keyExtractor={(item, index) => index.toString()}
+            estimatedItemSize={77}
+            renderItem={({ item }) => (
+              <Swipeable
+                renderRightActions={(_a, _b, swipeable) => (
+                  <RectButton
+                    onPress={() => {
+                      swipeable?.close();
+                      handleDeleteNotification(item);
+                    }}
+                    style={styles.deleteButton}
+                  >
+                    <FontAwesome name='trash-o' size={26} color={red_100} />
+                  </RectButton>
+                )}>
+                <BaseButton
+                  onPress={() => router.push(`/chat/${item.user._id}`)}
+                  style={styles.container}
+                >
+                  <View style={styles.imageContainer}>
+                    <Image source={{ uri: item.user?.avatar }} style={styles.image} />
+                  </View>
+
+                  <Text>
+                    <Text style={{ fontWeight: '700' }}>{item.user.name}</Text>
+                    is your new match
+                  </Text>
+                </BaseButton>
+              </Swipeable>
+            )}
+          />
         )}
       />
     </SafeAreaView>
