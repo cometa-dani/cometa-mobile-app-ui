@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { useInfiniteQueryGetLatestEventsByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
@@ -14,7 +14,7 @@ export default function HomeScreen(): JSX.Element {
   // colors
   const { background } = useColors();
   // eventsData
-  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetLatestEventsByLoggedInUser();
+  const { data, isFetching, fetchNextPage, hasNextPage, isLoading, isRefetching } = useInfiniteQueryGetLatestEventsByLoggedInUser();
   const evenstData = data?.pages.flatMap(page => page.events) || [];
 
   // handling fetch when reaching the end
@@ -23,40 +23,42 @@ export default function HomeScreen(): JSX.Element {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <View style={styles.container}>
-
         <If
           condition={!evenstData?.length && !isLoading}
           render={(
-            <View style={styles.notFoundContainer}>
-              <Text style={{ fontWeight: '600', fontSize: 20 }}>No events found</Text>
-
-              <TouchableOpacity
-                style={{ alignItems: 'center' }}
-                onPress={() => router.push('/settings')}
-              >
-                <MaterialCommunityIcons
-                  name="checkbox-marked-circle-plus-outline"
-                  size={34}
-                  color={gray_900}
-                />
-                <Text style={{ fontSize: 14, marginTop: 6 }}>Change Settings</Text>
-              </TouchableOpacity>
-
-            </View>
+            <NotEventsFound />
           )}
           elseRender={(
             <EventsFlashList
               items={evenstData}
-              isLoading={isLoading}
+              isLoading={isLoading || isRefetching}
               onInfiniteScroll={handleInfiniteFetch}
             />
           )}
         />
-
       </View>
     </SafeAreaView>
   );
 }
+
+
+const NotEventsFound: FC = () => (
+  <View style={styles.notFoundContainer}>
+    <Text style={{ fontWeight: '600', fontSize: 20 }}>No events found</Text>
+
+    <TouchableOpacity
+      style={{ alignItems: 'center' }}
+      onPress={() => router.push('/settings')}
+    >
+      <MaterialCommunityIcons
+        name="checkbox-marked-circle-plus-outline"
+        size={34}
+        color={gray_900}
+      />
+      <Text style={{ fontSize: 14, marginTop: 6 }}>Change Settings</Text>
+    </TouchableOpacity>
+  </View>
+);
 
 
 const styles = StyleSheet.create({
