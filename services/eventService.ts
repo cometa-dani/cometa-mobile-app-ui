@@ -1,4 +1,4 @@
-import { GetAllLatestEventsWithPagination, CreateEventLike } from '../models/Event';
+import { GetAllLatestEventsWithPagination, CreateEventLike, EventCategory } from '../models/Event';
 import { GetEventByID } from '../models/EventLike';
 import { GetLikedEventsForBucketListWithPagination } from '../models/LikedEvent';
 import { GetMatchedUsersWhoLikedEventWithPagination } from '../models/User';
@@ -7,8 +7,16 @@ import { RestApiService } from './restService';
 
 class EventService extends RestApiService {
 
-  public getAllEventsWithPagination(cursor: number, limit: number, loggedInUserAccessToken: string) {
-    const params = { cursor, limit };
+  private _parseCategories = (params: object) => Object.values(params).filter(val => val).reduce((prev, curr) => (prev ? prev?.concat(`,${curr}`.toUpperCase()) : `${curr?.toUpperCase()}`), '');
+
+  public getAllEventsWithPagination(
+    cursor: number,
+    limit: number,
+    categories: Record<EventCategory, EventCategory | undefined>,
+    loggedInUserAccessToken: string
+  ) {
+
+    const params = { cursor, limit, categories: this._parseCategories(categories) };
     const AuthHeaders = this.configAuthHeader(loggedInUserAccessToken).headers;
     const config = { params, headers: AuthHeaders };
 

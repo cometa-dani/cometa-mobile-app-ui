@@ -9,13 +9,14 @@ import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEve
 // Query to fetch a list of events with infinite scrolling
 export const useInfiniteQueryGetLatestEventsByLoggedInUser = () => {
   const accessToken = useCometaStore(state => state.accessToken);
+  const categoriesSearchFilters = useCometaStore(state => state.searchFilters);
 
   return (
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetAllLatestEventsWithPagination> => {
-        const res = await eventService.getAllEventsWithPagination(pageParam, 4, accessToken);
+        const res = await eventService.getAllEventsWithPagination(pageParam, 4, categoriesSearchFilters, accessToken);
         if (res.status === 200) {
           return res.data;
         }
