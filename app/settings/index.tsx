@@ -1,36 +1,39 @@
 import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
 import { useColors } from '../../components/Themed';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack } from 'expo-router';
 import { RectButton } from 'react-native-gesture-handler';
 import Checkbox from 'expo-checkbox';
 import { gray_900 } from '../../constants/colors';
 import { FlashList } from '@shopify/flash-list';
-import { FC, useState } from 'react';
-
-
-const filterOptions = [
-  'Option 1',
-  'Option 2',
-  'Option 3',
-  'Option 4',
-  'Option 5',
-  'Option 6',
-  'Option 7',
-  'Option 8',
-  'Option 9',
-  'Option 10',
-  'Option 11',
-  'Option 12',
-  'Option 13',
-  'Option 14',
-  'Option 15',
-];
+import { FC } from 'react';
+import { EventCategory } from '../../models/Event';
+import { useCometaStore } from '../../store/cometaStore';
 
 
 export default function SettingsScreen(): JSX.Element {
-  // colors
   const { background } = useColors();
-  const uuid = useLocalSearchParams<{ uuid: string }>()['uuid'];
+  const storedSearchFilters = useCometaStore(state => state.searchFilters);
+  const setStoredSearchFilters = useCometaStore(state => state.AddOrDeleteSearchFilter);
+
+  const filterOptions = [
+    EventCategory.EDUCATIONAL,
+    EventCategory.CULTURAL,
+    EventCategory.SPORTS,
+    EventCategory.PARTY,
+    EventCategory.CINEMA,
+    EventCategory.SHOWS,
+    EventCategory.GALLERY,
+    EventCategory.PARK,
+    EventCategory.EXHIBITION,
+    EventCategory.MUSEUM,
+    EventCategory.THEATRE,
+    EventCategory.FESTIVAL,
+    EventCategory.CAFE,
+    EventCategory.CLUB,
+    EventCategory.RESTAURANT,
+    EventCategory.CONCERT,
+    EventCategory.BRUNCH,
+  ];
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
@@ -47,9 +50,15 @@ export default function SettingsScreen(): JSX.Element {
         stickyHeaderHiddenOnScroll={true}
         estimatedItemSize={70}
         data={filterOptions}
-        renderItem={({ item: option }) => (
-          <Item title={option} />
-        )}
+        renderItem={({ item: option }) => {
+          return (
+            <Item
+              title={option}
+              isChecked={storedSearchFilters[option] !== undefined}
+              onSelectOption={setStoredSearchFilters}
+            />
+          );
+        }}
       />
     </SafeAreaView>
   );
@@ -57,14 +66,15 @@ export default function SettingsScreen(): JSX.Element {
 
 
 interface ItemProps {
-  title: string;
+  title: EventCategory;
+  isChecked: boolean;
+  onSelectOption: (category: EventCategory) => void;
 }
 
-const Item: FC<ItemProps> = ({ title }) => {
-  const [isChecked, setIsChecked] = useState(false);
+const Item: FC<ItemProps> = ({ title, isChecked, onSelectOption }) => {
   return (
     <RectButton
-      onPress={() => setIsChecked(prev => !prev)}
+      onPress={() => onSelectOption(title)}
       style={styles.option}
     >
       <Checkbox
