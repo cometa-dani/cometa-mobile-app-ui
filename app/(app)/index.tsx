@@ -1,29 +1,52 @@
 import React from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
-import { View, useColors } from '../../components/Themed';
+import { Text, View, useColors } from '../../components/Themed';
 import { useInfiniteQueryGetLatestEventsByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
 import { EventsFlashList } from '../../components/eventsFlashList/eventsFlashList';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { If } from '../../components/utils';
+import { gray_900 } from '../../constants/colors';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 export default function HomeScreen(): JSX.Element {
   // colors
   const { background } = useColors();
-
   // eventsData
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetLatestEventsByLoggedInUser();
+  const evenstData = data?.pages.flatMap(page => page.events) || [];
 
   // handling fetch when reaching the end
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
-
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <View style={styles.container}>
 
-        <EventsFlashList
-          items={data?.pages.flatMap(page => page.events) || []}
-          isLoading={isLoading}
-          onInfiniteScroll={handleInfiniteFetch}
+        <If
+          condition={!evenstData?.length && !isLoading}
+          render={(
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 26 }}>
+              <Text style={{ fontWeight: '600', fontSize: 20 }}>No events found</Text>
+
+              <TouchableOpacity style={{ alignItems: 'center' }}>
+                <MaterialCommunityIcons
+                  name="checkbox-marked-circle-plus-outline"
+                  size={34}
+                  color={gray_900}
+                />
+                <Text style={{ fontSize: 14, marginTop: 6 }}>Change Settings</Text>
+              </TouchableOpacity>
+
+            </View>
+          )}
+          elseRender={(
+            <EventsFlashList
+              items={evenstData}
+              isLoading={isLoading}
+              onInfiniteScroll={handleInfiniteFetch}
+            />
+          )}
         />
 
       </View>
