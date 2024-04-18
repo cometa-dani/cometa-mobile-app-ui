@@ -7,7 +7,21 @@ import { RestApiService } from './restService';
 
 class EventService extends RestApiService {
 
-  private _parseCategories = (params: object) => Object.values(params).filter(val => val).reduce((prev, curr) => (prev ? prev?.concat(`,${curr}`.toUpperCase()) : `${curr?.toUpperCase()}`), '');
+
+  private _parseCategories = (params: object) => {
+    return (
+      Object
+        .values(params)
+        .filter(val => val)
+        .reduce(
+          (prev, curr) => (
+            prev ? prev?.concat(`,${curr}`.toUpperCase())
+              : `${curr?.toUpperCase()}`)
+
+          , '')
+    );
+  };
+
 
   public getAllEventsWithPagination(
     cursor: number,
@@ -15,13 +29,13 @@ class EventService extends RestApiService {
     categories: Record<EventCategory, EventCategory | undefined>,
     loggedInUserAccessToken: string
   ) {
-
     const params = { cursor, limit, categories: this._parseCategories(categories) };
     const AuthHeaders = this.configAuthHeader(loggedInUserAccessToken).headers;
     const config = { params, headers: AuthHeaders };
 
     return this.http.get<GetAllLatestEventsWithPagination>('/events', config);
   }
+
 
   // TODO make autorization configHeader
   public createOrDeleteLikeByEventID(eventID: number, loggedInUserAccessToken: string) {

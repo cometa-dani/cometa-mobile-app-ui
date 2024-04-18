@@ -5,13 +5,16 @@ import { RectButton } from 'react-native-gesture-handler';
 import Checkbox from 'expo-checkbox';
 import { gray_900 } from '../../constants/colors';
 import { FlashList } from '@shopify/flash-list';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { EventCategory } from '../../models/Event';
 import { useCometaStore } from '../../store/cometaStore';
+import { useQueryClient } from '@tanstack/react-query';
+import { QueryKeys } from '../../queries/queryKeys';
 
 
 export default function SettingsScreen(): JSX.Element {
   const { background } = useColors();
+  const queryClient = useQueryClient();
   const storedSearchFilters = useCometaStore(state => state.searchFilters);
   const setStoredSearchFilters = useCometaStore(state => state.AddOrDeleteSearchFilter);
 
@@ -34,6 +37,16 @@ export default function SettingsScreen(): JSX.Element {
     EventCategory.CONCERT,
     EventCategory.BRUNCH,
   ];
+
+
+  useEffect(() => {
+    return () => {
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION]
+      });
+    };
+  }, []);
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
