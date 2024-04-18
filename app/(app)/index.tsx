@@ -7,6 +7,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { If } from '../../components/utils';
 import { gray_900 } from '../../constants/colors';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { router } from 'expo-router';
 
 
 export default function HomeScreen(): JSX.Element {
@@ -26,10 +27,13 @@ export default function HomeScreen(): JSX.Element {
         <If
           condition={!evenstData?.length && !isLoading}
           render={(
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 26 }}>
+            <View style={styles.notFoundContainer}>
               <Text style={{ fontWeight: '600', fontSize: 20 }}>No events found</Text>
 
-              <TouchableOpacity style={{ alignItems: 'center' }}>
+              <TouchableOpacity
+                style={{ alignItems: 'center' }}
+                onPress={() => router.push('/settings')}
+              >
                 <MaterialCommunityIcons
                   name="checkbox-marked-circle-plus-outline"
                   size={34}
@@ -62,4 +66,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     overflow: 'hidden',
   },
+
+  notFoundContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 26 },
 });
