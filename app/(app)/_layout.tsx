@@ -165,7 +165,7 @@ export default function AppLayout() {
                     </>
                   )}
                 </Pressable>
-                <Pressable onPress={() => router.push('/settings')}>
+                <Pressable onPress={() => router.push('/filter')}>
                   {({ pressed }) => (
                     <Image style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }} source={icons.filter} />
                   )}

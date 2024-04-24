@@ -1,15 +1,16 @@
 import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
 import { useColors } from '../../components/Themed';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { RectButton } from 'react-native-gesture-handler';
 import Checkbox from 'expo-checkbox';
 import { gray_900 } from '../../constants/colors';
 import { FlashList } from '@shopify/flash-list';
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { EventCategory } from '../../models/Event';
 import { useCometaStore } from '../../store/cometaStore';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
+import { AppButton } from '../../components/buttons/buttons';
 
 
 export default function SettingsScreen(): JSX.Element {
@@ -38,14 +39,17 @@ export default function SettingsScreen(): JSX.Element {
     EventCategory.BRUNCH,
   ];
 
-
-  useEffect(() => {
-    return () => {
-      queryClient.invalidateQueries({
-        queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION]
-      });
-    };
-  }, []);
+  // ****************************************************
+  // TODO:
+  // only should execute when the component is unmounted and has changed the search filters
+  // ****************************************************
+  // useEffect(() => {
+  //   return () => {
+  //     queryClient.invalidateQueries({
+  //       queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION]
+  //     });
+  //   };
+  // }, []);
 
 
   return (
@@ -60,8 +64,8 @@ export default function SettingsScreen(): JSX.Element {
       <Text style={{ paddingHorizontal: 24, paddingVertical: 10, fontSize: 18, fontWeight: '700' }}>Category</Text>
       <FlashList
         contentContainerStyle={{ paddingBottom: 20 }}
-        stickyHeaderHiddenOnScroll={true}
-        estimatedItemSize={70}
+        // stickyHeaderHiddenOnScroll={true}
+        estimatedItemSize={50}
         data={filterOptions}
         renderItem={({ item: option }) => {
           return (
@@ -73,7 +77,20 @@ export default function SettingsScreen(): JSX.Element {
           );
         }}
       />
-    </SafeAreaView>
+
+      <View style={{ paddingHorizontal: 24, paddingVertical: 20 }}>
+        <AppButton
+          text='Apply'
+          btnColor='black'
+          onPress={() => {
+            queryClient.invalidateQueries({
+              queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION]
+            });
+            router.back();
+          }}
+        />
+      </View>
+    </SafeAreaView >
   );
 }
 
@@ -109,7 +126,7 @@ const styles = StyleSheet.create({
   option: {
     paddingHorizontal: 24,
     width: '100%',
-    height: 70,
+    height: 50,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 20,

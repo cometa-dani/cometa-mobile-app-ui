@@ -3,7 +3,7 @@ import { StyleSheet, SafeAreaView, TextInput, Pressable, Image, View as Transpar
 import { Text, View } from '../../../components/Themed';
 import { BaseButton, RectButton, Swipeable } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { gray_50, gray_900, messages, red_100, white_50 } from '../../../constants/colors';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
@@ -19,6 +19,7 @@ import ReactNativeModal from 'react-native-modal';
 import { appButtonstyles } from '../../../components/buttons/buttons';
 import Checkbox from 'expo-checkbox';
 import { useMMKV } from 'react-native-mmkv';
+import { AppSearchInput } from '../../../components/textInput/AppSearchInput';
 
 
 export default function ChatLatestMessagesScreen(): JSX.Element {
@@ -199,27 +200,13 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
       </ReactNativeModal>
 
       <View style={styles.mainView}>
-        <View style={styles.innerView}>
-          <View style={styles.relativeView}>
-            <TextInput
-              ref={inputRef}
-              style={styles.input}
-              value={textInput}
-              onChangeText={setTextInput}
-              placeholder='type @ to search all your friends...'
-            />
-            <Pressable style={styles.pressable}>
-              {({ pressed }) => (
-                <Ionicons
-                  name="search-circle"
-                  size={34}
-                  style={{ opacity: pressed ? 0.5 : 1 }}
-                  color="#83C9DD"
-                />
-              )}
-            </Pressable>
-          </View>
-        </View>
+
+        <AppSearchInput
+          value={textInput}
+          setValue={setTextInput}
+          placeholder='type @ to search all your friends...'
+          ref={inputRef}
+        />
 
         <FlashList
           data={showSearchedFriends ? memoizedSearchedFriendsList : friendsLatestMessagesList}
@@ -342,21 +329,6 @@ const styles = StyleSheet.create({
   mainView: {
     flex: 1
   },
-  innerView: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-  },
-  relativeView: {
-    position: 'relative',
-    justifyContent: 'center'
-  },
-  input: {
-    backgroundColor: '#F4F4F4',
-    borderRadius: 50,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    paddingLeft: 56
-  },
 
   deleteButton: {
     backgroundColor: gray_50,
@@ -366,13 +338,6 @@ const styles = StyleSheet.create({
     padding: 24
   },
 
-  pressable: {
-    position: 'absolute',
-    zIndex: 30,
-    left: 10,
-    borderRadius: 50,
-    padding: 4.4
-  },
   baseButton: {
     backgroundColor: white_50,
     flexDirection: 'row',

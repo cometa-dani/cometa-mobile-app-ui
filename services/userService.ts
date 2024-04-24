@@ -23,9 +23,13 @@ class UsersService extends RestApiService {
    * @param userFields  can be either the loggedInUser or the targetUser
    * @returns
    */
-  public searchUsers(userFields: Partial<LoggedUserClientState>) {
-    type Res = GetBasicUserProfile[] | GetBasicUserProfile | null;
-    return this.http.get<Res>('/users', { params: userFields });
+  public findUniqueByQueryParams(userFields: Partial<LoggedUserClientState>) {
+    return this.http.get<GetBasicUserProfile>('/users', { params: userFields });
+  }
+
+
+  public searchByUsernameWithPagination(username: string) {
+    return this.http.get<GetBasicUserProfile[]>('/users/search', { params: username });
   }
 
 
