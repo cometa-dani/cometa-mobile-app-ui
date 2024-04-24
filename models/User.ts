@@ -155,6 +155,16 @@ export interface GetBasicUserProfile extends
   incomingFriendships: Friendship[];
 }
 
+
+export interface GetUsersWithPagination {
+  users: Omit<GetBasicUserProfile, 'outgoingFriendships' | 'incomingFriendships'>[];
+  nextCursor: number;
+  totalUsers: number;
+  usersPerPage: number;
+  hasNextCursor: boolean;
+}
+
+
 export interface GetDetailedUserProfile {
   id: number;
   avatar?: string;
@@ -210,9 +220,3 @@ interface LikedEvent {
   userId: number;
   event: Event;
 }
-
-// export interface Count {
-//   likedEvents: number;
-//   incomingFriendships: number;
-//   outgoingFriendships: number;
-// }

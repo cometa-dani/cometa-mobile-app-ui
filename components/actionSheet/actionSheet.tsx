@@ -5,7 +5,7 @@ import { Text, View } from '../Themed';
 import { LikeableEvent } from '../../models/Event';
 import { FontAwesome, Feather } from '@expo/vector-icons';
 // import MapView, { Marker } from 'react-native-maps';
-import { getRegionForCoordinates } from '../../helpers/getRegionFromCoords';
+// import { getRegionForCoordinates } from '../../helpers/getRegionFromCoords';
 import {
   Gesture,
   BaseButton,
@@ -119,12 +119,12 @@ export const EventActionSheet: FC<EventActionSheetProps> = ({ eventItem, isOpen,
                   </View>
                   <View style={styles.textItem}>
                     <Feather name='map-pin' size={20} />
-                    <Text>{eventItem.location.name}</Text>
+                    {/* <Text>{eventItem.location.name}</Text> */}
                   </View>
                 </View>
 
                 <View>
-                  <Text>{eventItem.location.description}</Text>
+                  {/* <Text>{eventItem.location.description}</Text> */}
                 </View>
               </View>
 

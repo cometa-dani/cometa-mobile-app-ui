@@ -4,6 +4,8 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack, } from 'expo-router';
 import ToastManager from 'toastify-react-native';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+
 
 // hooks
 import { useFonts } from 'expo-font';
@@ -60,7 +62,9 @@ export default function RootLayout() {
           animationInTiming={800}
         />
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <RootLayoutNav />
+          <BottomSheetModalProvider>
+            <RootLayoutNav />
+          </BottomSheetModalProvider>
         </GestureHandlerRootView>
       </QueryClientProvider>
     </ThemeProvider>

@@ -133,18 +133,18 @@ export default function AppLayout() {
                 <MaterialCommunityIcons name="home-circle-outline" size={45} color={color} />
               </TabButton>
             ),
-            headerLeft: () => (
-              <Pressable onPress={() => router.push(`/search/${loggedInUserUUID}`)}>
-                {({ pressed }) => (
-                  <Ionicons
-                    name="search"
-                    size={32}
-                    color={gray300}
-                    style={{ marginLeft: 18, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            ),
+            // headerLeft: () => (
+            //   <Pressable onPress={() => router.push(`/search/${loggedInUserUUID}`)}>
+            //     {({ pressed }) => (
+            //       <Ionicons
+            //         name="search"
+            //         size={32}
+            //         color={gray300}
+            //         style={{ marginLeft: 18, opacity: pressed ? 0.5 : 1 }}
+            //       />
+            //     )}
+            //   </Pressable>
+            // ),
             headerTitle() {
               return (
                 <Image style={{ height: 24, width: 110 }} source={titles.cometa} />

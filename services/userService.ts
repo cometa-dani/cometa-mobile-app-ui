@@ -1,4 +1,4 @@
-import { GetBasicUserProfile, GetDetailedUserProfile, LoggedUserClientState } from '../models/User';
+import { GetBasicUserProfile, GetDetailedUserProfile, GetUsersWithPagination, LoggedUserClientState } from '../models/User';
 import { RestApiService } from './restService';
 import { ImagePickerAsset } from 'expo-image-picker';
 import FormData from 'form-data';
@@ -28,8 +28,8 @@ class UsersService extends RestApiService {
   }
 
 
-  public searchByUsernameWithPagination(username: string) {
-    return this.http.get<GetBasicUserProfile[]>('/users/search', { params: username });
+  public searchByUsernameWithPagination(username: string, cursor: number, limit = 10,) {
+    return this.http.get<GetUsersWithPagination>('/users/search', { params: { username, limit, cursor } });
   }
 
 
