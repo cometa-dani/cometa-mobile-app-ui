@@ -95,7 +95,7 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
   const renderBackdrop: FC<BottomSheetBackdropProps> = useCallback(
     (props) => (
       <BottomSheetBackdrop
-        onPress={() => setIndex(1)}
+        // onPress={() => setIndex(1)}
         {...props}
       />
     ),
@@ -110,12 +110,10 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
             if (index <= 1) {
               (ref as RefObject<BottomSheetModal>)?.current?.expand();
             }
-
             if (index == 2) {
               (ref as RefObject<BottomSheetModal>)?.current?.snapToIndex(1);
             }
-          }
-          }
+          }}
           style={bottomSheetStyles.footerContainer}
         >
           <If
@@ -162,8 +160,16 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
         style={bottomSheetStyles.contentContainer}
         focusable={true}
       >
-        <TextInput style={bottomSheetStyles.input} />
-        <Text>Awesome 🎉</Text>
+        <TextInput
+          // onFocus={() => (ref as RefObject<BottomSheetModal>)?.current?.expand()}
+          onChangeText={() => {
+            if ((index) != 2) {
+              // (ref as RefObject<BottomSheetModal>)?.current?.expand();
+            }
+          }}
+          style={bottomSheetStyles.input}
+        />
+        <Text>Awesome 🥳</Text>
 
       </BottomSheetView>
 
@@ -198,7 +204,7 @@ const EventItem: FC<ItemProps> = ({ event, onPress }) => {
     <RectButton
       style={styles.eventItem}
     >
-      <FontAwesome6 name="location-dot" size={28} color={gray_900} />
+      <FontAwesome6 name="location-dot" size={22} color={gray_900} />
       <View style={styles.titleContainer}>
         <Text style={{ fontWeight: '700' }}>
           {event.name}
@@ -266,7 +272,7 @@ const styles = StyleSheet.create({
     height: 50,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 20,
+    gap: 16,
   },
 
   titleContainer: {

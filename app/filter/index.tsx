@@ -57,7 +57,7 @@ export default function SettingsScreen(): JSX.Element {
       <Stack.Screen
         options={{
           headerShadowVisible: false,
-          headerTitle: 'Filter',
+          headerTitle: 'Find liked minded people',
           headerTitleAlign: 'center'
         }}
       />
