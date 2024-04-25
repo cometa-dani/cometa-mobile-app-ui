@@ -51,7 +51,7 @@ export default function AppLayout() {
 
   // bucket list empty modal
   const [toggleModal, setToggleModal] = useState(false);
-  const { data } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
+  const { data, isSuccess } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
 
 
   const totalNewMessages = useMemo(() => (
@@ -133,18 +133,6 @@ export default function AppLayout() {
                 <MaterialCommunityIcons name="home-circle-outline" size={45} color={color} />
               </TabButton>
             ),
-            // headerLeft: () => (
-            //   <Pressable onPress={() => router.push(`/search/${loggedInUserUUID}`)}>
-            //     {({ pressed }) => (
-            //       <Ionicons
-            //         name="search"
-            //         size={32}
-            //         color={gray300}
-            //         style={{ marginLeft: 18, opacity: pressed ? 0.5 : 1 }}
-            //       />
-            //     )}
-            //   </Pressable>
-            // ),
             headerTitle() {
               return (
                 <Image style={{ height: 24, width: 110 }} source={titles.cometa} />
@@ -196,7 +184,7 @@ export default function AppLayout() {
           name="bucketList"
           listeners={{
             focus: () => {
-              if (!data?.pages[0]?.totalEvents) {
+              if (!data?.pages[0]?.totalEvents && isSuccess) {
                 setTimeout(() => setToggleModal(true), 600);
               }
             }
@@ -213,14 +201,7 @@ export default function AppLayout() {
               return (
                 <Image style={{ height: 70, width: 142 }} source={titles.bucketList} />
               );
-            },
-            headerRight: () => (
-              <Pressable style={{ marginRight: 18 }}>
-                {({ pressed }) => (
-                  <Image style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }} source={icons.filter} />
-                )}
-              </Pressable>
-            )
+            }
           }}
         />
         <Tabs.Screen

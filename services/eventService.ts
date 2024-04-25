@@ -8,7 +8,7 @@ import { RestApiService } from './restService';
 class EventService extends RestApiService {
 
 
-  private _parseCategories = (params: object) => {
+  private _parseCategories = (params: object): string => {
     return (
       Object
         .values(params)
@@ -18,7 +18,7 @@ class EventService extends RestApiService {
             prev ? prev?.concat(`,${curr}`.toUpperCase())
               : `${curr?.toUpperCase()}`)
 
-          , '')
+          , '').trim()
     );
   };
 
@@ -29,7 +29,11 @@ class EventService extends RestApiService {
     categories: Record<EventCategory, EventCategory | undefined>,
     loggedInUserAccessToken: string
   ) {
-    const params = { cursor, limit, categories: this._parseCategories(categories) };
+    const categoriesPayload = this._parseCategories(categories);
+    const params: { cursor: number, limit: number, categories?: string } = { cursor, limit };
+    if (categoriesPayload.trim().length > 2) {
+      params['categories'] = categoriesPayload;
+    }
     const AuthHeaders = this.configAuthHeader(loggedInUserAccessToken).headers;
     const config = { params, headers: AuthHeaders };
 

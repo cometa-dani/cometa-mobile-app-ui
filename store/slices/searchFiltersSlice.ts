@@ -2,8 +2,8 @@ import { StateCreator } from 'zustand';
 import { EventCategory } from '../../models/Event';
 import { MMKV } from 'react-native-mmkv';
 
-
 const mmvkStorage = new MMKV({ id: 'mmvk.searchFilters' });
+// mmvkStorage.clearAll();
 export type SearchFiltersSlice = {
   searchFilters: Record<EventCategory, EventCategory | undefined>
   AddOrDeleteSearchFilter: (category: EventCategory) => void;

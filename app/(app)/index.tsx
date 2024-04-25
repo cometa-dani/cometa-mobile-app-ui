@@ -1,87 +1,39 @@
-import React, { FC, useCallback, useRef } from 'react';
-import { StyleSheet, SafeAreaView, Pressable, TextInput } from 'react-native';
-import { Text, View, useColors } from '../../components/Themed';
+import React, { FC, forwardRef, useCallback, useRef, useState } from 'react';
+import { StyleSheet, SafeAreaView, Pressable, TextInput, View } from 'react-native';
+import { Text, useColors } from '../../components/Themed';
 import { useInfiniteQueryGetLatestEventsByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
 import { EventsFlashList } from '../../components/eventsFlashList/eventsFlashList';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { If } from '../../components/utils';
-import { gray_300, gray_900 } from '../../constants/colors';
-import { RectButton, TouchableOpacity } from 'react-native-gesture-handler';
+import { gray_300, gray_900, red_100 } from '../../constants/colors';
+import { BaseButton, RectButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Tabs, router } from 'expo-router';
-import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetFooter, BottomSheetFooterProps, BottomSheetModal, BottomSheetTextInput, BottomSheetView } from '@gorhom/bottom-sheet';
-import { EventCategory } from '../../models/Event';
-import { FlashList } from '@shopify/flash-list';
-import Checkbox from 'expo-checkbox';
+import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetFlatList, BottomSheetFooter, BottomSheetFooterProps, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import { EventCategory, LikeableEvent } from '../../models/Event';
 
-
-const filterOptions = [
-  EventCategory.EDUCATIONAL,
-  EventCategory.CULTURAL,
-  EventCategory.SPORTS,
-  EventCategory.PARTY,
-  EventCategory.CINEMA,
-  EventCategory.SHOWS,
-  EventCategory.GALLERY,
-  EventCategory.PARK,
-  EventCategory.EXHIBITION,
-  EventCategory.MUSEUM,
-  EventCategory.THEATRE,
-  EventCategory.FESTIVAL,
-  EventCategory.CAFE,
-  EventCategory.CLUB,
-  EventCategory.RESTAURANT,
-  EventCategory.CONCERT,
-  EventCategory.BRUNCH,
-];
 
 export default function HomeScreen(): JSX.Element {
-  // colors
   const { background } = useColors();
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetRef.current?.present();
+    // bottomSheetRef.
+  }, []);
+
   // eventsData
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading, isRefetching } = useInfiniteQueryGetLatestEventsByLoggedInUser();
   const evenstData = data?.pages.flatMap(page => page.events) || [];
+  const [scrollToIndex, setScrollToIndex] = useState(0);
 
   // handling fetch when reaching the end
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  // callbacks
-  // callbacks
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetRef.current?.present();
-    // bottomSheetRef.current.
-  }, []);
-
-  const handleSheetChanges = useCallback((index: number) => {
-    // console.log('handleSheetChanges', index);
-  }, []);
-
-  const snapPoints = ['35%', '50%', '100%'];
-  const renderBackdrop: FC<BottomSheetBackdropProps> = useCallback(
-    (props) => (
-      <BottomSheetBackdrop
-        {...props}
-      // disappearsOnIndex={0}
-      // appearsOnIndex={-1}
-      />
-    ),
-    []
-  );
-  const renderFooter: FC<BottomSheetFooterProps> = useCallback(
-    (props) => (
-      <BottomSheetFooter {...props} bottomInset={20}>
-        <View style={bottomSheetStyles.footerContainer}>
-          <Text style={bottomSheetStyles.footerText}>Search</Text>
-        </View>
-      </BottomSheetFooter>
-    ),
-    []
-  );
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <Tabs.Screen
-        // name="index"
         options={{
           headerTitleAlign: 'center',
           headerShown: true,
@@ -92,58 +44,23 @@ export default function HomeScreen(): JSX.Element {
                   name="search"
                   size={32}
                   color={gray_300}
-                  style={{ marginLeft: 18, opacity: pressed ? 0.5 : 1 }}
+                  style={{
+                    marginLeft: 18,
+                    opacity: pressed ? 0.5 : 1
+                  }}
                 />
               )}
             </Pressable>
           ),
         }}
       />
-      <BottomSheetModal
-        backgroundStyle={{
-          flex: 1,
-          backgroundColor: '#fcfcfc',
-          elevation: 1,
-          shadowColor: '#171717', // add shadow for iOS
-          shadowOffset: {
-            width: 4,
-            height: 5,
-          },
-          shadowOpacity: 0.1,
-          shadowRadius: 5,
-        }}
-        index={1}
-        ref={bottomSheetRef}
-        keyboardBehavior="fillParent"
-        onChange={handleSheetChanges}
-        snapPoints={snapPoints}
-        backdropComponent={renderBackdrop}
-        footerComponent={renderFooter}
-      >
-        <BottomSheetView
-          style={bottomSheetStyles.contentContainer}
-          focusable={true}
-        >
-          <TextInput style={bottomSheetStyles.input} />
-          <Text>Awesome 🎉</Text>
 
-          <FlashList
-            contentContainerStyle={{ paddingBottom: 20 }}
-            // stickyHeaderHiddenOnScroll={true}
-            estimatedItemSize={50}
-            data={filterOptions}
-            renderItem={({ item: option }) => {
-              return (
-                <Item
-                  title={option}
-                  isChecked={false}
-                  onSelectOption={() => null}
-                />
-              );
-            }}
-          />
-        </BottomSheetView>
-      </BottomSheetModal>
+      <BottonSheetSearchEvents
+        ref={bottomSheetRef}
+        events={evenstData}
+        onPressEventItem={setScrollToIndex}
+      />
+
       <View style={styles.container}>
         <If
           condition={!evenstData?.length && !isLoading}
@@ -151,13 +68,12 @@ export default function HomeScreen(): JSX.Element {
             <NotEventsFound />
           )}
           elseRender={(
-            <>
-              <EventsFlashList
-                items={evenstData}
-                isLoading={isLoading || isRefetching}
-                onInfiniteScroll={handleInfiniteFetch}
-              />
-            </>
+            <EventsFlashList
+              initialScrollIndex={scrollToIndex}
+              items={evenstData}
+              isLoading={isLoading || isRefetching}
+              onInfiniteScroll={handleInfiniteFetch}
+            />
           )}
         />
       </View>
@@ -165,28 +81,118 @@ export default function HomeScreen(): JSX.Element {
   );
 }
 
+interface BottonSheetSearchEventsProps {
+  events: LikeableEvent[],
+  onPressEventItem: (index: number) => void
+}
+
+export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetSearchEventsProps>((props, ref) => {
+  const [index, setIndex] = useState(1);
+  const snapPoints = ['35%', '50%', '100%'];
+
+  const renderBackdrop: FC<BottomSheetBackdropProps> = useCallback(
+    (props) => (
+      <BottomSheetBackdrop
+        onPress={() => setIndex(1)}
+        {...props}
+      />
+    ),
+    []
+  );
+
+  const renderFooter: FC<BottomSheetFooterProps> = useCallback(
+    (props) => (
+      <BottomSheetFooter  {...props} bottomInset={20}>
+        <BaseButton
+          onPress={() => setIndex(prev => prev <= 1 ? 2 : prev === 2 ? 1 : 0)}
+          style={bottomSheetStyles.footerContainer}
+        >
+          <If
+            condition={index == 1}
+            render={(
+              <FontAwesome6 name="angle-up" size={22} color="white" />
+            )}
+          />
+          <If
+            condition={index == 2}
+            render={(
+              <FontAwesome6 name="angle-down" size={22} color="white" />
+            )}
+          />
+        </BaseButton>
+      </BottomSheetFooter>
+    ),
+    [index]
+  );
+
+
+  return (
+    <BottomSheetModal
+      containerStyle={{ position: 'absolute' }}
+      backgroundStyle={{
+        flex: 1,
+        backgroundColor: '#fcfcfc',
+        elevation: 1,
+        shadowColor: '#171717', // add shadow for iOS
+        shadowOffset: {
+          width: 4,
+          height: 5,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+      }}
+      index={index}
+      ref={ref}
+      keyboardBehavior="fillParent"
+      // onChange={handleSheetChanges}
+      snapPoints={snapPoints}
+      backdropComponent={renderBackdrop}
+      footerComponent={renderFooter}
+    >
+      <BottomSheetView
+        style={bottomSheetStyles.contentContainer}
+        focusable={true}
+      >
+        <TextInput style={bottomSheetStyles.input} />
+        <Text>Awesome 🎉</Text>
+
+      </BottomSheetView>
+
+      <BottomSheetFlatList
+        showsVerticalScrollIndicator={true}
+        style={{ width: '100%', flex: 1 }}
+        data={props.events}
+        renderItem={({ item: event, index }) => {
+          return (
+            <EventItem
+              key={event.id}
+              event={event}
+              onPress={() => props.onPressEventItem(index)}
+            />
+          );
+        }}
+      />
+    </BottomSheetModal>
+  );
+});
+
+BottonSheetSearchEvents.displayName = 'BottonSheetModalSearchEvents';
 
 
 interface ItemProps {
-  title: EventCategory;
-  isChecked: boolean;
-  onSelectOption: (category: EventCategory) => void;
+  event: LikeableEvent;
+  onPress: (category: EventCategory) => void;
 }
 
-const Item: FC<ItemProps> = ({ title, isChecked, onSelectOption }) => {
+const EventItem: FC<ItemProps> = ({ event, onPress }) => {
   return (
     <RectButton
-      onPress={() => onSelectOption(title)}
-      style={styles.option}
+      style={styles.eventItem}
     >
-      <Checkbox
-        style={styles.checkbox}
-        value={isChecked}
-        color={isChecked ? gray_900 : undefined}
-      />
+      <FontAwesome6 name="location-dot" size={28} color={gray_900} />
       <View style={styles.titleContainer}>
         <Text style={{ fontWeight: '700' }}>
-          {title}
+          {event.name}
         </Text>
       </View>
     </RectButton>
@@ -194,20 +200,11 @@ const Item: FC<ItemProps> = ({ title, isChecked, onSelectOption }) => {
 };
 
 
-
-// const styles = StyleSheet.create({
-
-// });
-
-
 const bottomSheetStyles = StyleSheet.create({
   contentContainer: {
-    flex: 1,
-    // height: '100%',
     alignItems: 'center',
     paddingTop: 10,
     padding: 20
-    // backgroundColor: '#eee',
   },
 
   input: {
@@ -219,17 +216,17 @@ const bottomSheetStyles = StyleSheet.create({
     backgroundColor: 'rgba(151, 151, 151, 0.08)',
   },
   footerContainer: {
-    padding: 12,
-    margin: 20,
-    marginBottom: 0,
-    borderRadius: 12,
-    backgroundColor: '#80f',
-  },
-  footerText: {
-    textAlign: 'center',
-    color: 'white',
+    marginLeft: 'auto', // 'auto' is not working, it should be 'flex-end
+    marginRight: 20,
+    width: 30,
+    height: 30,
+    borderRadius: 100,
+    backgroundColor: red_100,
+    justifyContent: 'center',
+    alignItems: 'center',
     fontWeight: '800',
-  },
+    paddingTop: 2
+  }
 });
 
 
@@ -254,17 +251,13 @@ const NotEventsFound: FC = () => (
 
 const styles = StyleSheet.create({
 
-  option: {
+  eventItem: {
     paddingHorizontal: 24,
     width: '100%',
     height: 50,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 20,
-  },
-
-  checkbox: {
-    borderRadius: 5,
   },
 
   titleContainer: {
@@ -279,5 +272,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 
-  notFoundContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 26 },
+  notFoundContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 26
+  },
 });

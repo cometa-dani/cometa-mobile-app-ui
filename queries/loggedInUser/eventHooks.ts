@@ -16,7 +16,7 @@ export const useInfiniteQueryGetLatestEventsByLoggedInUser = () => {
       queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetAllLatestEventsWithPagination> => {
-        const res = await eventService.getAllEventsWithPagination(pageParam, 4, categoriesSearchFilters, accessToken);
+        const res = await eventService.getAllEventsWithPagination(pageParam, 8, categoriesSearchFilters, accessToken);
         if (res.status === 200) {
           return res.data;
         }
