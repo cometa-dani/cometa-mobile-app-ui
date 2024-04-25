@@ -1,12 +1,12 @@
-import React, { FC, forwardRef, useCallback, useRef, useState } from 'react';
-import { StyleSheet, SafeAreaView, Pressable, TextInput, View } from 'react-native';
+import React, { FC, forwardRef, useCallback, useRef, useState, RefObject, } from 'react';
+import { StyleSheet, SafeAreaView, Pressable, TextInput, View, TouchableOpacity } from 'react-native';
 import { Text, useColors } from '../../components/Themed';
 import { useInfiniteQueryGetLatestEventsByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
 import { EventsFlashList } from '../../components/eventsFlashList/eventsFlashList';
 import { FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { If } from '../../components/utils';
 import { gray_300, gray_900, red_100 } from '../../constants/colors';
-import { BaseButton, RectButton, TouchableOpacity } from 'react-native-gesture-handler';
+import { RectButton } from 'react-native-gesture-handler';
 import { Tabs, router } from 'expo-router';
 import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetFlatList, BottomSheetFooter, BottomSheetFooterProps, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { EventCategory, LikeableEvent } from '../../models/Event';
@@ -90,6 +90,8 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
   const [index, setIndex] = useState(1);
   const snapPoints = ['35%', '50%', '100%'];
 
+  const handleSheetChanges = useCallback((index: number) => setIndex(index), []);
+
   const renderBackdrop: FC<BottomSheetBackdropProps> = useCallback(
     (props) => (
       <BottomSheetBackdrop
@@ -100,15 +102,24 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
     []
   );
 
-  const renderFooter: FC<BottomSheetFooterProps> = useCallback(
+  const renderFooter: FC<BottomSheetFooterProps> =
     (props) => (
       <BottomSheetFooter  {...props} bottomInset={20}>
-        <BaseButton
-          onPress={() => setIndex(prev => prev <= 1 ? 2 : prev === 2 ? 1 : 0)}
+        <TouchableOpacity
+          onPress={() => {
+            if (index <= 1) {
+              (ref as RefObject<BottomSheetModal>)?.current?.expand();
+            }
+
+            if (index == 2) {
+              (ref as RefObject<BottomSheetModal>)?.current?.snapToIndex(1);
+            }
+          }
+          }
           style={bottomSheetStyles.footerContainer}
         >
           <If
-            condition={index == 1}
+            condition={index <= 1}
             render={(
               <FontAwesome6 name="angle-up" size={22} color="white" />
             )}
@@ -119,11 +130,9 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
               <FontAwesome6 name="angle-down" size={22} color="white" />
             )}
           />
-        </BaseButton>
+        </TouchableOpacity>
       </BottomSheetFooter>
-    ),
-    [index]
-  );
+    );
 
 
   return (
@@ -141,10 +150,10 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
         shadowOpacity: 0.1,
         shadowRadius: 5,
       }}
-      index={index}
+      index={1}
       ref={ref}
       keyboardBehavior="fillParent"
-      // onChange={handleSheetChanges}
+      onChange={handleSheetChanges}
       snapPoints={snapPoints}
       backdropComponent={renderBackdrop}
       footerComponent={renderFooter}
