@@ -83,8 +83,8 @@ export default function HomeScreen(): JSX.Element {
   );
 }
 
-
-const snapPoints = ['35%', '55%', '100%'];
+// coulbe the case that when dragging up add the 100% snap point
+const snapPoints = ['35%', '50%', '100'];
 
 interface BottonSheetSearchEventsProps {
   events: LikeableEvent[],
@@ -143,7 +143,7 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
 
   return (
     <BottomSheetModal
-      containerStyle={{ position: 'absolute' }}
+      containerStyle={{ position: 'absolute', }}
       backgroundStyle={{
         flex: 1,
         backgroundColor: '#fdfdfd',
@@ -161,6 +161,7 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
       keyboardBehavior="fillParent"
       onChange={handleSheetChanges}
       snapPoints={snapPoints}
+      // handleComponent={(props) => props.}
       backdropComponent={renderBackdrop}
       footerComponent={renderFooter}
     >
@@ -202,8 +203,10 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
           <BottomSheetFlatList
             showsVerticalScrollIndicator={true}
             onEndReached={props.onInfiniteScroll}
+            // contentContainerStyle={{ height: 100, overflow: 'scroll' }}
             style={{ width: '100%', flex: 1, marginVertical: 12 }}
             data={props.events}
+            keyExtractor={item => item.id.toString()}
             renderItem={({ item: event, index }) => {
               return (
                 <EventItem
