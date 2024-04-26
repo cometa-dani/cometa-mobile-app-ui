@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { LikeableEvent, } from '../../models/Event';
 import { StyleSheet, DimensionValue, Pressable, Dimensions, View as TransParentView } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
@@ -36,6 +36,13 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
   // perform mutations
   const mutateEventLike = useMutationLikeOrDislikeEvent();
   const onHandleLikeButtonPress = (eventID: number) => mutateEventLike.mutate({ eventID, targetUserId });
+  const listRef = useRef<FlashList<LikeableEvent>>(null);
+
+
+  useEffect(() => {
+    listRef.current?.scrollToIndex({ index: initialScrollIndex, animated: false, viewPosition: 0.5, viewOffset: 0 });
+  }, [initialScrollIndex]);
+
 
   return (
     <If
@@ -44,9 +51,13 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
       elseRender={(
         <FlashList
           onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
-          showsVerticalScrollIndicator={true}
+          showsVerticalScrollIndicator={false}
           estimatedItemSize={eventItemEstimatedHeight}
-          initialScrollIndex={initialScrollIndex}
+          // initialScrollIndex={initialScrollIndex}
+          scrollToOverflowEnabled={true}
+          // refreshing
+          // refreshControl={}  // pull to refresh feaature
+          ref={listRef}
           pagingEnabled={true}
           data={items}
           onEndReached={onInfiniteScroll}

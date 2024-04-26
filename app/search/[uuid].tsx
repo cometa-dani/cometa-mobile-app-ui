@@ -25,6 +25,7 @@ export default function SearchScreen(): JSX.Element {
           headerTitleAlign: 'center'
         }}
       />
+
       <AppSearchInput
         value={textInput}
         setValue={setTextInput}
