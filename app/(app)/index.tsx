@@ -10,6 +10,7 @@ import { RectButton } from 'react-native-gesture-handler';
 import { Tabs, router } from 'expo-router';
 import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetFlatList, BottomSheetFooter, BottomSheetFooterProps, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { LikeableEvent } from '../../models/Event';
+import { Image } from 'expo-image';
 
 
 export default function HomeScreen(): JSX.Element {
@@ -238,11 +239,25 @@ const EventItem: FC<ItemProps> = ({ event, onPress }) => {
       onPress={() => onPress()}
     >
       <FontAwesome6 name="location-dot" size={22} color={gray_900} />
-      <View style={styles.titleContainer}>
-        <Text style={{ fontWeight: '700' }}>
-          {event.name}
-        </Text>
-      </View>
+
+      <Text
+        numberOfLines={1}
+        ellipsizeMode='tail'
+        style={{
+          flex: 7 / 8,
+          fontWeight: '700',
+        }}
+      >
+        {event.name}
+      </Text>
+
+      <Image
+        style={{ width: 38, height: 38, borderRadius: 100 }}
+        source={{
+          thumbhash: event.photos[0].placeholder,
+          uri: event.photos[0].url
+        }}
+      />
     </RectButton>
   );
 };
@@ -295,7 +310,13 @@ const bottomSheetStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     fontWeight: '800',
-    paddingTop: 2
+    paddingTop: 2,
+    elevation: 2,
+    shadowColor: '#171717',
+    shadowOffset: {
+      width: 4,
+      height: 5,
+    },
   }
 });
 
@@ -322,17 +343,13 @@ const NotEventsFound: FC = () => (
 const styles = StyleSheet.create({
 
   eventItem: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     width: '100%',
-    height: 50,
+    height: 56,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-  },
-
-  titleContainer: {
-    alignItems: 'center',
-    gap: 8
+    justifyContent: 'space-between',
+    // gap: 16,
   },
 
   container: {
