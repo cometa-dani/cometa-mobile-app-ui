@@ -5,10 +5,22 @@ import { GetMatchedUsersWhoLikedEventWithPagination } from '../models/User';
 import { RestApiService } from './restService';
 
 
+interface ISearchParams {
+  cursor: number,
+  limit: number,
+  categories: Record<EventCategory, EventCategory | undefined>,
+  loggedInUserAccessToken: string,
+  name?: string
+}
+
 class EventService extends RestApiService {
 
-
+  /**
+   *
+   * @description Parse the categories object to a string
+   */
   private _parseCategories = (params: object): string => {
+    const initialValue = '';
     return (
       Object
         .values(params)
@@ -17,26 +29,29 @@ class EventService extends RestApiService {
           (prev, curr) => (
             prev ? prev?.concat(`,${curr}`.toUpperCase())
               : `${curr?.toUpperCase()}`)
-
-          , '').trim()
+          ,
+          initialValue
+        ).trim()
     );
   };
 
 
-  public getAllEventsWithPagination(
-    cursor: number,
-    limit: number,
-    categories: Record<EventCategory, EventCategory | undefined>,
-    loggedInUserAccessToken: string
-  ) {
+  public searchEventsWithPagination({ categories, cursor, limit, loggedInUserAccessToken, name }: ISearchParams) {
     const categoriesPayload = this._parseCategories(categories);
-    const params: { cursor: number, limit: number, categories?: string } = { cursor, limit };
-    if (categoriesPayload.trim().length > 2) {
-      params['categories'] = categoriesPayload;
+    const params: { cursor: number, limit: number, name?: string, categories?: string } =
+      { cursor, limit, name, categories: categoriesPayload };
+
+    if (!params.categories) {
+      delete params.categories;
+    }
+    if (!params.name) {
+      delete params.name;
     }
     const AuthHeaders = this.configAuthHeader(loggedInUserAccessToken).headers;
-    const config = { params, headers: AuthHeaders };
-
+    const config = {
+      params,
+      headers: AuthHeaders
+    };
     return this.http.get<GetAllLatestEventsWithPagination>('/events', config);
   }
 

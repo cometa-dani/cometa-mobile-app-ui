@@ -7,16 +7,24 @@ import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEve
 
 
 // Query to fetch a list of events with infinite scrolling
-export const useInfiniteQueryGetLatestEventsByLoggedInUser = () => {
+export const useInfiniteQuerySearchEventsByQueryParams = (eventName = '') => {
   const accessToken = useCometaStore(state => state.accessToken);
   const categoriesSearchFilters = useCometaStore(state => state.searchFilters);
 
   return (
     useInfiniteQuery({
-      queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION],
+      queryKey: [QueryKeys.SEARCH_EVENTS_WITH_PAGINATION, eventName],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetAllLatestEventsWithPagination> => {
-        const res = await eventService.getAllEventsWithPagination(pageParam, 8, categoriesSearchFilters, accessToken);
+        const res =
+          await eventService.searchEventsWithPagination({
+            cursor: pageParam,
+            limit: 10,
+            loggedInUserAccessToken: accessToken,
+            name: eventName,
+            categories: categoriesSearchFilters
+          });
+
         if (res.status === 200) {
           return res.data;
         }
@@ -26,11 +34,10 @@ export const useInfiniteQueryGetLatestEventsByLoggedInUser = () => {
       },
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
-        // stops incrementing next page because there no more events left
-        if (!lastPage.nextCursor || lastPage.events.length < 4) {
-          return null; // makes hasNextPage evalutes to false
+        if (lastPage.hasNextCursor) {
+          return lastPage.nextCursor;
         }
-        return lastPage.nextCursor;
+        return null; // makes hasNextPage evalutes to false
       },
       retry: 2,
       retryDelay: 1_000 * 6,

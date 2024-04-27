@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, View, TextInput } from 'react-native';
 
 interface AppSearchInputProps {
   placeholder?: string;
-  onEnterPressed?: () => void;
+  onSearch?: () => void;
   value: string;
   setValue: (text: string) => void;
 }
@@ -21,12 +21,15 @@ export const AppSearchInput = forwardRef<TextInput, AppSearchInputProps>((props,
           onChangeText={props.setValue}
           onKeyPress={(e) => {
             if (e.nativeEvent.key === 'Enter') {
-              props.onEnterPressed?.();
+              props.onSearch?.();
             }
           }}
           placeholder={props.placeholder ?? 'Search...'}
         />
-        <Pressable style={styles.pressable}>
+        <Pressable
+          style={styles.pressable}
+          onPress={props.onSearch}
+        >
           {({ pressed }) => (
             <Ionicons
               name="search-circle"
@@ -46,7 +49,7 @@ AppSearchInput.displayName = 'AppSearchInput';
 
 const styles = StyleSheet.create({
   innerView: {
-    paddingHorizontal: 20,
+    width: '100%',
     paddingVertical: 12,
   },
   relativeView: {

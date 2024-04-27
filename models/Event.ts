@@ -54,6 +54,7 @@ export interface GetAllLatestEventsWithPagination {
   events: LikeableEvent[];
   totalEvents: number;
   nextCursor: number;
+  hasNextCursor: boolean;
   eventsPerPage: number;
 }
 

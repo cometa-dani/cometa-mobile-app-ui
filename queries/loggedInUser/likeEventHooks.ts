@@ -33,7 +33,7 @@ export const useMutationLikeOrDislikeEvent = () => {
         if (!targetUserId) {
           queryClient
             .setQueryData<InfiniteData<GetAllLatestEventsWithPagination, number>>
-            ([QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION], (oldData) => ({
+            ([QueryKeys.SEARCH_EVENTS_WITH_PAGINATION], (oldData) => ({
               pages: oldData?.pages.map(
                 (page) => (
                   {
@@ -96,7 +96,7 @@ export const useMutationLikeOrDislikeEvent = () => {
         else {
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION] }),
-            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION] })
+            queryClient.invalidateQueries({ queryKey: [QueryKeys.SEARCH_EVENTS_WITH_PAGINATION] })
           ]);
         }
       },
@@ -146,7 +146,7 @@ export const useMutationDeleteLikedEventFromBucketList = () => {
       onSuccess: async (_, eventID) => {
         queryClient
           .setQueryData<InfiniteData<GetAllLatestEventsWithPagination, number>>
-          ([QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION], (oldData) => ({
+          ([QueryKeys.SEARCH_EVENTS_WITH_PAGINATION], (oldData) => ({
             pages: oldData?.pages.map(
               (page) => (
                 {

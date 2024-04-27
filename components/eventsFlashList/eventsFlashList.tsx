@@ -40,7 +40,12 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
 
 
   useEffect(() => {
-    listRef.current?.scrollToIndex({ index: initialScrollIndex, animated: false, viewPosition: 0.5, viewOffset: 0 });
+    listRef.current?.scrollToIndex({
+      index: initialScrollIndex,
+      animated: false,
+      viewPosition: 0.5,
+      viewOffset: 0
+    });
   }, [initialScrollIndex]);
 
 

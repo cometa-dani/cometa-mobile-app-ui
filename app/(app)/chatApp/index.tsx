@@ -200,13 +200,14 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
       </ReactNativeModal>
 
       <View style={styles.mainView}>
-
-        <AppSearchInput
-          value={textInput}
-          setValue={setTextInput}
-          placeholder='type @ to search all your friends...'
-          ref={inputRef}
-        />
+        <View style={{ paddingHorizontal: 24 }}>
+          <AppSearchInput
+            value={textInput}
+            setValue={setTextInput}
+            placeholder='type @ to search all your friends...'
+            ref={inputRef}
+          />
+        </View>
 
         <FlashList
           data={showSearchedFriends ? memoizedSearchedFriendsList : friendsLatestMessagesList}
