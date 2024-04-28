@@ -5,8 +5,8 @@ import userService from '../../services/userService';
 
 export const useInfiniteQuerySearchUsers = (username: string) => {
   return useInfiniteQuery({
-    initialPageParam: 1,
-    queryKey: [QueryKeys.SEARCH_USERS_BY_USERNAME_WITH_PAGINATION],
+    initialPageParam: -1,
+    queryKey: [QueryKeys.SEARCH_USERS_BY_USERNAME_WITH_PAGINATION, username],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await userService.searchByUsernameWithPagination(username, pageParam);
       if (response.status === 200) {
@@ -16,11 +16,14 @@ export const useInfiniteQuerySearchUsers = (username: string) => {
         throw new Error('Error while fetching users');
       }
     },
-    getNextPageParam: (lastPage, allPages) => {
+    getNextPageParam: (lastPage) => {
       if (lastPage.hasNextCursor) {
         return lastPage.nextCursor;
       }
       return null;
-    }
+    },
+    retry: 2,
+    retryDelay: 1_000 * 6,
+    refetchInterval: 1_000 * 60 * 10
   });
 };

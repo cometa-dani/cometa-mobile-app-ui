@@ -1,4 +1,4 @@
-import React, { FC, forwardRef, useCallback, useRef, useState, RefObject, useEffect, } from 'react';
+import React, { FC, forwardRef, useCallback, useRef, useState, RefObject, useEffect, useMemo, } from 'react';
 import { StyleSheet, SafeAreaView, Pressable, View, TouchableOpacity } from 'react-native';
 import { Text, useColors } from '../../components/Themed';
 import { useInfiniteQuerySearchEventsByQueryParams } from '../../queries/loggedInUser/eventHooks';
@@ -12,6 +12,8 @@ import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetFlatList, Bot
 import { LikeableEvent } from '../../models/Event';
 import { Image } from 'expo-image';
 import { AppSearchInput } from '../../components/textInput/AppSearchInput';
+import { useInfiniteQuerySearchUsers } from '../../queries/search/useInfiniteQuerySearchUsers';
+import { GetBasicUserProfile } from '../../models/User';
 
 
 export default function HomeScreen(): JSX.Element {
@@ -88,7 +90,7 @@ export default function HomeScreen(): JSX.Element {
 }
 
 // coulbe the case that when dragging up add the 100% snap point
-const snapPoints = ['35%', '50%', '100'];
+const snapPoints = ['25%', '40%', '100%'];
 
 interface BottonSheetSearchEventsProps {
   events: LikeableEvent[],
@@ -100,22 +102,41 @@ interface BottonSheetSearchEventsProps {
 
 export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetSearchEventsProps>((props, ref) => {
   const [index, setIndex] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [toggleTabs, setToggleTabs] = useState(true);
+  const inputSearchPlacesRef = useRef<TextInput>(null);
+  const [searchPlaces, setSearchPlaces] = useState('');
+  const [searchUsers, setSearchUsers] = useState('');
+  const [debouncedSearchUsers, setDebouncedSearchUsers] = useState('');
+  const { data: usersSearchedList, isLoading, hasNextPage, fetchNextPage } = useInfiniteQuerySearchUsers(debouncedSearchUsers);
+  const handleUserInfiniteScroll = () => !isLoading && hasNextPage && fetchNextPage();
 
-  // listen for search input changes
+  const memoizedSearchUsers = useMemo(() =>
+    usersSearchedList?.pages.flatMap(page => page.users) || [],
+    [usersSearchedList]);
+
+  // debounce search input for users
   useEffect(() => {
     const timeOutId = setTimeout(() => {
-      if (searchQuery.length) {
-        props.onSearchQuery(searchQuery);
+      if (searchUsers.length) {
+        setDebouncedSearchUsers(searchUsers);
       }
     }, 1_600);
     return () => clearTimeout(timeOutId);
-  }, [searchQuery]);
+  }, [searchUsers]);
+
+  // debounce search input for places
+  useEffect(() => {
+    const timeOutId = setTimeout(() => {
+      if (searchPlaces.length) {
+        props.onSearchQuery(searchPlaces);
+      }
+    }, 1_600);
+    return () => clearTimeout(timeOutId);
+  }, [searchPlaces]);
 
 
   const handleSheetChanges = useCallback((index: number) => setIndex(index), []);
-  const [toggleTabs, setToggleTabs] = useState(true);
-  const inputRef = useRef<TextInput>(null);
+
 
   const Backdrop: FC<BottomSheetBackdropProps> = useCallback(
     (props) => (
@@ -127,7 +148,7 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
     []
   );
 
-  const FloatingButton: FC<BottomSheetFooterProps> =
+  const FloatingButton: FC<BottomSheetFooterProps> = useCallback(
     (props) => (
       <BottomSheetFooter  {...props} bottomInset={20}>
         <TouchableOpacity
@@ -155,7 +176,9 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
           />
         </TouchableOpacity>
       </BottomSheetFooter>
-    );
+    ),
+    [index]
+  );
 
 
   return (
@@ -167,7 +190,6 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
       keyboardBehavior="fillParent"
       onChange={handleSheetChanges}
       snapPoints={snapPoints}
-      // handleComponent={(props) => props.}
       backdropComponent={Backdrop}
       footerComponent={FloatingButton}
     >
@@ -175,26 +197,25 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
         style={bottomSheetStyles.contentContainer}
         focusable={true}
       >
-
-        {/* <TextInput
-          placeholder="Search for events"
-          value={props.searchQuery}
-          // onFocus={() => (ref as RefObject<BottomSheetModal>)?.current?.expand()}
-          onChangeText={(val) => {
-            if ((index) != 2) {
+        <If
+          condition={toggleTabs}
+          render={(
+            <AppSearchInput
+              setValue={setSearchPlaces}
+              value={searchPlaces}
+              placeholder="Search new places..."
               // (ref as RefObject<BottomSheetModal>)?.current?.expand();
-            }
-            props.setSearchQuery(val);
-          }}
-          style={bottomSheetStyles.input}
-        /> */}
-
-        <AppSearchInput
-          setValue={setSearchQuery}
-          value={searchQuery}
-          placeholder="Search..."
-          onSearch={() => props.onSearchQuery(searchQuery)}
-          ref={inputRef}
+              onSearch={() => props.onSearchQuery(searchPlaces)}
+              ref={inputSearchPlacesRef}
+            />
+          )}
+          elseRender={(
+            <AppSearchInput
+              setValue={setSearchUsers}
+              value={searchUsers}
+              placeholder="Search new people..."
+            />
+          )}
         />
 
         <View style={bottomSheetStyles.tabs}>
@@ -206,34 +227,68 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
             <Text style={[bottomSheetStyles.tab, !toggleTabs && { ...bottomSheetStyles.tabActive, color: '#E44063' }]}>Users</Text>
           </TouchableOpacity>
         </View>
-
       </BottomSheetView>
 
       <If
-        condition={props.isLoading}
+        condition={toggleTabs}
         render={(
-          <View style={{ padding: 20 }}>
-            <Text>Loading...</Text>
-          </View>
+          <If
+            condition={props.isLoading}
+            render={(
+              <View style={{ padding: 20 }}>
+                <Text>Loading...</Text>
+              </View>
+            )}
+            elseRender={(
+              <BottomSheetFlatList
+                showsVerticalScrollIndicator={true}
+                onEndReached={props.onInfiniteScroll}
+                onEndReachedThreshold={0.5}
+                // contentContainerStyle={{ height: 100, overflow: 'scroll' }}
+                style={{ width: '100%', flex: 1, marginVertical: 12 }}
+                data={props.events}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item: event, index }) => {
+                  return (
+                    <EventItem
+                      key={event.id}
+                      event={event}
+                      onPress={() => props.onPressEventItem(index)}
+                    />
+                  );
+                }}
+              />
+            )}
+          />
         )}
         elseRender={(
-          <BottomSheetFlatList
-            showsVerticalScrollIndicator={true}
-            onEndReached={props.onInfiniteScroll}
-            onEndReachedThreshold={0.5}
-            // contentContainerStyle={{ height: 100, overflow: 'scroll' }}
-            style={{ width: '100%', flex: 1, marginVertical: 12 }}
-            data={props.events}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item: event, index }) => {
-              return (
-                <EventItem
-                  key={event.id}
-                  event={event}
-                  onPress={() => props.onPressEventItem(index)}
-                />
-              );
-            }}
+          <If
+            condition={isLoading}
+            render={(
+              <View style={{ padding: 20 }}>
+                <Text>Loading...</Text>
+              </View>
+            )}
+            elseRender={(
+              <BottomSheetFlatList
+                showsVerticalScrollIndicator={true}
+                onEndReached={handleUserInfiniteScroll}
+                onEndReachedThreshold={0.5}
+                // contentContainerStyle={{ height: 100, overflow: 'scroll' }}
+                style={{ width: '100%', flex: 1, marginVertical: 12 }}
+                data={memoizedSearchUsers}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item: user }) => {
+                  return (
+                    <UserItem
+                      key={user.id}
+                      user={user}
+                      onPress={() => router.push(`/targetUserProfile/${user.uid}`)}
+                    />
+                  );
+                }}
+              />
+            )}
           />
         )}
       />
@@ -280,6 +335,41 @@ const EventItem: FC<ItemProps> = ({ event, onPress }) => {
 };
 
 
+interface UserItem {
+  user: Omit<GetBasicUserProfile, 'outgoingFriendships' | 'incomingFriendships'>,
+  onPress: () => void;
+}
+
+const UserItem: FC<UserItem> = ({ user, onPress }) => {
+  return (
+    <RectButton
+      style={styles.eventItem}
+      onPress={() => onPress()}
+    >
+      <FontAwesome6 name="user" size={22} color={gray_900} />
+
+      <Text
+        numberOfLines={1}
+        ellipsizeMode='tail'
+        style={{
+          flex: 7 / 8,
+          fontWeight: '700',
+        }}
+      >
+        {user.username} {user.currentLocation}
+      </Text>
+
+      <Image
+        style={{ width: 38, height: 38, borderRadius: 100 }}
+        source={{
+          thumbhash: user.photos[0]?.placeholder,
+          uri: user.photos[0]?.url
+        }}
+      />
+    </RectButton>
+  );
+};
+
 const bottomSheetStyles = StyleSheet.create({
 
   background: {
@@ -322,14 +412,6 @@ const bottomSheetStyles = StyleSheet.create({
     gap: 16
   },
 
-  // input: {
-  //   borderRadius: 10,
-  //   fontSize: 16,
-  //   lineHeight: 20,
-  //   width: '100%',
-  //   padding: 8,
-  //   backgroundColor: 'rgba(151, 151, 151, 0.08)',
-  // },
   footerContainer: {
     marginLeft: 'auto', // 'auto' is not working, it should be 'flex-end
     marginRight: 20,
@@ -379,7 +461,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    // gap: 16,
   },
 
   container: {
