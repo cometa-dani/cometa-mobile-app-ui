@@ -1,4 +1,4 @@
-import React, { FC, forwardRef, useCallback, useRef, useState, RefObject, } from 'react';
+import React, { FC, forwardRef, useCallback, useRef, useState, RefObject, useEffect, } from 'react';
 import { StyleSheet, SafeAreaView, Pressable, View, TouchableOpacity } from 'react-native';
 import { Text, useColors } from '../../components/Themed';
 import { useInfiniteQuerySearchEventsByQueryParams } from '../../queries/loggedInUser/eventHooks';
@@ -6,7 +6,7 @@ import { EventsFlashList } from '../../components/eventsFlashList/eventsFlashLis
 import { FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { If } from '../../components/utils';
 import { gray_200, gray_300, gray_500, gray_900, red_100 } from '../../constants/colors';
-import { RectButton } from 'react-native-gesture-handler';
+import { RectButton, TextInput } from 'react-native-gesture-handler';
 import { Tabs, router } from 'expo-router';
 import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetFlatList, BottomSheetFooter, BottomSheetFooterProps, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { LikeableEvent } from '../../models/Event';
@@ -101,8 +101,21 @@ interface BottonSheetSearchEventsProps {
 export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetSearchEventsProps>((props, ref) => {
   const [index, setIndex] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // listen for search input changes
+  useEffect(() => {
+    const timeOutId = setTimeout(() => {
+      if (searchQuery.length) {
+        props.onSearchQuery(searchQuery);
+      }
+    }, 1_600);
+    return () => clearTimeout(timeOutId);
+  }, [searchQuery]);
+
+
   const handleSheetChanges = useCallback((index: number) => setIndex(index), []);
   const [toggleTabs, setToggleTabs] = useState(true);
+  const inputRef = useRef<TextInput>(null);
 
   const Backdrop: FC<BottomSheetBackdropProps> = useCallback(
     (props) => (
@@ -144,6 +157,7 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
       </BottomSheetFooter>
     );
 
+
   return (
     <BottomSheetModal
       containerStyle={{ position: 'absolute', }}
@@ -161,6 +175,7 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
         style={bottomSheetStyles.contentContainer}
         focusable={true}
       >
+
         {/* <TextInput
           placeholder="Search for events"
           value={props.searchQuery}
@@ -179,6 +194,7 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
           value={searchQuery}
           placeholder="Search..."
           onSearch={() => props.onSearchQuery(searchQuery)}
+          ref={inputRef}
         />
 
         <View style={bottomSheetStyles.tabs}>
