@@ -14,6 +14,8 @@ import { Image } from 'expo-image';
 import { AppSearchInput } from '../../components/textInput/AppSearchInput';
 import { useInfiniteQuerySearchUsers } from '../../queries/search/useInfiniteQuerySearchUsers';
 import { GetBasicUserProfile } from '../../models/User';
+import { defaultImgPlaceholder } from '../../constants/vars';
+import { SkeletonLoaderList } from '../../components/lodingSkeletons/LoadingSkeletonList';
 
 
 export default function HomeScreen(): JSX.Element {
@@ -90,7 +92,7 @@ export default function HomeScreen(): JSX.Element {
 }
 
 // coulbe the case that when dragging up add the 100% snap point
-const snapPoints = ['25%', '40%', '100%'];
+const snapPoints = ['35%', '50%'];
 
 interface BottonSheetSearchEventsProps {
   events: LikeableEvent[],
@@ -119,6 +121,9 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
     const timeOutId = setTimeout(() => {
       if (searchUsers.length) {
         setDebouncedSearchUsers(searchUsers);
+      }
+      else {
+        setDebouncedSearchUsers('@');
       }
     }, 1_600);
     return () => clearTimeout(timeOutId);
@@ -153,23 +158,23 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
       <BottomSheetFooter  {...props} bottomInset={20}>
         <TouchableOpacity
           onPress={() => {
-            if (index <= 1) {
+            if (index == 0) {
               (ref as RefObject<BottomSheetModal>)?.current?.expand();
             }
-            if (index == 2) {
-              (ref as RefObject<BottomSheetModal>)?.current?.snapToIndex(1);
+            if (index == 1) {
+              (ref as RefObject<BottomSheetModal>)?.current?.snapToIndex(0);
             }
           }}
           style={bottomSheetStyles.footerContainer}
         >
           <If
-            condition={index <= 1}
+            condition={index <= 0}
             render={(
               <FontAwesome6 name="angle-up" size={22} color="white" />
             )}
           />
           <If
-            condition={index == 2}
+            condition={index == 1}
             render={(
               <FontAwesome6 name="angle-down" size={22} color="white" />
             )}
@@ -235,9 +240,7 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
           <If
             condition={props.isLoading}
             render={(
-              <View style={{ padding: 20 }}>
-                <Text>Loading...</Text>
-              </View>
+              <SkeletonLoaderList height={44} gap={8} />
             )}
             elseRender={(
               <BottomSheetFlatList
@@ -245,7 +248,7 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
                 onEndReached={props.onInfiniteScroll}
                 onEndReachedThreshold={0.5}
                 // contentContainerStyle={{ height: 100, overflow: 'scroll' }}
-                style={{ width: '100%', flex: 1, marginVertical: 12 }}
+                style={{ width: '100%', flex: 1, marginTop: 12 }}
                 data={props.events}
                 keyExtractor={item => item.id.toString()}
                 renderItem={({ item: event, index }) => {
@@ -265,9 +268,7 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
           <If
             condition={isLoading}
             render={(
-              <View style={{ padding: 20 }}>
-                <Text>Loading...</Text>
-              </View>
+              <SkeletonLoaderList height={44} gap={8} />
             )}
             elseRender={(
               <BottomSheetFlatList
@@ -275,7 +276,7 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
                 onEndReached={handleUserInfiniteScroll}
                 onEndReachedThreshold={0.5}
                 // contentContainerStyle={{ height: 100, overflow: 'scroll' }}
-                style={{ width: '100%', flex: 1, marginVertical: 12 }}
+                style={{ width: '100%', flex: 1, marginTop: 12 }}
                 data={memoizedSearchUsers}
                 keyExtractor={item => item.id.toString()}
                 renderItem={({ item: user }) => {
@@ -316,20 +317,13 @@ const EventItem: FC<ItemProps> = ({ event, onPress }) => {
         numberOfLines={1}
         ellipsizeMode='tail'
         style={{
-          flex: 7 / 8,
+          flex: 8 / 8,
           fontWeight: '700',
         }}
       >
         {event.name}
       </Text>
 
-      <Image
-        style={{ width: 38, height: 38, borderRadius: 100 }}
-        source={{
-          thumbhash: event.photos[0].placeholder,
-          uri: event.photos[0].url
-        }}
-      />
     </RectButton>
   );
 };
@@ -346,26 +340,25 @@ const UserItem: FC<UserItem> = ({ user, onPress }) => {
       style={styles.eventItem}
       onPress={() => onPress()}
     >
-      <FontAwesome6 name="user" size={22} color={gray_900} />
+      <Image
+        style={{ width: 38, height: 38, borderRadius: 100 }}
+        source={{
+          thumbhash: user.photos[0]?.placeholder,
+          uri: user.photos[0]?.url ?? defaultImgPlaceholder
+        }}
+      />
 
       <Text
         numberOfLines={1}
         ellipsizeMode='tail'
         style={{
-          flex: 7 / 8,
+          flex: 1,
           fontWeight: '700',
         }}
       >
-        {user.username} {user.currentLocation}
+        {user.username}
       </Text>
 
-      <Image
-        style={{ width: 38, height: 38, borderRadius: 100 }}
-        source={{
-          thumbhash: user.photos[0]?.placeholder,
-          uri: user.photos[0]?.url
-        }}
-      />
     </RectButton>
   );
 };
@@ -457,10 +450,11 @@ const styles = StyleSheet.create({
   eventItem: {
     paddingHorizontal: 20,
     width: '100%',
-    height: 56,
+    height: 54,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 20
   },
 
   container: {

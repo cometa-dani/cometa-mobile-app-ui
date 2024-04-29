@@ -1,6 +1,6 @@
-import React, { FC, Fragment, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
+import { Pressable, StyleSheet, SafeAreaView } from 'react-native';
 import { Image } from 'expo-image';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { RectButton } from 'react-native-gesture-handler';
@@ -9,13 +9,13 @@ import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../..
 import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { View, Text } from '../../components/Themed';
-import ContentLoader, { Rect } from 'react-content-loader/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { gray_50, red_100 } from '../../constants/colors';
 import { If } from '../../components/utils/ifElse';
 import { ForEach } from '../../components/utils';
 import { LikeableEvent } from '../../models/Event';
 import { defaultImgPlaceholder } from '../../constants/vars';
+import { SkeletonLoaderList } from '../../components/lodingSkeletons/LoadingSkeletonList';
 
 
 export default function BuckectListScreen(): JSX.Element {
@@ -114,51 +114,6 @@ const renderBucketItem = ({ item, index }: { item: LikeableEvent, index: number 
   );
 };
 
-
-export const SkeletonLoaderList:
-  FC<{ height?: number, numberOfItems?: number, gap?: number }> = ({ height = 108, numberOfItems = 6, gap = 20 }) => {
-    const windowWidth = Dimensions.get('window').width;
-    const itemWidth = windowWidth - 40; // Subtract padding
-    const itemHeight = height;
-    const totalHeight = numberOfItems * (itemHeight + gap);
-
-    const rect1Width = itemWidth * 0.40; // 35% of item width
-    const rect2Width = itemWidth * 0.60; // 51% of item width
-    const rect2X = rect1Width + 20; // Start of second rect, add 20 for gap
-
-    return (
-      <ContentLoader
-        speed={1}
-        style={{ marginVertical: 26 }}
-        width={windowWidth}
-        height={totalHeight}
-        viewBox={`0 0 ${windowWidth} ${totalHeight}`}
-        backgroundColor="#f3f3f3"
-        foregroundColor="#ecebeb"
-      >
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Fragment key={i}>
-            <Rect
-              x="20"
-              y={i * (itemHeight + gap) + 6}
-              rx="26"
-              ry="26"
-              width={rect1Width}
-              height={itemHeight}
-            />
-            <Rect
-              x={rect2X + 10}
-              y={i * (itemHeight + gap) + 6}
-              rx="26"
-              ry="26"
-              width={rect2Width - 10}
-              height={itemHeight}
-            />
-          </Fragment>
-        ))}
-      </ContentLoader>
-    );
-  };
 
 // const AnimatedImage  = Animated.createAnimatedComponent(Image);
 

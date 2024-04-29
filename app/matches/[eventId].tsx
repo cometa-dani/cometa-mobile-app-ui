@@ -22,12 +22,12 @@ import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
 import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEvent';
 import { If } from '../../components/utils';
-import { SkeletonLoaderList } from '../(app)/bucketList';
 import uuid from 'react-native-uuid';
 import { GetLatestFriendships, MutateFrienship } from '../../models/Friendship';
 import chatWithFriendService from '../../services/chatWithFriendService';
 import notificationService from '../../services/notificationService';
 import { INotificationData } from '../../store/slices/notificationSlice';
+import { SkeletonLoaderList } from '../../components/lodingSkeletons/LoadingSkeletonList';
 
 
 type Message = { message: string };
