@@ -53,10 +53,12 @@ export default function MatchedEventsScreen(): JSX.Element {
 
   const TabsHeader: FC = () => (
     <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 20 }]}>
-      <HeaderImage
-        style={styles.imgHeader}
-        source={{ uri: eventByIdCachedData?.photos[0]?.url }}
-      />
+      {eventByIdCachedData?.photos[0]?.url &&
+        <HeaderImage
+          style={styles.imgHeader}
+          source={{ uri: eventByIdCachedData?.photos[0]?.url }}
+        />
+      }
 
       <View style={styles.tabs}>
         <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
@@ -297,7 +299,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
 
                   return (
                     <View key={targetUser.id} style={styles.user}>
-                      <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?isFriend=false&eventId=${urlParams.eventId}`)}>
+                      <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?eventId=${urlParams.eventId}`)}>
                         <View style={styles.avatarContainer}>
                           <Image
                             style={styles.userAvatar}

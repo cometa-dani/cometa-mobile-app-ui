@@ -50,9 +50,9 @@ export const ProfileCarousel: FC<ProfileCarouselProps> = ({ userPhotos, isLoadin
             renderItem={({ item }) => (
               <Image
                 key={item.uuid}
-                placeholder={{ thumbhash: item.placeholder }}
+                placeholder={{ thumbhash: item?.placeholder }}
                 style={{ height: height, width: '100%', objectFit: 'cover' }}
-                source={item.url}
+                source={item?.url}
               />
             )}
           />

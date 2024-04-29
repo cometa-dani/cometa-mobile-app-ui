@@ -41,16 +41,16 @@ export const AppCarousel: FC<Props> = ({ list, title, isLocked = false, onPress 
               ListFooterComponent={() => <View style={{ width: 20 }} />}
               ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
               horizontal={true}
-              data={list}
+              data={list ?? []}
               renderItem={({ item, index }) => {
                 return (
                   item?.img ? (
                     <Pressable onPress={() => onPress && onPress(index)}>
                       <Image
-                        placeholder={{ thumbhash: item.placeholder }}
+                        placeholder={{ thumbhash: item?.placeholder }}
                         style={styles.bucketListImage}
                         key={item.id}
-                        source={{ uri: item.img }}
+                        source={{ uri: item?.img }}
                       />
                     </Pressable>
                   ) : (

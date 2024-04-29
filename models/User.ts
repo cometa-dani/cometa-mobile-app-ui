@@ -207,10 +207,16 @@ export interface GetDetailedUserProfile {
   likedEvents: LikedEvent[];
   // sharedEvents: sharedEvent[];
 
-  incomingFriendships: OutgoingFriendship[];
-  outgoingFriendships: OutgoingFriendship[];
   // _count: Count;
 }
+
+
+export interface GetTargetUser extends GetDetailedUserProfile {
+  isFriend: boolean;
+  incomingFriendships: OutgoingFriendship[];
+  outgoingFriendships: OutgoingFriendship[];
+}
+
 
 interface LikedEvent {
   id: number;

@@ -1,4 +1,4 @@
-import { GetBasicUserProfile, GetDetailedUserProfile, GetUsersWithPagination, LoggedUserClientState } from '../models/User';
+import { GetBasicUserProfile, GetDetailedUserProfile, GetTargetUser, GetUsersWithPagination, LoggedUserClientState } from '../models/User';
 import { RestApiService } from './restService';
 import { ImagePickerAsset } from 'expo-image-picker';
 import FormData from 'form-data';
@@ -44,8 +44,19 @@ class UsersService extends RestApiService {
    * @param {string} loggedInUserAccessToken
    * @returns
    */
-  public getUserInfoByUidWithFriendShips(userUuid: string, loggedInUserAccessToken: string) {
-    return this.http.get<GetDetailedUserProfile>(`/users/${userUuid}`, this.configAuthHeader(loggedInUserAccessToken));
+  public getUserInfoByUidWithLikedEvents(userUuid: string) {
+    return this.http.get<GetDetailedUserProfile>(`/users/${userUuid}`);
+  }
+
+
+  /**
+ *
+ * @param {string} targetUser can be either the loggedInUser or the targetUser
+ * @param {string} loggedInUserAccessToken
+ * @returns
+ */
+  public getTargetUserProfile(targetUser: string, loggedInUserAccessToken: string) {
+    return this.http.get<GetTargetUser>(`/users/${targetUser}/targets`, this.configAuthHeader(loggedInUserAccessToken));
   }
 
 

@@ -13,7 +13,7 @@ import { AppCarousel } from '../../components/carousels/carousel';
 import { nodeEnv } from '../../constants/vars';
 import { useCometaStore } from '../../store/cometaStore';
 import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
-import { GetDetailedUserProfile } from '../../models/User';
+import { GetDetailedUserProfile, GetTargetUser } from '../../models/User';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
 import { ProfileCarousel } from '../../components/profile/profileCarousel';
@@ -25,17 +25,17 @@ import { ProfileTitle } from '../../components/profile/profileTitle';
 
 
 const searchParamsSchemma = Yup.object({
-  isFriend:
-    Yup.boolean()
-      .required()
-      .transform((originalValue): boolean => {
-        // Coerce string to number if it's a parsable number
-        if (typeof originalValue === 'string') {
-          return JSON.parse(originalValue); // boolean
-        }
-        // Otherwise, leave it as is
-        return originalValue;
-      }),
+  // isFriend:
+  //   Yup.boolean()
+  //     .required()
+  //     .transform((originalValue): boolean => {
+  //       // Coerce string to number if it's a parsable number
+  //       if (typeof originalValue === 'string') {
+  //         return JSON.parse(originalValue); // boolean
+  //       }
+  //       // Otherwise, leave it as is
+  //       return originalValue;
+  //     }),
 
   uuid: Yup.string().required(),
   eventId: Yup.string()
@@ -59,6 +59,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const { data: targetUserbucketList } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfile?.id);
   const { data: matchedEvents } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUserUrlParams.uuid);
 
+
   const memoizedMatchedEvents =
     useMemo(() => (matchedEvents?.pages.flatMap(
       page => page.events.map(
@@ -70,7 +71,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
       ))
       || []), [matchedEvents?.pages]);
 
-  const memoizedLikedEvents = useMemo(() => (
+  const memoizedBucketList = useMemo(() => (
     targetUserUrlParams?.eventId ?
       targetUserbucketList?.pages.flatMap(
         page => page.events.map(
@@ -108,7 +109,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
   * @param {GetBasicUserProfile} targetUserAsSender the sender of the friendship invitation
   */
-  const acceptPendingInvitation = (targetUserAsSender: GetDetailedUserProfile): void => {
+  const acceptPendingInvitation = (targetUserAsSender: GetTargetUser): void => {
     setTargetUserAsFriendshipSender(targetUserAsSender);
     setTimeout(() => setToggleModal(), 200);
     const friendshipID = targetUserAsSender.outgoingFriendships[0].id;
@@ -175,7 +176,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
 
   const TargetUserFriendShipInvitationButtons: FC = () => (
     isSuccess && (
-      targetUserUrlParams.isFriend ? (
+      targetUserProfile?.isFriend ? (
         <AppButton
           onPress={() => router.push(`/chat/${targetUserProfile?.uid}`)}
           btnColor='gray'
@@ -222,9 +223,9 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const CarouselTargetUserBucketList: FC = () => (
     <AppCarousel
       onPress={(initialScrollIndex: number) => router.push(`/targetUserProfile/bucketList/${targetUserUrlParams.uuid}?eventId=${targetUserUrlParams.eventId}&initialScrollIndex=${initialScrollIndex}`)}
-      isLocked={!targetUserUrlParams.isFriend}
+      isLocked={!targetUserProfile?.isFriend}
       title='BucketList'
-      list={memoizedLikedEvents ?? []}
+      list={memoizedBucketList ?? []}
     />
   );
 
