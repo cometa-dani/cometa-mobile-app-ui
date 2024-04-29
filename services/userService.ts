@@ -28,8 +28,9 @@ class UsersService extends RestApiService {
   }
 
 
-  public searchByUsernameWithPagination(username: string, cursor: number, limit = 10,) {
-    return this.http.get<GetUsersWithPagination>('/users/search', { params: { username, limit, cursor } });
+  public searchByUsernameWithPagination(username: string, cursor: number, limit = 10, loggedInUserAccessToken: string) {
+    const payload = { params: { username, limit, cursor }, headers: this.configAuthHeader(loggedInUserAccessToken).headers };
+    return this.http.get<GetUsersWithPagination>('/users/search', payload);
   }
 
 
