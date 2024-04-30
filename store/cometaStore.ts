@@ -6,9 +6,10 @@ import { LatestMessagesSlice, createLatestMessagesSlice } from './slices/message
 import { createChatGroupSlice, ChatGroupSlice } from './slices/chatGroupSlice';
 import { createNotificationsSlice, NotificationsSlice } from './slices/notificationSlice';
 import { createSearchFiltersSlice, SearchFiltersSlice } from './slices/searchFiltersSlice';
+import { createSearchPlaceSlice, SearchPlaceSlice } from './slices/searchPlacesSlide';
 
 
-type StoreSlices = OnboardingSlice & UserSlice & NewPeopleSlice & LatestMessagesSlice & ChatGroupSlice & NotificationsSlice & SearchFiltersSlice;
+type StoreSlices = OnboardingSlice & UserSlice & NewPeopleSlice & LatestMessagesSlice & ChatGroupSlice & NotificationsSlice & SearchFiltersSlice & SearchPlaceSlice;
 
 export const useCometaStore = create<StoreSlices>(
   (...args) => ({
@@ -19,5 +20,6 @@ export const useCometaStore = create<StoreSlices>(
     ...createChatGroupSlice(...args),
     ...createNotificationsSlice(...args),
     ...createSearchFiltersSlice(...args),
+    ...createSearchPlaceSlice(...args)
   })
 );

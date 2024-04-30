@@ -16,23 +16,19 @@ import { useInfiniteQuerySearchUsers } from '../../queries/search/useInfiniteQue
 import { GetBasicUserProfile } from '../../models/User';
 import { defaultImgPlaceholder } from '../../constants/vars';
 import { SkeletonLoaderList } from '../../components/lodingSkeletons/LoadingSkeletonList';
+import { useCometaStore } from '../../store/cometaStore';
 
 
 export default function HomeScreen(): JSX.Element {
   const { background } = useColors();
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const searchQuery = useCometaStore(state => state.searchQuery);
+  const scrollToIndex = useCometaStore(state => state.scrollToIndex);
 
-  // callbacks
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetRef.current?.present();
-  }, []);
-
-  const [searchQuery, setSearchQuery] = useState('');
+  const handleNavigateToSearchScreen = () => router.push('/search');
 
   // eventsData
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading, isRefetching } = useInfiniteQuerySearchEventsByQueryParams(searchQuery);
   const evenstData = data?.pages.flatMap(page => page.events) || [];
-  const [scrollToIndex, setScrollToIndex] = useState(0);
 
   // handling fetch when reaching the end
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
@@ -45,7 +41,7 @@ export default function HomeScreen(): JSX.Element {
           headerTitleAlign: 'center',
           headerShown: true,
           headerLeft: () => (
-            <Pressable onPress={handlePresentModalPress}>
+            <Pressable onPress={handleNavigateToSearchScreen}>
               {({ pressed }) => (
                 <Ionicons
                   name="search"
@@ -62,14 +58,14 @@ export default function HomeScreen(): JSX.Element {
         }}
       />
 
-      <BottonSheetSearchEvents
+      {/* <BottonSheetSearchEvents
         onSearchQuery={setSearchQuery}
         onPressEventItem={setScrollToIndex}
         onInfiniteScroll={handleInfiniteFetch}
         isLoading={isLoading || isRefetching}
         ref={bottomSheetRef}
         events={evenstData}
-      />
+      /> */}
 
       <View style={styles.container}>
         <If
@@ -90,6 +86,14 @@ export default function HomeScreen(): JSX.Element {
     </SafeAreaView>
   );
 }
+
+
+
+// const bottomSheetRef = useRef<BottomSheetModal>(null);
+// // callbacks
+// const handlePresentModalPress = useCallback(() => {
+//   bottomSheetRef.current?.present();
+// }, []);
 
 // coulbe the case that when dragging up add the 100% snap point
 const snapPoints = ['35%', '50%'];
