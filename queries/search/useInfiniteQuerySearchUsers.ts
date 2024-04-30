@@ -1,14 +1,17 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { QueryKeys } from '../queryKeys';
 import userService from '../../services/userService';
+import { useCometaStore } from '../../store/cometaStore';
 
 
 export const useInfiniteQuerySearchUsers = (username: string) => {
+  const accessToken = useCometaStore(state => state.accessToken);
+
   return useInfiniteQuery({
     initialPageParam: -1,
     queryKey: [QueryKeys.SEARCH_USERS_BY_USERNAME_WITH_PAGINATION, username],
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await userService.searchByUsernameWithPagination(username, pageParam);
+      const response = await userService.searchByUsernameWithPagination(username, pageParam, 10, accessToken);
       if (response.status === 200) {
         return response.data;
       }
