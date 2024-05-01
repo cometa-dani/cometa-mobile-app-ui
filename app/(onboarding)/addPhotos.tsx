@@ -118,7 +118,7 @@ export default function AddPhotosScreen(): JSX.Element {
     <View style={styles.figure}>
       <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-      <Text style={onBoardingStyles.title}>Add photos to your profile</Text>
+      <Text size='lg' style={{ textAlign: 'center' }}>Add photos to your profile</Text>
     </View>
   );
 

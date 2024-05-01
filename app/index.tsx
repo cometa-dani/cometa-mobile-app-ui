@@ -1,13 +1,14 @@
-import { ImageBackground, StyleSheet, View, Text, Image } from 'react-native';
+import { ImageBackground, StyleSheet, View, Image } from 'react-native';
 import { router } from 'expo-router';
 import { LightButton } from '../components/buttons/buttons';
 import { useEffect } from 'react';
 import { Unsubscribe, onAuthStateChanged } from 'firebase/auth'; // Import Firebase authentication functions.
 import { auth, realtimeDB } from '../firebase/firebase'; // Import Firebase authentication instance.
 import { useCometaStore } from '../store/cometaStore';
-import { onValue, ref, set } from 'firebase/database';
+import { onValue, ref, } from 'firebase/database';
 import { UserMessagesData } from '../store/slices/messagesSlices';
 import { INotificationData } from '../store/slices/notificationSlice';
+import { Text } from '../components/Themed';
 
 
 export default function WelcomeScreen(): JSX.Element {
@@ -115,9 +116,9 @@ export default function WelcomeScreen(): JSX.Element {
     <ImageBackground style={styles.imageBackground} source={require('../assets/images/welcome-image.jpeg')}>
       <View style={styles.textContainer}>
         <Image style={styles.logo} source={require('../assets/images/cometa-logo.png')} />
-        <Text style={styles.h1}>Discover New Experiences</Text>
+        <Text size='xl' style={styles.h1}>Discover New Experiences</Text>
 
-        <Text style={styles.h2}>Start exploring events near you and join like-minded people</Text>
+        <Text size='lg' style={styles.h2}>Start exploring events near you and join like-minded people</Text>
       </View>
 
       <LightButton
@@ -132,15 +133,11 @@ export default function WelcomeScreen(): JSX.Element {
 const styles = StyleSheet.create({
   h1: {
     color: '#fff',
-    fontSize: 26,
-    fontWeight: '800',
     textAlign: 'center'
   },
 
   h2: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
     maxWidth: 320,
     textAlign: 'center'
   },

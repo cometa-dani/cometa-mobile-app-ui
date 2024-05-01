@@ -32,10 +32,5 @@ export const onBoardingStyles = StyleSheet.create({
   logo: {
     aspectRatio: 1,
     height: 70,
-  },
-
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
   }
 });

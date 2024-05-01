@@ -32,7 +32,7 @@ export default function HowManyLanguagesScreen(): JSX.Element {
     <View style={styles.figure}>
       <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-      <Text style={{ ...onBoardingStyles.title, textAlign: 'center' }}>
+      <Text size='lg' style={{ textAlign: 'center' }}>
         How many languages
         do you speak?
       </Text>

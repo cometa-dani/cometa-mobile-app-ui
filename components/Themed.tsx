@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * Learn more about Light and Dark modes:
  * https://docs.expo.io/guides/color-schemes/
  */
@@ -7,10 +7,21 @@ import { Text as DefaultText, useColorScheme, View as DefaultView } from 'react-
 import Colors from '../constants/colors';
 
 
+const fontSizes = {
+  sm: 12,
+  md: 15,
+  lg: 18,
+  xl: 24,
+  xxl: 30,
+  xxxl: 36,
+};
+
 // Define a type for theme-specific color props
 type ThemeProps = {
   lightColor?: string;
   darkColor?: string;
+  size?: keyof typeof fontSizes;
+  color?: string;
 };
 
 // Create type aliases for Text and View props with theme options
@@ -19,7 +30,7 @@ export type ViewProps = ThemeProps & DefaultView['props'];
 
 
 /**
- * 
+ *
  * It's intended to be used in ThemedComponents
  * Overides the selected color in Colors acording to their Theme
  * Get the appropriate color based on the current theme (light or dark) and color name.
@@ -52,8 +63,8 @@ function useThemedColor(
 
 
 /**
- * 
- * @param colorScheme 
+ *
+ * @param colorScheme
  * @returns {Object} the colors given the theme.
  */
 export const useColors = (colorScheme?: 'light' | 'dark') => {
@@ -68,20 +79,31 @@ export const useColors = (colorScheme?: 'light' | 'dark') => {
 
 
 /**
- * 
+ *
  * Custom Text component that applies the appropriate color based on the theme.
  * @param {TextProps} props - The props for the Text component, including theme options.
  * @returns {JSX.Element} - A Text component with the theme-specific color applied.
  */
 export function Text(props: TextProps) {
-  const { style, lightColor, darkColor, ...otherProps } = props;
-  const color = useThemedColor({ light: lightColor, dark: darkColor }, 'text');
+  const { style, lightColor, darkColor, size = 'md', color, ...otherProps } = props;
+  const defaultColor = useThemedColor({ light: lightColor, dark: darkColor }, 'text');
 
-  return <DefaultText style={[{ color, fontSize: 15 }, style]} {...otherProps} />;
+  return <DefaultText
+    style={[
+      {
+        color: color ?? defaultColor,
+        fontSize: fontSizes[size],
+        fontFamily: 'Poppins',
+      },
+      style
+    ]}
+    {...otherProps}
+  />;
 }
 
+
 /**
- * 
+ *
  * Custom View component that applies the appropriate background color based on the theme.
  * @param {ViewProps} props - The props for the View component, including theme options.
  * @returns {JSX.Element} - A View component with the theme-specific background color applied.

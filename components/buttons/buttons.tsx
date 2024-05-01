@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { FC, ReactNode } from 'react';
-import { Text, StyleSheet, TextStyle } from 'react-native';
-import { useColors } from '../Themed';
+import { StyleSheet, TextStyle } from 'react-native';
+import { useColors, Text } from '../Themed';
 import { buttonColors } from '../../constants/colors';
 import { BaseButton, BaseButtonProps } from 'react-native-gesture-handler';
 
@@ -67,8 +67,6 @@ export const appButtonstyles = StyleSheet.create({
 
   buttonText: {
     color: '#6c6c6c',
-    fontSize: 15,
-    fontWeight: '700',
     textAlign: 'center',
   },
 });

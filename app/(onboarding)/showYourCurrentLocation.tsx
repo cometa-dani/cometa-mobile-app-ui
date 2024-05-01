@@ -31,7 +31,7 @@ export default function ShowCurrentLocationScreen(): JSX.Element {
       <View style={styles.figure}>
         <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={onBoardingStyles.title}>Show your location</Text>
+        <Text size='lg' style={{ textAlign: 'center' }}>Show your location</Text>
       </View>
       {/* logo */}
 

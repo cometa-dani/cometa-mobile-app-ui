@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-raw-text */
-import { StyleSheet, SafeAreaView, TextInput, Pressable, Image, View as TransparentView, Text as TransparentText } from 'react-native';
+import { StyleSheet, SafeAreaView, TextInput, Pressable, Image, View as TransparentView } from 'react-native';
 import { Text, View } from '../../../components/Themed';
 import { BaseButton, RectButton, Swipeable } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
@@ -182,17 +182,17 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
               <Pressable
                 style={{ ...appButtonstyles.button, backgroundColor: gray_900 }}
                 onPress={() => setToggleModal(false)}>
-                <TransparentText style={{ ...appButtonstyles.buttonText, color: white_50 }}>
+                <Text style={{ ...appButtonstyles.buttonText, color: white_50 }}>
                   Close
-                </TransparentText>
+                </Text>
               </Pressable>
 
               <Pressable
                 style={{ ...appButtonstyles.button, backgroundColor: gray_900 }}
                 onPress={handleDeleteMessage} >
-                <TransparentText style={{ ...appButtonstyles.buttonText, color: white_50 }}>
+                <Text style={{ ...appButtonstyles.buttonText, color: white_50 }}>
                   Delete chat
-                </TransparentText>
+                </Text>
               </Pressable>
             </View>
           </View>
@@ -252,7 +252,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
                       <Text
                         numberOfLines={1}
                         ellipsizeMode='tail'
-                        style={styles.textBold}
+                        size='lg'
                       >
                         {message.user.name}
                       </Text>
@@ -383,10 +383,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '900',
 
-  },
-  textBold: {
-    fontSize: 20,
-    fontWeight: 'bold',
   },
   textGray: {
     color: 'gray'

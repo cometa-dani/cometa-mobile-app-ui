@@ -34,7 +34,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    Poppins: require('../assets/fonts/Poppins-Regular.ttf'),
     ...FontAwesome.font,
   });
 
@@ -74,7 +74,7 @@ export default function RootLayout() {
 
 function RootLayoutNav(): JSX.Element {
   return (
-    <Stack>
+    <Stack screenOptions={{ headerTitleStyle: { fontFamily: 'Poppins' } }}>
       <Stack.Screen name='index' options={{ headerShown: false, animation: 'slide_from_right', animationDuration: 290 }} />
 
       <Stack.Screen name="(onboarding)" options={{ headerShown: false, animation: 'slide_from_right', animationDuration: 290 }} />

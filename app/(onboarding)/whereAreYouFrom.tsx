@@ -31,7 +31,7 @@ export default function WhereAreYouFromScreen(): JSX.Element {
       <View style={styles.figure}>
         <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={onBoardingStyles.title}>Where are you from?</Text>
+        <Text size='lg' style={{ textAlign: 'center' }}>Where are you from?</Text>
       </View>
       {/* logo */}
 

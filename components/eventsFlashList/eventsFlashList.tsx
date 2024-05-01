@@ -69,7 +69,7 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
           onEndReachedThreshold={0.4}
           decelerationRate={'normal'}
           renderItem={({ item }) => (
-            <MemoizedEventItem
+            <EventItem
               hideLikeAndShareButtons={hideLikeAndShareButtons}
               key={item.id}
               item={item}
@@ -210,7 +210,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
                       )
                     )}
                   </Pressable>
-                  <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 16 }}>{item._count.likes || 0}</Text>
+                  <Text lightColor='#fff'>{item._count.likes || 0}</Text>
                 </TransParentView>
 
                 <TransParentView style={{ alignItems: 'center', gap: 2 }}>
@@ -219,7 +219,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
                       <FontAwesome name="share" size={28} color="white" />        // <Image style={{ width: 28, height: 28 }} source={icons.share} />
                     )}
                   </Pressable>
-                  <Text lightColor='#fff' style={{ fontWeight: '700', fontSize: 16 }}>{3612}</Text>
+                  <Text lightColor='#fff'>{3612}</Text>
                 </TransParentView>
               </>
             )}
@@ -241,7 +241,8 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
             darkColor='#eee'
             numberOfLines={2}
             ellipsizeMode='tail'
-            style={[stylesEventItem.eventTitle, stylesEventItem.textShadow]}
+            size='xl'
+            style={stylesEventItem.textShadow}
           >
             {item.name}
           </Text>
@@ -332,11 +333,6 @@ const stylesEventItem = StyleSheet.create({
     width: '70%',
   },
 
-  eventTitle: {
-    fontSize: 17,
-    fontWeight: '500',
-  },
-
   imgBackground: { height: '100%', width: '100%' },
 
   paginationContainer: {
@@ -381,7 +377,6 @@ const stylesEventItem = StyleSheet.create({
 
   tagText: {
     color: white_50,
-    fontSize: 13,
     fontWeight: '500',
     textTransform: 'uppercase'
   },
@@ -391,7 +386,6 @@ const stylesEventItem = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.6)',
     textShadowOffset: { width: -1, height: 1 },
     textShadowRadius: 10,
-    // fontSize: 14,
   },
 
   wrapper: { flex: 1, position: 'relative' }

@@ -72,6 +72,7 @@ export const textInputStyles = StyleSheet.create({
   },
 
   input: {
+    fontFamily: 'Poppins',
     paddingHorizontal: 22,
     paddingVertical: 10,
     elevation: 3, // add elevation to android
@@ -97,7 +98,7 @@ export const AppLabelFeedbackMsg: FC<AppLabelProps> = ({ text, position = 'top' 
   return (
     position === 'top' ? (
       <TransparentView style={formFieldStyles.formLabelTop}>
-        <TransparentView style={{ ...formFieldStyles.cirle, width: 18, height: 18, position: 'static', right: 0 }}>
+        <TransparentView style={{ ...formFieldStyles.cirle, width: 18, height: 18, right: 0 }}>
           <FontAwesome name='exclamation' color={messages.error} size={12} />
         </TransparentView>
 
@@ -121,7 +122,7 @@ export const AppLabelMsgOk: FC<AppLabelProps> = ({ text, position = 'top' }) => 
     position === 'top' ? (
       <TransparentView style={formFieldStyles.formLabelTop}>
         <FontAwesome name='check-circle-o' color={messages.ok} size={20} />
-        <Text style={{ color: messages.ok, fontSize: 14 }}>{text} is available</Text>
+        <Text color={messages.ok}>{text} is available</Text>
       </TransparentView>
     )
       : (

@@ -53,7 +53,7 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
     <View style={styles.figure}>
       <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-      <Text style={onBoardingStyles.title}>When is your birthday?</Text>
+      <Text size='lg' style={{ textAlign: 'center' }}>When is your birthday?</Text>
     </View>
   );
 

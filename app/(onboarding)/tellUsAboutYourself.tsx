@@ -59,7 +59,7 @@ export default function TellUsAboutYourselfScreen(): JSX.Element {
       <View style={styles.figure}>
         <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={onBoardingStyles.title}>Tell us about yourself</Text>
+        <Text size='lg' style={{ textAlign: 'center' }}>Tell us about yourself</Text>
       </View>
       {/* logo */}
 

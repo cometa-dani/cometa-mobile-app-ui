@@ -1,5 +1,5 @@
-import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
-import { useColors } from '../../components/Themed';
+import { StyleSheet, SafeAreaView, View } from 'react-native';
+import { useColors, Text, } from '../../components/Themed';
 import { Stack, router } from 'expo-router';
 import { RectButton } from 'react-native-gesture-handler';
 import Checkbox from 'expo-checkbox';
@@ -61,7 +61,7 @@ export default function SettingsScreen(): JSX.Element {
           headerTitleAlign: 'center'
         }}
       />
-      <Text style={{ paddingHorizontal: 24, paddingVertical: 10, fontSize: 18, fontWeight: '700' }}>Category</Text>
+      <Text size='lg' style={{ paddingHorizontal: 24, paddingVertical: 10 }}>Category</Text>
       <FlashList
         contentContainerStyle={{ paddingBottom: 20 }}
         // stickyHeaderHiddenOnScroll={true}
@@ -113,7 +113,7 @@ const Item: FC<ItemProps> = ({ title, isChecked, onSelectOption }) => {
         color={isChecked ? gray_900 : undefined}
       />
       <View style={styles.titleContainer}>
-        <Text style={{ fontWeight: '700' }}>
+        <Text>
           {title}
         </Text>
       </View>

@@ -1,9 +1,10 @@
 import { FC, ReactNode } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { AppButton } from '../buttons/buttons';
-import { profileStyles } from './profileStyles';
+// import { profileStyles } from './profileStyles';
 import { StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { Text } from '../Themed';
 
 
 interface BadgesProps {
@@ -17,7 +18,7 @@ export const Badges: FC<BadgesProps> = ({ items, title, iconName }) => {
     <View>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 }}>
         {iconName && <FontAwesome name={iconName} size={20} />}
-        <Text style={profileStyles.title}>{title}:</Text>
+        <Text size='lg'>{title}:</Text>
       </View>
 
       <View style={{ flexWrap: 'wrap', flexDirection: 'row', gap: 16 }}>
@@ -27,7 +28,7 @@ export const Badges: FC<BadgesProps> = ({ items, title, iconName }) => {
             btnColor='white'
             style={badgesStyles.badge}
           >
-            <Text style={{ fontSize: 16 }}>{item}</Text>
+            <Text>{item}</Text>
           </AppButton>
         ))}
       </View>

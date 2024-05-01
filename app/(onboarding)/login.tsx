@@ -67,7 +67,7 @@ export default function LoginScreen(): JSX.Element {
           <View>
             <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-            <Text style={onBoardingStyles.title}>Log In</Text>
+            <Text size='lg' style={{ textAlign: 'center' }}>Log In</Text>
           </View>
 
           <Formik

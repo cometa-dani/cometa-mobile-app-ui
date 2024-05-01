@@ -121,6 +121,7 @@ export default function AppLayout() {
             tabBarShowLabel: false,
             tabBarActiveTintColor: red100,
             tabBarActiveBackgroundColor: '#eee',
+            headerTitleStyle: { fontFamily: 'Poppins' },
           });
         }}>
         <Tabs.Screen

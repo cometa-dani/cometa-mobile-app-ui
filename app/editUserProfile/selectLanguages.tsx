@@ -1,4 +1,4 @@
-import { StyleSheet, Text as TransparentText, View as TransparentView } from 'react-native';
+import { StyleSheet, View as TransparentView } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { Stack } from 'expo-router';
 import { animationDuration } from '../../constants/vars';
@@ -87,7 +87,7 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
               data={[''].concat(filteredLanguagesData)}
               ListHeaderComponent={() => (
                 <View style={{ gap: 12, paddingTop: 20, paddingHorizontal: 20 }}>
-                  <Text style={{ fontSize: 22, fontWeight: '700' }}>What Languages do you know?</Text>
+                  <Text size='xl'>What Languages do you know?</Text>
                   <Text>
                     We&apos;ll show these on your profile
                     and use them to connect you with great
@@ -189,9 +189,9 @@ const LanguageItem: FC<LanguageItemProps> = ({ language, onCheck, isChecked }) =
       >
         <TransparentView style={styles.titleContainer}>
           <FontAwesome name='language' size={20} />
-          <TransparentText style={{ fontWeight: '700' }}>
+          <Text>
             {language}
-          </TransparentText>
+          </Text>
         </TransparentView>
       </RectButton>
 

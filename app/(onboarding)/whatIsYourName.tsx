@@ -78,7 +78,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
       <View style={styles.figure}>
         <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={onBoardingStyles.title}>What is your name?</Text>
+        <Text size='lg' style={{ textAlign: 'center' }}>What is your name?</Text>
       </View>
       {/* logo */}
 

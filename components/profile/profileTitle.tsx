@@ -37,8 +37,8 @@ export const ProfileTitle: FC<ProfileHeaderProps> = ({ userProfile, isLoading = 
           <>
             <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
               <Text>
-                <Text style={{ fontSize: 24, fontWeight: '800' }}>{userProfile?.name}, </Text>
-                <Text style={{ fontSize: 24, fontWeight: '800' }}>{userProfile?.birthday && calAge(new Date(userProfile?.birthday)) || 26}</Text>
+                <Text size='xl'>{userProfile?.name}, </Text>
+                <Text size='xl'>{userProfile?.birthday && calAge(new Date(userProfile?.birthday)) || 26}</Text>
               </Text>
             </View>
             <If condition={userProfile?.occupation}

@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
   },
 
   input: {
+    fontFamily: 'Poppins',
     backgroundColor: '#F4F4F4',
     borderRadius: 50,
     paddingVertical: 10,

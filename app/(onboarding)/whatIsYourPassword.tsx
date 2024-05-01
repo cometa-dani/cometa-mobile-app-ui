@@ -51,7 +51,7 @@ export default function WhatIsYourPasswordScreen(): JSX.Element {
       <View style={styles.figure}>
         <Image style={onBoardingStyles.logo} source={require('../../assets/images/cometa-logo.png')} />
 
-        <Text style={onBoardingStyles.title}>What is your password?</Text>
+        <Text size='lg' style={{ textAlign: 'center' }}>What is your password?</Text>
       </View>
       {/* logo */}
 

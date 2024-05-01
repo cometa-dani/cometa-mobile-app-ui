@@ -169,7 +169,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
           render={(
             <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
               <FontAwesome size={20} name='user' style={{ alignSelf: 'flex-start' }} />
-              <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center', fontSize: 18, paddingRight: 20 }}>
+              <Text size='md' style={{ flexDirection: 'row', gap: 10, alignItems: 'center', paddingRight: 20 }}>
                 {loggedInuserProfile?.biography}
               </Text>
             </View>
@@ -235,7 +235,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
               {/* occupation */}
               <View style={{ gap: 8 }}>
                 <View style={{ gap: -4 }}>
-                  <Text style={profileStyles.title}>Occupation</Text>
+                  <Text size='lg'>Occupation</Text>
                   <Text style={{ color: gray_300 }}>Write your usual or principal job or profession </Text>
                 </View>
 
@@ -261,7 +261,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
               {/* bio */}
               <View style={{ gap: 8 }}>
                 <View style={{ gap: -4 }}>
-                  <Text style={profileStyles.title}>Bio</Text>
+                  <Text size='lg'>Bio</Text>
                   <Text style={{ color: gray_300 }}>Something fun about yourself and who you are </Text>
                 </View>
 
@@ -284,7 +284,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
               {/* languages */}
               <View style={{ gap: 8 }}>
                 <View style={{ gap: -4 }}>
-                  <Text style={profileStyles.title}>Languages</Text>
+                  <Text size='lg'>Languages</Text>
                   <Text style={{ color: gray_300 }}>How many languages you speak</Text>
                 </View>
 
@@ -328,7 +328,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
               {/* current location */}
               <View style={{ gap: 8 }}>
                 <View style={{ gap: -4 }}>
-                  <Text style={profileStyles.title}>Location</Text>
+                  <Text size='lg'>Location</Text>
                   <Text style={{ color: gray_300 }}>Where you are currently</Text>
                 </View>
 
@@ -365,7 +365,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
               {/* hometown */}
               <View style={{ gap: 8 }}>
                 <View style={{ gap: -4 }}>
-                  <Text style={profileStyles.title}>Home city</Text>
+                  <Text size='lg'>Home city</Text>
                   <Text style={{ color: gray_300 }}>Where you come from</Text>
                 </View>
 

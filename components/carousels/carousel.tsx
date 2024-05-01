@@ -28,7 +28,7 @@ export const AppCarousel: FC<Props> = ({ list, title, isLocked = false, onPress 
     ) : (
       <AppCard>
         <View style={styles.cardWrapper}>
-          <Text style={{ fontSize: 18, fontWeight: '700' }}>{title}</Text>
+          <Text size='lg'>{title}</Text>
 
           {list.length === 0 ? (
             <View style={styles.bucketListImage}>
