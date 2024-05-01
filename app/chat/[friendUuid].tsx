@@ -157,8 +157,8 @@ export default function ChatWithFriendScreen(): JSX.Element {
               user={props.user}
               key={props.currentMessage?._id}
               textStyle={{
-                right: { color: text },
-                left: { color: text }
+                right: { color: text, fontFamily: 'Poppins' },
+                left: { color: text, fontFamily: 'Poppins' }
               }}
               // bottomContainerStyle={{ right: { height: 30, marginBottom: 20 }, left: { height: 30, marginBottom: 20 } }}
               wrapperStyle={{
@@ -223,8 +223,6 @@ const styles = StyleSheet.create({
   },
 
   avatarName: {
-    fontSize: 16,
-    fontWeight: '600',
     marginBottom: -2,
     textTransform: 'capitalize'
   },
