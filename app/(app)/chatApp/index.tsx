@@ -4,7 +4,7 @@ import { Text, View } from '../../../components/Themed';
 import { BaseButton, RectButton, Swipeable } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
-import { gray_50, gray_900, messages, red_100, white_50 } from '../../../constants/colors';
+import { gray_50, gray_500, gray_900, messages, red_100, white_50 } from '../../../constants/colors';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { useCometaStore } from '../../../store/cometaStore';
@@ -269,7 +269,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
                       condition={!showSearchedFriends}
                       render={(
                         <TransparentView style={styles.transparentView4}>
-                          <Text style={[styles.textGray, { color: message.newMessagesCount ? messages.ok : undefined }]}>
+                          <Text color={message.newMessagesCount ? messages.ok : gray_500}>
                             {new Date(message.createdAt?.toString()).toLocaleTimeString()}
                           </Text>
                           <If condition={message?.newMessagesCount}
@@ -381,8 +381,6 @@ const styles = StyleSheet.create({
   },
   messagesCountText: {
     color: '#fff',
-    fontWeight: '900',
-
   },
   textGray: {
     color: 'gray'
