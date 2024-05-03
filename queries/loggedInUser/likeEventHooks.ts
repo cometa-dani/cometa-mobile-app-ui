@@ -30,63 +30,63 @@ export const useMutationLikeOrDislikeEvent = () => {
       },
       onMutate: ({ eventID, targetUserId }) => {
         // Update the cache with the new liked state
-        // if (!targetUserId) {
-        //   queryClient
-        //     .setQueryData<InfiniteData<GetAllLatestEventsWithPagination, number>>
-        //     ([QueryKeys.SEARCH_EVENTS_WITH_PAGINATION], (oldData) => ({
-        //       pages: oldData?.pages.map(
-        //         (page) => (
-        //           {
-        //             ...page,
-        //             totalEvents: page?.totalEvents - 1,
-        //             events: page.events.map(event =>
-        //               eventID === event.id ? (
-        //                 {
-        //                   ...event,
-        //                   isLiked: !event.isLiked,
-        //                   _count: {
-        //                     ...event._count,
-        //                     likes: !event.isLiked ?
-        //                       event._count.likes + 1
-        //                       : event._count.likes - 1
-        //                   }
-        //                 }
-        //               ) :
-        //                 event
-        //             )
-        //           }
-        //         )) || [],
-        //       pageParams: oldData?.pageParams || []
-        //     }));
-        // }
-        // else {
-        //   queryClient
-        //     .setQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>
-        //     ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_TARGET_USER_ID_WITH_PAGINATION], (oldData) => ({
-        //       pages: oldData?.pages.map(
-        //         (page) => (
-        //           {
-        //             ...page,
-        //             events: page.events.map(event =>
-        //               eventID === event.id ? (
-        //                 {
-        //                   ...event,
-        //                   isLiked: !event.isLiked,
-        //                   _count: {
-        //                     ...event._count,
-        //                     likes: !event.isLiked ?
-        //                       event._count.likes + 1
-        //                       : event._count.likes - 1
-        //                   }
-        //                 }
-        //               ) :
-        //                 event
-        //             )
-        //           }
-        //         )) || [],
-        //       pageParams: oldData?.pageParams || []
-        //     }));
-        // }
+        if (!targetUserId) {
+          queryClient
+            .setQueryData<InfiniteData<GetAllLatestEventsWithPagination, number>>
+            ([QueryKeys.SEARCH_EVENTS_WITH_PAGINATION], (oldData) => ({
+              pages: oldData?.pages.map(
+                (page) => (
+                  {
+                    ...page,
+                    totalEvents: page?.totalEvents - 1,
+                    events: page.events.map(event =>
+                      eventID === event.id ? (
+                        {
+                          ...event,
+                          isLiked: !event.isLiked,
+                          _count: {
+                            ...event._count,
+                            likes: !event.isLiked ?
+                              event._count.likes + 1
+                              : event._count.likes - 1
+                          }
+                        }
+                      ) :
+                        event
+                    )
+                  }
+                )) || [],
+              pageParams: oldData?.pageParams || []
+            }));
+        }
+        else {
+          queryClient
+            .setQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>
+            ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_TARGET_USER_ID_WITH_PAGINATION, targetUserId], (oldData) => ({
+              pages: oldData?.pages.map(
+                (page) => (
+                  {
+                    ...page,
+                    events: page.events.map(event =>
+                      eventID === event.id ? (
+                        {
+                          ...event,
+                          isLiked: !event.isLiked,
+                          _count: {
+                            ...event._count,
+                            likes: !event.isLiked ?
+                              event._count.likes + 1
+                              : event._count.likes - 1
+                          }
+                        }
+                      ) :
+                        event
+                    )
+                  }
+                )) || [],
+              pageParams: oldData?.pageParams || []
+            }));
+        }
       },
       // Invalidate queries after the mutation succeeds
       onSuccess: async (_, { targetUserId }) => {

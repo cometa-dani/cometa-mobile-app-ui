@@ -54,7 +54,7 @@ export const AppButton: FC<AppButtonProps> = ({ children, text, btnColor, ...pro
 
 export const appButtonstyles = StyleSheet.create({
   button: {
-    borderRadius: 50,
+    borderRadius: 16,
     elevation: 3,
     minWidth: 110,
     paddingHorizontal: 18,

@@ -56,20 +56,19 @@ export default function TargerUserProfileScreen(): JSX.Element {
 
   // queries
   const { data: targetUserProfile, isSuccess, isLoading } = useQueryGetTargetUserPeopleProfileByUid(targetUserUrlParams.uuid);
-  const { data: targetUserbucketList } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfile?.id);
   const { data: matchedEvents } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUserUrlParams.uuid);
+  const { data: targetUserbucketList } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfile?.id);
 
 
-  const memoizedMatchedEvents =
-    useMemo(() => (matchedEvents?.pages.flatMap(
-      page => page.events.map(
-        event => ({
-          id: event.id,
-          img: event.photos[0]?.url,
-          placeholder: event.photos[0]?.placeholder
-        })
-      ))
-      || []), [matchedEvents?.pages]);
+  const memoizedMatchedEvents = useMemo(() => (matchedEvents?.pages.flatMap(
+    page => page.events.map(
+      event => ({
+        id: event.id,
+        img: event.photos[0]?.url,
+        placeholder: event.photos[0]?.placeholder
+      })
+    ))
+    || []), [matchedEvents?.pages]);
 
   const memoizedBucketList = useMemo(() => (
     targetUserUrlParams?.eventId ?

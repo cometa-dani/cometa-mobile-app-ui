@@ -13,7 +13,7 @@ export const useInfiniteQuerySearchEventsByQueryParams = (eventName = '') => {
 
   return (
     useInfiniteQuery({
-      queryKey: [QueryKeys.SEARCH_EVENTS_WITH_PAGINATION, eventName],
+      queryKey: [QueryKeys.SEARCH_EVENTS_WITH_PAGINATION],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetAllLatestEventsWithPagination> => {
         const res =

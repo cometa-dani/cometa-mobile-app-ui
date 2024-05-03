@@ -6,17 +6,17 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { EventsFlashList } from '../../../components/eventsFlashList/eventsFlashList';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../../queries/queryKeys';
-import { GetDetailedUserProfile } from '../../../models/User';
+import { GetTargetUser } from '../../../models/User';
 import { CustomHeader } from '../../../components/customHeader/customHeader';
 
 
-export default function BucketListScreen(): JSX.Element {
+export default function TargetUserBucketListScreen(): JSX.Element {
   // colors
   const { background } = useColors();
 
   const { uuid: targetUserUuid, eventId, initialScrollIndex } = useLocalSearchParams<{ uuid: string, eventId: string, initialScrollIndex: string }>();
   const queryClient = useQueryClient();
-  const targetUserProfileCached = queryClient.getQueryData<GetDetailedUserProfile>([QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUuid]);
+  const targetUserProfileCached = queryClient.getQueryData<GetTargetUser>([QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUuid]);
 
   // events & function to handle fetching more events when reaching the end
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfileCached?.id);

@@ -35,18 +35,20 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
   const [layoutHeight, setLayoutHeight] = useState<DimensionValue>('100%');
   // perform mutations
   const mutateEventLike = useMutationLikeOrDislikeEvent();
-  const onHandleLikeButtonPress = (eventID: number) => mutateEventLike.mutate({ eventID, targetUserId });
+  const onHandleLikeButtonPress = (eventID: number) => {
+    mutateEventLike.mutate({ eventID, targetUserId });
+  };
   const listRef = useRef<FlashList<LikeableEvent>>(null);
 
 
   useEffect(() => {
-    listRef.current?.scrollToIndex({
-      index: initialScrollIndex,
-      animated: false,
-      viewPosition: 0.5,
-      viewOffset: 0
-    });
-  }, [initialScrollIndex]);
+    if (!isLoading) {
+      listRef.current?.scrollToIndex({
+        index: initialScrollIndex,
+        animated: false
+      });
+    }
+  }, [initialScrollIndex, isLoading]);
 
 
   return (
@@ -58,8 +60,9 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
           onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
           showsVerticalScrollIndicator={false}
           estimatedItemSize={eventItemEstimatedHeight}
-          // initialScrollIndex={initialScrollIndex}
-          scrollToOverflowEnabled={true}
+          initialScrollIndex={initialScrollIndex}
+          // scrollToOverflowEnabled={true}
+          // scrollEnabled={true}
           // refreshing
           // refreshControl={}  // pull to refresh feaature
           ref={listRef}
@@ -204,7 +207,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
                   <Pressable onPress={() => onHandleLikeButtonPress(item.id)}>
                     {({ pressed }) => (
                       (item.isLiked) ? (
-                        <FontAwesome name='heart' size={28} style={{ color: (pressed) ? white50 : red100 }} />
+                        <FontAwesome name='heart' size={28} style={{ color: red100 }} />
                       ) : (
                         <FontAwesome name='heart-o' size={28} style={{ color: (pressed) ? red100 : white50 }} />
                       )
@@ -232,7 +235,6 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
           </Pressable>
         </TransParentView>
         {/* positioned buttons */}
-
 
         {/* event info */}
         <TransParentView style={stylesEventItem.eventInfoContainer}>
