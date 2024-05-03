@@ -28,7 +28,7 @@ export const LightButton: FC<Props> = ({ text, textStyles = {}, ...props }) => {
 interface AppButtonProps extends BaseButtonProps {
   text?: string,
   children?: ReactNode
-  btnColor: 'black' | 'gray' | 'blue' | 'white' | 'primary' | 'lightGray' | 'transparent',
+  btnColor: 'black' | 'gray' | 'blue' | 'white' | 'primary' | 'lightGray' | 'transparent' | 'pink',
 }
 
 export const AppButton: FC<AppButtonProps> = ({ children, text, btnColor, ...props }) => {

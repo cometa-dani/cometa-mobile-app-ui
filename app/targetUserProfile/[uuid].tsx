@@ -163,11 +163,20 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const TargetUserFriendShipInvitationButtons: FC = () => (
     isSuccess && (
       targetUserProfile?.isFriend ? (
-        <AppButton
-          onPress={() => router.push(`/chat/${targetUserProfile?.uid}`)}
-          btnColor='gray'
-          text='CHAT'
-        />
+        <View style={{ flexDirection: 'row', gap: 16, width: '100%', justifyContent: 'space-between' }}>
+          <AppButton
+            style={{ flex: 1 }}
+            onPress={() => console.log('unfloww')}
+            btnColor='gray'
+            text='FOLLOWING'
+          />
+          <AppButton
+            style={{ flex: 1 }}
+            onPress={() => router.push(`/chat/${targetUserProfile?.uid}`)}
+            btnColor='pink'
+            text='CHAT'
+          />
+        </View>
       ) : (
         <>
           {isTargetUserFriendShipReceiver && (

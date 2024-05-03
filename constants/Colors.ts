@@ -29,6 +29,11 @@ export const buttonColors = {
     color: '#000'
   },
 
+  pink: {
+    background: '#FFCFDA',
+    color: '#030303'
+  },
+
   gray: {
     background: gray_50,
     color: '#000'
