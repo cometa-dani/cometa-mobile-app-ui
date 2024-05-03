@@ -72,7 +72,7 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
           onEndReachedThreshold={0.4}
           decelerationRate={'normal'}
           renderItem={({ item }) => (
-            <EventItem
+            <MemoizedEventItem
               hideLikeAndShareButtons={hideLikeAndShareButtons}
               key={item.id}
               item={item}
