@@ -1,5 +1,5 @@
-import { FC, useMemo } from 'react';
-import { SafeAreaView } from 'react-native';
+import { FC, useMemo, useState } from 'react';
+import { Pressable, SafeAreaView, StyleSheet } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -8,7 +8,7 @@ import * as Yup from 'yup';
 import { profileStyles } from '../../components/profile/profileStyles';
 import { useQueryGetTargetUserPeopleProfileByUid } from '../../queries/targetUser/userProfileHooks';
 import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser, useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../queries/targetUser/eventHooks';
-import { AppButton } from '../../components/buttons/buttons';
+import { AppButton, appButtonstyles } from '../../components/buttons/buttons';
 import { AppCarousel } from '../../components/carousels/carousel';
 import { useCometaStore } from '../../store/cometaStore';
 import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
@@ -21,6 +21,8 @@ import ContentLoader, { Rect } from 'react-content-loader/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { If } from '../../components/utils';
 import { ProfileTitle } from '../../components/profile/profileTitle';
+import ReactNativeModal from 'react-native-modal';
+import { gray_100, pink_200 } from '../../constants/colors';
 
 
 const searchParamsSchemma = Yup.object({
@@ -159,24 +161,61 @@ export default function TargerUserProfileScreen(): JSX.Element {
     />
   );
 
+  const [toggleModalUnfollow, setToggleModalUnfollow] = useState(false);
 
   const TargetUserFriendShipInvitationButtons: FC = () => (
     isSuccess && (
       targetUserProfile?.isFriend ? (
-        <View style={{ flexDirection: 'row', gap: 16, width: '100%', justifyContent: 'space-between' }}>
-          <AppButton
-            style={{ flex: 1 }}
-            onPress={() => console.log('unfloww')}
-            btnColor='gray'
-            text='FOLLOWING'
-          />
-          <AppButton
-            style={{ flex: 1 }}
-            onPress={() => router.push(`/chat/${targetUserProfile?.uid}`)}
-            btnColor='pink'
-            text='CHAT'
-          />
-        </View>
+        <>
+          <ReactNativeModal
+            isVisible={toggleModalUnfollow}
+            onBackdropPress={() => setToggleModalUnfollow(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={{ gap: 22 }}>
+                <View>
+                  <Text style={{ textAlign: 'center' }}>Are you sure you want to unfollow this profile?</Text>
+                  {/* <Text >No events liked yet</Text> */}
+                </View>
+
+                <View style={{ flexDirection: 'row', gap: 20 }}>
+                  <Pressable
+                    style={{ ...appButtonstyles.button, flex: 1, backgroundColor: gray_100 }}
+                    onPress={() => {
+                      setToggleModalUnfollow(false);
+                    }} >
+                    <Text style={{ ...appButtonstyles.buttonText }}>
+                      CANCEL
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={{ ...appButtonstyles.button, flex: 1, backgroundColor: pink_200 }}
+                    onPress={() => {
+                      setToggleModalUnfollow(false);
+                    }} >
+                    <Text style={{ ...appButtonstyles.buttonText }}>
+                      UNFOLLOW
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+          </ReactNativeModal>
+          <View style={{ flexDirection: 'row', gap: 16, width: '100%', justifyContent: 'space-between' }}>
+            <AppButton
+              style={{ flex: 1 }}
+              onPress={() => setToggleModalUnfollow(true)}
+              btnColor='gray'
+              text='FOLLOWING'
+            />
+            <AppButton
+              style={{ flex: 1 }}
+              onPress={() => router.push(`/chat/${targetUserProfile?.uid}`)}
+              btnColor='pink'
+              text='CHAT'
+            />
+          </View>
+        </>
       ) : (
         <>
           {isTargetUserFriendShipReceiver && (
@@ -297,3 +336,15 @@ export default function TargerUserProfileScreen(): JSX.Element {
     </SafeAreaView >
   );
 }
+
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    minHeight: 180,
+    width: 300,
+    justifyContent: 'center',
+    padding: 20,
+    borderRadius: 20,
+    alignSelf: 'center'
+  }
+});

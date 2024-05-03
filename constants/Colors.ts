@@ -12,6 +12,8 @@ export const gray_500 = '#4f4f4f';
 export const gray_900 = '#030303';
 export const backDrop = 'rgba(0, 0, 0, 0.4)';
 
+export const pink_200 = '#FFCFDA';
+
 export const messages = {
   error: '#FB7185',
   ok: '#22C55E',
