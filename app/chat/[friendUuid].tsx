@@ -134,13 +134,14 @@ export default function ChatWithFriendScreen(): JSX.Element {
 
                   <View>
                     <Text style={styles.avatarName}>{targetUser?.username}</Text>
-                    <Text>online</Text>
+                    {/* <Text>online</Text> */}
                   </View>
                 </View>
               </TouchableOpacity>
             );
           },
-        }} />
+        }}
+      />
 
       <View style={styles.container}>
         <GiftedChat

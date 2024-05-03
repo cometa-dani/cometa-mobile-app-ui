@@ -10,7 +10,6 @@ import { useQueryGetTargetUserPeopleProfileByUid } from '../../queries/targetUse
 import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser, useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../queries/targetUser/eventHooks';
 import { AppButton } from '../../components/buttons/buttons';
 import { AppCarousel } from '../../components/carousels/carousel';
-import { nodeEnv } from '../../constants/vars';
 import { useCometaStore } from '../../store/cometaStore';
 import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
 import { GetDetailedUserProfile, GetTargetUser } from '../../models/User';
@@ -25,18 +24,6 @@ import { ProfileTitle } from '../../components/profile/profileTitle';
 
 
 const searchParamsSchemma = Yup.object({
-  // isFriend:
-  //   Yup.boolean()
-  //     .required()
-  //     .transform((originalValue): boolean => {
-  //       // Coerce string to number if it's a parsable number
-  //       if (typeof originalValue === 'string') {
-  //         return JSON.parse(originalValue); // boolean
-  //       }
-  //       // Otherwise, leave it as is
-  //       return originalValue;
-  //     }),
-
   uuid: Yup.string().required(),
   eventId: Yup.string()
 });
@@ -193,14 +180,14 @@ export default function TargerUserProfileScreen(): JSX.Element {
           {isTargetUserFriendShipSender && (
             <AppButton
               onPress={() => acceptPendingInvitation(targetUserProfile)}
-              text={nodeEnv === 'development' ? 'JOIN 2' : 'JOIN'}
+              text={'FOLLOW'}
               btnColor='black'
             />
           )}
           {!isTargetUserFriendShipReceiver && !isTargetUserFriendShipSender && (
             <AppButton
               onPress={() => sentFriendshipInvitation(targetUserProfile)}
-              text="JOIN"
+              text="FOLLOW"
               btnColor='black'
             />
           )}

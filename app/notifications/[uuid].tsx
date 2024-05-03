@@ -1,5 +1,5 @@
-import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
-import { useColors } from '../../components/Themed';
+import { StyleSheet, SafeAreaView, View } from 'react-native';
+import { useColors, Text } from '../../components/Themed';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
@@ -36,7 +36,7 @@ export default function NotificationsScreen(): JSX.Element {
         condition={notificationsList.length === 0}
         render={(
           <View style={styles.titleContainer}>
-            <Text style={{ fontWeight: '500', fontSize: 16 }}>No notifications yet</Text>
+            <Text>No notifications yet</Text>
           </View>
         )}
         elseRender={(
@@ -67,7 +67,7 @@ export default function NotificationsScreen(): JSX.Element {
                   </View>
 
                   <Text>
-                    <Text style={{ fontWeight: '600' }}>{notification.user.name} </Text>
+                    <Text>{notification.user.name} </Text>
                     is your new match
                   </Text>
                 </BaseButton>

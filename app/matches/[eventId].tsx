@@ -14,7 +14,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination } from '../../models/User';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import { defaultImgPlaceholder, nodeEnv } from '../../constants/vars';
+import { defaultImgPlaceholder } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { gray_200, gray_300, gray_500 } from '../../constants/colors';
 import { useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
@@ -62,11 +62,11 @@ export default function MatchedEventsScreen(): JSX.Element {
 
       <View style={styles.tabs}>
         <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
-          <Text style={[styles.tab, toggleTabs && { ...styles.tabActive, color: '#83C9DD' }]}>Friends</Text>
+          <Text size='lg' style={[styles.tab, toggleTabs && { ...styles.tabActive, color: '#83C9DD' }]}>Friends</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
-          <Text style={[styles.tab, !toggleTabs && { ...styles.tabActive, color: '#E44063' }]}>New People</Text>
+          <Text size='lg' style={[styles.tab, !toggleTabs && { ...styles.tabActive, color: '#E44063' }]}>New People</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -309,13 +309,19 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
 
                           <View style={styles.textContainer}>
                             <Text
+                              size='lg'
                               style={styles.userName}
+                              numberOfLines={1}
+                              ellipsizeMode='tail'
+                            >
+                              {targetUser.name}
+                            </Text>
+                            <Text
                               numberOfLines={1}
                               ellipsizeMode='tail'
                             >
                               {targetUser.username}
                             </Text>
-                            <Text>online</Text>
                           </View>
                         </View>
                       </Pressable>
@@ -323,7 +329,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
                       {isSender && (
                         <AppButton
                           onPress={() => acceptPendingInvitation(targetUser)}
-                          text={nodeEnv === 'development' ? 'FOLLOW 2' : 'FOLLOW'}
+                          text='FOLLOW'
                           btnColor='black'
                         />
                       )}
@@ -392,7 +398,7 @@ const FriendsFlashList: FC<FriendsFlashListProps> = ({ users, isEmpty, isFetchin
               renderItem={({ item }) => {
                 return (
                   <View key={item?.friend?.id} style={styles.user}>
-                    <Pressable onPress={() => router.push(`/targetUserProfile/${item?.friend?.uid}?isFriend=true&eventId=${urlParams.eventId}`)}>
+                    <Pressable onPress={() => router.push(`/targetUserProfile/${item?.friend?.uid}?eventId=${urlParams.eventId}`)}>
                       <View style={styles.avatarContainer}>
                         <Image
                           style={styles.userAvatar}
@@ -402,13 +408,19 @@ const FriendsFlashList: FC<FriendsFlashListProps> = ({ users, isEmpty, isFetchin
 
                         <View style={styles.textContainer}>
                           <Text
+                            size='lg'
                             style={styles.userName}
+                            numberOfLines={1}
+                            ellipsizeMode='tail'
+                          >
+                            {item?.friend?.name}
+                          </Text>
+                          <Text
                             numberOfLines={1}
                             ellipsizeMode='tail'
                           >
                             {item?.friend?.username}
                           </Text>
-                          <Text>online</Text>
                         </View>
                       </View>
                     </Pressable>
@@ -544,8 +556,6 @@ const styles = StyleSheet.create({
   },
 
   tab: {
-    fontSize: 17,
-    fontWeight: '700',
     paddingHorizontal: 10,
     paddingVertical: 2,
     color: gray_500
@@ -563,7 +573,7 @@ const styles = StyleSheet.create({
   },
 
   textContainer: {
-    gap: 2,
+    gap: -1,
     justifyContent: 'center'
   },
 
@@ -590,8 +600,6 @@ const styles = StyleSheet.create({
   },
 
   userName: {
-    fontSize: 16,
-    fontWeight: '700',
     textTransform: 'capitalize',
     width: 110
   }
