@@ -27,7 +27,7 @@ import { gray_100, pink_200 } from '../../constants/colors';
 
 const searchParamsSchemma = Yup.object({
   uuid: Yup.string().required(),
-  eventId: Yup.string()
+  eventId: Yup.string().optional()
 });
 
 
@@ -163,6 +163,20 @@ export default function TargerUserProfileScreen(): JSX.Element {
 
   const [toggleModalUnfollow, setToggleModalUnfollow] = useState(false);
 
+  const handleUnfollowingUser = (): void => {
+    if (targetUserProfile?.id) {
+      mutationCancelFriendship.mutate(targetUserProfile?.id, {
+        onSuccess() {
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE] });
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] });
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, targetUserUrlParams.eventId] });
+        },
+      });
+    }
+    setToggleModalUnfollow(false);
+  };
+
+
   const TargetUserFriendShipInvitationButtons: FC = () => (
     isSuccess && (
       targetUserProfile?.isFriend ? (
@@ -190,9 +204,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
                   </Pressable>
                   <Pressable
                     style={{ ...appButtonstyles.button, flex: 1, backgroundColor: pink_200 }}
-                    onPress={() => {
-                      setToggleModalUnfollow(false);
-                    }} >
+                    onPress={handleUnfollowingUser}>
                     <Text style={{ ...appButtonstyles.buttonText }}>
                       UNFOLLOW
                     </Text>

@@ -84,8 +84,8 @@ export default function MatchedEventsScreen(): JSX.Element {
           render={(
             <MemoizedFriendsFlashList
               users={newestFriendsTargetUsers.data?.pages.flatMap(page => page?.friendships) || []}
-              isFetching={newPeopleTargetUsers.isPending}
-              isEmpty={!newPeopleTargetUsers.data?.pages[0]?.totalUsers}
+              isFetching={newestFriendsTargetUsers.isPending}
+              isEmpty={!newestFriendsTargetUsers.data?.pages[0]?.totalFriendships}
             />
           )}
           elseRender={(
