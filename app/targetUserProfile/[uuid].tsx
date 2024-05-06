@@ -44,6 +44,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const targetUserUrlParams = searchParamsSchemma.validateSync(urlParams);
 
   // queries
+  const queryClient = useQueryClient();
   const { data: targetUserProfile, isSuccess, isLoading } = useQueryGetTargetUserPeopleProfileByUid(targetUserUrlParams.uuid);
   const { data: matchedEvents } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUserUrlParams.uuid);
   const { data: targetUserbucketList } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfile?.id);
@@ -90,7 +91,6 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
   const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
   const mutationCancelFriendship = useMutationCancelFriendshipInvitation();
-  const queryClient = useQueryClient();
 
   /**
   *
@@ -167,11 +167,17 @@ export default function TargerUserProfileScreen(): JSX.Element {
     if (targetUserProfile?.id) {
       mutationCancelFriendship.mutate(targetUserProfile?.id, {
         onSuccess() {
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE] });
           queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] });
           queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, targetUserUrlParams.eventId] });
         },
       });
+      queryClient.setQueryData<GetTargetUser>(
+        [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUrlParams.uuid],
+        (oldData) => ({
+          ...oldData,
+          isFriend: !oldData?.isFriend
+        }) as GetTargetUser
+      );
     }
     setToggleModalUnfollow(false);
   };

@@ -1,9 +1,8 @@
-import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import friendshipService from '../../services/friendshipService';
 import { GetLatestFriendships } from '../../models/Friendship';
 import { useCometaStore } from '../../store/cometaStore';
 import { QueryKeys } from '../queryKeys';
-import { GetMatchedUsersWhoLikedEventWithPagination } from '../../models/User';
 
 
 export const useInfiniteQueryGetLoggedInUserNewestFriends = () => {
@@ -178,10 +177,9 @@ export const useMutationCancelFriendshipInvitation = () => {
           throw new Error('failed fech');
         }
       },
-      onMutate: async (receiverID) => {
-        const prevState = queryClient.getQueryData<InfiniteData<GetMatchedUsersWhoLikedEventWithPagination>>([QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, receiverID]);
-
-        prevState?.pages.flatMap(page => page.usersWhoLikedEvent);
+      onMutate: async () => {
+        // const prevState = queryClient.getQueryData<InfiniteData<GetMatchedUsersWhoLikedEventWithPagination>>([QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, receiverID]);
+        // prevState?.pages.flatMap(page => page.usersWhoLikedEvent);
       },
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION] });
