@@ -11,7 +11,7 @@ import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser, useInfiniteQue
 import { AppButton, appButtonstyles } from '../../components/buttons/buttons';
 import { AppCarousel } from '../../components/carousels/carousel';
 import { useCometaStore } from '../../store/cometaStore';
-import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
+import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationResetFrienshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
 import { GetDetailedUserProfile, GetTargetUser } from '../../models/User';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
@@ -90,6 +90,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   // mutations
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
   const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
+  const mutationResetFrienship = useMutationResetFrienshipInvitation();
   const mutationCancelFriendship = useMutationCancelFriendshipInvitation();
 
   /**
@@ -164,22 +165,26 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const [toggleModalUnfollow, setToggleModalUnfollow] = useState(false);
 
   const handleUnfollowingUser = (): void => {
-    if (targetUserProfile?.id) {
-      mutationCancelFriendship.mutate(targetUserProfile?.id, {
-        onSuccess() {
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] });
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, targetUserUrlParams.eventId] });
-        },
-      });
-      queryClient.setQueryData<GetTargetUser>(
-        [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUrlParams.uuid],
-        (oldData) => ({
-          ...oldData,
-          isFriend: !oldData?.isFriend
-        }) as GetTargetUser
-      );
-    }
     setToggleModalUnfollow(false);
+    if (targetUserProfile?.isFriend) {
+      const friendship = targetUserProfile?.incomingFriendships.at(0) ?? targetUserProfile?.outgoingFriendships.at(0);
+      if (friendship) {
+        mutationResetFrienship.mutate(friendship?.id, {
+          onSuccess() {
+            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] });
+            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, targetUserUrlParams.eventId] });
+          },
+        });
+        queryClient.setQueryData<GetTargetUser>(
+          [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUrlParams.uuid],
+          (oldData) => ({
+            ...oldData,
+            isFriend: !oldData?.isFriend
+          }) as GetTargetUser
+        );
+        router.back();
+      }
+    }
   };
 
 

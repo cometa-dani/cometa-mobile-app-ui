@@ -199,7 +199,37 @@ export const useMutationAcceptFriendshipInvitation = () => {
     useMutation({
       mutationFn: async (friendshipID: number) => {
         const res =
-          await friendshipService.acceptFriendShipInvitation(friendshipID, loggedInUserAccessToken);
+          await friendshipService.updateFrienshipInvitation(friendshipID, 'ACCEPTED', loggedInUserAccessToken);
+        if (res.status === 200) {
+          return res.data;
+        }
+        else {
+          throw new Error('failed fech');
+        }
+      },
+      onMutate: async () => { },
+      onSuccess: async () => {
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] }),
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION] })
+        ]);
+      },
+      retry: 2,
+      retryDelay: 1_000 * 6,
+    })
+  );
+};
+
+
+export const useMutationResetFrienshipInvitation = () => {
+  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
+  const queryClient = useQueryClient();
+
+  return (
+    useMutation({
+      mutationFn: async (friendshipID: number) => {
+        const res =
+          await friendshipService.updateFrienshipInvitation(friendshipID, 'PENDING', loggedInUserAccessToken);
         if (res.status === 200) {
           return res.data;
         }

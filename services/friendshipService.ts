@@ -1,5 +1,6 @@
 import { GetFriendShipWithSenderAndReceiver, GetLatestFriendships, MutateFrienship } from '../models/Friendship';
 import { RestApiService } from './restService';
+import { FriendShipStatus } from '../models/Friendship';
 
 
 class FrienshipService extends RestApiService {
@@ -32,8 +33,8 @@ class FrienshipService extends RestApiService {
     return this.http.delete(`/friendships/${receiverId}`, this.configAuthHeader(accessToken));
   }
 
-  acceptFriendShipInvitation(friendShipId: number, accessToken: string) {
-    return this.http.patch<MutateFrienship>(`/friendships/${friendShipId}`, null, this.configAuthHeader(accessToken));
+  updateFrienshipInvitation(friendShipId: number, status: FriendShipStatus, accessToken: string) {
+    return this.http.patch<MutateFrienship>(`/friendships/${friendShipId}`, { status }, this.configAuthHeader(accessToken));
   }
 }
 
