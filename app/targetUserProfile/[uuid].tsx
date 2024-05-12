@@ -60,6 +60,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
     ))
     || []), [matchedEvents?.pages]);
 
+
   const memoizedBucketList = useMemo(() => (
     targetUserUrlParams?.eventId ?
       targetUserbucketList?.pages.flatMap(

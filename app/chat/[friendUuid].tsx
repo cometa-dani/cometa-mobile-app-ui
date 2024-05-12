@@ -36,12 +36,12 @@ export default function ChatWithFriendScreen(): JSX.Element {
   const loggedInUser = sender?.uid !== targetUserUUID ? sender : receiver;
   const [messages, setMessages] = useState<ChatWithFriendMessage>(new Map([]));
   const chatRef = useRef<FlatList<IMessage>>(null);
-  const [messagesHaveBeenRead, setMessagesHaveBeenRead] = useState(false);
+  const [localMessagesHaveBeenRead, setLocalMessagesHaveBeenRead] = useState(false);
 
   // listen only for chatuuid changes
   useMMKVListener((key: string) => {
-    if (key === friendshipData?.chatuuid) {
-      const updateMap: [] = JSON.parse(mmkvStorage.getString(friendshipData?.chatuuid) ?? '[]');
+    if (key === `${loggedInUserUuid}.chats.${friendshipData?.chatuuid}`) {
+      const updateMap: [] = JSON.parse(mmkvStorage.getString(`${loggedInUserUuid}.chats.${friendshipData?.chatuuid}`) ?? '[]');
       setMessages(new Map(updateMap));
     }
   });
@@ -74,17 +74,17 @@ export default function ChatWithFriendScreen(): JSX.Element {
 
   // load messages from local storage on first render
   useEffect(() => {
-    if (friendshipData?.chatuuid && !messagesHaveBeenRead) {
-      const localMessages: [] = JSON.parse(mmkvStorage.getString(friendshipData?.chatuuid) ?? '[]');
+    if (friendshipData?.chatuuid && !localMessagesHaveBeenRead) {
+      const localMessages: [] = JSON.parse(mmkvStorage.getString(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`) ?? '[]');
       setMessages(new Map(localMessages));
-      setMessagesHaveBeenRead(true);
+      setLocalMessagesHaveBeenRead(true);
     }
   }, [friendshipData?.chatuuid]);
 
 
   // listen for new added messages in real-time DB
   useEffect(() => {
-    if (!messagesHaveBeenRead) return;
+    if (!localMessagesHaveBeenRead) return;
 
     let unsubscribe!: Unsubscribe;
     if (friendshipData?.chatuuid) {
@@ -93,23 +93,25 @@ export default function ChatWithFriendScreen(): JSX.Element {
 
       unsubscribe = onChildAdded(queryMessages, (data) => {
         const newMessage = data?.val() as UserMessagesData;
-        const localMessages: [] = JSON.parse(mmkvStorage.getString(friendshipData?.chatuuid) ?? '[]');
+        const localMessages: [] = JSON.parse(mmkvStorage.getString(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`) ?? '[]');
         const addNewMessage = () => JSON.stringify([...localMessages, [newMessage._id, newMessage]]);
 
-        mmkvStorage.set(friendshipData?.chatuuid, addNewMessage());
+        mmkvStorage.set(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`, addNewMessage());
       });
     }
     return () => {
       unsubscribe && unsubscribe();
     };
-  }, [messagesHaveBeenRead]);
+  }, [localMessagesHaveBeenRead]);
 
 
   useEffect(() => {
-    setTimeout(() => {
-      chatRef.current?.scrollToEnd({ animated: true });
-    }, 80);
-  }, [messages.size]);
+    if (localMessagesHaveBeenRead) {
+      setTimeout(() => {
+        chatRef.current?.scrollToEnd({ animated: true });
+      }, 80);
+    }
+  }, [messages.size, localMessagesHaveBeenRead]);
 
 
   return (
@@ -124,7 +126,7 @@ export default function ChatWithFriendScreen(): JSX.Element {
           presentation: 'modal',
           headerTitle: () => {
             return (
-              <TouchableOpacity onPress={() => router.push(`/targetUserProfile/${targetUser?.uid}?isFriend=true`)}>
+              <TouchableOpacity onPress={() => router.push(`/targetUserProfile/${targetUser?.uid}`)}>
                 <View style={styles.targetUser}>
                   <ImageWithPlaceholder
                     style={styles.avatarImg}
