@@ -45,32 +45,11 @@ export default function MatchedEventsScreen(): JSX.Element {
   const eventByIdCachedData = bucketListCahedData?.pages.flatMap(page => page?.events)[+urlParams.eventIndex] ?? null;
 
   // people state
-  const newPeopleTargetUsers = useInfiteQueryGetUsersWhoLikedSameEventByID(+urlParams.eventId);
-  const newestFriendsTargetUsers = useInfiniteQueryGetLoggedInUserNewestFriends();
+  const newPeopleList = useInfiteQueryGetUsersWhoLikedSameEventByID(+urlParams.eventId);
+  const newFriendsList = useInfiniteQueryGetLoggedInUserNewestFriends();
 
   // toggling tabs
   const [toggleTabs, setToggleTabs] = useState(false); // shuould be store on phone
-
-  const TabsHeader: FC = () => (
-    <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 20 }]}>
-      {eventByIdCachedData?.photos[0]?.url &&
-        <HeaderImage
-          style={styles.imgHeader}
-          source={{ uri: eventByIdCachedData?.photos[0]?.url }}
-        />
-      }
-
-      <View style={styles.tabs}>
-        <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
-          <Text size='lg' style={[styles.tab, toggleTabs && { ...styles.tabActive, color: '#83C9DD' }]}>Friends</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
-          <Text size='lg' style={[styles.tab, !toggleTabs && { ...styles.tabActive, color: '#E44063' }]}>New People</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
 
 
   return (
@@ -78,21 +57,39 @@ export default function MatchedEventsScreen(): JSX.Element {
       <StatusBar backgroundColor="transparent" translucent={true} style={'auto'} />
 
       <View style={styles.screenContainer}>
-        <TabsHeader />
+        <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 20 }]}>
+          {eventByIdCachedData?.photos[0]?.url &&
+            <HeaderImage
+              style={styles.imgHeader}
+              source={{ uri: eventByIdCachedData?.photos[0]?.url }}
+            />
+          }
+
+          <View style={styles.tabs}>
+            <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
+              <Text size='lg' style={[styles.tab, toggleTabs && { ...styles.tabActive, color: '#83C9DD' }]}>Friends</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => setToggleTabs(prev => !prev)}>
+              <Text size='lg' style={[styles.tab, !toggleTabs && { ...styles.tabActive, color: '#E44063' }]}>New People</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         <If
           condition={toggleTabs}
           render={(
-            <MemoizedFriendsFlashList
-              users={newestFriendsTargetUsers.data?.pages.flatMap(page => page?.friendships) || []}
-              isFetching={newestFriendsTargetUsers.isPending}
-              isEmpty={!newestFriendsTargetUsers.data?.pages[0]?.totalFriendships}
+            <FriendsFlashList
+              users={newFriendsList.data?.pages.flatMap(page => page?.friendships) || []}
+              isFetching={newFriendsList.isPending}
+              isEmpty={!newFriendsList.data?.pages[0]?.totalFriendships}
             />
           )}
           elseRender={(
-            <MemoizedMeetNewPeopleFlashList
-              users={newPeopleTargetUsers.data?.pages.flatMap(page => page?.usersWhoLikedEvent) || []}
-              isFetching={newPeopleTargetUsers.isPending}
-              isEmpty={!newPeopleTargetUsers.data?.pages[0]?.totalUsers}
+            <MeetNewPeopleFlashList
+              users={newPeopleList.data?.pages.flatMap(page => page?.usersWhoLikedEvent) || []}
+              isFetching={newPeopleList.isPending}
+              isEmpty={!newPeopleList.data?.pages[0]?.totalUsers}
             />
           )}
         />
@@ -102,7 +99,6 @@ export default function MatchedEventsScreen(): JSX.Element {
 }
 
 
-
 interface FlashListProps {
   users: GetMatchedUsersWhoLikedEventWithPagination['usersWhoLikedEvent'];
   isFetching: boolean;
@@ -110,11 +106,12 @@ interface FlashListProps {
 }
 
 const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users }) => {
+  const queryClient = useQueryClient();
   const loggedInUserUuid = useCometaStore(state => state.uid);
   const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
   const setTargetUserAsFriendShipSender = useCometaStore(state => state.setIncommginFriendshipSender);
   const targetUserAsFriendshipSender = useCometaStore(state => state.incommginFriendshipSender);
-  const urlParams = useGlobalSearchParams<{ eventId: string, eventIndex: string }>();
+  const urlParams = useGlobalSearchParams<{ eventId: string }>();
   const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
 
   // mutations
@@ -133,9 +130,25 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   const acceptPendingInvitation = async (targetUserAsSender: GetBasicUserProfile) => {
     try {
       setTargetUserAsFriendShipSender(targetUserAsSender);
-      setTimeout(() => setToggleModal(), 100);
       const friendshipID = targetUserAsSender.outgoingFriendships[0]?.id;
-      const newFriendship = await mutationAcceptFriendship.mutateAsync(friendshipID); // set status to 'ACCEPTED' and create chat uuid
+      if (!friendshipID) return;
+
+      setTimeout(() => setToggleModal(), 100);
+      const newFriendship =
+        await mutationAcceptFriendship.mutateAsync(
+          friendshipID,
+          {
+            onSuccess: async () => {
+              // refetch on screen focus
+              await Promise.all([
+                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, +urlParams.eventId] }),
+                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] })
+              ]);
+            }
+          }
+        ); // set status to 'ACCEPTED' and create chat uuid
+      if (!newFriendShip) return;
+
       setNewFriendShip(newFriendship);
       const messagePayload = {
         createdAt: new Date().toString(),
@@ -163,7 +176,20 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
   const sentFriendshipInvitation = (targetUserAsReceiver: GetBasicUserProfile): void => {
-    mutationSentFriendship.mutate({ receiverID: targetUserAsReceiver.id });
+    mutationSentFriendship.mutate(
+      { receiverID: targetUserAsReceiver.id },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, +urlParams.eventId] });
+        },
+        onError: (error) => {
+          if (error.message === 'Invitation is already pending') {
+            // here loggedInUser should trigger acceptFrienshipInvitation method
+            console.log(error.message);
+          }
+        }
+      }
+    );
   };
 
   /**
@@ -172,7 +198,16 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
   const cancelFriendshipInvitation = (targetUserAsReceiver: GetBasicUserProfile): void => {
-    mutationCancelFriendship.mutate(targetUserAsReceiver.id);
+    mutationCancelFriendship.mutate(
+      targetUserAsReceiver.id,
+      {
+        onSuccess() {
+          queryClient.invalidateQueries({
+            queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, +urlParams.eventId]
+          });
+        }
+      }
+    );
   };
 
   /**
@@ -200,10 +235,6 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
             loggedInUserProfile,
             targetUserAsFriendshipSender
           );
-        }
-        else {
-          // TODO:
-          // should fetch the chatuuid from the server again
         }
         actions.resetForm();
         actions.setSubmitting(true);

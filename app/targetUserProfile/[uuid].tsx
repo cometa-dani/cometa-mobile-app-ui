@@ -101,8 +101,9 @@ export default function TargerUserProfileScreen(): JSX.Element {
   */
   const acceptPendingInvitation = (targetUserAsSender: GetTargetUser): void => {
     setTargetUserAsFriendshipSender(targetUserAsSender);
-    setTimeout(() => setToggleModal(), 200);
     const friendshipID = targetUserAsSender.outgoingFriendships[0].id;
+    if (!friendshipID) return;
+    setTimeout(() => setToggleModal(), 200);
     mutationAcceptFriendship.mutate(friendshipID, {
       onSuccess() {
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE] });

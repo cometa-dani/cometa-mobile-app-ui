@@ -3,8 +3,7 @@ export const icons = {
   share: require('../assets/icons/Share.png'),
   info: require('../assets/icons/info.png'),
   notifications: require('../assets/icons/Notifications.png'),
-  filter: require('../assets/icons/Filter.png'),
-  locationMarker: require('../assets/icons/location.png'),
+  filter: require('../assets/icons/filter.png'),
 
   // footer nav icons
   home: require('../assets/icons/Homepage.png'),
