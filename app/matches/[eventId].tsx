@@ -136,6 +136,9 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
       setTimeout(() => setToggleModal(), 100);
       const newFriendship =
         await mutationAcceptFriendship.mutateAsync(
+          // should use both targetUserID & loggedInUserID because ift he user clicks
+          // multiple times the button this frienshipID, could no exists by the time
+          // the other user triggers the aceeptInvitation logic
           friendshipID,
           {
             onSuccess: async () => {
@@ -183,9 +186,13 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
           queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, +urlParams.eventId] });
         },
         onError: (error) => {
+
+          // I CAN NOT READ THE TYPE OF ERROR HERE
+
+          // console.log(error.toString());
           if (error.message === 'Invitation is already pending') {
+            console.log(error.toString());
             // here loggedInUser should trigger acceptFrienshipInvitation method
-            console.log(error.message);
           }
         }
       }

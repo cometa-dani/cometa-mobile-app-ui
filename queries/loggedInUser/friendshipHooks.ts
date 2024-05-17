@@ -105,20 +105,21 @@ export const useMutationSentFriendshipInvitation = () => {
   return (
     useMutation({
       mutationFn: async ({ receiverID }: FriendshipInvitationArgs) => {
-        try {
-          const res = await friendshipService.sentFriendShipInvitation(receiverID, loggedInUserAccessToken);
-          if (res.status === 201 || res.status === 200) {
-            return res.data;
-          }
-          // what if the friendship allready exists?
-          // and this fails we should make a match right away
-          else {
-            throw new Error('failed fech');
-          }
+        const res = await friendshipService.sentFriendShipInvitation(receiverID, loggedInUserAccessToken);
+        if (res.status === 201 || res.status === 200) {
+          return res.data;
         }
-        catch (error) {
-          console.log(error);
+        // what if the friendship allready exists?
+        // and this fails we should make a match right away
+        else {
+          console.log(res);
+          throw new Error('failed fech');
         }
+        // try {
+        // }
+        // catch (error) {
+        //   throw error;
+        // }
       },
       // onMutate: async ({ receiverID }) => {
 
