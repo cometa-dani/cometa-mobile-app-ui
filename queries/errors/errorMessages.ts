@@ -1,0 +1,3 @@
+export enum ErrorMessage {
+  'INVITATION_ALREADY_PENDING' = 'INVITATION_ALREADY_PENDING'
+}

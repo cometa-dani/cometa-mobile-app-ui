@@ -28,6 +28,7 @@ import chatWithFriendService from '../../services/chatWithFriendService';
 import notificationService from '../../services/notificationService';
 import { INotificationData } from '../../store/slices/notificationSlice';
 import { SkeletonLoaderList } from '../../components/lodingSkeletons/LoadingSkeletonList';
+import { ErrorMessage } from '../../queries/errors/errorMessages';
 
 
 type Message = { message: string };
@@ -183,16 +184,13 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
       { receiverID: targetUserAsReceiver.id },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, +urlParams.eventId] });
+          queryClient.invalidateQueries({
+            queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, +urlParams.eventId]
+          });
         },
-        onError: (error) => {
-
-          // I CAN NOT READ THE TYPE OF ERROR HERE
-
-          // console.log(error.toString());
-          if (error.message === 'Invitation is already pending') {
-            console.log(error.toString());
-            // here loggedInUser should trigger acceptFrienshipInvitation method
+        onError: ({ response }) => {
+          if (response?.data.message === ErrorMessage.INVITATION_ALREADY_PENDING) {
+            acceptPendingInvitation(targetUserAsReceiver);
           }
         }
       }
@@ -398,9 +396,9 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
 };
 
 
-const MemoizedMeetNewPeopleFlashList = React.memo(MeetNewPeopleFlashList, (prev, curr) => {
-  return prev.users === curr.users && prev.isFetching === curr.isFetching;
-});
+// const MemoizedMeetNewPeopleFlashList = React.memo(MeetNewPeopleFlashList, (prev, curr) => {
+//   return prev.users === curr.users && prev.isFetching === curr.isFetching;
+// });
 
 
 interface FriendsFlashListProps {
@@ -480,9 +478,9 @@ const FriendsFlashList: FC<FriendsFlashListProps> = ({ users, isEmpty, isFetchin
 };
 
 
-const MemoizedFriendsFlashList = React.memo(FriendsFlashList, (prev, curr) => {
-  return prev.users === curr.users && prev.isFetching === curr.isFetching;
-});
+// const MemoizedFriendsFlashList = React.memo(FriendsFlashList, (prev, curr) => {
+//   return prev.users === curr.users && prev.isFetching === curr.isFetching;
+// });
 
 
 const modalStyles = StyleSheet.create({
