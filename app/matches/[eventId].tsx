@@ -131,8 +131,8 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   const acceptPendingInvitation = async (targetUserAsSender: GetBasicUserProfile) => {
     try {
       setTargetUserAsFriendShipSender(targetUserAsSender);
-      const friendshipID = targetUserAsSender.outgoingFriendships[0]?.id;
-      if (!friendshipID) return;
+      // const friendshipID = targetUserAsSender.outgoingFriendships[0]?.id;
+      // if (!friendshipID) return;
 
       setTimeout(() => setToggleModal(), 100);
       const newFriendship =
@@ -140,7 +140,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
           // should use both targetUserID & loggedInUserID because ift he user clicks
           // multiple times the button this frienshipID, could no exists by the time
           // the other user triggers the aceeptInvitation logic
-          friendshipID,
+          targetUserAsSender.id,
           {
             onSuccess: async () => {
               // refetch on screen focus
@@ -181,7 +181,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   */
   const sentFriendshipInvitation = (targetUserAsReceiver: GetBasicUserProfile): void => {
     mutationSentFriendship.mutate(
-      { receiverID: targetUserAsReceiver.id },
+      { targetUserId: targetUserAsReceiver.id },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({
@@ -190,6 +190,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
         },
         onError: ({ response }) => {
           if (response?.data.message === ErrorMessage.INVITATION_ALREADY_PENDING) {
+            // console.log(response.data);
             acceptPendingInvitation(targetUserAsReceiver);
           }
         }
@@ -330,12 +331,12 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
                 showsVerticalScrollIndicator={true}
                 data={users}
                 renderItem={({ item: { user: targetUser } }) => {
-                  const isReceiver: boolean = targetUser?.incomingFriendships[0]?.status === 'PENDING';
-                  const isSender: boolean = targetUser?.outgoingFriendships[0]?.status === 'PENDING';
+                  const hasIncommingFriendship: boolean = targetUser?.hasIncommingFriendship;
+                  const hasOutgoingFriendship: boolean = targetUser?.hasOutgoingFriendship;
 
                   return (
                     <View key={targetUser.id} style={styles.user}>
-                      <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?eventId=${urlParams.eventId}`)}>
+                      <Pressable onPress={() => router.replace(`/targetUserProfile/${targetUser.uid}?eventId=${urlParams.eventId}`)}>
                         <View style={styles.avatarContainer}>
                           <Image
                             style={styles.userAvatar}
@@ -362,24 +363,26 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
                         </View>
                       </Pressable>
 
-                      {isSender && (
+                      {hasOutgoingFriendship && (
                         <AppButton
                           onPress={() => acceptPendingInvitation(targetUser)}
                           text='FOLLOW'
                           btnColor='black'
                         />
                       )}
-                      {!isReceiver && !isSender && (
+                      {!hasIncommingFriendship && !hasOutgoingFriendship && (
                         <AppButton
                           onPress={() => sentFriendshipInvitation(targetUser)}
                           text="FOLLOW"
                           btnColor='black'
                         />
                       )}
-                      {isReceiver && (
+                      {hasIncommingFriendship && (
                         <AppButton
+                          enabled={false}
                           onPress={() => cancelFriendshipInvitation(targetUser)}
                           text="PENDING"
+                          style={{ opacity: 0.5 }}
                           btnColor='blue'
                         />
                       )}

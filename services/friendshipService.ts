@@ -24,8 +24,8 @@ class FrienshipService extends RestApiService {
     return this.http.get<GetFriendShipWithSenderAndReceiver>(`/friendships/${targetUserUUID}`, this.configAuthHeader(accessToken));
   }
 
-  sentFriendShipInvitation(receiverId: number, accessToken: string) {
-    const payload = { id: receiverId };
+  sentFriendShipInvitation(targerUserID: number, accessToken: string) {
+    const payload = { id: targerUserID };
     return this.http.post<MutateFrienship>('/friendships', payload, this.configAuthHeader(accessToken));
   }
 

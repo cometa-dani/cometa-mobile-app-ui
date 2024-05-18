@@ -59,7 +59,7 @@ export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => 
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (!lastPage.nextCursor || lastPage.usersWhoLikedEvent.length < 5) {
+        if (!lastPage.hasNextCursor) {
           return null; // makes hasNextPage evalutes to false
         }
         return lastPage.nextCursor;

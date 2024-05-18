@@ -106,6 +106,7 @@ export interface GetMatchedUsersWhoLikedEventWithPagination {
   usersWhoLikedEvent: MatchedUsersWhoLikedEvent[];
   nextCursor: number;
   totalUsers: number;
+  hasNextCursor: boolean;
   usersPerPage: number;
 }
 
@@ -151,8 +152,8 @@ export interface GetBasicUserProfile extends
     'occupation' |
     'educationLevel'
   )> {
-  outgoingFriendships: Friendship[];
-  incomingFriendships: Friendship[];
+  hasOutgoingFriendship: boolean;
+  hasIncommingFriendship: boolean;
 }
 
 
