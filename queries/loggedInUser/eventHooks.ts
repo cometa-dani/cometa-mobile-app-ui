@@ -51,7 +51,7 @@ export const useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser = () => {
 
   return (
     useInfiniteQuery({
-      queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION],
+      queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION],
       initialPageParam: -1,
       // select(data): GetLikedEventsForBucketListWithPagination{
       //   return data?.pages.flatMap(page => page.events) ;

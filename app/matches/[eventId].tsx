@@ -42,7 +42,7 @@ export default function MatchedEventsScreen(): JSX.Element {
   const urlParams = useGlobalSearchParams<{ eventId: string, eventIndex: string }>();
   // cached data
   const queryClient = useQueryClient();
-  const bucketListCahedData = queryClient.getQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION]);
+  const bucketListCahedData = queryClient.getQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION]);
   const eventByIdCachedData = bucketListCahedData?.pages.flatMap(page => page?.events)[+urlParams.eventIndex] ?? null;
 
   // people state
@@ -110,8 +110,8 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   const queryClient = useQueryClient();
   const loggedInUserUuid = useCometaStore(state => state.uid);
   const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
-  const setTargetUserAsFriendShipSender = useCometaStore(state => state.setIncommginFriendshipSender);
-  const targetUserAsFriendshipSender = useCometaStore(state => state.incommginFriendshipSender);
+  const setTargetUserAsNewFriend = useCometaStore(state => state.setIncommginFriendshipSender);
+  const targetUserAsNewFriend = useCometaStore(state => state.incommginFriendshipSender);
   const urlParams = useGlobalSearchParams<{ eventId: string }>();
   const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
 
@@ -130,24 +130,27 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   */
   const acceptPendingInvitation = async (targetUserAsSender: GetBasicUserProfile) => {
     try {
-      setTargetUserAsFriendShipSender(targetUserAsSender);
-      // const friendshipID = targetUserAsSender.outgoingFriendships[0]?.id;
-      // if (!friendshipID) return;
+      // 1. set button to pending
+      handleOptimisticUpdate(targetUserAsSender.id);
+      setTargetUserAsNewFriend(targetUserAsSender);
 
-      setTimeout(() => setToggleModal(), 100);
+      // 2. mutation
       const newFriendship =
         await mutationAcceptFriendship.mutateAsync(
-          // should use both targetUserID & loggedInUserID because ift he user clicks
-          // multiple times the button this frienshipID, could no exists by the time
-          // the other user triggers the aceeptInvitation logic
           targetUserAsSender.id,
           {
             onSuccess: async () => {
+              setToggleModal();
               // refetch on screen focus
               await Promise.all([
-                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, +urlParams.eventId] }),
+                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId] }),
                 queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] })
               ]);
+            },
+            onError: ({ response }) => {
+              if (response?.data.message === ErrorMessage.INVITATION_DOES_NOT_EXIST) {
+                sentFriendshipInvitation(targetUserAsSender);
+              }
             }
           }
         ); // set status to 'ACCEPTED' and create chat uuid
@@ -175,22 +178,55 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   };
 
   /**
+   *
+   * @description sets the button to pending optimistically
+   */
+  const handleOptimisticUpdate = (userID: number) => {
+    queryClient.setQueryData<InfiniteData<GetMatchedUsersWhoLikedEventWithPagination>>(
+      [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId],
+      (oldData) => ({
+        pageParams: oldData?.pageParams,
+        pages:
+          oldData?.pages
+            .map((page) => ({
+              ...page,
+              usersWhoLikedEvent:
+                page.usersWhoLikedEvent
+                  .map(event => event.userId === userID ?
+                    ({
+                      ...event,
+                      user: {
+                        ...event.user,
+                        hasIncommingFriendship: true
+                      }
+                    })
+                    : event
+                  )
+            }))
+
+      }) as InfiniteData<GetMatchedUsersWhoLikedEventWithPagination>);
+  };
+
+  /**
   *
   * @description for a receiver user, sends a friendship invitation with status 'PENDING'
   * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
   const sentFriendshipInvitation = (targetUserAsReceiver: GetBasicUserProfile): void => {
+    // 1. set button to pending
+    handleOptimisticUpdate(targetUserAsReceiver.id);
+
+    // 2. mutation
     mutationSentFriendship.mutate(
       { targetUserId: targetUserAsReceiver.id },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({
-            queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, +urlParams.eventId]
+            queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId]
           });
         },
         onError: ({ response }) => {
           if (response?.data.message === ErrorMessage.INVITATION_ALREADY_PENDING) {
-            // console.log(response.data);
             acceptPendingInvitation(targetUserAsReceiver);
           }
         }
@@ -209,7 +245,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
       {
         onSuccess() {
           queryClient.invalidateQueries({
-            queryKey: [QueryKeys.GET_All_USERS_WHO_LIKED_SAME_EVENT_BY_ID_WITH_PAGINATION, +urlParams.eventId]
+            queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId]
           });
         }
       }
@@ -231,15 +267,15 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
         }
       };
       try {
-        if (newFriendShip?.chatuuid && loggedInUserProfile && targetUserAsFriendshipSender) {
+        if (newFriendShip?.chatuuid && loggedInUserProfile && targetUserAsNewFriend) {
           setToggleModal();
           const { chatuuid } = newFriendShip;
-          router.push(`/chat/${targetUserAsFriendshipSender?.uid}`);
+          router.push(`/chat/${targetUserAsNewFriend?.uid}`);
           await chatWithFriendService.writeMessage(
             chatuuid,
             messagePayload,
             loggedInUserProfile,
-            targetUserAsFriendshipSender
+            targetUserAsNewFriend
           );
         }
         actions.resetForm();
@@ -262,11 +298,11 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
               source={{ uri: loggedInUserProfile?.photos[0]?.url }}
             />
 
-            {targetUserAsFriendshipSender?.photos?.[0]?.url && (
+            {targetUserAsNewFriend?.photos?.[0]?.url && (
               <Image
                 style={modalStyles.avatarMatch}
-                placeholder={{ thumbhash: targetUserAsFriendshipSender.photos[0]?.placeholder }}
-                source={{ uri: targetUserAsFriendshipSender.photos[0]?.url }}
+                placeholder={{ thumbhash: targetUserAsNewFriend.photos[0]?.placeholder }}
+                source={{ uri: targetUserAsNewFriend.photos[0]?.url }}
               />
             )}
           </View>
@@ -289,7 +325,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
                   onChangeText={handleChange('message')}
                   onBlur={handleBlur('message')}
                   value={values.message}
-                  placeholder={`Mesage ${targetUserAsFriendshipSender?.username} to join together`}
+                  placeholder={`Mesage ${targetUserAsNewFriend?.username} to join together`}
                 />
                 <Pressable
                   disabled={isSubmitting}

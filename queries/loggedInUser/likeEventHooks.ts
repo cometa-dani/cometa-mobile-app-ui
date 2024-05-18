@@ -91,11 +91,11 @@ export const useMutationLikeOrDislikeEvent = () => {
       // Invalidate queries after the mutation succeeds
       onSuccess: async (_, { targetUserId }) => {
         if (!targetUserId) {
-          await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION] });
+          await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION] });
         }
         else {
           await Promise.all([
-            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION] }),
+            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION] }),
             queryClient.invalidateQueries({ queryKey: [QueryKeys.SEARCH_EVENTS_WITH_PAGINATION] })
           ]);
         }
@@ -129,7 +129,7 @@ export const useMutationDeleteLikedEventFromBucketList = () => {
         // Update the cache with the new liked state
         queryClient
           .setQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>
-          ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_LOGGED_IN_USER_WITH_PAGINATION], (oldData) => ({
+          ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION], (oldData) => ({
             pages: oldData?.pages.map(
               (page) => (
                 {
