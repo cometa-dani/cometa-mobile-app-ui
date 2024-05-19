@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import Modal from 'react-native-modal';
 import { SafeAreaView, StyleSheet, Pressable, Image as HeaderImage } from 'react-native';
 import { Text, View } from '../../components/Themed';
@@ -46,8 +46,30 @@ export default function MatchedEventsScreen(): JSX.Element {
   const eventByIdCachedData = bucketListCahedData?.pages.flatMap(page => page?.events)[+urlParams.eventIndex] ?? null;
 
   // people state
-  const newPeopleList = useInfiteQueryGetUsersWhoLikedSameEventByID(+urlParams.eventId);
-  const newFriendsList = useInfiniteQueryGetLoggedInUserNewestFriends();
+  const newPeopleData = useInfiteQueryGetUsersWhoLikedSameEventByID(+urlParams.eventId);
+  const newFriendsData = useInfiniteQueryGetLoggedInUserNewestFriends();
+
+
+  const memoizedFriendsList = useMemo(() => (
+    newFriendsData.data?.pages.flatMap(page => page?.friendships) ?? []
+  ), [newFriendsData.data?.pages]);
+  const memoizedNewPeopleList = useMemo(() => (
+    newPeopleData.data?.pages.flatMap(page => page?.usersWhoLikedEvent) ?? []
+  ), [newPeopleData.data?.pages]);
+
+
+  const handleNewPeopleInfiniteScroll = (): void => {
+    if (newPeopleData) {
+      const { hasNextPage, isFetching, fetchNextPage } = newPeopleData;
+      hasNextPage && !isFetching && fetchNextPage();
+    }
+  };
+  const handleNewFriendsInfiniteScroll = (): void => {
+    if (newFriendsData) {
+      const { hasNextPage, isFetching, fetchNextPage } = newFriendsData;
+      hasNextPage && !isFetching && fetchNextPage();
+    }
+  };
 
   // toggling tabs
   const [toggleTabs, setToggleTabs] = useState(false); // shuould be store on phone
@@ -81,16 +103,18 @@ export default function MatchedEventsScreen(): JSX.Element {
           condition={toggleTabs}
           render={(
             <FriendsFlashList
-              users={newFriendsList.data?.pages.flatMap(page => page?.friendships) || []}
-              isFetching={newFriendsList.isPending}
-              isEmpty={!newFriendsList.data?.pages[0]?.totalFriendships}
+              onInfiniteScroll={handleNewFriendsInfiniteScroll}
+              users={memoizedFriendsList}
+              isFetching={newFriendsData.isPending}
+              isEmpty={!newFriendsData.data?.pages[0]?.totalFriendships}
             />
           )}
           elseRender={(
             <MeetNewPeopleFlashList
-              users={newPeopleList.data?.pages.flatMap(page => page?.usersWhoLikedEvent) || []}
-              isFetching={newPeopleList.isPending}
-              isEmpty={!newPeopleList.data?.pages[0]?.totalUsers}
+              onInfiniteScroll={handleNewPeopleInfiniteScroll}
+              users={memoizedNewPeopleList}
+              isFetching={newPeopleData.isPending}
+              isEmpty={!newPeopleData.data?.pages[0]?.totalUsers}
             />
           )}
         />
@@ -104,9 +128,10 @@ interface FlashListProps {
   users: GetMatchedUsersWhoLikedEventWithPagination['usersWhoLikedEvent'];
   isFetching: boolean;
   isEmpty: boolean;
+  onInfiniteScroll: () => void,
 }
 
-const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users }) => {
+const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users, onInfiniteScroll }) => {
   const queryClient = useQueryClient();
   const loggedInUserUuid = useCometaStore(state => state.uid);
   const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
@@ -361,6 +386,9 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
             )}
             elseRender={(
               <FlashList
+                onEndReached={onInfiniteScroll}
+                onEndReachedThreshold={0.4}
+                decelerationRate={'normal'}
                 estimatedItemSize={100}
                 ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
                 contentContainerStyle={styles.flatList}
@@ -444,10 +472,11 @@ interface FriendsFlashListProps {
   users: GetLatestFriendships['friendships'];
   isFetching: boolean;
   isEmpty: boolean;
+  onInfiniteScroll: () => void
 }
 
 
-const FriendsFlashList: FC<FriendsFlashListProps> = ({ users, isEmpty, isFetching }) => {
+const FriendsFlashList: FC<FriendsFlashListProps> = ({ users, isEmpty, isFetching, onInfiniteScroll }) => {
   const urlParams = useGlobalSearchParams<{ eventId: string, eventIndex: string }>();
   return (
     <If
@@ -465,6 +494,9 @@ const FriendsFlashList: FC<FriendsFlashListProps> = ({ users, isEmpty, isFetchin
           )}
           elseRender={(
             <FlashList
+              onEndReached={onInfiniteScroll}
+              onEndReachedThreshold={0.4}
+              decelerationRate={'normal'}
               estimatedItemSize={100}
               ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
               contentContainerStyle={styles.flatList}
