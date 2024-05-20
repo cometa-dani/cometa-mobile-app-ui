@@ -11,7 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
 import { useCometaStore } from '../../store/cometaStore';
 import { FontAwesome } from '@expo/vector-icons';
-import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination } from '../../models/User';
+import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination, GetTargetUser } from '../../models/User';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { defaultImgPlaceholder } from '../../constants/vars';
@@ -161,7 +161,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
       setTargetUserAsNewFriend(targetUserAsSender);
 
       // 2. mutation
-      const newFriendship =
+      const newCreatedFrienship =
         await mutationAcceptFriendship.mutateAsync(
           targetUserAsSender.id,
           {
@@ -180,9 +180,9 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
             }
           }
         ); // set status to 'ACCEPTED' and create chat uuid
-      if (!newFriendShip) return;
+      if (!newCreatedFrienship) return;
 
-      setNewFriendShip(newFriendship);
+      setNewFriendShip(newCreatedFrienship);
       const messagePayload = {
         createdAt: new Date().toString(),
         user: {
@@ -195,7 +195,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
         notificationService.sentNotificationToTargetUser(
           messagePayload,
           targetUserAsSender.uid,
-          newFriendship.chatuuid
+          newCreatedFrienship.chatuuid
         );
     }
     catch (error) {
@@ -376,6 +376,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
           </Pressable>
         </View>
       </Modal>
+
       <If
         condition={isFetching}
         render={(
@@ -403,7 +404,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
                   const { hasIncommingFriendship = false, hasOutgoingFriendship = false } = targetUser;
                   return (
                     <View key={targetUser.id} style={styles.user}>
-                      <Pressable onPress={() => router.replace(`/targetUserProfile/${targetUser.uid}?eventId=${urlParams.eventId}`)}>
+                      <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?eventId=${urlParams.eventId}`)}>
                         <View style={styles.avatarContainer}>
                           <Image
                             style={styles.userAvatar}

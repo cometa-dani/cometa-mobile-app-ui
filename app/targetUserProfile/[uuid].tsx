@@ -12,7 +12,7 @@ import { AppButton, appButtonstyles } from '../../components/buttons/buttons';
 import { AppCarousel } from '../../components/carousels/carousel';
 import { useCometaStore } from '../../store/cometaStore';
 import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationResetFrienshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
-import { GetDetailedUserProfile, GetTargetUser } from '../../models/User';
+import { GetTargetUser } from '../../models/User';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
 import { ProfileCarousel } from '../../components/profile/profileCarousel';
@@ -23,6 +23,10 @@ import { If } from '../../components/utils';
 import { ProfileTitle } from '../../components/profile/profileTitle';
 import ReactNativeModal from 'react-native-modal';
 import { gray_100, pink_200 } from '../../constants/colors';
+import { ErrorMessage } from '../../queries/errors/errorMessages';
+import { INotificationData } from '../../store/slices/notificationSlice';
+import notificationService from '../../services/notificationService';
+import { useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
 
 
 const searchParamsSchemma = Yup.object({
@@ -35,6 +39,8 @@ export default function TargerUserProfileScreen(): JSX.Element {
   // client state
   const setToggleModal = useCometaStore(state => state.setToggleModal);
   const setTargetUserAsFriendshipSender = useCometaStore(state => state.setIncommginFriendshipSender);
+  const loggedInUserUuid = useCometaStore(state => state.uid);
+  const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
 
   // colors
   const { background } = useColors();
@@ -48,8 +54,10 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const { data: targetUserProfile, isSuccess, isLoading } = useQueryGetTargetUserPeopleProfileByUid(targetUserUrlParams.uuid);
   const { data: matchedEvents } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUserUrlParams.uuid);
   const { data: targetUserbucketList } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfile?.id);
+  const hasIncommingFriendship: boolean = targetUserProfile?.hasIncommingFriendship ?? false;
+  const hasOutgoingFriendship: boolean = targetUserProfile?.hasOutgoingFriendship ?? false;
 
-
+  // memoized data
   const memoizedMatchedEvents = useMemo(() => (matchedEvents?.pages.flatMap(
     page => page.events.map(
       event => ({
@@ -59,8 +67,6 @@ export default function TargerUserProfileScreen(): JSX.Element {
       })
     ))
     || []), [matchedEvents?.pages]);
-
-
   const memoizedBucketList = useMemo(() => (
     targetUserUrlParams?.eventId ?
       targetUserbucketList?.pages.flatMap(
@@ -84,31 +90,69 @@ export default function TargerUserProfileScreen(): JSX.Element {
         )
       )), [targetUserbucketList?.pages, targetUserUrlParams.eventId]);
 
-
-  const isTargetUserFriendShipReceiver: boolean = targetUserProfile?.incomingFriendships[0]?.status === 'PENDING';
-  const isTargetUserFriendShipSender: boolean = targetUserProfile?.outgoingFriendships[0]?.status === 'PENDING';
-
   // mutations
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
   const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
   const mutationResetFrienship = useMutationResetFrienshipInvitation();
   const mutationCancelFriendship = useMutationCancelFriendshipInvitation();
 
+
+  const pedningButton = {
+    optimisticUpdate: (targetUserID: string) => (
+      queryClient
+        .setQueryData<GetTargetUser>(
+          [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserID],
+          (oldata) => ({
+            ...oldata,
+            hasIncommingFriendship: true
+          } as GetTargetUser)
+        )
+    )
+  };
+
+
   /**
   *
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
   * @param {GetBasicUserProfile} targetUserAsSender the sender of the friendship invitation
   */
-  const acceptPendingInvitation = (targetUserAsSender: GetTargetUser): void => {
+  const acceptPendingInvitation = async (targetUserAsSender: GetTargetUser) => {
     setTargetUserAsFriendshipSender(targetUserAsSender);
-    const friendshipID = targetUserAsSender.outgoingFriendships[0].id;
-    if (!friendshipID) return;
-    setTimeout(() => setToggleModal(), 200);
-    mutationAcceptFriendship.mutate(friendshipID, {
-      onSuccess() {
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE] });
-      },
-    });
+    if (!targetUserAsSender.hasOutgoingFriendship) {
+      pedningButton.optimisticUpdate(targetUserAsSender.uid);
+    }
+    const newFriendship =
+      await mutationAcceptFriendship.mutateAsync(
+        targetUserAsSender.id, {
+        onSuccess() {
+          setToggleModal();
+          queryClient.invalidateQueries({
+            queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserAsSender.uid]
+          });
+        },
+        onError: ({ response }) => {
+          if (response?.data.message === ErrorMessage.INVITATION_DOES_NOT_EXIST) {
+            sentFriendshipInvitation(targetUserAsSender);
+          }
+        }
+      });
+    if (!newFriendship) return;
+
+    // setNewFriendShip(newFriendship);
+    const messagePayload = {
+      createdAt: new Date().toString(),
+      user: {
+        _id: loggedInUserUuid,
+        avatar: loggedInUserProfile?.photos[0]?.url,
+        name: loggedInUserProfile?.username
+      }
+    } as INotificationData;
+    await
+      notificationService.sentNotificationToTargetUser(
+        messagePayload,
+        targetUserAsSender.uid,
+        newFriendship.chatuuid
+      );
   };
 
   /**
@@ -116,12 +160,23 @@ export default function TargerUserProfileScreen(): JSX.Element {
   * @description for a receiver user, sends a friendship invitation with status 'PENDING'
   * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const sentFriendshipInvitation = (targetUserAsReceiver: GetDetailedUserProfile): void => {
-    mutationSentFriendship.mutate({ targetUserId: targetUserAsReceiver.id }, {
-      onSuccess() {
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE] });
-      },
-    });
+  const sentFriendshipInvitation = (targetUserAsReceiver: GetTargetUser): void => {
+    pedningButton.optimisticUpdate(targetUserAsReceiver.uid);
+    mutationSentFriendship.mutate(
+      { targetUserId: targetUserAsReceiver.id },
+      {
+        onSuccess() {
+          queryClient.invalidateQueries({
+            queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserAsReceiver.uid]
+          });
+        },
+        onError: ({ response }) => {
+          if (response?.data.message === ErrorMessage.INVITATION_ALREADY_PENDING) {
+            acceptPendingInvitation(targetUserAsReceiver);
+          }
+        }
+      }
+    );
   };
 
   /**
@@ -129,10 +184,10 @@ export default function TargerUserProfileScreen(): JSX.Element {
   * @description cancels a friendship invitation with status 'PENDING'
   * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const cancelFriendshipInvitation = (targetUserAsReceiver: GetDetailedUserProfile): void => {
+  const cancelFriendshipInvitation = (targetUserAsReceiver: GetTargetUser): void => {
     mutationCancelFriendship.mutate(targetUserAsReceiver.id, {
       onSuccess() {
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserAsReceiver.uid] });
       },
     });
   };
@@ -169,23 +224,20 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const handleUnfollowingUser = (): void => {
     setToggleModalUnfollow(false);
     if (targetUserProfile?.isFriend) {
-      const friendship = targetUserProfile?.incomingFriendships.at(0) ?? targetUserProfile?.outgoingFriendships.at(0);
-      if (friendship) {
-        mutationResetFrienship.mutate(friendship?.id, {
-          onSuccess() {
-            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] });
-            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, targetUserUrlParams.eventId] });
-          },
-        });
-        queryClient.setQueryData<GetTargetUser>(
-          [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUrlParams.uuid],
-          (oldData) => ({
-            ...oldData,
-            isFriend: !oldData?.isFriend
-          }) as GetTargetUser
-        );
-        router.back();
-      }
+      mutationResetFrienship.mutate(targetUserProfile.id, {
+        onSuccess() {
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] });
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, targetUserUrlParams.eventId] });
+        },
+      });
+      queryClient.setQueryData<GetTargetUser>(
+        [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUrlParams.uuid],
+        (oldData) => ({
+          ...oldData,
+          isFriend: !oldData?.isFriend
+        }) as GetTargetUser
+      );
+      router.back();
     }
   };
 
@@ -243,21 +295,21 @@ export default function TargerUserProfileScreen(): JSX.Element {
         </>
       ) : (
         <>
-          {isTargetUserFriendShipReceiver && (
+          {hasIncommingFriendship && !hasOutgoingFriendship && (
             <AppButton
               onPress={() => cancelFriendshipInvitation(targetUserProfile)}
               text="PENDING"
               btnColor='blue'
             />
           )}
-          {isTargetUserFriendShipSender && (
+          {hasOutgoingFriendship && !hasIncommingFriendship && (
             <AppButton
               onPress={() => acceptPendingInvitation(targetUserProfile)}
               text={'FOLLOW'}
               btnColor='black'
             />
           )}
-          {!isTargetUserFriendShipReceiver && !isTargetUserFriendShipSender && (
+          {!hasIncommingFriendship && !hasOutgoingFriendship && (
             <AppButton
               onPress={() => sentFriendshipInvitation(targetUserProfile)}
               text="FOLLOW"

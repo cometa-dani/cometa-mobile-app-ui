@@ -157,9 +157,9 @@ export const useMutationResetFrienshipInvitation = () => {
 
   return (
     useMutation<MutateFrienship, TypedAxiosError, number>({
-      mutationFn: async (friendshipID: number) => {
+      mutationFn: async (targetUserID: number) => {
         const res =
-          await friendshipService.updateFrienshipInvitation(friendshipID, 'PENDING', loggedInUserAccessToken);
+          await friendshipService.updateFrienshipInvitation(targetUserID, 'PENDING', loggedInUserAccessToken);
         if (res.status === 200) {
           return res.data;
         }
@@ -167,7 +167,6 @@ export const useMutationResetFrienshipInvitation = () => {
           throw new Error('failed fech');
         }
       },
-      onMutate: async () => { },
       onSuccess: async () => {
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] }),
