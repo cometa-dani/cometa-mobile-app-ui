@@ -29,15 +29,11 @@ export const useMutationLikeOrDislikeEvent = () => {
         }
       },
       onMutate: ({ eventID, targetUserId }) => {
-        let queryKeys: string | QueryKeys[] = [];
-
-        if (!targetUserId) {
-          queryKeys = [QueryKeys.SEARCH_EVENTS_WITH_PAGINATION];
-        }
-        else {
-          queryKeys = [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_TARGET_USER_ID_WITH_PAGINATION, targetUserId];
-        }
-
+        const queryKeys = (
+          !targetUserId ?
+            [QueryKeys.SEARCH_EVENTS_WITH_PAGINATION] :
+            [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_TARGET_USER_ID_WITH_PAGINATION, targetUserId]
+        );
         // Update the cache with the new liked state
         queryClient
           .setQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>

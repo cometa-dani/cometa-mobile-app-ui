@@ -151,12 +151,13 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   /**
   *
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
-  * @param {GetBasicUserProfile} targetUserAsSender the sender of the friendship invitation
   */
   const acceptPendingInvitation = async (targetUserAsSender: GetBasicUserProfile) => {
     try {
       // 1. set button to pending
-      handleOptimisticUpdate(targetUserAsSender.id);
+      if (!targetUserAsSender.hasOutgoingFriendship) {
+        pendingButton.handleOptimisticUpdate(targetUserAsSender.id);
+      }
       setTargetUserAsNewFriend(targetUserAsSender);
 
       // 2. mutation
@@ -202,35 +203,39 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
     }
   };
 
-  /**
-   *
-   * @description sets the button to pending optimistically
-   */
-  const handleOptimisticUpdate = (userID: number) => {
-    queryClient.setQueryData<InfiniteData<GetMatchedUsersWhoLikedEventWithPagination>>(
-      [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId],
-      (oldData) => ({
-        pageParams: oldData?.pageParams,
-        pages:
-          oldData?.pages
-            .map((page) => ({
-              ...page,
-              usersWhoLikedEvent:
-                page.usersWhoLikedEvent
-                  .map(event => event.userId === userID ?
-                    ({
-                      ...event,
-                      user: {
-                        ...event.user,
-                        hasIncommingFriendship: true
-                      }
-                    })
-                    : event
-                  )
-            }))
 
-      }) as InfiniteData<GetMatchedUsersWhoLikedEventWithPagination>);
+  const pendingButton = {
+    /**
+     *
+     * @description sets the button to pending optimistically
+     */
+    handleOptimisticUpdate: (userID: number) => {
+      queryClient.setQueryData<InfiniteData<GetMatchedUsersWhoLikedEventWithPagination>>(
+        [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId],
+        (oldData) => ({
+          pageParams: oldData?.pageParams,
+          pages:
+            oldData?.pages
+              .map((page) => ({
+                ...page,
+                usersWhoLikedEvent:
+                  page.usersWhoLikedEvent
+                    .map(event => event.userId === userID ?
+                      ({
+                        ...event,
+                        user: {
+                          ...event.user,
+                          hasIncommingFriendship: true
+                        }
+                      })
+                      : event
+                    )
+              }))
+
+        }) as InfiniteData<GetMatchedUsersWhoLikedEventWithPagination>);
+    }
   };
+
 
   /**
   *
@@ -239,7 +244,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   */
   const sentFriendshipInvitation = (targetUserAsReceiver: GetBasicUserProfile): void => {
     // 1. set button to pending
-    handleOptimisticUpdate(targetUserAsReceiver.id);
+    pendingButton.handleOptimisticUpdate(targetUserAsReceiver.id);
 
     // 2. mutation
     mutationSentFriendship.mutate(
@@ -395,9 +400,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
                 showsVerticalScrollIndicator={true}
                 data={users}
                 renderItem={({ item: { user: targetUser } }) => {
-                  const hasIncommingFriendship: boolean = targetUser?.hasIncommingFriendship;
-                  const hasOutgoingFriendship: boolean = targetUser?.hasOutgoingFriendship;
-
+                  const { hasIncommingFriendship = false, hasOutgoingFriendship = false } = targetUser;
                   return (
                     <View key={targetUser.id} style={styles.user}>
                       <Pressable onPress={() => router.replace(`/targetUserProfile/${targetUser.uid}?eventId=${urlParams.eventId}`)}>
@@ -427,13 +430,6 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
                         </View>
                       </Pressable>
 
-                      {hasOutgoingFriendship && (
-                        <AppButton
-                          onPress={() => acceptPendingInvitation(targetUser)}
-                          text='FOLLOW'
-                          btnColor='black'
-                        />
-                      )}
                       {!hasIncommingFriendship && !hasOutgoingFriendship && (
                         <AppButton
                           onPress={() => sentFriendshipInvitation(targetUser)}
@@ -441,7 +437,16 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
                           btnColor='black'
                         />
                       )}
-                      {hasIncommingFriendship && (
+
+                      {hasOutgoingFriendship && !hasIncommingFriendship && (
+                        <AppButton
+                          onPress={() => acceptPendingInvitation(targetUser)}
+                          text='FOLLOW'
+                          btnColor='black'
+                        />
+                      )}
+
+                      {hasIncommingFriendship && !hasOutgoingFriendship && (
                         <AppButton
                           enabled={false}
                           onPress={() => cancelFriendshipInvitation(targetUser)}
