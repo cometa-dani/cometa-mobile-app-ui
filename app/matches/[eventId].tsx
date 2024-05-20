@@ -11,7 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
 import { useCometaStore } from '../../store/cometaStore';
 import { FontAwesome } from '@expo/vector-icons';
-import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination, GetTargetUser } from '../../models/User';
+import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination } from '../../models/User';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { defaultImgPlaceholder } from '../../constants/vars';

@@ -121,15 +121,6 @@ export interface MatchedUsersWhoLikedEvent {
 
 type Event = Pick<LikeableEvent, ('photos' | 'name')>
 
-type OutgoingFriendship =
-  Pick<Friendship, (
-    'id' |
-    'createdAt' |
-    'updatedAt' |
-    'senderId' |
-    'receiverId' |
-    'status'
-  )>
 
 export interface GetBasicUserProfile extends
   Pick<GetDetailedUserProfile, (
