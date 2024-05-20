@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, SafeAreaView, StyleSheet } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -12,7 +12,7 @@ import { AppButton, appButtonstyles } from '../../components/buttons/buttons';
 import { AppCarousel } from '../../components/carousels/carousel';
 import { useCometaStore } from '../../store/cometaStore';
 import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationResetFrienshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
-import { GetTargetUser } from '../../models/User';
+import { GetBasicUserProfile, GetTargetUser } from '../../models/User';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
 import { ProfileCarousel } from '../../components/profile/profileCarousel';
@@ -27,18 +27,18 @@ import { ErrorMessage } from '../../queries/errors/errorMessages';
 import { INotificationData } from '../../store/slices/notificationSlice';
 import notificationService from '../../services/notificationService';
 import { useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
+import { MutateFrienship } from '../../models/Friendship';
+import { ModalNewFriendship } from '../../components/modal/modalNewFriendship';
 
 
 const searchParamsSchemma = Yup.object({
   uuid: Yup.string().required(),
-  eventId: Yup.string().optional()
+  eventId: Yup.number().optional()
 });
 
 
 export default function TargerUserProfileScreen(): JSX.Element {
   // client state
-  const setToggleModal = useCometaStore(state => state.setToggleModal);
-  const setTargetUserAsFriendshipSender = useCometaStore(state => state.setIncommginFriendshipSender);
   const loggedInUserUuid = useCometaStore(state => state.uid);
   const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
 
@@ -56,6 +56,10 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const { data: targetUserbucketList } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfile?.id);
   const hasIncommingFriendship: boolean = targetUserProfile?.hasIncommingFriendship ?? false;
   const hasOutgoingFriendship: boolean = targetUserProfile?.hasOutgoingFriendship ?? false;
+
+  const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState({} as GetBasicUserProfile);
+  const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
+  const [toggleModal, setToggleModal] = useState(false);
 
   // memoized data
   const memoizedMatchedEvents = useMemo(() => (matchedEvents?.pages.flatMap(
@@ -97,8 +101,8 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const mutationCancelFriendship = useMutationCancelFriendshipInvitation();
 
 
-  const pedningButton = {
-    optimisticUpdate: (targetUserID: string) => (
+  const pendingButton = {
+    handleOptimisticUpdate: (targetUserID: string) => (
       queryClient
         .setQueryData<GetTargetUser>(
           [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserID],
@@ -117,42 +121,60 @@ export default function TargerUserProfileScreen(): JSX.Element {
   * @param {GetBasicUserProfile} targetUserAsSender the sender of the friendship invitation
   */
   const acceptPendingInvitation = async (targetUserAsSender: GetTargetUser) => {
-    setTargetUserAsFriendshipSender(targetUserAsSender);
-    if (!targetUserAsSender.hasOutgoingFriendship) {
-      pedningButton.optimisticUpdate(targetUserAsSender.uid);
-    }
-    const newFriendship =
-      await mutationAcceptFriendship.mutateAsync(
-        targetUserAsSender.id, {
-        onSuccess() {
-          setToggleModal();
-          queryClient.invalidateQueries({
-            queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserAsSender.uid]
-          });
-        },
-        onError: ({ response }) => {
-          if (response?.data.message === ErrorMessage.INVITATION_DOES_NOT_EXIST) {
-            sentFriendshipInvitation(targetUserAsSender);
-          }
-        }
-      });
-    if (!newFriendship) return;
-
-    // setNewFriendShip(newFriendship);
-    const messagePayload = {
-      createdAt: new Date().toString(),
-      user: {
-        _id: loggedInUserUuid,
-        avatar: loggedInUserProfile?.photos[0]?.url,
-        name: loggedInUserProfile?.username
+    try {
+      // 1. set button to pending
+      if (!targetUserAsSender.hasOutgoingFriendship) {
+        pendingButton.handleOptimisticUpdate(targetUserAsSender.uid);
       }
-    } as INotificationData;
-    await
-      notificationService.sentNotificationToTargetUser(
-        messagePayload,
-        targetUserAsSender.uid,
-        newFriendship.chatuuid
-      );
+      setTargetUserAsNewFriend(targetUserAsSender);
+
+      // 2. mutation
+      const newCreatedFriendship =
+        await mutationAcceptFriendship.mutateAsync(
+          targetUserAsSender.id, {
+          onSuccess: async () => {
+            setToggleModal(true);
+            if (urlParams.eventId) {
+              queryClient.invalidateQueries({
+                queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId]
+              });
+            }
+            await Promise.all([
+              queryClient.invalidateQueries({
+                queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserAsSender.uid]
+              }),
+              queryClient.invalidateQueries({
+                queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION]
+              })
+            ]);
+          },
+          onError: ({ response }) => {
+            if (response?.data.message === ErrorMessage.INVITATION_DOES_NOT_EXIST) {
+              sentFriendshipInvitation(targetUserAsSender);
+            }
+          }
+        });
+      if (!newCreatedFriendship) return;
+
+      setNewFriendShip(newCreatedFriendship);
+      const messagePayload = {
+        createdAt: new Date().toString(),
+        user: {
+          _id: loggedInUserUuid,
+          avatar: loggedInUserProfile?.photos[0]?.url,
+          name: loggedInUserProfile?.username
+        }
+      } as INotificationData;
+      await
+        notificationService.sentNotificationToTargetUser(
+          messagePayload,
+          targetUserAsSender.uid,
+          newCreatedFriendship.chatuuid
+        );
+    }
+    catch (error) {
+      return null;
+    }
   };
 
   /**
@@ -161,11 +183,19 @@ export default function TargerUserProfileScreen(): JSX.Element {
   * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
   const sentFriendshipInvitation = (targetUserAsReceiver: GetTargetUser): void => {
-    pedningButton.optimisticUpdate(targetUserAsReceiver.uid);
+    // 1. set button to pending
+    pendingButton.handleOptimisticUpdate(targetUserAsReceiver.uid);
+
+    // 2. mutation
     mutationSentFriendship.mutate(
       { targetUserId: targetUserAsReceiver.id },
       {
         onSuccess() {
+          if (urlParams.eventId) {
+            queryClient.invalidateQueries({
+              queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId]
+            });
+          }
           queryClient.invalidateQueries({
             queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserAsReceiver.uid]
           });
@@ -187,37 +217,15 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const cancelFriendshipInvitation = (targetUserAsReceiver: GetTargetUser): void => {
     mutationCancelFriendship.mutate(targetUserAsReceiver.id, {
       onSuccess() {
+        if (urlParams.eventId) {
+          queryClient.invalidateQueries({
+            queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId]
+          });
+        }
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserAsReceiver.uid] });
       },
     });
   };
-
-
-  const TargetUserBiography: FC = () => (
-    <If
-      condition={!isLoading}
-      elseRender={(
-        <ContentLoader
-          speed={1}
-          width={150}
-          height={12}
-          viewBox={`0 0 ${150} ${12}`}
-          backgroundColor="#f3f3f3"
-          foregroundColor="#ecebeb"
-        >
-          <Rect x="6" y="0" rx="6" ry="6" width="140" height="12" />
-        </ContentLoader>
-      )}
-      render={(
-        <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-          <FontAwesome size={16} name='user' />
-          <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-            {targetUserProfile?.biography}
-          </Text>
-        </View>
-      )}
-    />
-  );
 
   const [toggleModalUnfollow, setToggleModalUnfollow] = useState(false);
 
@@ -225,9 +233,13 @@ export default function TargerUserProfileScreen(): JSX.Element {
     setToggleModalUnfollow(false);
     if (targetUserProfile?.isFriend) {
       mutationResetFrienship.mutate(targetUserProfile.id, {
-        onSuccess() {
+        onSuccess: async () => {
+          if (urlParams.eventId) {
+            queryClient.invalidateQueries({
+              queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId]
+            });
+          }
           queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] });
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, targetUserUrlParams.eventId] });
         },
       });
       queryClient.setQueryData<GetTargetUser>(
@@ -242,126 +254,17 @@ export default function TargerUserProfileScreen(): JSX.Element {
   };
 
 
-  const TargetUserFriendShipInvitationButtons: FC = () => (
-    isSuccess && (
-      targetUserProfile?.isFriend ? (
-        <>
-          <ReactNativeModal
-            isVisible={toggleModalUnfollow}
-            onBackdropPress={() => setToggleModalUnfollow(false)}
-          >
-            <View style={styles.modalContainer}>
-              <View style={{ gap: 22 }}>
-                <View>
-                  <Text style={{ textAlign: 'center' }}>Are you sure you want to unfollow this profile?</Text>
-                  {/* <Text >No events liked yet</Text> */}
-                </View>
-
-                <View style={{ flexDirection: 'row', gap: 20 }}>
-                  <Pressable
-                    style={{ ...appButtonstyles.button, flex: 1, backgroundColor: gray_100 }}
-                    onPress={() => {
-                      setToggleModalUnfollow(false);
-                    }} >
-                    <Text style={{ ...appButtonstyles.buttonText }}>
-                      CANCEL
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    style={{ ...appButtonstyles.button, flex: 1, backgroundColor: pink_200 }}
-                    onPress={handleUnfollowingUser}>
-                    <Text style={{ ...appButtonstyles.buttonText }}>
-                      UNFOLLOW
-                    </Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-          </ReactNativeModal>
-          <View style={{ flexDirection: 'row', gap: 16, width: '100%', justifyContent: 'space-between' }}>
-            <AppButton
-              style={{ flex: 1 }}
-              onPress={() => setToggleModalUnfollow(true)}
-              btnColor='gray'
-              text='FOLLOWING'
-            />
-            <AppButton
-              style={{ flex: 1 }}
-              onPress={() => router.push(`/chat/${targetUserProfile?.uid}`)}
-              btnColor='pink'
-              text='CHAT'
-            />
-          </View>
-        </>
-      ) : (
-        <>
-          {hasIncommingFriendship && !hasOutgoingFriendship && (
-            <AppButton
-              onPress={() => cancelFriendshipInvitation(targetUserProfile)}
-              text="PENDING"
-              btnColor='blue'
-            />
-          )}
-          {hasOutgoingFriendship && !hasIncommingFriendship && (
-            <AppButton
-              onPress={() => acceptPendingInvitation(targetUserProfile)}
-              text={'FOLLOW'}
-              btnColor='black'
-            />
-          )}
-          {!hasIncommingFriendship && !hasOutgoingFriendship && (
-            <AppButton
-              onPress={() => sentFriendshipInvitation(targetUserProfile)}
-              text="FOLLOW"
-              btnColor='black'
-            />
-          )}
-        </>
-      )
-    )
-  );
-
-
-  const CarouselMatchedEventsByLoggedInUserAndTargetUser: FC = () => (
-    <AppCarousel
-      onPress={(initialScrollIndex: number) => router.push(`/targetUserProfile/matchedEventsList/${targetUserUrlParams.uuid}?initialScrollIndex=${initialScrollIndex}`)}
-      title='Matches'
-      list={memoizedMatchedEvents}
-    />
-  );
-
-  // to block set to !isFriend
-  const CarouselTargetUserBucketList: FC = () => (
-    <AppCarousel
-      onPress={(initialScrollIndex: number) => router.push(`/targetUserProfile/bucketList/${targetUserUrlParams.uuid}?eventId=${targetUserUrlParams.eventId}&initialScrollIndex=${initialScrollIndex}`)}
-      isLocked={!targetUserProfile?.isFriend}
-      title='BucketList'
-      list={memoizedBucketList ?? []}
-    />
-  );
-
-
-  const TargetUserLanguages: FC = () => (
-    <Badges
-      iconName='comment'
-      title='Languages'
-      items={targetUserProfile?.languages ?? []}
-    />
-  );
-
-
-  const TargetUserLocations: FC = () => (
-    <Badges
-      iconName='map-marker'
-      title='Location'
-      items={[`from ${targetUserProfile?.homeTown}`, `live in ${targetUserProfile?.currentLocation}`]}
-    />
-  );
-
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style={'auto'} />
+
+      <ModalNewFriendship
+        frienshipUUID={newFriendShip?.chatuuid ?? ''}
+        loggedInUserProfile={loggedInUserProfile!}
+        targetUser={targetUserAsNewFriend}
+        onclose={() => setToggleModal(false)}
+        toggle={toggleModal}
+      />
 
       <Stack.Screen
         options={{
@@ -377,6 +280,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: background }}
       >
+
         <ProfileCarousel
           isLoading={isLoading}
           userPhotos={targetUserProfile?.photos || []}
@@ -389,23 +293,143 @@ export default function TargerUserProfileScreen(): JSX.Element {
             userProfile={targetUserProfile}
           />
 
-          <TargetUserBiography />
+          {/* biography */}
+          <If
+            condition={!isLoading}
+            elseRender={(
+              <ContentLoader
+                speed={1}
+                width={150}
+                height={12}
+                viewBox={`0 0 ${150} ${12}`}
+                backgroundColor="#f3f3f3"
+                foregroundColor="#ecebeb"
+              >
+                <Rect x="6" y="0" rx="6" ry="6" width="140" height="12" />
+              </ContentLoader>
+            )}
+            render={(
+              <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                <FontAwesome size={16} name='user' />
+                <Text style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                  {targetUserProfile?.biography}
+                </Text>
+              </View>
+            )}
+          />{/* biography */}
 
-          <TargetUserFriendShipInvitationButtons />
+          {/* friendship invitation buttons */}
+          {isSuccess && (
+            targetUserProfile?.isFriend ? (
+              <>
+                <ReactNativeModal
+                  isVisible={toggleModalUnfollow}
+                  onBackdropPress={() => setToggleModalUnfollow(false)}
+                >
+                  <View style={styles.modalContainer}>
+                    <View style={{ gap: 22 }}>
+                      <View>
+                        <Text style={{ textAlign: 'center' }}>Are you sure you want to unfollow this profile?</Text>
+                        {/* <Text >No events liked yet</Text> */}
+                      </View>
 
-          <CarouselMatchedEventsByLoggedInUserAndTargetUser />
+                      <View style={{ flexDirection: 'row', gap: 20 }}>
+                        <Pressable
+                          style={{ ...appButtonstyles.button, flex: 1, backgroundColor: gray_100 }}
+                          onPress={() => {
+                            setToggleModalUnfollow(false);
+                          }} >
+                          <Text style={{ ...appButtonstyles.buttonText }}>
+                            CANCEL
+                          </Text>
+                        </Pressable>
+                        <Pressable
+                          style={{ ...appButtonstyles.button, flex: 1, backgroundColor: pink_200 }}
+                          onPress={handleUnfollowingUser}>
+                          <Text style={{ ...appButtonstyles.buttonText }}>
+                            UNFOLLOW
+                          </Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  </View>
+                </ReactNativeModal>
+                <View style={{ flexDirection: 'row', gap: 16, width: '100%', justifyContent: 'space-between' }}>
+                  <AppButton
+                    style={{ flex: 1 }}
+                    onPress={() => setToggleModalUnfollow(true)}
+                    btnColor='gray'
+                    text='FOLLOWING'
+                  />
+                  <AppButton
+                    style={{ flex: 1 }}
+                    onPress={() => router.push(`/chat/${targetUserProfile?.uid}`)}
+                    btnColor='pink'
+                    text='CHAT'
+                  />
+                </View>
+              </>
+            ) : (
+              <>
+                {hasIncommingFriendship && !hasOutgoingFriendship && (
+                  <AppButton
+                    onPress={() => cancelFriendshipInvitation(targetUserProfile)}
+                    text="PENDING"
+                    btnColor='blue'
+                  />
+                )}
+                {hasOutgoingFriendship && !hasIncommingFriendship && (
+                  <AppButton
+                    onPress={() => acceptPendingInvitation(targetUserProfile)}
+                    text={'FOLLOW'}
+                    btnColor='black'
+                  />
+                )}
+                {!hasIncommingFriendship && !hasOutgoingFriendship && (
+                  <AppButton
+                    onPress={() => sentFriendshipInvitation(targetUserProfile)}
+                    text="FOLLOW"
+                    btnColor='black'
+                  />
+                )}
+              </>
+            )
+          )}
+          {/* friendship invitation buttons */}
 
-          <CarouselTargetUserBucketList />
+
+          <AppCarousel
+            onPress={(initialScrollIndex: number) => router.push(`/targetUserProfile/matchedEventsList/${targetUserUrlParams.uuid}?initialScrollIndex=${initialScrollIndex}`)}
+            title='Matches'
+            list={memoizedMatchedEvents}
+          />
+
+
+          {/* to block set to !isFriend */}
+          <AppCarousel
+            onPress={(initialScrollIndex: number) => router.push(`/targetUserProfile/bucketList/${targetUserUrlParams.uuid}?eventId=${targetUserUrlParams.eventId}&initialScrollIndex=${initialScrollIndex}`)}
+            isLocked={!targetUserProfile?.isFriend}
+            title='BucketList'
+            list={memoizedBucketList ?? []}
+          />
 
           <If condition={targetUserProfile?.languages?.length}
             render={
-              <TargetUserLanguages />
+              <Badges
+                iconName='comment'
+                title='Languages'
+                items={targetUserProfile?.languages ?? []}
+              />
             }
           />
 
           <If condition={targetUserProfile?.homeTown && targetUserProfile?.currentLocation}
             render={
-              <TargetUserLocations />
+              <Badges
+                iconName='map-marker'
+                title='Location'
+                items={[`from ${targetUserProfile?.homeTown}`, `live in ${targetUserProfile?.currentLocation}`]}
+              />
             }
           />
         </View>

@@ -1,19 +1,15 @@
 import React, { FC, useMemo, useState } from 'react';
-import Modal from 'react-native-modal';
 import { SafeAreaView, StyleSheet, Pressable, Image as HeaderImage } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { router, useGlobalSearchParams } from 'expo-router';
 import { useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../queries/targetUser/eventHooks';
 import { Image } from 'expo-image';
-import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { AppButton } from '../../components/buttons/buttons';
 import { StatusBar } from 'expo-status-bar';
 import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
 import { useCometaStore } from '../../store/cometaStore';
-import { FontAwesome } from '@expo/vector-icons';
 import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination } from '../../models/User';
-import { Formik, FormikHelpers } from 'formik';
-import * as Yup from 'yup';
 import { defaultImgPlaceholder } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { gray_200, gray_300, gray_500 } from '../../constants/colors';
@@ -22,20 +18,12 @@ import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
 import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEvent';
 import { If } from '../../components/utils';
-import uuid from 'react-native-uuid';
 import { GetLatestFriendships, MutateFrienship } from '../../models/Friendship';
-import chatWithFriendService from '../../services/chatWithFriendService';
 import notificationService from '../../services/notificationService';
 import { INotificationData } from '../../store/slices/notificationSlice';
 import { SkeletonLoaderList } from '../../components/lodingSkeletons/LoadingSkeletonList';
 import { ErrorMessage } from '../../queries/errors/errorMessages';
-
-
-type Message = { message: string };
-
-const messageSchemmaValidation = Yup.object<Message>({
-  message: Yup.string().required()
-});
+import { ModalNewFriendship } from '../../components/modal/modalNewFriendship';
 
 
 export default function MatchedEventsScreen(): JSX.Element {
@@ -135,18 +123,15 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   const queryClient = useQueryClient();
   const loggedInUserUuid = useCometaStore(state => state.uid);
   const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
-  const setTargetUserAsNewFriend = useCometaStore(state => state.setIncommginFriendshipSender);
-  const targetUserAsNewFriend = useCometaStore(state => state.incommginFriendshipSender);
   const urlParams = useGlobalSearchParams<{ eventId: string }>();
+  const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState<GetBasicUserProfile | undefined>(undefined);
   const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
+  const [toggleModal, setToggleModal] = useState(false);
 
   // mutations
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
   const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
   const mutationCancelFriendship = useMutationCancelFriendshipInvitation();
-
-  const setToggleModal = useCometaStore(state => state.setToggleModal);
-  const toggleModal = useCometaStore(state => state.toggleModal);
 
   /**
   *
@@ -166,7 +151,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
           targetUserAsSender.id,
           {
             onSuccess: async () => {
-              setToggleModal();
+              setToggleModal(true);
               // refetch on screen focus
               await Promise.all([
                 queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId] }),
@@ -282,100 +267,16 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
     );
   };
 
-  /**
-   *
-   * @description start chat with new friend on modal open
-   */
-  const handleSentMessageToTargetUserAsNewFriend =
-    async (values: Message, actions: FormikHelpers<Message>): Promise<void> => {
-      const messagePayload = {
-        _id: uuid.v4().toString(),
-        text: values.message,
-        createdAt: new Date().toString(),
-        user: {
-          _id: loggedInUserUuid,
-        }
-      };
-      try {
-        if (newFriendShip?.chatuuid && loggedInUserProfile && targetUserAsNewFriend) {
-          setToggleModal();
-          const { chatuuid } = newFriendShip;
-          router.push(`/chat/${targetUserAsNewFriend?.uid}`);
-          await chatWithFriendService.writeMessage(
-            chatuuid,
-            messagePayload,
-            loggedInUserProfile,
-            targetUserAsNewFriend
-          );
-        }
-        actions.resetForm();
-        actions.setSubmitting(true);
-      }
-      catch (error) {
-        // console.log(error);
-      }
-    };
-
 
   return (
     <>
-      <Modal isVisible={toggleModal}>
-        <View style={modalStyles.modalView}>
-          <View style={modalStyles.avatarMatchContainer}>
-            <Image
-              style={modalStyles.avatarMatch}
-              placeholder={{ thumbhash: loggedInUserProfile?.photos[0]?.placeholder }}
-              source={{ uri: loggedInUserProfile?.photos[0]?.url }}
-            />
-
-            {targetUserAsNewFriend?.photos?.[0]?.url && (
-              <Image
-                style={modalStyles.avatarMatch}
-                placeholder={{ thumbhash: targetUserAsNewFriend.photos[0]?.placeholder }}
-                source={{ uri: targetUserAsNewFriend.photos[0]?.url }}
-              />
-            )}
-          </View>
-
-          <View>
-            <Text style={modalStyles.modalText}>It&apos;s a match!</Text>
-            <Text style={modalStyles.modalText}>You have a new friend</Text>
-          </View>
-
-          <Formik
-            validationSchema={messageSchemmaValidation}
-            initialValues={{ message: '' }}
-            onSubmit={handleSentMessageToTargetUserAsNewFriend}
-          >
-            {({ handleSubmit, handleBlur, handleChange, values, isSubmitting }) => (
-              <View style={modalStyles.inputContainer}>
-                <TextInput
-                  numberOfLines={1}
-                  style={modalStyles.input}
-                  onChangeText={handleChange('message')}
-                  onBlur={handleBlur('message')}
-                  value={values.message}
-                  placeholder={`Mesage ${targetUserAsNewFriend?.username} to join together`}
-                />
-                <Pressable
-                  disabled={isSubmitting}
-                  style={modalStyles.btnSubmit}
-                  onPress={() => handleSubmit()}
-                >
-                  <FontAwesome style={{ fontSize: 26, color: '#fff' }} name='send' />
-                </Pressable>
-              </View>
-            )}
-          </Formik>
-
-          <Pressable
-            style={modalStyles.iconButton}
-            onPress={() => setToggleModal()}
-          >
-            <FontAwesome style={modalStyles.icon} name='times-circle' />
-          </Pressable>
-        </View>
-      </Modal>
+      <ModalNewFriendship
+        frienshipUUID={newFriendShip?.chatuuid ?? ''}
+        loggedInUserProfile={loggedInUserProfile!}
+        targetUser={targetUserAsNewFriend}
+        onclose={() => setToggleModal(false)}
+        toggle={toggleModal}
+      />
 
       <If
         condition={isFetching}
@@ -404,7 +305,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
                   const { hasIncommingFriendship = false, hasOutgoingFriendship = false } = targetUser;
                   return (
                     <View key={targetUser.id} style={styles.user}>
-                      <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?eventId=${urlParams.eventId}`)}>
+                      <Pressable onPress={() => router.replace(`/targetUserProfile/${targetUser.uid}?eventId=${urlParams.eventId}`)}>
                         <View style={styles.avatarContainer}>
                           <Image
                             style={styles.userAvatar}
@@ -558,89 +459,6 @@ const FriendsFlashList: FC<FriendsFlashListProps> = ({ users, isEmpty, isFetchin
 // const MemoizedFriendsFlashList = React.memo(FriendsFlashList, (prev, curr) => {
 //   return prev.users === curr.users && prev.isFetching === curr.isFetching;
 // });
-
-
-const modalStyles = StyleSheet.create({
-  avatarMatch: {
-    aspectRatio: 1,
-    borderColor: '#eee',
-    borderRadius: 100,
-    borderWidth: 2,
-    height: 110
-  },
-
-  avatarMatchContainer: {
-    flexDirection: 'row',
-    gap: -28
-  },
-
-  btnSubmit: {
-    backgroundColor: '#a22bfa',
-    borderRadius: 10,
-    elevation: 2,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    shadowColor: '#171717',
-    shadowOffset: { width: 6, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-  },
-
-  icon: {
-    fontSize: 34
-  },
-
-  iconButton: {
-    position: 'absolute',
-    right: 28,
-    top: 24
-  },
-
-  input: {
-    backgroundColor: '#fff',
-    borderRadius: 50,
-    elevation: 2,
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    shadowColor: '#171717',
-    shadowOffset: { width: 6, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-  },
-
-  inputContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 16,
-    marginTop: 10
-  },
-
-
-  modalText: {
-    fontSize: 18,
-    textAlign: 'center',
-  },
-
-  modalView: {
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    elevation: 3,
-    gap: 16,
-    paddingHorizontal: 28,
-    paddingVertical: 24,
-    shadowColor: '#171717',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 0.4,
-    width: '100%'
-  }
-});
-
 
 const styles = StyleSheet.create({
   avatarContainer: {
