@@ -305,7 +305,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
                   const { hasIncommingFriendship = false, hasOutgoingFriendship = false } = targetUser;
                   return (
                     <View key={targetUser.id} style={styles.user}>
-                      <Pressable onPress={() => router.replace(`/targetUserProfile/${targetUser.uid}?eventId=${urlParams.eventId}`)}>
+                      <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?eventId=${urlParams.eventId}`)}>
                         <View style={styles.avatarContainer}>
                           <Image
                             style={styles.userAvatar}

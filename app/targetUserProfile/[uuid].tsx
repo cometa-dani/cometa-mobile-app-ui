@@ -11,7 +11,7 @@ import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser, useInfiniteQue
 import { AppButton, appButtonstyles } from '../../components/buttons/buttons';
 import { AppCarousel } from '../../components/carousels/carousel';
 import { useCometaStore } from '../../store/cometaStore';
-import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationResetFrienshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
+import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
 import { GetBasicUserProfile, GetTargetUser } from '../../models/User';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../queries/queryKeys';
@@ -97,7 +97,6 @@ export default function TargerUserProfileScreen(): JSX.Element {
   // mutations
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
   const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
-  const mutationResetFrienship = useMutationResetFrienshipInvitation();
   const mutationCancelFriendship = useMutationCancelFriendshipInvitation();
 
 
@@ -232,14 +231,17 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const handleUnfollowingUser = (): void => {
     setToggleModalUnfollow(false);
     if (targetUserProfile?.isFriend) {
-      mutationResetFrienship.mutate(targetUserProfile.id, {
+      mutationCancelFriendship.mutate(targetUserProfile.id, {
         onSuccess: async () => {
           if (urlParams.eventId) {
             queryClient.invalidateQueries({
               queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId]
             });
           }
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] });
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserProfile.uid] }),
+            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] })
+          ]);
         },
       });
       queryClient.setQueryData<GetTargetUser>(
@@ -249,7 +251,6 @@ export default function TargerUserProfileScreen(): JSX.Element {
           isFriend: !oldData?.isFriend
         }) as GetTargetUser
       );
-      router.back();
     }
   };
 
@@ -397,13 +398,11 @@ export default function TargerUserProfileScreen(): JSX.Element {
           )}
           {/* friendship invitation buttons */}
 
-
           <AppCarousel
             onPress={(initialScrollIndex: number) => router.push(`/targetUserProfile/matchedEventsList/${targetUserUrlParams.uuid}?initialScrollIndex=${initialScrollIndex}`)}
             title='Matches'
             list={memoizedMatchedEvents}
           />
-
 
           {/* to block set to !isFriend */}
           <AppCarousel
