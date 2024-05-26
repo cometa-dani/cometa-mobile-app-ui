@@ -40,6 +40,7 @@ export default function ChatWithFriendScreen(): JSX.Element {
 
   // listen only for chatuuid changes
   useMMKVListener((key: string) => {
+    // debugger;
     if (key === `${loggedInUserUuid}.chats.${friendshipData?.chatuuid}`) {
       const updateMap: [] = JSON.parse(mmkvStorage.getString(`${loggedInUserUuid}.chats.${friendshipData?.chatuuid}`) ?? '[]');
       setMessages(new Map(updateMap));

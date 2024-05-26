@@ -6,8 +6,7 @@ export default function ChatAppLayout(): JSX.Element {
     <Stack
       screenOptions={{
         headerShadowVisible: false,
-        headerShown: false,
-        animation: 'slide_from_bottom'
+        headerShown: false
       }}
     />
   );

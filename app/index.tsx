@@ -17,7 +17,7 @@ export default function WelcomeScreen(): JSX.Element {
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const setUserUid = useCometaStore(state => state.setUid);
   const loggedInUserUUID = useCometaStore(state => state.uid);
-  const setFriendsMessagesList = useCometaStore(state => state.setFriendsLatestMessagesList);
+  const setFriendsLatestMessagesList = useCometaStore(state => state.setFriendsLatestMessagesList);
   const setNotificationsList = useCometaStore(state => state.setNotificationsList);
   let unsubscribe!: Unsubscribe;
 
@@ -90,7 +90,7 @@ export default function WelcomeScreen(): JSX.Element {
           } as UserMessagesData;
           messages.push(data);
         });
-        setFriendsMessagesList(messages);
+        setFriendsLatestMessagesList(messages);
       });
 
       onValue(notificationsRef, (snapshot) => {

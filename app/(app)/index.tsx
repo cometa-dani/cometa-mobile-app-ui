@@ -22,7 +22,6 @@ import { useCometaStore } from '../../store/cometaStore';
 export default function HomeScreen(): JSX.Element {
   const { background } = useColors();
   const searchQuery = useCometaStore(state => state.searchQuery);
-  const scrollToIndex = useCometaStore(state => state.scrollToIndex);
 
   const handleNavigateToSearchScreen = () => router.push('/search');
 
@@ -75,7 +74,6 @@ export default function HomeScreen(): JSX.Element {
           )}
           elseRender={(
             <EventsFlashList
-              initialScrollIndex={scrollToIndex}
               items={evenstData}
               isLoading={isLoading || isRefetching}
               onInfiniteScroll={handleInfiniteFetch}
