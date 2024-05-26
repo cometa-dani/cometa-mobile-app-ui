@@ -74,7 +74,11 @@ export default function RootLayout() {
 
 function RootLayoutNav(): JSX.Element {
   return (
-    <Stack screenOptions={{ headerTitleStyle: { fontFamily: 'Poppins' } }}>
+    <Stack
+      screenOptions={{
+        headerBackTitleVisible: false,
+        headerTitleStyle: { fontFamily: 'Poppins' }
+      }}>
       <Stack.Screen name='index' options={{ headerShown: false, animation: 'slide_from_right', animationDuration: 290 }} />
 
       <Stack.Screen name="(onboarding)" options={{ headerShown: false, animation: 'slide_from_right', animationDuration: 290 }} />

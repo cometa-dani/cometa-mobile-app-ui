@@ -110,7 +110,6 @@ export default function AppLayout() {
           // TODO: rewrite this to React Navigation v7
           return ({
             tabBarStyle: {
-              height: 60,
               shadowColor: 'transparent',
               elevation: 0,
               borderTopWidth: 0,

@@ -34,30 +34,31 @@ export default function HomeScreen(): JSX.Element {
 
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
-      <Tabs.Screen
-        options={{
-          headerTitleAlign: 'center',
-          headerShown: true,
-          headerLeft: () => (
-            <Pressable onPress={handleNavigateToSearchScreen}>
-              {({ pressed }) => (
-                <Ionicons
-                  name="search"
-                  size={32}
-                  color={gray_300}
-                  style={{
-                    marginLeft: 18,
-                    opacity: pressed ? 0.5 : 1
-                  }}
-                />
-              )}
-            </Pressable>
-          ),
-        }}
-      />
+    <>
+      <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
+        <Tabs.Screen
+          options={{
+            headerTitleAlign: 'center',
+            headerShown: true,
+            headerLeft: () => (
+              <Pressable onPress={handleNavigateToSearchScreen}>
+                {({ pressed }) => (
+                  <Ionicons
+                    name="search"
+                    size={32}
+                    color={gray_300}
+                    style={{
+                      marginLeft: 18,
+                      opacity: pressed ? 0.5 : 1
+                    }}
+                  />
+                )}
+              </Pressable>
+            ),
+          }}
+        />
 
-      {/* <BottonSheetSearchEvents
+        {/* <BottonSheetSearchEvents
         onSearchQuery={setSearchQuery}
         onPressEventItem={setScrollToIndex}
         onInfiniteScroll={handleInfiniteFetch}
@@ -66,22 +67,23 @@ export default function HomeScreen(): JSX.Element {
         events={evenstData}
       /> */}
 
-      <View style={styles.container}>
-        <If
-          condition={!evenstData?.length && !isLoading}
-          render={(
-            <NotEventsFound />
-          )}
-          elseRender={(
-            <EventsFlashList
-              items={evenstData}
-              isLoading={isLoading || isRefetching}
-              onInfiniteScroll={handleInfiniteFetch}
-            />
-          )}
-        />
-      </View>
-    </SafeAreaView>
+        <View style={styles.container}>
+          <If
+            condition={!evenstData?.length && !isLoading}
+            render={(
+              <NotEventsFound />
+            )}
+            elseRender={(
+              <EventsFlashList
+                items={evenstData}
+                isLoading={isLoading || isRefetching}
+                onInfiniteScroll={handleInfiniteFetch}
+              />
+            )}
+          />
+        </View>
+      </SafeAreaView>
+    </>
   );
 }
 
