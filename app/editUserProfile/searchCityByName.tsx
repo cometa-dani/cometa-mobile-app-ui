@@ -52,7 +52,6 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
     <>
       <Stack.Screen
         options={{
-          presentation: 'fullScreenModal',
           headerTitleAlign: 'left',
           headerTitle: () => (
             <TextInput

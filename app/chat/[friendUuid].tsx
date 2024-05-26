@@ -124,7 +124,6 @@ export default function ChatWithFriendScreen(): JSX.Element {
         options={{
           gestureDirection: 'vertical',
           fullScreenGestureEnabled: true,
-          presentation: 'modal',
           headerTitle: () => {
             return (
               <TouchableOpacity onPress={() => router.push(`/targetUserProfile/${targetUser?.uid}`)}>

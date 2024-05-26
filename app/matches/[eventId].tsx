@@ -6,7 +6,6 @@ import { useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../queries/targe
 import { Image } from 'expo-image';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { AppButton } from '../../components/buttons/buttons';
-import { StatusBar } from 'expo-status-bar';
 import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
 import { useCometaStore } from '../../store/cometaStore';
 import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination } from '../../models/User';
@@ -65,8 +64,6 @@ export default function MatchedEventsScreen(): JSX.Element {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar backgroundColor="transparent" translucent={true} style={'auto'} />
-
       <View style={styles.screenContainer}>
         <View style={[styles.header, { paddingHorizontal: 18, paddingTop: 20 }]}>
           {eventByIdCachedData?.photos[0]?.url &&

@@ -269,7 +269,6 @@ export default function TargerUserProfileScreen(): JSX.Element {
 
       <Stack.Screen
         options={{
-          presentation: 'modal',
           animation: 'default',
           headerShown: true,
           headerShadowVisible: false,

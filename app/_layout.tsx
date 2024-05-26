@@ -84,7 +84,6 @@ function RootLayoutNav(): JSX.Element {
       <Stack.Screen
         name="matches/[eventId]"
         options={{
-          presentation: 'fullScreenModal',
           headerTitleAlign: 'center',
           headerShadowVisible: false,
           headerTitle: () => (

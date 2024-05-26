@@ -69,7 +69,6 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
     <>
       <Stack.Screen
         options={{
-          presentation: 'fullScreenModal',
           headerTitleAlign: 'left',
           headerTitle: 'Your languages',
           animationDuration: animationDuration,
