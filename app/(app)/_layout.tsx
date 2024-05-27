@@ -207,7 +207,7 @@ export default function AppLayout() {
           }}
         />
         <Tabs.Screen
-          name='loggedInUserProfile'
+          name='loggedInUserProfile/index'
           options={{
             tabBarIcon: ({ color }) => (
               <TabButton>
