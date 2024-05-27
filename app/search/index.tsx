@@ -45,6 +45,8 @@ export default function SearchScreen(): JSX.Element {
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <Stack.Screen
         options={{
+          gestureDirection: 'vertical',
+          fullScreenGestureEnabled: true,
           headerShadowVisible: false,
           headerTitle: 'Search',
           headerTitleAlign: 'center'

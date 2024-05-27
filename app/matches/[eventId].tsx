@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useState } from 'react';
 import { SafeAreaView, StyleSheet, Pressable, Image as HeaderImage } from 'react-native';
 import { Text, View } from '../../components/Themed';
-import { router, useGlobalSearchParams } from 'expo-router';
+import { Stack, router, useGlobalSearchParams } from 'expo-router';
 import { useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../queries/targetUser/eventHooks';
 import { Image } from 'expo-image';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -19,7 +19,6 @@ import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEve
 import { If } from '../../components/utils';
 import { GetLatestFriendships, MutateFrienship } from '../../models/Friendship';
 import notificationService from '../../services/notificationService';
-import { INotificationData } from '../../store/slices/notificationSlice';
 import { SkeletonLoaderList } from '../../components/lodingSkeletons/LoadingSkeletonList';
 import { ErrorMessage } from '../../queries/errors/errorMessages';
 import { ModalNewFriendship } from '../../components/modal/modalNewFriendship';
@@ -172,7 +171,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
           avatar: loggedInUserProfile?.photos[0]?.url,
           name: loggedInUserProfile?.username
         }
-      } as INotificationData;
+      };
       await
         notificationService.sentNotificationToTargetUser(
           messagePayload,
@@ -267,6 +266,12 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
 
   return (
     <>
+      <Stack.Screen
+        options={{
+          gestureDirection: 'vertical',
+          fullScreenGestureEnabled: true,
+        }}
+      />
       <ModalNewFriendship
         frienshipUUID={newFriendShip?.chatuuid ?? ''}
         loggedInUserProfile={loggedInUserProfile!}
