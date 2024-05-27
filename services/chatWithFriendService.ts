@@ -1,6 +1,6 @@
 import { increment, push, ref, set, update } from 'firebase/database';
 import { GetBasicUserProfile } from '../models/User';
-import { realtimeDB } from '../firebase/firebase';
+import { realtimeDB } from '../config/firebase/firebase';
 import { UserMessagesData } from '../store/slices/messagesSlices';
 
 

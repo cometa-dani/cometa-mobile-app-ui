@@ -7,7 +7,7 @@ import {
   projectId,
   storageBucket,
   databaseURL,
-} from '../constants/vars';
+} from '../../constants/vars';
 import { initializeApp } from 'firebase/app';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';

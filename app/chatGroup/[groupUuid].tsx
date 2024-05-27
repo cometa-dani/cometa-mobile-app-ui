@@ -15,7 +15,7 @@ import { If } from '../../components/utils';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { gray_900 } from '../../constants/colors';
 // firebase
-import { realtimeDB } from '../../firebase/firebase';
+import { realtimeDB } from '../../config/firebase/firebase';
 import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
 import { GetBasicUserProfile } from '../../models/User';
 import chatWithGroupService from '../../services/chatWithGroupService';

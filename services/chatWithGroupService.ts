@@ -1,5 +1,5 @@
 import { push, ref, set, update, increment } from 'firebase/database';
-import { realtimeDB } from '../firebase/firebase';
+import { realtimeDB } from '../config/firebase/firebase';
 import { GetBasicUserProfile } from '../models/User';
 
 

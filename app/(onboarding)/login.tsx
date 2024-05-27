@@ -7,7 +7,7 @@ import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboard
 
 // // auth services
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../firebase/firebase';
+import { auth } from '../../config/firebase/firebase';
 import { useState } from 'react';
 import { useCometaStore } from '../../store/cometaStore';
 import { AppButton, LightButton } from '../../components/buttons/buttons';

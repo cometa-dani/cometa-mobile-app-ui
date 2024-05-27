@@ -12,7 +12,7 @@ import { FC, useEffect, useState } from 'react';
 import { BackHandler } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import userService from '../../services/userService';
-import { auth } from '../../firebase/firebase';
+import { auth } from '../../config/firebase/firebase';
 import uuid from 'react-native-uuid';
 import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
 import { If } from '../../components/utils';

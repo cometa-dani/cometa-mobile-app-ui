@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { ref, onValue, DataSnapshot, IteratedDataSnapshot } from 'firebase/database';
-import { realtimeDB } from './firebase'; // Adjust the import according to your project structure
+import { realtimeDB } from '../config/firebase/firebase'; // Adjust the import according to your project structure
 import { UserMessagesData } from '../store/slices/messagesSlices';
 import { INotificationData } from '../store/slices/notificationSlice';
 

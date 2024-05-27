@@ -1,7 +1,7 @@
 import { ScrollView, SafeAreaView, Dimensions, View as TransparentView } from 'react-native';
 import { Text, View, useColors } from '../../components/Themed';
 import { signOut } from 'firebase/auth';
-import { auth } from '../../firebase/firebase';
+import { auth } from '../../config/firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
 import { useMutationDeleteLoggedInUserPhotoByUuid, useMutationUploadLoggedInUserPhotos, useMutationLoggedInUserProfileById, useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
 import { AppButton } from '../../components/buttons/buttons';

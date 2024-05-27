@@ -1,5 +1,5 @@
 import { child, get, ref } from 'firebase/database';
-import { realtimeDB } from '../firebase/firebase';
+import { realtimeDB } from '../config/firebase/firebase';
 
 
 // Generate chatuuids

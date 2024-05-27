@@ -1,5 +1,5 @@
 import { ref, set } from 'firebase/database';
-import { realtimeDB } from '../firebase/firebase';
+import { realtimeDB } from '../config/firebase/firebase';
 
 
 class NotificationService {

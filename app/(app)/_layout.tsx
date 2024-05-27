@@ -5,7 +5,7 @@ import { View, useColors, Text } from '../../components/Themed';
 import { StatusBar } from 'expo-status-bar';
 import { FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../firebase/firebase';
+import { auth } from '../../config/firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
 import { Image } from 'expo-image';
 import { icons, titles } from '../../constants/assets';
@@ -106,10 +106,12 @@ export default function AppLayout() {
       </ReactNativeModal>
 
       <Tabs
+        // safeAreaInsets={{ bottom: 0 }}
         screenOptions={() => {
           // TODO: rewrite this to React Navigation v7
           return ({
             tabBarStyle: {
+              // height: 70,
               shadowColor: 'transparent',
               elevation: 0,
               borderTopWidth: 0,

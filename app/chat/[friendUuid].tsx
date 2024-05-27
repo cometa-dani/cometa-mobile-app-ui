@@ -11,7 +11,7 @@ import { Unsubscribe } from 'firebase/auth';
 import { useCometaStore } from '../../store/cometaStore';
 import { useQueryGetFriendshipByTargetUserID } from '../../queries/loggedInUser/friendshipHooks';
 // firebase
-import { realtimeDB } from '../../firebase/firebase';
+import { realtimeDB } from '../../config/firebase/firebase';
 import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
 import chatWithFriendService from '../../services/chatWithFriendService';
 import { useMMKVListener, useMMKV } from 'react-native-mmkv';
