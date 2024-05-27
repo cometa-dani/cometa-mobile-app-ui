@@ -9,7 +9,7 @@ import { AppButton } from '../../../components/buttons/buttons';
 import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../../queries/loggedInUser/friendshipHooks';
 import { useCometaStore } from '../../../store/cometaStore';
 import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination } from '../../../models/User';
-import { defaultImgPlaceholder } from '../../../constants/vars';
+import { animationDuration, defaultImgPlaceholder } from '../../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { gray_200, gray_300, gray_500 } from '../../../constants/colors';
 import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/loggedInUser/userProfileHooks';
@@ -22,6 +22,7 @@ import notificationService from '../../../services/notificationService';
 import { SkeletonLoaderList } from '../../../components/lodingSkeletons/LoadingSkeletonList';
 import { ErrorMessage } from '../../../queries/errors/errorMessages';
 import { ModalNewFriendship } from '../../../components/modal/modalNewFriendship';
+import { titles } from '../../../constants/assets';
 
 
 export default function MatchedEventsScreen(): JSX.Element {
@@ -270,8 +271,18 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
         options={{
           gestureDirection: 'vertical',
           fullScreenGestureEnabled: true,
+          headerTitleAlign: 'center',
+          headerShadowVisible: false,
+          headerTitle: () => (
+            <Image
+              style={{ height: 24, width: 110 }}
+              source={titles.matches}
+            />
+          ),
+          animationDuration: animationDuration,
         }}
       />
+
       <ModalNewFriendship
         frienshipUUID={newFriendShip?.chatuuid ?? ''}
         loggedInUserProfile={loggedInUserProfile!}

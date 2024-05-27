@@ -4,18 +4,18 @@ import { Pressable, StyleSheet, SafeAreaView } from 'react-native';
 import { Image } from 'expo-image';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { RectButton } from 'react-native-gesture-handler';
-import { useMutationDeleteLikedEventFromBucketList } from '../../queries/loggedInUser/likeEventHooks';
-import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
+import { useMutationDeleteLikedEventFromBucketList } from '../../../queries/loggedInUser/likeEventHooks';
+import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../../queries/loggedInUser/eventHooks';
 import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
-import { View, Text } from '../../components/Themed';
+import { View, Text } from '../../../components/Themed';
 import { FontAwesome } from '@expo/vector-icons';
-import { gray_50, red_100 } from '../../constants/colors';
-import { If } from '../../components/utils/ifElse';
-import { ForEach } from '../../components/utils';
-import { LikeableEvent } from '../../models/Event';
-import { defaultImgPlaceholder } from '../../constants/vars';
-import { SkeletonLoaderList } from '../../components/lodingSkeletons/LoadingSkeletonList';
+import { gray_50, red_100 } from '../../../constants/colors';
+import { If } from '../../../components/utils/ifElse';
+import { ForEach } from '../../../components/utils';
+import { LikeableEvent } from '../../../models/Event';
+import { defaultImgPlaceholder } from '../../../constants/vars';
+import { SkeletonLoaderList } from '../../../components/lodingSkeletons/LoadingSkeletonList';
 
 
 export default function BuckectListScreen(): JSX.Element {

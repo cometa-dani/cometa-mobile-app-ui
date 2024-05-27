@@ -183,7 +183,7 @@ export default function AppLayout() {
           }}
         />
         <Tabs.Screen
-          name="bucketList"
+          name="bucketList/index"
           listeners={{
             focus: () => {
               if (!data?.pages[0]?.totalEvents && isSuccess) {
