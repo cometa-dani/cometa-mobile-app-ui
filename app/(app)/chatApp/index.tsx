@@ -148,7 +148,10 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
         options={{
           headerShown: true,
           headerTitle: () => (
-            <Image style={{ height: 24, width: 76 }} source={titles.chat} />
+            <Image
+              style={{ height: 24, width: 76 }}
+              source={titles.chat}
+            />
           ),
           headerTitleAlign: 'center',
           // headerRight() {

@@ -3,7 +3,7 @@ import { StateCreator } from 'zustand';
 
 export interface INotificationData {
   chatUUID?: string,
-  createdAt?: string,
+  createdAt: Date | number,
   user: {
     _id: string,
     name: string,

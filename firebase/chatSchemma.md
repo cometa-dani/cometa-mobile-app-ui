@@ -14,24 +14,24 @@ Realtime Database
 |-- chatGroups
 |
 |   |-- groupId1 (unique id for group chats)
-|   |   |-- messages    
+|   |   |-- messages
 |   |       |-- messageId1: { senderId, timestamp, text, ... }
 |   |       |-- messageId2: { senderId, timestamp, text, ... }
 |   |       |-- ...
 |       |---members
 |   |       |-- user_1
 |   |       |-- user_2
-|   |       |-- ...            
+|   |       |-- ...
 |
 |   |-- groupId2
-|   |   |-- messages    
+|   |   |-- messages
 |   |       |-- messageId1: { senderId, timestamp, text, ... }
 |   |       |-- messageId2: { senderId, timestamp, text, ... }
 |   |       |-- ...
 |       |---members
 |   |       |-- user_1
 |   |       |-- user_2
-|   |       |-- ...            
+|   |       |-- ...
 |
 |
 |-- latestMessages

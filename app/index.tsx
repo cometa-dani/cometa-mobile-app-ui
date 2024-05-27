@@ -4,8 +4,8 @@ import { LightButton } from '../components/buttons/buttons';
 import { useEffect } from 'react';
 import { Unsubscribe, onAuthStateChanged } from 'firebase/auth'; // Import Firebase authentication functions.
 import { auth, realtimeDB } from '../firebase/firebase'; // Import Firebase authentication instance.
+import { onValue, ref, query } from 'firebase/database';
 import { useCometaStore } from '../store/cometaStore';
-import { onValue, ref, } from 'firebase/database';
 import { UserMessagesData } from '../store/slices/messagesSlices';
 import { INotificationData } from '../store/slices/notificationSlice';
 import { Text } from '../components/Themed';
@@ -90,8 +90,10 @@ export default function WelcomeScreen(): JSX.Element {
           } as UserMessagesData;
           messages.push(data);
         });
-        setFriendsLatestMessagesList(messages);
+        const sorted = messages.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setFriendsLatestMessagesList(sorted);
       });
+
 
       onValue(notificationsRef, (snapshot) => {
         const notifications: INotificationData[] = [];
