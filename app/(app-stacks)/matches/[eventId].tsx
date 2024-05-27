@@ -1,27 +1,27 @@
 import React, { FC, useMemo, useState } from 'react';
 import { SafeAreaView, StyleSheet, Pressable, Image as HeaderImage } from 'react-native';
-import { Text, View } from '../../components/Themed';
+import { Text, View } from '../../../components/Themed';
 import { Stack, router, useGlobalSearchParams } from 'expo-router';
-import { useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../queries/targetUser/eventHooks';
+import { useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../../queries/targetUser/eventHooks';
 import { Image } from 'expo-image';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { AppButton } from '../../components/buttons/buttons';
-import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
-import { useCometaStore } from '../../store/cometaStore';
-import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination } from '../../models/User';
-import { defaultImgPlaceholder } from '../../constants/vars';
+import { AppButton } from '../../../components/buttons/buttons';
+import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../../queries/loggedInUser/friendshipHooks';
+import { useCometaStore } from '../../../store/cometaStore';
+import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination } from '../../../models/User';
+import { defaultImgPlaceholder } from '../../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
-import { gray_200, gray_300, gray_500 } from '../../constants/colors';
-import { useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
+import { gray_200, gray_300, gray_500 } from '../../../constants/colors';
+import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/loggedInUser/userProfileHooks';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
-import { QueryKeys } from '../../queries/queryKeys';
-import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEvent';
-import { If } from '../../components/utils';
-import { GetLatestFriendships, MutateFrienship } from '../../models/Friendship';
-import notificationService from '../../services/notificationService';
-import { SkeletonLoaderList } from '../../components/lodingSkeletons/LoadingSkeletonList';
-import { ErrorMessage } from '../../queries/errors/errorMessages';
-import { ModalNewFriendship } from '../../components/modal/modalNewFriendship';
+import { QueryKeys } from '../../../queries/queryKeys';
+import { GetLikedEventsForBucketListWithPagination } from '../../../models/LikedEvent';
+import { If } from '../../../components/utils';
+import { GetLatestFriendships, MutateFrienship } from '../../../models/Friendship';
+import notificationService from '../../../services/notificationService';
+import { SkeletonLoaderList } from '../../../components/lodingSkeletons/LoadingSkeletonList';
+import { ErrorMessage } from '../../../queries/errors/errorMessages';
+import { ModalNewFriendship } from '../../../components/modal/modalNewFriendship';
 
 
 export default function MatchedEventsScreen(): JSX.Element {

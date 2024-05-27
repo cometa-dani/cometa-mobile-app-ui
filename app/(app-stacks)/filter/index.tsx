@@ -1,16 +1,16 @@
 import { StyleSheet, SafeAreaView, View } from 'react-native';
-import { useColors, Text, } from '../../components/Themed';
+import { useColors, Text, } from '../../../components/Themed';
 import { Stack, router } from 'expo-router';
 import { RectButton } from 'react-native-gesture-handler';
 import Checkbox from 'expo-checkbox';
-import { gray_900 } from '../../constants/colors';
+import { gray_900 } from '../../../constants/colors';
 import { FlashList } from '@shopify/flash-list';
 import { FC } from 'react';
-import { EventCategory } from '../../models/Event';
-import { useCometaStore } from '../../store/cometaStore';
+import { EventCategory } from '../../../models/Event';
+import { useCometaStore } from '../../../store/cometaStore';
 import { useQueryClient } from '@tanstack/react-query';
-import { QueryKeys } from '../../queries/queryKeys';
-import { AppButton } from '../../components/buttons/buttons';
+import { QueryKeys } from '../../../queries/queryKeys';
+import { AppButton } from '../../../components/buttons/buttons';
 
 
 export default function SettingsScreen(): JSX.Element {
@@ -56,6 +56,8 @@ export default function SettingsScreen(): JSX.Element {
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <Stack.Screen
         options={{
+          gestureDirection: 'horizontal',
+          fullScreenGestureEnabled: true,
           headerShadowVisible: false,
           headerTitle: 'Find liked minded people',
           headerTitleAlign: 'center'

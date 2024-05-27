@@ -3,32 +3,31 @@ import { Pressable, SafeAreaView, StyleSheet } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Text, View, useColors } from '../../components/Themed';
+import { Text, View, useColors } from '../../../components/Themed';
 import * as Yup from 'yup';
-import { profileStyles } from '../../components/profile/profileStyles';
-import { useQueryGetTargetUserPeopleProfileByUid } from '../../queries/targetUser/userProfileHooks';
-import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser, useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../queries/targetUser/eventHooks';
-import { AppButton, appButtonstyles } from '../../components/buttons/buttons';
-import { AppCarousel } from '../../components/carousels/carousel';
-import { useCometaStore } from '../../store/cometaStore';
-import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../queries/loggedInUser/friendshipHooks';
-import { GetBasicUserProfile, GetTargetUser } from '../../models/User';
+import { profileStyles } from '../../../components/profile/profileStyles';
+import { useQueryGetTargetUserPeopleProfileByUid } from '../../../queries/targetUser/userProfileHooks';
+import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser, useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../../queries/targetUser/eventHooks';
+import { AppButton, appButtonstyles } from '../../../components/buttons/buttons';
+import { AppCarousel } from '../../../components/carousels/carousel';
+import { useCometaStore } from '../../../store/cometaStore';
+import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../../queries/loggedInUser/friendshipHooks';
+import { GetBasicUserProfile, GetTargetUser } from '../../../models/User';
 import { useQueryClient } from '@tanstack/react-query';
-import { QueryKeys } from '../../queries/queryKeys';
-import { ProfileCarousel } from '../../components/profile/profileCarousel';
-import { Badges } from '../../components/profile/badges';
+import { QueryKeys } from '../../../queries/queryKeys';
+import { ProfileCarousel } from '../../../components/profile/profileCarousel';
+import { Badges } from '../../../components/profile/badges';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import { FontAwesome } from '@expo/vector-icons';
-import { If } from '../../components/utils';
-import { ProfileTitle } from '../../components/profile/profileTitle';
+import { If } from '../../../components/utils';
+import { ProfileTitle } from '../../../components/profile/profileTitle';
 import ReactNativeModal from 'react-native-modal';
-import { gray_100, pink_200 } from '../../constants/colors';
-import { ErrorMessage } from '../../queries/errors/errorMessages';
-import { INotificationData } from '../../store/slices/notificationSlice';
-import notificationService from '../../services/notificationService';
-import { useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
-import { MutateFrienship } from '../../models/Friendship';
-import { ModalNewFriendship } from '../../components/modal/modalNewFriendship';
+import { gray_100, pink_200 } from '../../../constants/colors';
+import { ErrorMessage } from '../../../queries/errors/errorMessages';
+import notificationService from '../../../services/notificationService';
+import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/loggedInUser/userProfileHooks';
+import { MutateFrienship } from '../../../models/Friendship';
+import { ModalNewFriendship } from '../../../components/modal/modalNewFriendship';
 
 
 const searchParamsSchemma = Yup.object({
@@ -163,7 +162,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
           avatar: loggedInUserProfile?.photos[0]?.url,
           name: loggedInUserProfile?.username
         }
-      } as INotificationData;
+      };
       await
         notificationService.sentNotificationToTargetUser(
           messagePayload,
@@ -269,7 +268,8 @@ export default function TargerUserProfileScreen(): JSX.Element {
 
       <Stack.Screen
         options={{
-          animation: 'default',
+          gestureDirection: 'horizontal',
+          fullScreenGestureEnabled: true,
           headerShown: true,
           headerShadowVisible: false,
           headerTitle: targetUserProfile?.username || '',

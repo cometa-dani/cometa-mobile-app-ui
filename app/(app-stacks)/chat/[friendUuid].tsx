@@ -3,19 +3,19 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Bubble, GiftedChat, IMessage, Avatar } from 'react-native-gifted-chat';
 import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import { Text, View, useColors } from '../../components/Themed';
+import { Text, View, useColors } from '../../../components/Themed';
 import { Stack, useLocalSearchParams, router } from 'expo-router';
 import { SafeAreaView } from 'react-native';
 import { Image as ImageWithPlaceholder } from 'expo-image';
 import { Unsubscribe } from 'firebase/auth';
-import { useCometaStore } from '../../store/cometaStore';
-import { useQueryGetFriendshipByTargetUserID } from '../../queries/loggedInUser/friendshipHooks';
+import { useCometaStore } from '../../../store/cometaStore';
+import { useQueryGetFriendshipByTargetUserID } from '../../../queries/loggedInUser/friendshipHooks';
 // firebase
-import { realtimeDB } from '../../config/firebase/firebase';
+import { realtimeDB } from '../../../config/firebase/firebase';
 import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
-import chatWithFriendService from '../../services/chatWithFriendService';
+import chatWithFriendService from '../../../services/chatWithFriendService';
 import { useMMKVListener, useMMKV } from 'react-native-mmkv';
-import { UserMessagesData } from '../../store/slices/messagesSlices';
+import { UserMessagesData } from '../../../store/slices/messagesSlices';
 
 
 type ChatWithFriendMessage = Map<string | number, IMessage>

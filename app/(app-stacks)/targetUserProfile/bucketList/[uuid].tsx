@@ -1,13 +1,13 @@
 import React from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
-import { View, useColors } from '../../../components/Themed';
-import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser } from '../../../queries/targetUser/eventHooks';
+import { View, useColors } from '../../../../components/Themed';
+import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser } from '../../../../queries/targetUser/eventHooks';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { EventsFlashList } from '../../../components/eventsFlashList/eventsFlashList';
+import { EventsFlashList } from '../../../../components/eventsFlashList/eventsFlashList';
 import { useQueryClient } from '@tanstack/react-query';
-import { QueryKeys } from '../../../queries/queryKeys';
-import { GetTargetUser } from '../../../models/User';
-import { CustomHeader } from '../../../components/customHeader/customHeader';
+import { QueryKeys } from '../../../../queries/queryKeys';
+import { GetTargetUser } from '../../../../models/User';
+import { CustomHeader } from '../../../../components/customHeader/customHeader';
 
 
 export default function TargetUserBucketListScreen(): JSX.Element {
@@ -29,8 +29,8 @@ export default function TargetUserBucketListScreen(): JSX.Element {
 
       <Stack.Screen
         options={{
-          presentation: 'modal',
-          animation: 'default',
+          gestureDirection: 'vertical',
+          fullScreenGestureEnabled: true,
           headerShown: true,
           headerTitle: '',
           header: () => (

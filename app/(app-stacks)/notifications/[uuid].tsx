@@ -1,15 +1,15 @@
 import { StyleSheet, SafeAreaView, View } from 'react-native';
-import { useColors, Text } from '../../components/Themed';
+import { useColors, Text } from '../../../components/Themed';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import { BaseButton, RectButton, Swipeable } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
-import { gray_50, red_100 } from '../../constants/colors';
-import { useCometaStore } from '../../store/cometaStore';
-import notificationService from '../../services/notificationService';
-import { INotificationData } from '../../store/slices/notificationSlice';
-import { If } from '../../components/utils';
+import { gray_50, red_100 } from '../../../constants/colors';
+import { useCometaStore } from '../../../store/cometaStore';
+import notificationService from '../../../services/notificationService';
+import { INotificationData } from '../../../store/slices/notificationSlice';
+import { If } from '../../../components/utils';
 
 
 export default function NotificationsScreen(): JSX.Element {
@@ -26,6 +26,8 @@ export default function NotificationsScreen(): JSX.Element {
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <Stack.Screen
         options={{
+          gestureDirection: 'horizontal',
+          fullScreenGestureEnabled: true,
           headerShadowVisible: false,
           headerTitle: 'Notifications',
           headerTitleAlign: 'center'

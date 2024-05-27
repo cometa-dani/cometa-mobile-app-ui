@@ -1,15 +1,15 @@
 import { StyleSheet, TextInput, Pressable } from 'react-native';
 import { BaseButton } from 'react-native-gesture-handler';
-import { Text, View } from '../../components/Themed';
+import { Text, View } from '../../../components/Themed';
 import { Stack } from 'expo-router';
-import { animationDuration } from '../../constants/vars';
+import { animationDuration } from '../../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { useInfiniteQueryGetCities } from '../../queries/loggedInUser/editProfileHooks';
-import { gray_50 } from '../../constants/colors';
-import { If } from '../../components/utils/ifElse';
-import { FadingLoader } from '../../components/lodingSkeletons/FadingList';
+import { useInfiniteQueryGetCities } from '../../../queries/loggedInUser/editProfileHooks';
+import { gray_50 } from '../../../constants/colors';
+import { If } from '../../../components/utils/ifElse';
+import { FadingLoader } from '../../../components/lodingSkeletons/FadingList';
 
 
 interface Props {

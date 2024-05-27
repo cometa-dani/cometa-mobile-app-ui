@@ -1,11 +1,11 @@
 import { SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useColors } from '../../components/Themed';
+import { useColors } from '../../../components/Themed';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SearchCityByName } from './searchCityByName';
 import { SelectLanguages } from './selectLanguages';
-import { If } from '../../components/utils/ifElse';
-import { useMutationLoggedInUserProfileById } from '../../queries/loggedInUser/userProfileHooks';
+import { If } from '../../../components/utils/ifElse';
+import { useMutationLoggedInUserProfileById } from '../../../queries/loggedInUser/userProfileHooks';
 
 
 type UserProfileFields = 'homeTown' | 'currentLocation' | 'languages';

@@ -86,7 +86,7 @@ function RootLayoutNav(): JSX.Element {
       <Stack.Screen name="(app)" options={{ headerShown: false, animation: 'slide_from_right', animationDuration: 290 }} />
 
       <Stack.Screen
-        name="matches/[eventId]"
+        name="(app-stacks)/matches/[eventId]"
         options={{
           headerTitleAlign: 'center',
           headerShadowVisible: false,
