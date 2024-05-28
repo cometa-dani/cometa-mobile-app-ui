@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { StateCreator } from 'zustand';
 import { IMessage } from 'react-native-gifted-chat';
 

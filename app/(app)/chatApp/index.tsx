@@ -18,12 +18,10 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import ReactNativeModal from 'react-native-modal';
 import { appButtonstyles } from '../../../components/buttons/buttons';
 import Checkbox from 'expo-checkbox';
-import { useMMKV } from 'react-native-mmkv';
 import { AppSearchInput } from '../../../components/textInput/AppSearchInput';
 
 
 export default function ChatLatestMessagesScreen(): JSX.Element {
-  const mmkvStorage = useMMKV();
   const friendsLatestMessagesList = useCometaStore(state => state.friendsLatestMessagesList);
   const [showSearchedFriends, setShowSearchedFriends] = useState(false);
   const loggedInUserUUID: string = useCometaStore(state => state.uid);
@@ -90,7 +88,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
   const navigateToChatWithFriend = async (receivedMessage: UserMessagesData) => {
     let messagePayload!: UserMessagesData;
     const { user } = receivedMessage;
-    router.push(`/chat/${user._id}`);
+    router.push(`/chat/${user._id}`); // use chatUUID
 
     if (showSearchedFriends) {
       const currentFriendMessage = friendsLatestMessagesList.find(friend => friend.user._id === user._id);
@@ -133,7 +131,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
     if (chatuuidToDelete.current) {
       if (deleteMedia) {
         await chatWithFriendService.deleteChatHistory(loggedInUserUUID, chatuuidToDelete.current);
-        mmkvStorage.delete(chatuuidToDelete.current);
+        // mmkvStorage.delete(chatuuidToDelete.current);
       }
       await chatWithFriendService.deleteLatestMessage(loggedInUserUUID, chatuuidToDelete.current);
       chatuuidToDelete.current = '';

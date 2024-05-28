@@ -47,7 +47,7 @@ export function WelcomeScreen(): JSX.Element {
           }
         }
         catch (error) {
-          // console.log(error);
+          return null;
         }
       });
     });
@@ -55,6 +55,7 @@ export function WelcomeScreen(): JSX.Element {
 
   // useEffect hook to perform actions when the component is mounted.
   useEffect(() => {
+    let unsubscribe!: Unsubscribe;
     // Use Promise.all to wait for multiple asynchronous operations.
     Promise.all([
       handleAuthStateChanged(), // Check if the user is authenticated.
@@ -73,12 +74,14 @@ export function WelcomeScreen(): JSX.Element {
 
 
   useEffect(() => {
-    // let unsubscribe!: Unsubscribe;
+    let unsubscribeMessages!: Unsubscribe;
+    let unsubscribeNotifications!: Unsubscribe;
+
     if (loggedInUserUUID) {
       const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}`);
       const notificationsRef = ref(realtimeDB, `notifications/${loggedInUserUUID}`);
 
-      unsubscribe = onValue(latestMessageRef, (snapshot) => {
+      unsubscribeMessages = onValue(latestMessageRef, (snapshot) => {
         const messages: UserMessagesData[] = [];
         snapshot.forEach((child) => {
           const data = {
@@ -95,7 +98,7 @@ export function WelcomeScreen(): JSX.Element {
       });
 
 
-      onValue(notificationsRef, (snapshot) => {
+      unsubscribeNotifications = onValue(notificationsRef, (snapshot) => {
         const notifications: INotificationData[] = [];
         snapshot.forEach((child) => {
           const data = {
@@ -104,11 +107,13 @@ export function WelcomeScreen(): JSX.Element {
           } as INotificationData;
           notifications.push(data);
         });
-        setNotificationsList(notifications);
+        const sorted = notifications.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setNotificationsList(sorted);
       });
 
       return () => {
-        unsubscribe && unsubscribe();
+        unsubscribeMessages && unsubscribeMessages();
+        unsubscribeNotifications && unsubscribeNotifications();
       };
     }
   }, [loggedInUserUUID]);
