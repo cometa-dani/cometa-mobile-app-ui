@@ -67,7 +67,7 @@ class ChatWithFriendService {
   }
 
 
-  async markLastMessageAsSeen(loggedInUserUUID: string | number, prevMessage: UserMessagesData) {
+  async markMessageAsSeen(loggedInUserUUID: string | number, prevMessage: UserMessagesData) {
     const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}/${prevMessage.chatUUID}`);
     const messagePayload = {
       ...prevMessage,

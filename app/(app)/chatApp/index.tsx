@@ -102,7 +102,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
     }
     if (!messagePayload.newMessagesCount) return;
 
-    chatWithFriendService.markLastMessageAsSeen(loggedInUserUUID, messagePayload);
+    chatWithFriendService.markMessageAsSeen(loggedInUserUUID, messagePayload);
   };
 
 

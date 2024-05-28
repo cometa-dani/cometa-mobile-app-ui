@@ -76,7 +76,14 @@ export default function ChatWithFriendScreen(): JSX.Element {
   // load messages from local storage on first render
   useEffect(() => {
     if (friendshipData?.chatuuid && !localMessagesHaveBeenRead) {
-      const localMessages: [] = JSON.parse(mmkvStorage.getString(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`) ?? '[]');
+      const localChat = mmkvStorage.getString(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`) ?? '[]';
+      // console.log('localchat: ', localChat);
+      // console.log('key:', mmkvStorage.getString(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`));
+      console.log(mmkvStorage.getAllKeys());
+      console.log('chatUUID', friendshipData.chatuuid);
+      console.log('logged in user', loggedInUserUuid);
+      const localMessages: [] = JSON.parse(localChat);
+      console.log(localMessages);
       setMessages(new Map(localMessages));
       setLocalMessagesHaveBeenRead(true);
     }
@@ -85,19 +92,22 @@ export default function ChatWithFriendScreen(): JSX.Element {
 
   // listen for new added messages in real-time DB
   useEffect(() => {
-    if (!localMessagesHaveBeenRead) return;
-
     let unsubscribe!: Unsubscribe;
+    if (!localMessagesHaveBeenRead) return;
     if (friendshipData?.chatuuid) {
       const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}/${loggedInUserUuid}`);
       const queryMessages = query(chatsRef, limitToLast(20)); // we can use the number of new messages
 
       unsubscribe = onChildAdded(queryMessages, (data) => {
+        const addNewMessage = (): string => (
+          JSON.stringify([...localMessages, [newMessage._id, newMessage]])
+        );
+        const localChatUUID = `${loggedInUserUuid}.chats.${friendshipData.chatuuid}`;
         const newMessage = data?.val() as UserMessagesData;
-        const localMessages: [] = JSON.parse(mmkvStorage.getString(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`) ?? '[]');
-        const addNewMessage = () => JSON.stringify([...localMessages, [newMessage._id, newMessage]]);
-
-        mmkvStorage.set(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`, addNewMessage());
+        const localMessages: [] = JSON.parse(mmkvStorage.getString(localChatUUID) ?? '[]');
+        if (!new Map(localMessages).has(newMessage?._id)) {
+          mmkvStorage.set(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`, addNewMessage());
+        }
       });
     }
     return () => {
@@ -188,7 +198,7 @@ export default function ChatWithFriendScreen(): JSX.Element {
                 user: {
                   ...props.currentMessage?.user,
                   avatar:
-                    props.currentMessage?.user._id === targetUser?.uid ?
+                    props.currentMessage?.user?._id === targetUser?.uid ?
                       targetUser?.photos[0]?.url : loggedInUser?.photos[0]?.url
                 }
               } as IMessage
