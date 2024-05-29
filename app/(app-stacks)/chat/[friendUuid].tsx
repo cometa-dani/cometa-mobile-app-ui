@@ -77,13 +77,7 @@ export default function ChatWithFriendScreen(): JSX.Element {
   useEffect(() => {
     if (friendshipData?.chatuuid && !localMessagesHaveBeenRead) {
       const localChat = mmkvStorage.getString(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`) ?? '[]';
-      // console.log('localchat: ', localChat);
-      // console.log('key:', mmkvStorage.getString(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`));
-      console.log(mmkvStorage.getAllKeys());
-      console.log('chatUUID', friendshipData.chatuuid);
-      console.log('logged in user', loggedInUserUuid);
       const localMessages: [] = JSON.parse(localChat);
-      console.log(localMessages);
       setMessages(new Map(localMessages));
       setLocalMessagesHaveBeenRead(true);
     }

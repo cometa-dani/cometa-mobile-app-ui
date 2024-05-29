@@ -19,9 +19,11 @@ import ReactNativeModal from 'react-native-modal';
 import { appButtonstyles } from '../../../components/buttons/buttons';
 import Checkbox from 'expo-checkbox';
 import { AppSearchInput } from '../../../components/textInput/AppSearchInput';
+import { useMMKV } from 'react-native-mmkv';
 
 
 export default function ChatLatestMessagesScreen(): JSX.Element {
+  const mmkvStorage = useMMKV();
   const friendsLatestMessagesList = useCometaStore(state => state.friendsLatestMessagesList);
   const [showSearchedFriends, setShowSearchedFriends] = useState(false);
   const loggedInUserUUID: string = useCometaStore(state => state.uid);
@@ -128,12 +130,13 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
 
 
   const handleDeleteMessage = async () => {
-    if (chatuuidToDelete.current) {
+    const chatUUID = chatuuidToDelete.current;
+    if (chatUUID) {
       if (deleteMedia) {
-        await chatWithFriendService.deleteChatHistory(loggedInUserUUID, chatuuidToDelete.current);
-        // mmkvStorage.delete(chatuuidToDelete.current);
+        await chatWithFriendService.deleteChatHistory(loggedInUserUUID, chatUUID);
+        mmkvStorage.delete(`${loggedInUserUUID}.chats.${chatUUID}`);
       }
-      await chatWithFriendService.deleteLatestMessage(loggedInUserUUID, chatuuidToDelete.current);
+      await chatWithFriendService.deleteLatestMessage(loggedInUserUUID, chatUUID);
       chatuuidToDelete.current = '';
     }
     setToggleModal(false);
