@@ -78,6 +78,16 @@ class ChatWithFriendService {
     return await set(latestMessageRef, messagePayload);
   }
 
+  async setMessageAsViewed() {
+    // const chatsRootRef = ref(realtimeDB, `chats/${chatuuid}`);
+    // const chatsRefUser1 = ref(realtimeDB, `chats/${chatuuid}/${loggedInUser.uid}`);
+    // const newMessageKey1 = (await push(chatsRefUser1)).key;
+
+    // const chatPayload = {
+    //   [`/${loggedInUser.uid}/${newMessageKey1}`]: messagePayload,
+    //   [`/${targetUser.uid}/${newMessageKey1}`]: messagePayload
+    // };
+  }
 
   async deleteLatestMessage(loggedInUserUUID: string | number, chatuuid: string) {
     const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}/${chatuuid}`);

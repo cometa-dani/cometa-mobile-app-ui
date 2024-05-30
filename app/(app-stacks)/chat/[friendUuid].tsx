@@ -16,7 +16,7 @@ import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
 import chatWithFriendService from '../../../services/chatWithFriendService';
 import { useMMKVListener, useMMKV } from 'react-native-mmkv';
 import { UserMessagesData } from '../../../store/slices/messagesSlices';
-import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { blue_100, gray_50 } from '../../../constants/colors';
 
 
@@ -50,6 +50,16 @@ export default function ChatWithFriendScreen(): JSX.Element {
   });
 
 
+  // useFocusEffect(useCallback(() =>{
+  //   messages.forEach(message => {
+  //     if(!message.received) {
+  //       // chatWithFriendService.markMessageAsSeen(message)
+  //     }
+  //   })
+
+  // }, [messages]));
+
+
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
     try {
       const senderMessage = messages[0];
@@ -61,6 +71,10 @@ export default function ChatWithFriendScreen(): JSX.Element {
         }
       };
       if (friendshipData?.chatuuid && loggedInUser && targetUser) {
+        // 1. should be written locally {sent: false, received: false}
+
+        // 2. should be written in firebase and available for both users
+        //  {sent: true, received: false}
         await chatWithFriendService.writeMessage(
           friendshipData.chatuuid,
           messagePayload,
@@ -102,6 +116,10 @@ export default function ChatWithFriendScreen(): JSX.Element {
         );
         const localMessages: [] = JSON.parse(mmkvStorage.getString(localChatUUID) ?? '[]');
         if (!new Map(localMessages).has(newMessage?._id)) {
+
+          // What if we set the message {received: true} here ?
+
+
           mmkvStorage.set(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`, addNewMessage());
         }
       });
