@@ -12,6 +12,11 @@ class NotificationService {
     const notificationRef = ref(realtimeDB, `notifications/${loggedInUserUUID}/${chatUUID}`);
     return await set(notificationRef, null);
   };
+
+  deleteAllNotifications = async (loggedInUserUUID: string) => {
+    const notificationRef = ref(realtimeDB, `notifications/${loggedInUserUUID}`);
+    return await set(notificationRef, null);
+  };
 }
 
 

@@ -1,6 +1,6 @@
 import { StyleSheet, SafeAreaView, View } from 'react-native';
 import { useColors, Text } from '../../../components/Themed';
-import { Stack, router, useLocalSearchParams } from 'expo-router';
+import { Stack, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import { BaseButton, RectButton, Swipeable } from 'react-native-gesture-handler';
@@ -10,6 +10,7 @@ import { useCometaStore } from '../../../store/cometaStore';
 import notificationService from '../../../services/notificationService';
 import { INotificationData } from '../../../store/slices/notificationSlice';
 import { If } from '../../../components/utils';
+import { useCallback } from 'react';
 
 
 export default function NotificationsScreen(): JSX.Element {
@@ -21,6 +22,12 @@ export default function NotificationsScreen(): JSX.Element {
     if (!notification?.chatUUID) return;
     notificationService.deleteNotification(notification?.chatUUID, loggedInUserUUID);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => notificationService.deleteAllNotifications(loggedInUserUUID);
+    }, [])
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>

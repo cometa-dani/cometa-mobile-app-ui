@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Bubble, GiftedChat, IMessage, Avatar } from 'react-native-gifted-chat';
+import { Bubble, GiftedChat, IMessage, Avatar, Message } from 'react-native-gifted-chat';
 import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, View, useColors } from '../../../components/Themed';
 import { Stack, useLocalSearchParams, router } from 'expo-router';
@@ -16,6 +16,8 @@ import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
 import chatWithFriendService from '../../../services/chatWithFriendService';
 import { useMMKVListener, useMMKV } from 'react-native-mmkv';
 import { UserMessagesData } from '../../../store/slices/messagesSlices';
+import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import { blue_100, gray_50 } from '../../../constants/colors';
 
 
 type ChatWithFriendMessage = Map<string | number, IMessage>
@@ -93,11 +95,11 @@ export default function ChatWithFriendScreen(): JSX.Element {
       const queryMessages = query(chatsRef, limitToLast(20)); // we can use the number of new messages
 
       unsubscribe = onChildAdded(queryMessages, (data) => {
-        const addNewMessage = (): string => (
-          JSON.stringify([...localMessages, [newMessage._id, newMessage]])
-        );
         const localChatUUID = `${loggedInUserUuid}.chats.${friendshipData.chatuuid}`;
         const newMessage = data?.val() as UserMessagesData;
+        const addNewMessage = (): string => (
+          JSON.stringify([...localMessages, [newMessage._id, { ...newMessage, received: false, sent: true } as IMessage]])
+        );
         const localMessages: [] = JSON.parse(mmkvStorage.getString(localChatUUID) ?? '[]');
         if (!new Map(localMessages).has(newMessage?._id)) {
           mmkvStorage.set(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`, addNewMessage());
@@ -155,6 +157,7 @@ export default function ChatWithFriendScreen(): JSX.Element {
           messageContainerRef={chatRef}
           alwaysShowSend={true}
           inverted={false}
+          // renderT
           renderFooter={() => (
             <View style={{ height: 30 }} />
           )}
@@ -162,12 +165,18 @@ export default function ChatWithFriendScreen(): JSX.Element {
             <Bubble
               {...props}
               user={props.user}
+              renderTicks={(message) => (
+                message.user._id === loggedInUserUuid &&
+                <>
+                  <FontAwesome name="check" size={14} color={message.sent ? blue_100 : gray_50} />
+                  <FontAwesome name="check" size={14} color={message.received ? blue_100 : gray_50} />
+                </>
+              )}
               key={props.currentMessage?._id}
               textStyle={{
                 right: { color: text, fontFamily: 'Poppins' },
                 left: { color: text, fontFamily: 'Poppins' }
               }}
-              // bottomContainerStyle={{ right: { height: 30, marginBottom: 20 }, left: { height: 30, marginBottom: 20 } }}
               wrapperStyle={{
                 right: {
                   backgroundColor: '#ead4fa',
@@ -176,13 +185,15 @@ export default function ChatWithFriendScreen(): JSX.Element {
                   marginRight: -10,
                   minWidth: '50%',
                   maxWidth: '85%',
-                  // marginBottom: 20
                 },
                 left: {
                   backgroundColor: '#f0f0f0', padding: 8, borderRadius: 24
                 }
               }}
             />
+          )}
+          renderMessage={(props) => (
+            <Message  {...props} />
           )}
           renderAvatar={(props) => {
             const avatarProps = {
