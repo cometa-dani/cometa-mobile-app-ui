@@ -16,8 +16,9 @@ import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
 import chatWithFriendService from '../../../services/chatWithFriendService';
 import { useMMKVListener, useMMKV } from 'react-native-mmkv';
 import { UserMessagesData } from '../../../store/slices/messagesSlices';
-import { FontAwesome } from '@expo/vector-icons';
+import { Entypo, FontAwesome } from '@expo/vector-icons';
 import { blue_100, gray_50 } from '../../../constants/colors';
+import { If } from '../../../components/utils';
 
 
 type ChatWithFriendMessage = Map<string | number, IMessage>
@@ -119,7 +120,6 @@ export default function ChatWithFriendScreen(): JSX.Element {
 
           // What if we set the message {received: true} here ?
 
-
           mmkvStorage.set(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`, addNewMessage());
         }
       });
@@ -150,7 +150,9 @@ export default function ChatWithFriendScreen(): JSX.Element {
           fullScreenGestureEnabled: true,
           headerTitle: () => {
             return (
-              <TouchableOpacity onPress={() => router.push(`/targetUserProfile/${targetUser?.uid}`)}>
+              <TouchableOpacity
+                onPress={() => router.push(`/targetUserProfile/${targetUser?.uid}`)}
+              >
                 <View style={styles.targetUser}>
                   <ImageWithPlaceholder
                     style={styles.avatarImg}
@@ -175,7 +177,6 @@ export default function ChatWithFriendScreen(): JSX.Element {
           messageContainerRef={chatRef}
           alwaysShowSend={true}
           inverted={false}
-          // renderT
           renderFooter={() => (
             <View style={{ height: 30 }} />
           )}
@@ -184,11 +185,24 @@ export default function ChatWithFriendScreen(): JSX.Element {
               {...props}
               user={props.user}
               renderTicks={(message) => (
-                message.user._id === loggedInUserUuid &&
-                <>
-                  <FontAwesome name="check" size={14} color={message.sent ? blue_100 : gray_50} />
-                  <FontAwesome name="check" size={14} color={message.received ? blue_100 : gray_50} />
-                </>
+                <If
+                  condition={message.user._id === loggedInUserUuid}
+                  render={(
+                    <>
+                      <Entypo
+                        name="check"
+                        size={13.6}
+                        color={message.sent ? blue_100 : gray_50}
+                      />
+                      <Entypo
+                        style={{ marginLeft: -6 }}
+                        name="check"
+                        size={13.6}
+                        color={message.received ? blue_100 : gray_50}
+                      />
+                    </>
+                  )}
+                />
               )}
               key={props.currentMessage?._id}
               textStyle={{
