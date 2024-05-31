@@ -12,7 +12,7 @@ import { useCometaStore } from '../../../store/cometaStore';
 import { useQueryGetFriendshipByTargetUserID } from '../../../queries/loggedInUser/friendshipHooks';
 // firebase
 import { realtimeDB } from '../../../config/firebase/firebase';
-import { limitToLast, onChildAdded, query, ref, onValue, onChildChanged } from 'firebase/database';
+import { limitToLast, query, ref, onValue } from 'firebase/database';
 import chatWithFriendService from '../../../services/chatWithFriendService';
 import { useMMKVListener, useMMKV } from 'react-native-mmkv';
 import { UserMessagesData } from '../../../store/slices/messagesSlices';
@@ -51,16 +51,6 @@ export default function ChatWithFriendScreen(): JSX.Element {
   });
 
 
-  // useFocusEffect(useCallback(() =>{
-  //   messages.forEach(message => {
-  //     if(!message.received) {
-  //       // chatWithFriendService.markMessageAsSeen(message)
-  //     }
-  //   })
-
-  // }, [messages]));
-
-
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
     try {
       const senderMessage = messages[0];
@@ -95,10 +85,6 @@ export default function ChatWithFriendScreen(): JSX.Element {
   // load messages from local storage on first render
   useEffect(() => {
     if (friendshipData?.chatuuid && !localMessagesHaveBeenRead) {
-      // const localChat = mmkvStorage.getString(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`) ?? '[]';
-      // const localMessages: [] = JSON.parse(localChat);
-      // console.log(localMessages);
-
       setMessages(new Map(getLocalMessages()));
       setLocalMessagesHaveBeenRead(true);
     }
@@ -120,48 +106,19 @@ export default function ChatWithFriendScreen(): JSX.Element {
     if (!localMessagesHaveBeenRead) return;
     if (friendshipData?.chatuuid) {
       const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}/${loggedInUserUuid}`);
-      const queryMessages = query(chatsRef, limitToLast(10)); // we can use the number of new messages
+      const queryMessages = query(chatsRef, limitToLast(20)); // we can use the number of new messages
 
-      unsubscribe = onChildAdded(queryMessages, (data) => {
-        // data.
-        const newMessage = { ...data?.val() as UserMessagesData, messageUUID: data?.key ?? '' };
+      onValue(queryMessages, (snapshot) => {
         const localMessages = getLocalMessages();
         const messagesMap = new Map<string, UserMessagesData>(localMessages);
 
-        // create
-        if (!messagesMap.has(newMessage?._id.toString())) {
-          addNewLocalMessage(newMessage, localMessages);
-          return;
-        }
+        snapshot.forEach(data => {
+          const newMessage = { ...data?.val() as UserMessagesData, messageUUID: data?.key ?? '' };
+          messagesMap.set(newMessage._id.toString(), newMessage);
+        });
 
-        // update
-        const messageToUpdate = messagesMap.get(newMessage?._id.toString());
-        const updatedMessage = { ...messageToUpdate, ...newMessage };
-        messagesMap.set(newMessage._id.toString(), updatedMessage);
         mmkvStorage.set(LOCAL_CHAT_KEY, JSON.stringify([...messagesMap.entries()]));
-
-        console.log('updated', updatedMessage.text, updatedMessage.received);
       });
-      // onChildChanged(queryMessages, (data) => {
-      //   // data.
-      //   const newMessage = { ...data?.val() as UserMessagesData, messageUUID: data?.key ?? '' };
-      //   const localMessages = getLocalMessages();
-      //   const messagesMap = new Map<string, UserMessagesData>(localMessages);
-
-      //   // // create
-      //   // if (!messagesMap.has(newMessage?._id.toString())) {
-      //   //   addNewLocalMessage(newMessage, localMessages);
-      //   //   return;
-      //   // }
-
-      //   // update
-      //   const messageToUpdate = messagesMap.get(newMessage?._id.toString());
-      //   const updatedMessage = { ...messageToUpdate, ...newMessage };
-      //   messagesMap.set(newMessage._id.toString(), updatedMessage);
-      //   mmkvStorage.set(LOCAL_CHAT_KEY, JSON.stringify([...messagesMap.entries()]));
-
-      //   console.log('updated', updatedMessage.text, updatedMessage.received);
-      // });
     }
     return () => {
       unsubscribe && unsubscribe();
@@ -174,8 +131,8 @@ export default function ChatWithFriendScreen(): JSX.Element {
       const timeOutId = setTimeout(() => {
         chatRef.current?.scrollToEnd({ animated: true });
       }, 80);
+      // console.log(chatRef.current?.recordInteraction());
 
-      // console.log(...messages.entries());
 
       const lastMessage = [...messages.values()].at(-1);
       if (loggedInUserUuid !== lastMessage?.user._id && lastMessage && !lastMessage.received) {
@@ -210,7 +167,6 @@ export default function ChatWithFriendScreen(): JSX.Element {
 
                   <View>
                     <Text style={styles.avatarName}>{targetUser?.username}</Text>
-                    {/* <Text>online</Text> */}
                   </View>
                 </View>
               </TouchableOpacity>
@@ -221,6 +177,20 @@ export default function ChatWithFriendScreen(): JSX.Element {
 
       <View style={styles.container}>
         <GiftedChat
+          isLoadingEarlier={true}
+          loadEarlier={true}
+          infiniteScroll={true}
+          listViewProps={{
+            onEndReached: () => console.log('end reached'),
+            onScroll: () => console.log('top'),
+            scrollsToTop: false
+          }}
+          // renderLoadEarlier={(props) => (
+          //   <LoadEarlier
+          //     onLoadEarlier={() => console.log('load earlier')}
+          //     {...props}
+          //   />
+          // )}
           scrollToBottom={true}
           messageContainerRef={chatRef}
           alwaysShowSend={true}
@@ -296,8 +266,8 @@ export default function ChatWithFriendScreen(): JSX.Element {
               />
             );
           }}
-          // isTyping={true} // shows typing indicator
-          messages={[...messages.values()]}
+
+          messages={[...messages.values()].slice(-10)}
           onSend={(messages) => onSendMessage(messages)}
           showUserAvatar={true}
           user={{
