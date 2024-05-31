@@ -177,14 +177,14 @@ export default function ChatWithFriendScreen(): JSX.Element {
 
       <View style={styles.container}>
         <GiftedChat
-          isLoadingEarlier={true}
+          // isLoadingEarlier={true}
           loadEarlier={true}
           infiniteScroll={true}
-          listViewProps={{
-            onEndReached: () => console.log('end reached'),
-            onScroll: () => console.log('top'),
-            scrollsToTop: false
-          }}
+          // listViewProps={{
+          //   onEndReached: () => console.log('end reached'),
+          //   onScroll: () => console.log('top'),
+          //   scrollsToTop: false
+          // }}
           // renderLoadEarlier={(props) => (
           //   <LoadEarlier
           //     onLoadEarlier={() => console.log('load earlier')}
@@ -267,7 +267,7 @@ export default function ChatWithFriendScreen(): JSX.Element {
             );
           }}
 
-          messages={[...messages.values()].slice(-10)}
+          messages={[...messages.values()].slice(-20)}
           onSend={(messages) => onSendMessage(messages)}
           showUserAvatar={true}
           user={{
