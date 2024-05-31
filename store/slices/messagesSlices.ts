@@ -2,9 +2,10 @@ import { StateCreator } from 'zustand';
 import { IMessage } from 'react-native-gifted-chat';
 
 
-export interface UserMessagesData extends Pick<IMessage, '_id' | 'user' | 'text' | 'createdAt'> {
+export interface UserMessagesData extends Pick<IMessage, '_id' | 'user' | 'text' | 'createdAt' | 'received' | 'sent'> {
   newMessagesCount: number,
   chatUUID: string,
+  messageUUID: string,
   isChatGroup: boolean
 }
 

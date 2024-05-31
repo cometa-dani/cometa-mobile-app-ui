@@ -12,20 +12,21 @@ import { useCometaStore } from '../../../store/cometaStore';
 import { useQueryGetFriendshipByTargetUserID } from '../../../queries/loggedInUser/friendshipHooks';
 // firebase
 import { realtimeDB } from '../../../config/firebase/firebase';
-import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
+import { limitToLast, onChildAdded, query, ref, onValue, onChildChanged } from 'firebase/database';
 import chatWithFriendService from '../../../services/chatWithFriendService';
 import { useMMKVListener, useMMKV } from 'react-native-mmkv';
 import { UserMessagesData } from '../../../store/slices/messagesSlices';
-import { Entypo, FontAwesome } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 import { blue_100, gray_50 } from '../../../constants/colors';
 import { If } from '../../../components/utils';
 
 
-type ChatWithFriendMessage = Map<string | number, IMessage>
+type ChatWithFriendMessage = Map<string | number, UserMessagesData>
 
 export default function ChatWithFriendScreen(): JSX.Element {
   const { text } = useColors();
   const mmkvStorage = useMMKV();
+  // mmkvStorage.clearAll();
 
   // users ids
   const targetUserUUID = useLocalSearchParams<{ friendUuid: string }>()['friendUuid']; // TODO: can be uuid
@@ -37,16 +38,15 @@ export default function ChatWithFriendScreen(): JSX.Element {
   // users profiles
   const targetUser = sender?.uid === targetUserUUID ? sender : receiver;
   const loggedInUser = sender?.uid !== targetUserUUID ? sender : receiver;
+  const LOCAL_CHAT_KEY = `${loggedInUserUuid}.chats.${friendshipData?.chatuuid}`;
   const [messages, setMessages] = useState<ChatWithFriendMessage>(new Map([]));
   const chatRef = useRef<FlatList<IMessage>>(null);
   const [localMessagesHaveBeenRead, setLocalMessagesHaveBeenRead] = useState(false);
 
   // listen only for chatuuid changes
   useMMKVListener((key: string) => {
-    // debugger;
-    if (key === `${loggedInUserUuid}.chats.${friendshipData?.chatuuid}`) {
-      const updateMap: [] = JSON.parse(mmkvStorage.getString(`${loggedInUserUuid}.chats.${friendshipData?.chatuuid}`) ?? '[]');
-      setMessages(new Map(updateMap));
+    if (key === LOCAL_CHAT_KEY) {
+      setMessages(new Map(getLocalMessages()));
     }
   });
 
@@ -66,19 +66,21 @@ export default function ChatWithFriendScreen(): JSX.Element {
       const senderMessage = messages[0];
       const messagePayload = {
         ...senderMessage,
-        createdAt: new Date().toString(),
+        sent: false,
+        received: false,
         user: {
           _id: loggedInUserUuid,
         }
       };
       if (friendshipData?.chatuuid && loggedInUser && targetUser) {
         // 1. should be written locally {sent: false, received: false}
-
+        addNewLocalMessage(messagePayload, getLocalMessages());
         // 2. should be written in firebase and available for both users
         //  {sent: true, received: false}
+
         await chatWithFriendService.writeMessage(
           friendshipData.chatuuid,
-          messagePayload,
+          { ...messagePayload, sent: true },
           loggedInUser,
           targetUser
         );
@@ -93,13 +95,24 @@ export default function ChatWithFriendScreen(): JSX.Element {
   // load messages from local storage on first render
   useEffect(() => {
     if (friendshipData?.chatuuid && !localMessagesHaveBeenRead) {
-      const localChat = mmkvStorage.getString(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`) ?? '[]';
-      const localMessages: [] = JSON.parse(localChat);
-      setMessages(new Map(localMessages));
+      // const localChat = mmkvStorage.getString(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`) ?? '[]';
+      // const localMessages: [] = JSON.parse(localChat);
+      // console.log(localMessages);
+
+      setMessages(new Map(getLocalMessages()));
       setLocalMessagesHaveBeenRead(true);
     }
   }, [friendshipData?.chatuuid]);
 
+
+  function getLocalMessages(): [] {
+    return JSON.parse(mmkvStorage.getString(LOCAL_CHAT_KEY) ?? '[]');
+  }
+
+  function addNewLocalMessage<T>(message: UserMessagesData | IMessage, localMessages: T[]) {
+    const newMessage = JSON.stringify([...localMessages, [message._id, message]]);
+    mmkvStorage.set(LOCAL_CHAT_KEY, newMessage);
+  }
 
   // listen for new added messages in real-time DB
   useEffect(() => {
@@ -107,22 +120,48 @@ export default function ChatWithFriendScreen(): JSX.Element {
     if (!localMessagesHaveBeenRead) return;
     if (friendshipData?.chatuuid) {
       const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}/${loggedInUserUuid}`);
-      const queryMessages = query(chatsRef, limitToLast(20)); // we can use the number of new messages
+      const queryMessages = query(chatsRef, limitToLast(10)); // we can use the number of new messages
 
       unsubscribe = onChildAdded(queryMessages, (data) => {
-        const localChatUUID = `${loggedInUserUuid}.chats.${friendshipData.chatuuid}`;
-        const newMessage = data?.val() as UserMessagesData;
-        const addNewMessage = (): string => (
-          JSON.stringify([...localMessages, [newMessage._id, { ...newMessage, received: false, sent: true } as IMessage]])
-        );
-        const localMessages: [] = JSON.parse(mmkvStorage.getString(localChatUUID) ?? '[]');
-        if (!new Map(localMessages).has(newMessage?._id)) {
+        // data.
+        const newMessage = { ...data?.val() as UserMessagesData, messageUUID: data?.key ?? '' };
+        const localMessages = getLocalMessages();
+        const messagesMap = new Map<string, UserMessagesData>(localMessages);
 
-          // What if we set the message {received: true} here ?
-
-          mmkvStorage.set(`${loggedInUserUuid}.chats.${friendshipData.chatuuid}`, addNewMessage());
+        // create
+        if (!messagesMap.has(newMessage?._id.toString())) {
+          addNewLocalMessage(newMessage, localMessages);
+          return;
         }
+
+        // update
+        const messageToUpdate = messagesMap.get(newMessage?._id.toString());
+        const updatedMessage = { ...messageToUpdate, ...newMessage };
+        messagesMap.set(newMessage._id.toString(), updatedMessage);
+        mmkvStorage.set(LOCAL_CHAT_KEY, JSON.stringify([...messagesMap.entries()]));
+
+        console.log('updated', updatedMessage.text, updatedMessage.received);
       });
+      // onChildChanged(queryMessages, (data) => {
+      //   // data.
+      //   const newMessage = { ...data?.val() as UserMessagesData, messageUUID: data?.key ?? '' };
+      //   const localMessages = getLocalMessages();
+      //   const messagesMap = new Map<string, UserMessagesData>(localMessages);
+
+      //   // // create
+      //   // if (!messagesMap.has(newMessage?._id.toString())) {
+      //   //   addNewLocalMessage(newMessage, localMessages);
+      //   //   return;
+      //   // }
+
+      //   // update
+      //   const messageToUpdate = messagesMap.get(newMessage?._id.toString());
+      //   const updatedMessage = { ...messageToUpdate, ...newMessage };
+      //   messagesMap.set(newMessage._id.toString(), updatedMessage);
+      //   mmkvStorage.set(LOCAL_CHAT_KEY, JSON.stringify([...messagesMap.entries()]));
+
+      //   console.log('updated', updatedMessage.text, updatedMessage.received);
+      // });
     }
     return () => {
       unsubscribe && unsubscribe();
@@ -132,9 +171,18 @@ export default function ChatWithFriendScreen(): JSX.Element {
 
   useEffect(() => {
     if (localMessagesHaveBeenRead) {
-      setTimeout(() => {
+      const timeOutId = setTimeout(() => {
         chatRef.current?.scrollToEnd({ animated: true });
       }, 80);
+
+      // console.log(...messages.entries());
+
+      const lastMessage = [...messages.values()].at(-1);
+      if (loggedInUserUuid !== lastMessage?.user._id && lastMessage && !lastMessage.received) {
+        chatWithFriendService.setMessageAsViewed(friendshipData?.chatuuid ?? '', loggedInUserUuid, targetUserUUID, lastMessage);
+      }
+
+      return () => clearTimeout(timeOutId);
     }
   }, [messages.size, localMessagesHaveBeenRead]);
 

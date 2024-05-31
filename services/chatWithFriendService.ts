@@ -78,15 +78,16 @@ class ChatWithFriendService {
     return await set(latestMessageRef, messagePayload);
   }
 
-  async setMessageAsViewed() {
-    // const chatsRootRef = ref(realtimeDB, `chats/${chatuuid}`);
-    // const chatsRefUser1 = ref(realtimeDB, `chats/${chatuuid}/${loggedInUser.uid}`);
-    // const newMessageKey1 = (await push(chatsRefUser1)).key;
+  async setMessageAsViewed(chatuuid: string, loggedInUserUUID: string, targetUserUUID: string, prevMessage: UserMessagesData) {
+    const chatsRootRef = ref(realtimeDB, `chats/${chatuuid}`);
 
-    // const chatPayload = {
-    //   [`/${loggedInUser.uid}/${newMessageKey1}`]: messagePayload,
-    //   [`/${targetUser.uid}/${newMessageKey1}`]: messagePayload
-    // };
+    const messagePayload = { ...prevMessage, sent: true, received: true };
+    const chatPayload = {
+      [`/${loggedInUserUUID}/${prevMessage.messageUUID}`]: messagePayload,
+      [`/${targetUserUUID}/${prevMessage.messageUUID}`]: messagePayload
+    };
+
+    return update(chatsRootRef, chatPayload);
   }
 
   async deleteLatestMessage(loggedInUserUUID: string | number, chatuuid: string) {
