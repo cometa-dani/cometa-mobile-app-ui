@@ -91,23 +91,8 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
 
 
   const navigateToChatWithFriend = async (receivedMessage: UserMessagesData) => {
-    // let messagePayload!: UserMessagesData;
     const { user } = receivedMessage;
-    router.push(`/chat/${user._id}`); // use chatUUID
-
-    // if (showSearchedFriends) {
-    //   const currentFriendMessage = friendsLatestMessagesList.find(friend => friend.user._id === user._id);
-    //   if (!currentFriendMessage) {
-    //     return;
-    //   }
-    //   messagePayload = currentFriendMessage;
-    // }
-    // else {
-    //   messagePayload = receivedMessage;
-    // }
-    // if (!messagePayload.newMessagesCount) return;
-
-    // chatWithFriendService.markMessageAsSeen(loggedInUserUUID, messagePayload);
+    router.push(`/chat/${user._id}`);
   };
 
 
@@ -116,7 +101,6 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
     router.push(`/chatGroups/${chatUUID}/messages`);
     // const currentFriend = friendsLatestMessagesList.find(friend => friend.user._id === user._id);
     // const messagePayload = { ...receivedMessage, user: { ...receivedMessage.user, text: currentFriend?.text ?? '' } };
-
     // chatWithFriendService.markLastMessageAsSeen(loggedInUserUUID, messagePayload);
   };
 
