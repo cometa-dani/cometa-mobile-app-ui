@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Bubble, GiftedChat, IMessage, Avatar, Message } from 'react-native-gifted-chat';
 import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, View, useColors } from '../../../components/Themed';
-import { Stack, useLocalSearchParams, router } from 'expo-router';
+import { Stack, useLocalSearchParams, router, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native';
 import { Image as ImageWithPlaceholder } from 'expo-image';
 import { Unsubscribe } from 'firebase/auth';
@@ -14,7 +14,7 @@ import { useQueryGetFriendshipByTargetUserID } from '../../../queries/loggedInUs
 import { realtimeDB } from '../../../config/firebase/firebase';
 import { limitToLast, query, ref, onValue } from 'firebase/database';
 import chatWithFriendService from '../../../services/chatWithFriendService';
-import { useMMKVListener, useMMKV } from 'react-native-mmkv';
+import { useMMKV } from 'react-native-mmkv';
 import { UserMessagesData } from '../../../store/slices/messagesSlices';
 import { Entypo } from '@expo/vector-icons';
 import { blue_100, gray_50 } from '../../../constants/colors';
@@ -26,7 +26,6 @@ type ChatWithFriendMessage = Map<string | number, UserMessagesData>
 export default function ChatWithFriendScreen(): JSX.Element {
   const { text } = useColors();
   const mmkvStorage = useMMKV();
-  // mmkvStorage.clearAll();
 
   // users ids
   const targetUserUUID = useLocalSearchParams<{ friendUuid: string }>()['friendUuid']; // TODO: can be uuid
@@ -43,12 +42,10 @@ export default function ChatWithFriendScreen(): JSX.Element {
   const chatRef = useRef<FlatList<IMessage>>(null);
   const [localMessagesHaveBeenRead, setLocalMessagesHaveBeenRead] = useState(false);
 
-  // listen only for chatuuid changes
-  useMMKVListener((key: string) => {
-    if (key === LOCAL_CHAT_KEY) {
-      setMessages(new Map(getLocalMessages()));
-    }
-  });
+
+  function getLocalMessages(): [] {
+    return JSON.parse(mmkvStorage.getString(LOCAL_CHAT_KEY) ?? '[]');
+  }
 
 
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
@@ -61,12 +58,16 @@ export default function ChatWithFriendScreen(): JSX.Element {
         user: {
           _id: loggedInUserUuid,
         }
-      };
+      } as UserMessagesData;
       if (friendshipData?.chatuuid && loggedInUser && targetUser) {
-        // 1. should be written locally {sent: false, received: false}
-        addNewLocalMessage(messagePayload, getLocalMessages());
-        // 2. should be written in firebase and available for both users
-        //  {sent: true, received: false}
+        setMessages(prevMap => {
+          const prevMapCopy = new Map(prevMap);
+          prevMapCopy.set(messagePayload._id.toString(), messagePayload);
+          return prevMapCopy;
+        });
+        setTimeout(() => {
+          chatRef.current?.scrollToEnd({ animated: true });
+        }, 150);
 
         await chatWithFriendService.writeMessage(
           friendshipData.chatuuid,
@@ -79,69 +80,68 @@ export default function ChatWithFriendScreen(): JSX.Element {
     catch {
       return null;
     }
-  }, [friendshipData?.chatuuid]);
+  }, [friendshipData?.chatuuid, targetUser]);
 
 
   // load messages from local storage on first render
-  useEffect(() => {
-    if (friendshipData?.chatuuid && !localMessagesHaveBeenRead) {
-      setMessages(new Map(getLocalMessages()));
-      setLocalMessagesHaveBeenRead(true);
-    }
-  }, [friendshipData?.chatuuid]);
+  useFocusEffect(
+    useCallback(() => {
+      if (friendshipData?.chatuuid && !localMessagesHaveBeenRead) {
+        setMessages(new Map(getLocalMessages()));
+        setLocalMessagesHaveBeenRead(true);
+        const timeOutId = setTimeout(() => {
+          chatRef.current?.scrollToEnd({ animated: true });
+        }, 500);
+
+        return () => clearTimeout(timeOutId);
+      }
+    }, [friendshipData?.chatuuid])
+  );
 
 
-  function getLocalMessages(): [] {
-    return JSON.parse(mmkvStorage.getString(LOCAL_CHAT_KEY) ?? '[]');
-  }
+  // stores all the latest messages in disk when the user leaves the screen
+  useFocusEffect(useCallback(() => {
+    return () => mmkvStorage.set(LOCAL_CHAT_KEY, JSON.stringify([...messages.entries()]));
+  }, [messages]));
 
-  function addNewLocalMessage<T>(message: UserMessagesData | IMessage, localMessages: T[]) {
-    const newMessage = JSON.stringify([...localMessages, [message._id, message]]);
-    mmkvStorage.set(LOCAL_CHAT_KEY, newMessage);
-  }
 
   // listen for new added messages in real-time DB
-  useEffect(() => {
-    let unsubscribe!: Unsubscribe;
-    if (!localMessagesHaveBeenRead) return;
-    if (friendshipData?.chatuuid) {
-      const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}/${loggedInUserUuid}`);
-      const queryMessages = query(chatsRef, limitToLast(20)); // we can use the number of new messages
+  useFocusEffect(
+    useCallback(() => {
+      let unsubscribe!: Unsubscribe;
+      if (!localMessagesHaveBeenRead) return;
+      if (friendshipData?.chatuuid) {
+        const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}/${loggedInUserUuid}`);
+        const queryMessages = query(chatsRef, limitToLast(15)); // max average number of messages
 
-      onValue(queryMessages, (snapshot) => {
-        const localMessages = getLocalMessages();
-        const messagesMap = new Map<string, UserMessagesData>(localMessages);
+        unsubscribe = onValue(queryMessages, (snapshot) => {
+          const messagesMap = new Map<string, UserMessagesData>([]);
 
-        snapshot.forEach(data => {
-          const newMessage = { ...data?.val() as UserMessagesData, messageUUID: data?.key ?? '' };
-          messagesMap.set(newMessage._id.toString(), newMessage);
+          snapshot.forEach(data => {
+            const newMessage = { ...data?.val() as UserMessagesData, messageUUID: data?.key ?? '' };
+            messagesMap.set(newMessage._id.toString(), newMessage);
+          });
+
+          setMessages(prev => new Map([...prev.entries(), ...messagesMap.entries()]));
         });
-
-        mmkvStorage.set(LOCAL_CHAT_KEY, JSON.stringify([...messagesMap.entries()]));
-      });
-    }
-    return () => {
-      unsubscribe && unsubscribe();
-    };
-  }, [localMessagesHaveBeenRead]);
-
-
-  useEffect(() => {
-    if (localMessagesHaveBeenRead) {
-      const timeOutId = setTimeout(() => {
-        chatRef.current?.scrollToEnd({ animated: true });
-      }, 80);
-      // console.log(chatRef.current?.recordInteraction());
-
-
-      const lastMessage = [...messages.values()].at(-1);
-      if (loggedInUserUuid !== lastMessage?.user._id && lastMessage && !lastMessage.received) {
-        chatWithFriendService.setMessageAsViewed(friendshipData?.chatuuid ?? '', loggedInUserUuid, targetUserUUID, lastMessage);
       }
+      return () => {
+        unsubscribe && unsubscribe();
+      };
+    }, [localMessagesHaveBeenRead])
+  );
 
-      return () => clearTimeout(timeOutId);
-    }
-  }, [messages.size, localMessagesHaveBeenRead]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (localMessagesHaveBeenRead) {
+        const lastMessage = [...messages.values()].at(-1);
+        if (loggedInUserUuid !== lastMessage?.user._id && lastMessage && !lastMessage.received) {
+          chatWithFriendService.setMessageAsViewed(friendshipData?.chatuuid ?? '', loggedInUserUuid, targetUserUUID, lastMessage);
+        }
+      }
+    }, [messages.size, localMessagesHaveBeenRead])
+  );
 
 
   return (
@@ -177,9 +177,17 @@ export default function ChatWithFriendScreen(): JSX.Element {
 
       <View style={styles.container}>
         <GiftedChat
-          // isLoadingEarlier={true}
+          messages={[...messages.values()].slice(-20)}
+          onSend={(messages) => onSendMessage(messages)}
+          showUserAvatar={true}
+          user={{
+            _id: loggedInUserUuid,
+            name: loggedInUser?.username,
+            avatar: loggedInUser?.photos[0]?.url
+          }}
           loadEarlier={true}
           infiniteScroll={true}
+          // isLoadingEarlier={true}
           // listViewProps={{
           //   onEndReached: () => console.log('end reached'),
           //   onScroll: () => console.log('top'),
@@ -265,15 +273,6 @@ export default function ChatWithFriendScreen(): JSX.Element {
                 {...avatarProps}
               />
             );
-          }}
-
-          messages={[...messages.values()].slice(-20)}
-          onSend={(messages) => onSendMessage(messages)}
-          showUserAvatar={true}
-          user={{
-            _id: loggedInUserUuid,
-            name: loggedInUser?.username,
-            avatar: loggedInUser?.photos[0]?.url
           }}
         />
       </View>
