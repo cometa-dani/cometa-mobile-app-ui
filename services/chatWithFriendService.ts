@@ -67,28 +67,28 @@ class ChatWithFriendService {
   }
 
 
-  async markMessageAsSeen(loggedInUserUUID: string | number, prevMessage: UserMessagesData) {
-    const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}/${prevMessage.chatUUID}`);
-    const messagePayload = {
-      ...prevMessage,
-      newMessagesCount: 0,
-      updatedAt: new Date().toString(),
-    };
-
-    return await set(latestMessageRef, messagePayload);
-  }
-
-  async setMessageAsViewed(chatuuid: string, loggedInUserUUID: string, targetUserUUID: string, prevMessage: UserMessagesData) {
-    const chatsRootRef = ref(realtimeDB, `chats/${chatuuid}`);
+  async setMessageAsViewed(chatuuid: string, loggedInUserUUID: string, targetUser: UserData, prevMessage: UserMessagesData) {
+    const chatsRootRef = ref(realtimeDB);
 
     const messagePayload = { ...prevMessage, sent: true, received: true };
     const chatPayload = {
-      [`/${loggedInUserUUID}/${prevMessage.messageUUID}`]: messagePayload,
-      [`/${targetUserUUID}/${prevMessage.messageUUID}`]: messagePayload
+      [`chats/${chatuuid}/${loggedInUserUUID}/${prevMessage.messageUUID}`]: messagePayload,
+      [`chats/${chatuuid}/${targetUser.uid}/${prevMessage.messageUUID}`]: messagePayload,
+      [`latestMessages/${loggedInUserUUID}/${chatuuid}`]: {
+        ...messagePayload,
+        newMessagesCount: 0,
+        user: {
+          _id: targetUser?.uid,
+          name: targetUser?.name,
+          avatar: targetUser?.photos[0]?.url,
+        },
+        updatedAt: new Date().toString(),
+      }
     };
 
     return update(chatsRootRef, chatPayload);
   }
+
 
   async deleteLatestMessage(loggedInUserUUID: string | number, chatuuid: string) {
     const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}/${chatuuid}`);

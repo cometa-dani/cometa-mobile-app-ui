@@ -65,13 +65,16 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
               text: friendship.friend.username,
               newMessagesCount: 0,
               isChatGroup: false,
+              received: false,
+              sent: false,
+              // messageUUID
               user: {
                 _id: friendship.friend.uid,
                 name: friendship.friend.name,
                 avatar: friendship.friend.photos[0]?.url
               },
               createdAt: new Date()
-            })
+            } as UserMessagesData)
           )
       ) ?? []
   ), [searchedFriendsData?.pages]);
@@ -88,23 +91,23 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
 
 
   const navigateToChatWithFriend = async (receivedMessage: UserMessagesData) => {
-    let messagePayload!: UserMessagesData;
+    // let messagePayload!: UserMessagesData;
     const { user } = receivedMessage;
     router.push(`/chat/${user._id}`); // use chatUUID
 
-    if (showSearchedFriends) {
-      const currentFriendMessage = friendsLatestMessagesList.find(friend => friend.user._id === user._id);
-      if (!currentFriendMessage) {
-        return;
-      }
-      messagePayload = currentFriendMessage;
-    }
-    else {
-      messagePayload = receivedMessage;
-    }
-    if (!messagePayload.newMessagesCount) return;
+    // if (showSearchedFriends) {
+    //   const currentFriendMessage = friendsLatestMessagesList.find(friend => friend.user._id === user._id);
+    //   if (!currentFriendMessage) {
+    //     return;
+    //   }
+    //   messagePayload = currentFriendMessage;
+    // }
+    // else {
+    //   messagePayload = receivedMessage;
+    // }
+    // if (!messagePayload.newMessagesCount) return;
 
-    chatWithFriendService.markMessageAsSeen(loggedInUserUUID, messagePayload);
+    // chatWithFriendService.markMessageAsSeen(loggedInUserUUID, messagePayload);
   };
 
 

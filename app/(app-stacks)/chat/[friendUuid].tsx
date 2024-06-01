@@ -122,7 +122,9 @@ export default function ChatWithFriendScreen(): JSX.Element {
             messagesMap.set(newMessage._id.toString(), newMessage);
           });
 
-          setMessages(prev => new Map([...prev.entries(), ...messagesMap.entries()]));
+          setMessages(prev => new Map([
+            ...prev.entries(), ...messagesMap.entries()
+          ]));
         });
       }
       return () => {
@@ -132,12 +134,24 @@ export default function ChatWithFriendScreen(): JSX.Element {
   );
 
 
+  // sets the latest message as viewed
   useFocusEffect(
     useCallback(() => {
       if (localMessagesHaveBeenRead) {
         const lastMessage = [...messages.values()].at(-1);
-        if (loggedInUserUuid !== lastMessage?.user._id && lastMessage && !lastMessage.received) {
-          chatWithFriendService.setMessageAsViewed(friendshipData?.chatuuid ?? '', loggedInUserUuid, targetUserUUID, lastMessage);
+        if (
+          loggedInUserUuid !== lastMessage?.user._id
+          && lastMessage
+          && !lastMessage.received
+          && friendshipData?.chatuuid
+          && targetUser
+        ) {
+          chatWithFriendService.setMessageAsViewed(
+            friendshipData?.chatuuid,
+            loggedInUserUuid,
+            targetUser,
+            lastMessage
+          );
         }
       }
     }, [messages.size, localMessagesHaveBeenRead])
