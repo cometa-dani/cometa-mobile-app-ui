@@ -38,7 +38,6 @@ export default function ChatWithFriendScreen(): JSX.Element {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasNoMoreMessagesToLoad, setHasNoMoreMessagesToLoad] = useState(false);
   const chatRef = useRef<FlatList<IMessage> | null>(null);
-  const [firstRender, setFirstRender] = useState(false);
 
 
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
@@ -73,7 +72,7 @@ export default function ChatWithFriendScreen(): JSX.Element {
 
 
   const handleRefreshControl = () => {
-    if (firstRender && !isLoadingMore && !hasNoMoreMessagesToLoad) {
+    if (!isLoadingMore && !hasNoMoreMessagesToLoad) {
       setIsLoadingMore(true);
       const lastMessageKey = messagesList.at(0)?.messageUUID;
       if (!lastMessageKey) {
@@ -115,18 +114,9 @@ export default function ChatWithFriendScreen(): JSX.Element {
   };
 
 
+  // when the user has an unviewed new message
   useFocusEffect(useCallback(() => {
-    if (messages.size) {
-      if (!firstRender) {
-        // scroll to end on first render
-        const timeOutId = setTimeout(() => {
-          chatRef.current?.scrollToEnd({ animated: true });
-        }, 500);
-        setFirstRender(true);
-
-        return () => clearTimeout(timeOutId);
-      }
-
+    if (messagesList.length) {
       const lastMessage = messagesList.at(-1);
       if (
         loggedInUserUuid !== lastMessage?.user._id
@@ -142,14 +132,19 @@ export default function ChatWithFriendScreen(): JSX.Element {
           lastMessage
         );
       }
+
+      setTimeout(() => {
+        chatRef.current?.scrollToEnd({ animated: true });
+      }, 400);
     }
-  }, [messages.size]));
+
+  }, [messagesList]));
 
 
   // listens for new added/updated messages in real-time DB
   useFocusEffect(
     useCallback(() => {
-      if (friendshipData?.chatuuid && !firstRender) {
+      if (friendshipData?.chatuuid && !messages.size) {
         const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}/${loggedInUserUuid}`);
         const queryMessages = query(chatsRef, limitToLast(take));
 
@@ -218,7 +213,6 @@ export default function ChatWithFriendScreen(): JSX.Element {
           }}
           loadEarlier={!hasNoMoreMessagesToLoad && !isLoadingMore}
           listViewProps={{
-            scrollEventThrottle: 16,
             refreshControl: (
               <RefreshControl
                 refreshing={isLoadingMore}
