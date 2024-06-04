@@ -212,7 +212,7 @@ export default function ChatWithFriendScreen(): JSX.Element {
             name: loggedInUser?.username,
             avatar: loggedInUser?.photos[0]?.url
           }}
-          loadEarlier={!hasNoMoreMessagesToLoad && !isLoadingMore}
+          // loadEarlier={!hasNoMoreMessagesToLoad && !isLoadingMore}
           listViewProps={{
             refreshControl: (
               <RefreshControl
