@@ -129,7 +129,8 @@ export default function ChatWithFriendScreen(): JSX.Element {
           friendshipData?.chatuuid,
           loggedInUserUuid,
           targetUser,
-          lastMessage
+          lastMessage,
+          messagesList.filter(message => !message.received) ?? []
         );
       }
 

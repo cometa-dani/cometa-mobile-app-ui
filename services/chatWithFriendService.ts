@@ -67,15 +67,30 @@ class ChatWithFriendService {
   }
 
 
-  async setMessageAsViewed(chatuuid: string, loggedInUserUUID: string, targetUser: UserData, prevMessage: UserMessagesData) {
+  async setMessageAsViewed(
+    chatuuid: string,
+    loggedInUserUUID: string,
+    targetUser: UserData,
+    lastMessage: UserMessagesData,
+    latestMessages: UserMessagesData[]
+  ) {
     const chatsRootRef = ref(realtimeDB);
 
-    const messagePayload = { ...prevMessage, sent: true, received: true };
+    const latestMessage = { ...lastMessage, sent: true, received: true };
+
+    const viewedMessages = latestMessages.reduce((prev, currMsg) => ({
+      ...prev,
+      [`chats/${chatuuid}/${loggedInUserUUID}/${currMsg.messageUUID}`]: { ...currMsg, sent: true, received: true },
+      [`chats/${chatuuid}/${targetUser.uid}/${currMsg.messageUUID}`]: { ...currMsg, sent: true, received: true }
+    }),
+      {}
+    );
+
     const chatPayload = {
-      [`chats/${chatuuid}/${loggedInUserUUID}/${prevMessage.messageUUID}`]: messagePayload,
-      [`chats/${chatuuid}/${targetUser.uid}/${prevMessage.messageUUID}`]: messagePayload,
+      ...viewedMessages,
+
       [`latestMessages/${loggedInUserUUID}/${chatuuid}`]: {
-        ...messagePayload,
+        ...latestMessage,
         newMessagesCount: 0,
         user: {
           _id: targetUser?.uid,
