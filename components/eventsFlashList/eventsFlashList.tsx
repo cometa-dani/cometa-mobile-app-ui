@@ -68,7 +68,7 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
           ref={listRef}
           pagingEnabled={true}
           data={items}
-          // scrollsToTop
+          onScroll={(e) => e}
           onEndReached={onInfiniteScroll}
           onEndReachedThreshold={0.4}
           decelerationRate={'normal'}
