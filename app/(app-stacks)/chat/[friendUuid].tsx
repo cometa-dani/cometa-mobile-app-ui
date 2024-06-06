@@ -119,9 +119,9 @@ export default function ChatWithFriendScreen(): JSX.Element {
     if (messagesList.length) {
       const lastMessage = messagesList.at(-1);
       if (
-        loggedInUserUuid !== lastMessage?.user._id
+        loggedInUserUuid !== lastMessage?.user?._id
         && lastMessage
-        && !lastMessage.received
+        && !lastMessage?.received
         && friendshipData?.chatuuid
         && targetUser
       ) {

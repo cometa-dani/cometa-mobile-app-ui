@@ -76,9 +76,22 @@ class ChatWithFriendService {
   ) {
     const chatsRootRef = ref(realtimeDB);
 
-    const latestMessage = { ...lastMessage, sent: true, received: true };
+    const lastMessageCounter = {
+      [`latestMessages/${loggedInUserUUID}/${chatuuid}`]: {
+        ...lastMessage,
+        sent: true,
+        received: true,
+        newMessagesCount: 0,
+        user: {
+          _id: targetUser?.uid,
+          name: targetUser?.name,
+          avatar: targetUser?.photos[0]?.url,
+        },
+        updatedAt: new Date().toString()
+      }
+    };
 
-    const viewedMessages = latestMessages.reduce((prev, currMsg) => ({
+    const viewedChatMessages = latestMessages.reduce((prev, currMsg) => ({
       ...prev,
       [`chats/${chatuuid}/${loggedInUserUUID}/${currMsg.messageUUID}`]: { ...currMsg, sent: true, received: true },
       [`chats/${chatuuid}/${targetUser.uid}/${currMsg.messageUUID}`]: { ...currMsg, sent: true, received: true }
@@ -86,22 +99,12 @@ class ChatWithFriendService {
       {}
     );
 
-    const chatPayload = {
-      ...viewedMessages,
-
-      [`latestMessages/${loggedInUserUUID}/${chatuuid}`]: {
-        ...latestMessage,
-        newMessagesCount: 0,
-        user: {
-          _id: targetUser?.uid,
-          name: targetUser?.name,
-          avatar: targetUser?.photos[0]?.url,
-        },
-        updatedAt: new Date().toString(),
-      }
+    const chatMessagesPayload = {
+      ...viewedChatMessages,
+      ...lastMessageCounter
     };
 
-    return update(chatsRootRef, chatPayload);
+    return update(chatsRootRef, chatMessagesPayload);
   }
 
 
