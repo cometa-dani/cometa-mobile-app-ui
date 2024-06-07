@@ -24,6 +24,7 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
   const setOnboarding = useCometaStore(state => state.setOnboarding);
   const onboarding = useCometaStore(state => state.onboarding.user);
   const [isAvaibleToUse, setIsAvailableToUse] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [email, setEmail] = useState('');
 
@@ -39,35 +40,41 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
         router.push('/(onboarding)/whatIsYourPassword');
       }
       catch (error) {
-        // console.log(error);
+        return undefined;
       }
     };
 
 
   // check if user exists in our DB
   useEffect(() => {
-    const timeOutId = setTimeout(async () => {
+    const isFetchingTimeOutId = setTimeout(() => {
       if (email.includes('@')) {
-        try {
-          setIsFetching(true);
-          const res = await userService.findUniqueByQueryParams({ email: email.trim() });
-          if (res.status === 204) {
-            setIsAvailableToUse(true);
-          }
-          else {
-            setIsAvailableToUse(false);
-          }
-        }
-        catch (error) {
-          //
-        }
-        finally {
-          setIsFetching(false);
-        }
+        setIsFetching(true);
+        userService
+          .findUniqueByQueryParams({ email: email.trim() })
+          .then((res) => {
+            if (res.status === 200) {
+              setIsAvailableToUse(false);
+            }
+          })
+          .catch((error) => {
+            if (error.response.status === 404) {
+              setIsAvailableToUse(true);
+            }
+          })
+          .finally(() => setIsFetching(false));
       }
-    }, 2_000);
+    }, 1_600);
 
-    return () => clearTimeout(timeOutId);
+    setIsTyping(true);
+    const isTypingTimeOutID = setTimeout(() => {
+      setIsTyping(false);
+    }, 2000);
+
+    return () => {
+      clearTimeout(isFetchingTimeOutId);
+      clearTimeout(isTypingTimeOutID);
+    };
   }, [email]);
 
 
@@ -97,11 +104,11 @@ export default function WhatIsYourEmailScreen(): JSX.Element {
               {touched.email && errors.email && (
                 <AppLabelFeedbackMsg position='bottom' text={errors.email} />
               )}
-              {!isFetching && values.email.includes('@') && !errors.email && !isAvaibleToUse && (
+              {!isTyping && !isFetching && values.email.includes('@') && !errors.email && !isAvaibleToUse && (
                 <AppLabelFeedbackMsg position='bottom' text='your email already exists' />
               )}
-              {!isFetching && values.email.includes('@') && !errors.email && isAvaibleToUse && (
-                <AppLabelMsgOk position='bottom' text='email is available' />
+              {!isTyping && !isFetching && values.email.includes('@') && !errors.email && isAvaibleToUse && (
+                <AppLabelMsgOk position='bottom' text='email is available to use' />
               )}
               <AppTextInput
                 iconName='envelope-o'

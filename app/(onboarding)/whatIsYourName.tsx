@@ -27,6 +27,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
   const setOnboarding = useCometaStore(state => state.setOnboarding);
   const [isAvaibleToUse, setIsAvailableToUse] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const [username, setUsername] = useState('');
 
   const handleNextSlide =
@@ -41,34 +42,40 @@ export default function WhatIsYourNameScreen(): JSX.Element {
         router.push('/(onboarding)/whatIsYourEmail');
       }
       catch (error) {
-        // console.log(error);
+        return undefined;
       }
     };
 
   // checking if @username is available to used for current user
   useEffect(() => {
-    const timeOutId = setTimeout(async () => {
+    const isFetchingTimeOutId = setTimeout(() => {
       if (username.length >= 3) {
-        try {
-          setIsFetching(true);
-          const res = await userService.findUniqueByQueryParams({ username: username.trim() });
-          if (res.status === 204) {
-            setIsAvailableToUse(true);
-          }
-          else {
-            setIsAvailableToUse(false);
-          }
-          setIsFetching(false);
-        }
-        catch (error) {
-          // console.log(error);
-          setIsFetching(false);
-          setIsAvailableToUse(false);
-        }
+        setIsFetching(true);
+        userService
+          .findUniqueByQueryParams({ username: username.trim() })
+          .then((res) => {
+            if (res.status === 200) {
+              setIsAvailableToUse(false);
+            }
+          })
+          .catch((error) => {
+            if (error.response.status === 404) {
+              setIsAvailableToUse(true);
+            }
+          })
+          .finally(() => setIsFetching(false));
       }
     }, 1_600);
 
-    return () => clearTimeout(timeOutId);
+    setIsTyping(true);
+    const isTypingTimeOutID = setTimeout(() => {
+      setIsTyping(false);
+    }, 2000);
+
+    return () => {
+      clearTimeout(isFetchingTimeOutId);
+      clearTimeout(isTypingTimeOutID);
+    };
   }, [username]);
 
 
@@ -122,15 +129,15 @@ export default function WhatIsYourNameScreen(): JSX.Element {
 
               {/* validating in the backend */}
               <If
-                condition={!isFetching && !errors.username && !isAvaibleToUse}
+                condition={!isTyping && !isFetching && !errors.username && !isAvaibleToUse}
                 render={(
                   <AppLabelFeedbackMsg position='bottom' text={'Your username is already taken'} />
                 )}
               />
               <If
-                condition={!isFetching && values.username.length >= 3 && !errors.username && isAvaibleToUse}
+                condition={!isTyping && !isFetching && values.username.length >= 3 && !errors.username && isAvaibleToUse}
                 render={(
-                  <AppLabelMsgOk position='bottom' text={`@${values.username} is available`} />
+                  <AppLabelMsgOk position='bottom' text={`@${values.username} is available to use`} />
                 )}
               />
               {/* validating in the backend */}
