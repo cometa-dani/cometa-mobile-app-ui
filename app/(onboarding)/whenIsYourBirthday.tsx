@@ -7,10 +7,11 @@ import { AppButton, appButtonstyles } from '../../components/buttons/buttons';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useState } from 'react';
 import { calAge } from '../../helpers/calcAge';
-import { buttonColors } from '../../constants/colors';
-import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
+import { buttonColors, messages } from '../../constants/colors';
 import { If } from '../../components/utils';
 import ReactNativeModal from 'react-native-modal';
+import { FontAwesome } from '@expo/vector-icons';
+import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
 
 
 const initialDate = new Date('1990');
@@ -90,7 +91,7 @@ export default function WhenIsYourBirthdayScreen(): JSX.Element {
 
       <If condition={!user.birthday && !toggleModal}>
         <View style={{ position: 'relative', alignItems: 'center', marginTop: 16 }}>
-          <AppLabelFeedbackMsg text="Mandatory date" />
+          <AppLabelFeedbackMsg position='top' text="Mandatory date" />
         </View>
       </If>
 

@@ -106,7 +106,7 @@ export const AppLabelFeedbackMsg: FC<AppLabelProps> = ({ text, position = 'top' 
       </TransparentView>
     ) : (
       <>
-        <TransparentView style={formFieldStyles.cirle}>
+        <TransparentView style={{ ...formFieldStyles.cirle, position: 'absolute' }}>
           <FontAwesome name='exclamation' color={messages.error} size={16} />
         </TransparentView>
 
@@ -152,8 +152,6 @@ const formFieldStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 100,
-    // paddingLeft: 20,
-    position: 'absolute',
     right: 20,
   },
 
@@ -162,7 +160,6 @@ const formFieldStyles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 5,
-    // paddingLeft: 20,
     position: 'absolute',
     top: -24
   },

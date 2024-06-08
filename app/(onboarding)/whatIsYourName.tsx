@@ -70,7 +70,7 @@ export default function WhatIsYourNameScreen(): JSX.Element {
     setIsTyping(true);
     const isTypingTimeOutID = setTimeout(() => {
       setIsTyping(false);
-    }, 2000);
+    }, 2_000);
 
     return () => {
       clearTimeout(isFetchingTimeOutId);
