@@ -139,7 +139,7 @@ export default function LoginScreen(): JSX.Element {
         </View>
 
         <LightButton
-          onPress={() => router.push('/(onboarding)/whenIsYourBirthday')}
+          onPress={() => router.push('/(onboarding)/whatIsYourName')}
           text='Don&apos;t have an account? Sign Up'
         />
 

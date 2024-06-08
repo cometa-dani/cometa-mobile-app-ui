@@ -127,7 +127,7 @@ export const AppLabelMsgOk: FC<AppLabelProps> = ({ text, position = 'top' }) => 
     )
       : (
         <>
-          <TransparentView style={{ ...formFieldStyles.cirle, borderWidth: 0 }}>
+          <TransparentView style={{ ...formFieldStyles.cirle, borderWidth: 0, position: 'absolute' }}>
             <FontAwesome
               name='check-circle'
               color={messages.ok}

@@ -7,10 +7,9 @@ import { AppButton, appButtonstyles } from '../../components/buttons/buttons';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useState } from 'react';
 import { calAge } from '../../helpers/calcAge';
-import { buttonColors, messages } from '../../constants/colors';
+import { buttonColors } from '../../constants/colors';
 import { If } from '../../components/utils';
 import ReactNativeModal from 'react-native-modal';
-import { FontAwesome } from '@expo/vector-icons';
 import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
 
 
