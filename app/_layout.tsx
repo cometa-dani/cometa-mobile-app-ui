@@ -77,7 +77,6 @@ function RootLayoutNav(): JSX.Element {
         headerTitleStyle: { fontFamily: 'Poppins' }
       }}>
       <Stack.Screen
-        key="welcome"
         name='index'
         options={{ headerShown: false, animation: 'slide_from_right', animationDuration: 290 }}
       />
