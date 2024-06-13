@@ -13,7 +13,7 @@ import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { If } from '../../../../components/utils';
 
 
-export default function AddFriendsScreen(): JSX.Element {
+export function AddFriendsScreen(): JSX.Element {
   const chatGroupMembers = useCometaStore(state => state.chatGroupMembers);
   const setChatGroupMembers = useCometaStore(state => state.setChatGroupMembers);
   const [textInput, setTextInput] = useState('');
@@ -49,7 +49,7 @@ export default function AddFriendsScreen(): JSX.Element {
                 avatar: friendship.friend.photos[0]?.url
               },
               createdAt: new Date()
-            })
+            }) as UserMessagesData
           )
       ) ?? []
   ), [searchedFriendsData?.pages, chatGroupMembers.size]);

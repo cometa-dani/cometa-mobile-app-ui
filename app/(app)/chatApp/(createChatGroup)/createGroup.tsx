@@ -27,7 +27,7 @@ const validationSchemma = Yup.object<Value>({
   name: Yup.string().required('required group name'),
 });
 
-export default function CreateChatGroupScreen(): JSX.Element {
+export function CreateChatGroupScreen(): JSX.Element {
   const chatGroupMembers = useCometaStore(state => state.chatGroupMembers);
   const setChatGroupMembers = useCometaStore(state => state.setChatGroupMembers);
   const imageRef = useCometaStore(state => state.imageRef);
