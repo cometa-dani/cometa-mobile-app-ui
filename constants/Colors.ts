@@ -1,7 +1,7 @@
+/* eslint-disable no-unused-vars */
 export const primary_100 = '#a22bfa';
 export const white_50 = '#fff';
 export const red_100 = '#EA385C';
-// export const secondary_100 = '#EA385C';
 export const blue_100 = '#5ac8fa';
 export const blue_50 = '#83C9DD';
 export const gray_50 = '#f0f0f0';
@@ -103,3 +103,33 @@ export default {
     tabIconSelected: white_50,
   },
 };
+
+export enum Light {
+  PRIMARY_100 = '#a22bfa',
+  WHITE_50 = '#fff',
+  RED_100 = '#EA385C',
+  BLUE_100 = '#5ac8fa',
+  BLUE_50 = '#83C9DD',
+  GRAY_50 = '#f0f0f0',
+  GRAY_100 = '#e5e5e5',
+  GRAY_200 = '#afafaa',
+  GRAY_300 = '#7C8591',
+  GRAY_500 = '#4f4f4f',
+  GRAY_900 = '#030303',
+  PINK_200 = '#FFCFDA',
+}
+
+export enum Dark {
+  PRIMARY_100 = '#a22bfa',
+  WHITE_50 = '#fff',
+  RED_100 = '#EA385C',
+  BLUE_100 = '#5ac8fa',
+  BLUE_50 = '#83C9DD',
+  GRAY_50 = '#f0f0f0',
+  GRAY_100 = '#e5e5e5',
+  GRAY_200 = '#afafaa',
+  GRAY_300 = '#7C8591',
+  GRAY_500 = '#4f4f4f',
+  GRAY_900 = '#030303',
+  PINK_200 = '#FFCFDA',
+}
