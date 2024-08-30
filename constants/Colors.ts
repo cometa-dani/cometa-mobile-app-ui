@@ -104,6 +104,16 @@ export default {
   },
 };
 
+export enum Blues {
+  BLUE_100 = '#5ac8fa',
+  BLUE_50 = '#83C9DD',
+}
+
+export enum Reds {
+  RED_500 = '#D87289',
+  RED_700 = '#EA385C',
+}
+
 export enum Light {
   PRIMARY_100 = '#a22bfa',
   WHITE_50 = '#fff',
