@@ -9,7 +9,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
-import { gray_200, white_50 } from '../../constants/colors';
+import { Reds, white_50 } from '../../constants/colors';
 import { If } from '../utils/ifElse';
 import { Photo } from '../../models/Photo';
 import { ForEach } from '../utils/ForEach';
@@ -250,6 +250,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
             {item.name}
           </Text>
 
+          {/* tags */}
           <TransParentView style={{ flexDirection: 'row', gap: 10 }}>
             <ForEach items={item.categories}>
               {(cat, index) => (
@@ -259,6 +260,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
               )}
             </ForEach>
           </TransParentView>
+          {/* tags */}
 
           <Pressable onPress={() => setIsExpanded(prev => !prev)}>
             {({ pressed }) => (
@@ -286,6 +288,32 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
     </View>
   );
 };
+
+
+// const ExpandableText = () => {
+//   return (
+//     <Pressable onPress={() => setIsExpanded(prev => !prev)}>
+//       {({ pressed }) => (
+//         <Text
+//           lightColor='#fff'
+//           darkColor='#eee'
+//           numberOfLines={isExpanded ? 24 : 2}
+//           ellipsizeMode='tail'
+//           style={[
+//             stylesEventItem.textShadow,
+//             {
+//               fontSize: 14,
+//               opacity: pressed ? 0.84 : 1,
+//               backgroundColor: pressed ? 'rgba(255,255,255,0.05)' : 'transparent',
+//             }
+//           ]}
+//         >
+//           {item.description}
+//         </Text>
+//       )}
+//     </Pressable>
+//   )
+// }
 
 
 const renderCarouselItem = ({ item }: { item: Photo }) => (
@@ -367,7 +395,7 @@ const stylesEventItem = StyleSheet.create({
 
   tagContainer: {
     alignSelf: 'flex-start',
-    backgroundColor: gray_200,
+    backgroundColor: Reds.RED_500,
     borderRadius: 10,
     elevation: 3,
     paddingHorizontal: 8,

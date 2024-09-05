@@ -58,15 +58,6 @@ export default function HomeScreen(): JSX.Element {
           }}
         />
 
-        {/* <BottonSheetSearchEvents
-        onSearchQuery={setSearchQuery}
-        onPressEventItem={setScrollToIndex}
-        onInfiniteScroll={handleInfiniteFetch}
-        isLoading={isLoading || isRefetching}
-        ref={bottomSheetRef}
-        events={evenstData}
-      /> */}
-
         <View style={styles.container}>
           <If
             condition={!evenstData?.length && !isLoading}
@@ -87,6 +78,32 @@ export default function HomeScreen(): JSX.Element {
   );
 }
 
+const styles = StyleSheet.create({
+
+  eventItem: {
+    paddingHorizontal: 20,
+    width: '100%',
+    height: 54,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 20
+  },
+
+  container: {
+    borderRadius: 16,
+    flex: 1,
+    marginHorizontal: 10,
+    overflow: 'hidden',
+  },
+
+  notFoundContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 26
+  },
+});
 
 
 // const bottomSheetRef = useRef<BottomSheetModal>(null);
@@ -448,30 +465,3 @@ const NotEventsFound: FC = () => (
   </View>
 );
 
-
-const styles = StyleSheet.create({
-
-  eventItem: {
-    paddingHorizontal: 20,
-    width: '100%',
-    height: 54,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 20
-  },
-
-  container: {
-    borderRadius: 16,
-    flex: 1,
-    marginHorizontal: 10,
-    overflow: 'hidden',
-  },
-
-  notFoundContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 26
-  },
-});
