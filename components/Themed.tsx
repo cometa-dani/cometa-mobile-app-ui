@@ -8,6 +8,7 @@ import Colors from '../constants/colors';
 
 
 const fontSizes = {
+  xs: 10,
   sm: 12,
   md: 15,
   lg: 18,
@@ -93,6 +94,7 @@ export function Text(props: TextProps) {
       {
         color: color ?? defaultColor,
         fontSize: fontSizes[size],
+        fontWeight: '500',
         fontFamily: 'Poppins',
       },
       style

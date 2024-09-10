@@ -13,7 +13,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "icon": "./assets/favicons/apple-icon-60x60.png",
       "backgroundColor": "#ffffff",
@@ -36,7 +38,6 @@
     },
     "plugins": [
       "expo-router",
-
       [
         "expo-font",
         {
@@ -48,14 +49,12 @@
           ]
         }
       ],
-
       [
         "expo-image-picker",
         {
           "photosPermission": "Cometa accesses your photos to let you share them with your friends."
         }
       ],
-
       [
         "expo-av",
         {

@@ -111,7 +111,7 @@ export default function AppLayout() {
           // TODO: rewrite this to React Navigation v7
           return ({
             tabBarStyle: {
-              // height: 70,
+              // height: 80,
               shadowColor: 'transparent',
               elevation: 0,
               borderTopWidth: 0,
@@ -132,7 +132,8 @@ export default function AppLayout() {
             headerShown: true,
             tabBarIcon: ({ color }) => (
               <TabButton>
-                <MaterialCommunityIcons name="home-circle-outline" size={45} color={color} />
+                <MaterialCommunityIcons style={{ marginBottom: -2.2 }} name="home-circle-outline" size={35} color={color} />
+                <Text size='xs' color={color}>Home</Text>
               </TabButton>
             ),
             headerTitle() {
@@ -177,7 +178,8 @@ export default function AppLayout() {
                     </View>
                   )}
                 />
-                <Ionicons style={{ transform: [{ rotateY: '180deg' }] }} name="chatbubble" size={34} color={color} />
+                <Ionicons style={{ transform: [{ rotateY: '180deg' }] }} name="chatbubble" size={29} color={color} />
+                <Text size='xs' color={color}>Chat</Text>
               </TabButton>
             ),
           }}
@@ -196,7 +198,8 @@ export default function AppLayout() {
             headerShown: true,
             tabBarIcon: ({ color }) => (
               <TabButton>
-                <FontAwesome6 name="heart-circle-check" size={34} color={color} />
+                <FontAwesome6 name="heart-circle-check" size={29} color={color} />
+                <Text size='xs' color={color}>Bucketlist</Text>
               </TabButton>
             ),
             headerTitle() {
@@ -211,7 +214,8 @@ export default function AppLayout() {
           options={{
             tabBarIcon: ({ color }) => (
               <TabButton>
-                <FontAwesome name="user-circle-o" size={34} color={color} />
+                <FontAwesome name="user-circle-o" size={29} color={color} />
+                <Text size='xs' color={color}>Profile</Text>
               </TabButton>
             ),
           }}
@@ -235,12 +239,16 @@ const styles = StyleSheet.create({
   },
 
   tabButton: {
-    width: '100%',
+    top: -2,
     height: '100%',
+    width: 'auto',
     alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative'
+    justifyContent: 'flex-end',
+    gap: -1,
+    position: 'relative',
+    flex: 1
   },
+
   modalContainer: {
     minHeight: 200,
     width: 300,

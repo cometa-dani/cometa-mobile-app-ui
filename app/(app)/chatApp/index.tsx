@@ -244,6 +244,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
                         numberOfLines={1}
                         ellipsizeMode='tail'
                         size='lg'
+                        style={{ fontWeight: '700' }}
                       >
                         {message.user.name}
                       </Text>
@@ -374,7 +375,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   textGray: {
-    color: 'gray'
+    color: 'gray',
   },
   transparentView4: {
     alignSelf: 'center',

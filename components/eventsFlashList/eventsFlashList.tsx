@@ -220,7 +220,8 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
                 <TransParentView style={{ alignItems: 'center', gap: 2 }}>
                   <Pressable>
                     {() => (
-                      <FontAwesome name="share" size={28} color="white" />        // <Image style={{ width: 28, height: 28 }} source={icons.share} />
+                      <FontAwesome name="share" size={28} color="white" />
+                      // <Image style={{ width: 28, height: 28 }} source={icons.share} />
                     )}
                   </Pressable>
                   <Text lightColor='#fff'>{3612}</Text>
@@ -245,7 +246,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
             numberOfLines={2}
             ellipsizeMode='tail'
             size='xl'
-            style={stylesEventItem.textShadow}
+            style={{ ...stylesEventItem.textShadow, fontWeight: '700' }}
           >
             {item.name}
           </Text>
@@ -417,6 +418,7 @@ const stylesEventItem = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.6)',
     textShadowOffset: { width: -1, height: 1 },
     textShadowRadius: 10,
+    // fontWeight: 'bold'
   },
 
   wrapper: { flex: 1, position: 'relative' }
