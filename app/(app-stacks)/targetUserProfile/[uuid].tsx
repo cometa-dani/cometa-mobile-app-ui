@@ -11,7 +11,7 @@ import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser, useInfiniteQue
 import { AppButton, appButtonstyles } from '../../../components/buttons/buttons';
 import { AppCarousel } from '../../../components/carousels/carousel';
 import { useCometaStore } from '../../../store/cometaStore';
-import { useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../../queries/loggedInUser/friendshipHooks';
+import { useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../../queries/loggedInUser/friendshipHooks';
 import { GetBasicUserProfile, GetTargetUser } from '../../../models/User';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../../queries/queryKeys';
@@ -28,11 +28,13 @@ import notificationService from '../../../services/notificationService';
 import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/loggedInUser/userProfileHooks';
 import { MutateFrienship } from '../../../models/Friendship';
 import { ModalNewFriendship } from '../../../components/modal/modalNewFriendship';
+import chatWithFriendService from '../../../services/chatWithFriendService';
 
 
 const searchParamsSchemma = Yup.object({
   uuid: Yup.string().required(),
-  eventId: Yup.number().optional()
+  eventId: Yup.number().optional(),
+  chatuuid: Yup.string().optional(),
 });
 
 
@@ -50,6 +52,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
 
   // queries
   const queryClient = useQueryClient();
+  // const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(targetUserUrlParams.uuid);
   const { data: targetUserProfile, isSuccess, isLoading } = useQueryGetTargetUserPeopleProfileByUid(targetUserUrlParams.uuid);
   const { data: matchedEvents } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUserUrlParams.uuid);
   const { data: targetUserbucketList } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfile?.id);
@@ -96,7 +99,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   // mutations
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
   const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
-  const mutationCancelFriendship = useMutationCancelFriendshipInvitation();
+  const mutationDeleteFriendship = useMutationDeleteFriendshipInvitation();
 
 
   const pendingButton = {
@@ -213,7 +216,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
   const cancelFriendshipInvitation = (targetUserAsReceiver: GetTargetUser): void => {
-    mutationCancelFriendship.mutate(targetUserAsReceiver.id, {
+    mutationDeleteFriendship.mutate(targetUserAsReceiver.id, {
       onSuccess() {
         if (urlParams.eventId) {
           queryClient.invalidateQueries({
@@ -229,8 +232,12 @@ export default function TargerUserProfileScreen(): JSX.Element {
 
   const handleUnfollowingUser = (): void => {
     setToggleModalUnfollow(false);
-    if (targetUserProfile?.isFriend) {
-      mutationCancelFriendship.mutate(targetUserProfile.id, {
+    if (targetUserProfile?.isFriend && targetUserUrlParams?.chatuuid) {
+      chatWithFriendService
+        .deleteBothUsersChatHistory(targetUserUrlParams?.chatuuid, loggedInUserUuid, targetUserProfile.uid)
+        .then()
+        .catch();
+      mutationDeleteFriendship.mutate(targetUserProfile.id, {
         onSuccess: async () => {
           if (urlParams.eventId) {
             queryClient.invalidateQueries({

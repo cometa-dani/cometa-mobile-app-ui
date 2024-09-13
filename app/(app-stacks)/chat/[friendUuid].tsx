@@ -149,7 +149,15 @@ export default function ChatWithFriendScreen(): JSX.Element {
         const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}/${loggedInUserUuid}`);
         const queryMessages = query(chatsRef, limitToLast(take));
 
-        const unsubscribe = onValue(queryMessages, (snapshot) => {
+        const unsubscribeOnDelete = onValue(ref(realtimeDB, `chats/${friendshipData?.chatuuid}`), (snapshot) => {
+          if (!snapshot.exists()) {
+            if (router.canGoBack()) {
+              router.back();
+            }
+          }
+        });
+
+        const unsubscribeOnChange = onValue(queryMessages, (snapshot) => {
           const newMessagesMap = new Map<string, UserMessagesData>([]);
 
           snapshot.forEach(data => {
@@ -167,7 +175,10 @@ export default function ChatWithFriendScreen(): JSX.Element {
           ]));
         });
 
-        return unsubscribe;
+        return () => {
+          unsubscribeOnChange();
+          unsubscribeOnDelete();
+        };
       }
     }, [friendshipData?.chatuuid])
   );

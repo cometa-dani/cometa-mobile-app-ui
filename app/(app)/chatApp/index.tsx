@@ -116,11 +116,11 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
   };
 
 
-  const handleDeleteMessage = async () => {
+  const handleDeleteChatHistoryFromLoggedInUser = async () => {
     const chatUUID = chatuuidToDelete.current;
     if (chatUUID) {
       if (deleteMedia) {
-        await chatWithFriendService.deleteChatHistory(loggedInUserUUID, chatUUID);
+        await chatWithFriendService.deleteLoggedInUserChatHistory(loggedInUserUUID, chatUUID);
         mmkvStorage.delete(`${loggedInUserUUID}.chats.${chatUUID}`);
       }
       await chatWithFriendService.deleteLatestMessage(loggedInUserUUID, chatUUID);
@@ -180,7 +180,7 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
 
               <Pressable
                 style={{ ...appButtonstyles.button, backgroundColor: gray_900 }}
-                onPress={handleDeleteMessage} >
+                onPress={handleDeleteChatHistoryFromLoggedInUser} >
                 <Text style={{ ...appButtonstyles.buttonText, color: white_50 }}>
                   Delete chat
                 </Text>
@@ -244,7 +244,6 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
                         numberOfLines={1}
                         ellipsizeMode='tail'
                         size='lg'
-                        style={{ fontWeight: '700' }}
                       >
                         {message.user.name}
                       </Text>
@@ -301,7 +300,6 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
     textAlign: 'center'
   },
   modalCheckboxContainer: {

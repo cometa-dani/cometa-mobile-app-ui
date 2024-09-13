@@ -113,13 +113,13 @@ export const useMutationSentFriendshipInvitation = () => {
 };
 
 
-export const useMutationCancelFriendshipInvitation = () => {
+export const useMutationDeleteFriendshipInvitation = () => {
   const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
   return (
     useMutation({
       mutationFn: async (targetUserID: number) => {
         const res =
-          await friendshipService.cancelFriendShipInvitation(targetUserID, loggedInUserAccessToken);
+          await friendshipService.deleteFriendShipInvitation(targetUserID, loggedInUserAccessToken);
         if (res.status === 204) {
           return res.data ?? null;
         }

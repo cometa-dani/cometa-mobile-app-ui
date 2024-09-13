@@ -9,9 +9,9 @@ export type UserData = Pick<GetBasicUserProfile, ('uid' | 'name' | 'photos')>;
 
 class ChatWithFriendService {
 
-  async writeMessage(chatuuid: string, messagePayload: object, loggedInUser: UserData, targetUser: UserData) {
+  writeMessage(chatuuid: string, messagePayload: object, loggedInUser: UserData, targetUser: UserData): Promise<[void, void]> {
     return (
-      await Promise.all([
+      Promise.all([
         this._writeChatHistory(chatuuid, messagePayload, loggedInUser, targetUser),
         this._writeLatestMessages(chatuuid, messagePayload, loggedInUser, targetUser)
       ])
@@ -19,7 +19,7 @@ class ChatWithFriendService {
   }
 
 
-  private async _writeChatHistory(chatuuid: string, messagePayload: object, loggedInUser: UserData, targetUser: UserData) {
+  private async _writeChatHistory(chatuuid: string, messagePayload: object, loggedInUser: UserData, targetUser: UserData): Promise<void> {
     const chatsRootRef = ref(realtimeDB, `chats/${chatuuid}`);
     const chatsRefUser1 = ref(realtimeDB, `chats/${chatuuid}/${loggedInUser.uid}`);
     const newMessageKey1 = (await push(chatsRefUser1)).key;
@@ -33,7 +33,7 @@ class ChatWithFriendService {
   }
 
 
-  private async _writeLatestMessages(chatuuid: string, messagePayload: object, loggedInUser: UserData, targetUser: UserData) {
+  private _writeLatestMessages(chatuuid: string, messagePayload: object, loggedInUser: UserData, targetUser: UserData): Promise<void> {
     const latestMessagesRef = ref(realtimeDB, 'latestMessages');
 
     const toTargetUserLatestMessagePayload = {
@@ -67,13 +67,13 @@ class ChatWithFriendService {
   }
 
 
-  async setMessageAsViewed(
+  setMessageAsViewed(
     chatuuid: string,
     loggedInUserUUID: string,
     targetUser: UserData,
     lastMessage: UserMessagesData,
     latestMessages: UserMessagesData[]
-  ) {
+  ): Promise<void> {
     const chatsRootRef = ref(realtimeDB);
 
     const lastMessageCounter = {
@@ -108,15 +108,28 @@ class ChatWithFriendService {
   }
 
 
-  async deleteLatestMessage(loggedInUserUUID: string | number, chatuuid: string) {
+  deleteLatestMessage(loggedInUserUUID: string | number, chatuuid: string): Promise<void> {
     const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}/${chatuuid}`);
-    return await set(latestMessageRef, null);
+    return set(latestMessageRef, null);
   }
 
 
-  async deleteChatHistory(loggedInUserUUID: string | number, chatuuid: string) {
+  deleteLoggedInUserChatHistory(loggedInUserUUID: string | number, chatuuid: string): Promise<void> {
     const chatRef = ref(realtimeDB, `chats/${chatuuid}/${loggedInUserUUID}`);
-    return await set(chatRef, null);
+    return set(chatRef, null);
+  }
+
+
+  deleteBothUsersChatHistory(chatuuid: string, loggedInUserUUID: string | number, targetUserUUID: string | number): Promise<void> {
+    const chatRef = ref(realtimeDB);
+
+    const bothUsers = {
+      [`latestMessages/${loggedInUserUUID}/${chatuuid}`]: null,
+      [`latestMessages/${targetUserUUID}/${chatuuid}`]: null,
+      [`chats/${chatuuid}`]: null,
+    };
+
+    return update(chatRef, bothUsers);
   }
 }
 

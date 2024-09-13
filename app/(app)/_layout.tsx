@@ -275,18 +275,18 @@ const styles = StyleSheet.create({
   },
   newMessagesIndicator: {
     position: 'absolute',
-    top: 6,
-    right: 6,
+    top: 4,
+    right: -14,
     backgroundColor: red_100,
-    width: 20,
-    height: 20,
+    width: 17,
+    height: 17,
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center'
   },
   newMessagesText: {
     color: white_50,
-    fontWeight: '900',
-    fontSize: 14
+    fontWeight: 'bold',
+    fontSize: 12
   }
 });

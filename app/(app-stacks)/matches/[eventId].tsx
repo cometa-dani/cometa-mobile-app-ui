@@ -6,7 +6,7 @@ import { useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../../queries/ta
 import { Image } from 'expo-image';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { AppButton } from '../../../components/buttons/buttons';
-import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationCancelFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../../queries/loggedInUser/friendshipHooks';
+import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../../queries/loggedInUser/friendshipHooks';
 import { useCometaStore } from '../../../store/cometaStore';
 import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination } from '../../../models/User';
 import { animationDuration, defaultImgPlaceholder } from '../../../constants/vars';
@@ -128,7 +128,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   // mutations
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
   const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
-  const mutationCancelFriendship = useMutationCancelFriendshipInvitation();
+  const mutationCancelFriendship = useMutationDeleteFriendshipInvitation();
 
   /**
   *
@@ -425,7 +425,7 @@ const FriendsFlashList: FC<FriendsFlashListProps> = ({ users, isEmpty, isFetchin
               renderItem={({ item }) => {
                 return (
                   <View key={item?.friend?.id} style={styles.user}>
-                    <Pressable onPress={() => router.push(`/targetUserProfile/${item?.friend?.uid}?eventId=${urlParams.eventId}`)}>
+                    <Pressable onPress={() => router.push(`/targetUserProfile/${item?.friend?.uid}?eventId=${urlParams.eventId}&chatuuid=${item?.chatuuid}`)}>
                       <View style={styles.avatarContainer}>
                         <Image
                           style={styles.userAvatar}

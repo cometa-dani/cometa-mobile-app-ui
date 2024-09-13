@@ -29,7 +29,7 @@ class FrienshipService extends RestApiService {
     return this.http.post<MutateFrienship>('/friendships', payload, this.configAuthHeader(accessToken));
   }
 
-  cancelFriendShipInvitation(receiverId: number, accessToken: string) {
+  deleteFriendShipInvitation(receiverId: number, accessToken: string) {
     return this.http.delete(`/friendships/${receiverId}`, this.configAuthHeader(accessToken));
   }
 

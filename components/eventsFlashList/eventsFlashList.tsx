@@ -246,7 +246,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
             numberOfLines={2}
             ellipsizeMode='tail'
             size='xl'
-            style={{ ...stylesEventItem.textShadow, fontWeight: '700' }}
+            style={{ ...stylesEventItem.textShadow }}
           >
             {item.name}
           </Text>
@@ -417,8 +417,7 @@ const stylesEventItem = StyleSheet.create({
     borderRadius: 10,
     textShadowColor: 'rgba(0, 0, 0, 0.6)',
     textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
-    // fontWeight: 'bold'
+    textShadowRadius: 10
   },
 
   wrapper: { flex: 1, position: 'relative' }
