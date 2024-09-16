@@ -152,7 +152,7 @@ export default function ChatWithFriendScreen(): JSX.Element {
         const unsubscribeOnDelete = onValue(ref(realtimeDB, `chats/${friendshipData?.chatuuid}`), (snapshot) => {
           if (!snapshot.exists()) {
             if (router.canGoBack()) {
-              router.back();
+              router.back();  // closes the chat if it doesn't exist (when two users are no longer friends)
             }
           }
         });
@@ -194,7 +194,7 @@ export default function ChatWithFriendScreen(): JSX.Element {
           headerTitle: () => {
             return (
               <TouchableOpacity
-                onPress={() => router.push(`/targetUserProfile/${targetUser?.uid}`)}
+                onPress={() => router.push(`/targetUserProfile/${targetUser?.uid}?chatuuid=${friendshipData?.chatuuid}`)}
               >
                 <View style={styles.targetUser}>
                   <ImageWithPlaceholder

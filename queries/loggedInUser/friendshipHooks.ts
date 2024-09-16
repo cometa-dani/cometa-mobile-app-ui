@@ -74,6 +74,7 @@ export const useQueryGetFriendshipByTargetUserID = (targetUserUUID: string) => {
 
   return (
     useQuery({
+      enabled: !!targetUserUUID,
       queryKey: [QueryKeys.GET_FRIENDSHIP_BY_TARGET_USER_ID, targetUserUUID],
       queryFn: async () => {
         const res = await friendshipService.getFriendShipByTargetUserID(targetUserUUID, loggedInUserAccessToken);

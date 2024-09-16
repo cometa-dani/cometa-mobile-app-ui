@@ -39,6 +39,7 @@ export default function SearchScreen(): JSX.Element {
   const usersData = useMemo(() => (
     usersSearch.data?.pages.flatMap(page => page.users) || []
   ), [usersSearch.data?.pages]);
+
   const handleUserInfiniteScroll = () => !usersSearch.isLoading && usersSearch.hasNextPage && usersSearch.fetchNextPage();
 
   return (
@@ -92,7 +93,7 @@ export default function SearchScreen(): JSX.Element {
 
 
 interface UserItem {
-  user: Omit<GetBasicUserProfile, 'outgoingFriendships' | 'incomingFriendships'>,
+  user: GetBasicUserProfile,
   onPress: () => void;
 }
 

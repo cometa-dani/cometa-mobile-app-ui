@@ -11,7 +11,7 @@ import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser, useInfiniteQue
 import { AppButton, appButtonstyles } from '../../../components/buttons/buttons';
 import { AppCarousel } from '../../../components/carousels/carousel';
 import { useCometaStore } from '../../../store/cometaStore';
-import { useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../../queries/loggedInUser/friendshipHooks';
+import { useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation, useQueryGetFriendshipByTargetUserID } from '../../../queries/loggedInUser/friendshipHooks';
 import { GetBasicUserProfile, GetTargetUser } from '../../../models/User';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../../queries/queryKeys';
@@ -52,7 +52,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
 
   // queries
   const queryClient = useQueryClient();
-  // const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(targetUserUrlParams.uuid);
+  const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(!targetUserUrlParams.chatuuid ? targetUserUrlParams.uuid : '');
   const { data: targetUserProfile, isSuccess, isLoading } = useQueryGetTargetUserPeopleProfileByUid(targetUserUrlParams.uuid);
   const { data: matchedEvents } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUserUrlParams.uuid);
   const { data: targetUserbucketList } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfile?.id);
@@ -232,9 +232,11 @@ export default function TargerUserProfileScreen(): JSX.Element {
 
   const handleUnfollowingUser = (): void => {
     setToggleModalUnfollow(false);
-    if (targetUserProfile?.isFriend && targetUserUrlParams?.chatuuid) {
+    const chatuuid = targetUserUrlParams?.chatuuid || friendshipData?.chatuuid;
+
+    if (targetUserProfile?.isFriend && chatuuid) {
       chatWithFriendService
-        .deleteBothUsersChatHistory(targetUserUrlParams?.chatuuid, loggedInUserUuid, targetUserProfile.uid)
+        .deleteBothUsersChatHistory(chatuuid, loggedInUserUuid, targetUserProfile.uid)
         .then()
         .catch();
       mutationDeleteFriendship.mutate(targetUserProfile.id, {
