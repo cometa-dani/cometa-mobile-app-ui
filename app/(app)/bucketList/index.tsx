@@ -16,6 +16,7 @@ import { ForEach } from '../../../components/utils';
 import { LikeableEvent } from '../../../models/Event';
 import { defaultImgPlaceholder } from '../../../constants/vars';
 import { SkeletonLoaderList } from '../../../components/lodingSkeletons/LoadingSkeletonList';
+import { EmptyMessage } from '../../../components/empty/Empty';
 
 
 export default function BuckectListScreen(): JSX.Element {
@@ -30,15 +31,28 @@ export default function BuckectListScreen(): JSX.Element {
         condition={isFetching}
         render={<SkeletonLoaderList />}
         elseRender={(
-          <FlashList
-            data={memoizedLoggedInUserBucketList}
-            pagingEnabled={false}
-            showsVerticalScrollIndicator={true}
-            contentContainerStyle={{ paddingVertical: 26 }}
-            onMomentumScrollEnd={handleInfiniteFetch}
-            onEndReachedThreshold={1}
-            estimatedItemSize={100}
-            renderItem={renderBucketItem}
+          <If
+            condition={!memoizedLoggedInUserBucketList?.length}
+            render={(
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, gap: 12 }}>
+                <EmptyMessage
+                  title='Oops! Looks like your bucket list is empty'
+                  subtitle='Head back to the homepage and add some exciting events!'
+                />
+              </View>
+            )}
+            elseRender={(
+              <FlashList
+                data={memoizedLoggedInUserBucketList}
+                pagingEnabled={false}
+                showsVerticalScrollIndicator={true}
+                contentContainerStyle={{ paddingVertical: 26 }}
+                onMomentumScrollEnd={handleInfiniteFetch}
+                onEndReachedThreshold={1}
+                estimatedItemSize={100}
+                renderItem={renderBucketItem}
+              />
+            )}
           />
         )}
       />

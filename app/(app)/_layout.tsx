@@ -1,20 +1,16 @@
-/* eslint-disable react-native/no-raw-text */
 import { Tabs, router } from 'expo-router';
-import { Pressable, StyleSheet, Text as TransparentText } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { View, useColors, Text } from '../../components/Themed';
 import { StatusBar } from 'expo-status-bar';
-import { FC, ReactNode, useEffect, useMemo, useState } from 'react';
+import { FC, ReactNode, useEffect, useMemo } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../config/firebase/firebase';
 import { useCometaStore } from '../../store/cometaStore';
 import { Image } from 'expo-image';
 import { icons, titles } from '../../constants/assets';
 import { RectButton } from 'react-native-gesture-handler';
-import { gray_900, red_100, white_50 } from '../../constants/colors';
+import { red_100, white_50 } from '../../constants/colors';
 import { If } from '../../components/utils/ifElse';
-import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../queries/loggedInUser/eventHooks';
-import ReactNativeModal from 'react-native-modal';
-import { appButtonstyles } from '../../components/buttons/buttons';
 // icons
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
@@ -49,20 +45,13 @@ export default function AppLayout() {
   const friendsLatestMessagesList = useCometaStore(state => state.friendsLatestMessagesList) ?? [];
   const notificationsList = useCometaStore(state => state.notificationsList) ?? [];
 
-  // bucket list empty modal
-  const [toggleModal, setToggleModal] = useState(false);
-  const { data, isSuccess } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
-
-
   const totalNewMessages = useMemo(() => (
     friendsLatestMessagesList.map(({ newMessagesCount }) => newMessagesCount ?? 0).reduce((prev, curr) => prev + curr, 0)
   ), [friendsLatestMessagesList]);
 
-
   const totalNotifications = useMemo(() => (
     notificationsList.length
   ), [notificationsList.length]);
-
 
   // listens only for log-out event
   useEffect(() => {
@@ -82,28 +71,6 @@ export default function AppLayout() {
   return (
     <>
       <StatusBar style={'auto'} />
-
-      <ReactNativeModal isVisible={toggleModal}>
-        <View style={styles.modalContainer}>
-          <View style={{ gap: 20 }}>
-            <View>
-              <Text style={styles.modalTitle}>Bucket List is Empty</Text>
-              <Text style={styles.modalText}>No events liked yet</Text>
-            </View>
-
-            <Pressable
-              style={{ ...appButtonstyles.button, backgroundColor: gray_900 }}
-              onPress={() => {
-                setToggleModal(false);
-                setTimeout(() => router.push('/(app)/'), 600);
-              }} >
-              <TransparentText style={{ ...appButtonstyles.buttonText, color: white_50 }}>
-                Close
-              </TransparentText>
-            </Pressable>
-          </View>
-        </View>
-      </ReactNativeModal>
 
       <Tabs
         // safeAreaInsets={{ bottom: 0 }}
@@ -186,13 +153,6 @@ export default function AppLayout() {
         />
         <Tabs.Screen
           name="bucketList/index"
-          listeners={{
-            focus: () => {
-              if (!data?.pages[0]?.totalEvents && isSuccess) {
-                setTimeout(() => setToggleModal(true), 600);
-              }
-            }
-          }}
           options={{
             headerTitleAlign: 'center',
             headerShown: true,
@@ -247,24 +207,6 @@ const styles = StyleSheet.create({
     gap: -1,
     position: 'relative',
     flex: 1
-  },
-
-  modalContainer: {
-    minHeight: 200,
-    width: 300,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    borderRadius: 20,
-    alignSelf: 'center'
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center'
-  },
-  modalText: {
-    textAlign: 'center'
   },
   headerRightContainer: {
     flex: 1,

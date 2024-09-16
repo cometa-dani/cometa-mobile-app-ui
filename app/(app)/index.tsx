@@ -3,7 +3,7 @@ import { StyleSheet, SafeAreaView, Pressable, View, TouchableOpacity } from 'rea
 import { Text, useColors } from '../../components/Themed';
 import { useInfiniteQuerySearchEventsByQueryParams } from '../../queries/loggedInUser/eventHooks';
 import { EventsFlashList } from '../../components/eventsFlashList/eventsFlashList';
-import { FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { If } from '../../components/utils';
 import { gray_200, gray_300, gray_500, gray_900, red_100 } from '../../constants/colors';
 import { RectButton, TextInput } from 'react-native-gesture-handler';
@@ -17,6 +17,7 @@ import { GetBasicUserProfile } from '../../models/User';
 import { defaultImgPlaceholder } from '../../constants/vars';
 import { SkeletonLoaderList } from '../../components/lodingSkeletons/LoadingSkeletonList';
 import { useCometaStore } from '../../store/cometaStore';
+import { EmptyMessage } from '../../components/empty/Empty';
 
 
 export default function HomeScreen(): JSX.Element {
@@ -62,7 +63,11 @@ export default function HomeScreen(): JSX.Element {
           <If
             condition={!evenstData?.length && !isLoading}
             render={(
-              <NotEventsFound />
+              <EmptyMessage
+                title="No events found"
+                subtitle="Change Settings"
+                onPress={() => router.push('/settings')}
+              />
             )}
             elseRender={(
               <EventsFlashList
@@ -95,14 +100,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 10,
     overflow: 'hidden',
-  },
-
-  notFoundContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 26
-  },
+  }
 });
 
 
@@ -445,23 +443,3 @@ const bottomSheetStyles = StyleSheet.create({
     },
   }
 });
-
-
-const NotEventsFound: FC = () => (
-  <View style={styles.notFoundContainer}>
-    <Text style={{ fontWeight: '600', fontSize: 20 }}>No events found</Text>
-
-    <TouchableOpacity
-      style={{ alignItems: 'center' }}
-      onPress={() => router.push('/settings')}
-    >
-      <MaterialCommunityIcons
-        name="checkbox-marked-circle-plus-outline"
-        size={34}
-        color={gray_900}
-      />
-      <Text style={{ fontSize: 14, marginTop: 6 }}>Change Settings</Text>
-    </TouchableOpacity>
-  </View>
-);
-
