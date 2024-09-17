@@ -25,7 +25,11 @@ export default function NotificationsScreen(): JSX.Element {
 
   useFocusEffect(
     useCallback(() => {
-      return () => notificationService.deleteAllNotifications(loggedInUserUUID);
+      const chatUUID = notificationsList.at(-1)?.chatUUID;
+      if (!chatUUID) return;
+      notificationService.setNotificationAsSeen(chatUUID, loggedInUserUUID)
+        .then()
+        .catch();
     }, [])
   );
 

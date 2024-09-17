@@ -66,7 +66,7 @@ export default function HomeScreen(): JSX.Element {
               <EmptyMessage
                 title="No events found"
                 subtitle="Change Settings"
-                onPress={() => router.push('/settings')}
+                onPress={() => router.push('/filter')}
               />
             )}
             elseRender={(

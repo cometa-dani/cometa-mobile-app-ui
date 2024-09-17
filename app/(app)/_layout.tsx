@@ -1,5 +1,6 @@
+/* eslint-disable react-native/no-unused-styles */
 import { Tabs, router } from 'expo-router';
-import { Pressable, StyleSheet } from 'react-native';
+import { Platform, Pressable, StyleSheet } from 'react-native';
 import { View, useColors, Text } from '../../components/Themed';
 import { StatusBar } from 'expo-status-bar';
 import { FC, ReactNode, useEffect, useMemo } from 'react';
@@ -31,27 +32,27 @@ export function TabBarIcon(props: {
   );
 }
 
-const TabButton: FC<{ children: ReactNode }> = ({ children }) => (
-  <RectButton style={styles.tabButton}>
-    {children}
-  </RectButton>
-);
+const TabButton: FC<{ children: ReactNode }> = ({ children }) => {
+  const localStyle = Platform.OS === 'android' ? stylesAndroid : stylesIOS;
+  return (
+    <RectButton style={localStyle.tabButton}>
+      {children}
+    </RectButton>
+  );
+};
 
 export default function AppLayout() {
+  const dynamicStyles = Platform.OS === 'android' ? stylesAndroid : stylesIOS;
   const { gray300, red100 } = useColors();
   const isCurrentUserAuthenticated = useCometaStore(state => state.isAuthenticated);
   const loggedInUserUUID = useCometaStore(state => state.uid);
   const setIsCurrentUserAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const friendsLatestMessagesList = useCometaStore(state => state.friendsLatestMessagesList) ?? [];
-  const notificationsList = useCometaStore(state => state.notificationsList) ?? [];
+  const notificationIsSeen = useCometaStore(state => state.notificationsList).at(-1)?.user?.isSeen;
 
   const totalNewMessages = useMemo(() => (
     friendsLatestMessagesList.map(({ newMessagesCount }) => newMessagesCount ?? 0).reduce((prev, curr) => prev + curr, 0)
   ), [friendsLatestMessagesList]);
-
-  const totalNotifications = useMemo(() => (
-    notificationsList.length
-  ), [notificationsList.length]);
 
   // listens only for log-out event
   useEffect(() => {
@@ -63,7 +64,6 @@ export default function AppLayout() {
     });
     return () => unsubscribe();
   }, []);
-
 
   if (!isCurrentUserAuthenticated) {
     return null;
@@ -78,7 +78,7 @@ export default function AppLayout() {
           // TODO: rewrite this to React Navigation v7
           return ({
             tabBarStyle: {
-              // height: 80,
+              height: dynamicStyles.tabBar.height,
               shadowColor: 'transparent',
               elevation: 0,
               borderTopWidth: 0,
@@ -99,7 +99,12 @@ export default function AppLayout() {
             headerShown: true,
             tabBarIcon: ({ color }) => (
               <TabButton>
-                <MaterialCommunityIcons style={{ marginBottom: -2.2 }} name="home-circle-outline" size={35} color={color} />
+                <MaterialCommunityIcons
+                  style={{ marginBottom: -2.2 }}
+                  name="home-circle-outline"
+                  size={35}
+                  color={color}
+                />
                 <Text size='xs' color={color}>Home</Text>
               </TabButton>
             ),
@@ -109,17 +114,25 @@ export default function AppLayout() {
               );
             },
             headerRight: () => (
-              <View style={styles.headerRightContainer}>
-                <Pressable style={{ position: 'relative' }} onPress={() => router.push(`/notifications/${loggedInUserUUID}`)}>
+              <View style={dynamicStyles.headerRightContainer}>
+                <Pressable
+                  style={{ position: 'relative' }}
+                  onPress={() => router.push(`/notifications/${loggedInUserUUID}`)}
+                >
                   {({ pressed }) => (
                     <>
                       <If
-                        condition={totalNotifications}
+                        condition={notificationIsSeen === false}
                         render={(
-                          <View style={styles.notificationIndicator} />
+                          <View style={dynamicStyles.notificationIndicator} />
                         )}
                       />
-                      <Ionicons style={{ opacity: pressed ? 0.5 : 1 }} name="notifications" size={30} color={gray300} />
+                      <Ionicons
+                        style={{ opacity: pressed ? 0.5 : 1 }}
+                        name="notifications"
+                        size={30}
+                        color={gray300}
+                      />
                     </>
                   )}
                 </Pressable>
@@ -140,8 +153,8 @@ export default function AppLayout() {
                 <If
                   condition={totalNewMessages}
                   render={(
-                    <View style={styles.newMessagesIndicator}>
-                      <Text style={styles.newMessagesText}>{totalNewMessages}</Text>
+                    <View style={dynamicStyles.newMessagesIndicator}>
+                      <Text style={dynamicStyles.newMessagesText}>{totalNewMessages}</Text>
                     </View>
                   )}
                 />
@@ -159,7 +172,7 @@ export default function AppLayout() {
             tabBarIcon: ({ color }) => (
               <TabButton>
                 <FontAwesome6 name="heart-circle-check" size={29} color={color} />
-                <Text size='xs' color={color}>Bucketlist</Text>
+                <Text size='xs' color={color}>Bucket list</Text>
               </TabButton>
             ),
             headerTitle() {
@@ -186,8 +199,29 @@ export default function AppLayout() {
 }
 
 
-// Styles object
-const styles = StyleSheet.create({
+const stylesAndroid = StyleSheet.create({
+  tabBar: {
+    height: 70
+  },
+
+  tabButton: {
+    top: 2,
+    height: '100%',
+    width: 'auto',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: -1,
+    position: 'relative',
+    flex: 1
+  },
+
+  headerRightContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 18,
+    gap: 8
+  },
 
   notificationIndicator: {
     borderRadius: 50,
@@ -198,16 +232,42 @@ const styles = StyleSheet.create({
     top: -2
   },
 
+  newMessagesIndicator: {
+    position: 'absolute',
+    top: 4,
+    right: -14,
+    backgroundColor: red_100,
+    width: 17,
+    height: 17,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  newMessagesText: {
+    color: white_50,
+    fontWeight: 'bold',
+    fontSize: 12
+  }
+});
+
+// Styles object
+const stylesIOS = StyleSheet.create({
+
+  tabBar: {
+    height: 90
+  },
+
   tabButton: {
     top: -2,
     height: '100%',
     width: 'auto',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     gap: -1,
     position: 'relative',
     flex: 1
   },
+
   headerRightContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -215,6 +275,16 @@ const styles = StyleSheet.create({
     marginRight: 18,
     gap: 8
   },
+
+  notificationIndicator: {
+    borderRadius: 50,
+    width: 8,
+    height: 8,
+    backgroundColor: red_100,
+    position: 'absolute',
+    top: -2
+  },
+
   newMessagesIndicator: {
     position: 'absolute',
     top: 4,

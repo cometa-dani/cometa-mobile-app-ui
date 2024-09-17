@@ -20,7 +20,7 @@ export const EmptyMessage: FC<Props> = ({ onPress, title, subtitle }) => (
       style={{ alignItems: 'center' }}
       onPress={onPress}
     >
-      <Text style={{ fontSize: 14, marginTop: 6 }}>
+      <Text style={{ fontSize: 14, marginTop: 6, textAlign: 'center' }}>
         {subtitle}
       </Text>
     </TouchableOpacity>

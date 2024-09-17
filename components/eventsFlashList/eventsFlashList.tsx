@@ -240,16 +240,18 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
 
         {/* event info */}
         <TransParentView style={stylesEventItem.eventInfoContainer}>
-          <Text
-            lightColor='#fff'
-            darkColor='#eee'
-            numberOfLines={2}
-            ellipsizeMode='tail'
-            size='xl'
-            style={{ ...stylesEventItem.textShadow }}
-          >
-            {item.name}
-          </Text>
+          <Pressable onPress={() => setIsExpanded(prev => !prev)}>
+            <Text
+              lightColor='#fff'
+              darkColor='#eee'
+              numberOfLines={isExpanded ? 24 : 2}
+              ellipsizeMode='tail'
+              size='xl'
+              style={{ ...stylesEventItem.textShadow }}
+            >
+              {item.name}
+            </Text>
+          </Pressable>
 
           {/* tags */}
           <TransParentView style={{ flexDirection: 'row', gap: 10 }}>

@@ -163,7 +163,8 @@ export default function TargerUserProfileScreen(): JSX.Element {
         user: {
           _id: loggedInUserUuid,
           avatar: loggedInUserProfile?.photos[0]?.url,
-          name: loggedInUserProfile?.username
+          name: loggedInUserProfile?.username,
+          isSeen: false
         }
       };
       await

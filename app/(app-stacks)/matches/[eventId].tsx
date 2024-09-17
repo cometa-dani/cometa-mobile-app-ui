@@ -170,7 +170,8 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
         user: {
           _id: loggedInUserUuid,
           avatar: loggedInUserProfile?.photos[0]?.url,
-          name: loggedInUserProfile?.username
+          name: loggedInUserProfile?.username,
+          isSeen: false
         }
       };
       await
