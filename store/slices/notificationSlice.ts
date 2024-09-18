@@ -8,7 +8,8 @@ export interface INotificationData {
     _id: string,
     name: string,
     avatar: string,
-    isSeen: boolean
+    isSeen: boolean,
+    message: string
   },
 }
 

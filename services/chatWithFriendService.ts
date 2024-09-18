@@ -91,6 +91,10 @@ class ChatWithFriendService {
       }
     };
 
+    /**
+     *
+     * TODO: currMsg is not necessary here for partial updates
+     */
     const viewedChatMessages = latestMessages.reduce((prev, currMsg) => ({
       ...prev,
       [`chats/${chatuuid}/${loggedInUserUUID}/${currMsg.messageUUID}`]: { ...currMsg, sent: true, received: true },

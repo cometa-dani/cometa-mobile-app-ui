@@ -171,14 +171,15 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
           _id: loggedInUserUuid,
           avatar: loggedInUserProfile?.photos[0]?.url,
           name: loggedInUserProfile?.username,
+          message: `${loggedInUserProfile?.username} is your new match!`,
           isSeen: false
         }
       };
       await
         notificationService.sentNotificationToTargetUser(
           messagePayload,
-          targetUserAsSender.uid,
-          newCreatedFrienship.chatuuid
+          targetUserAsSender.uid, // to
+          loggedInUserUuid // from
         );
     }
     catch (error) {
@@ -230,7 +231,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
     pendingButton.handleOptimisticUpdate(targetUserAsReceiver.id);
 
     // 2. mutation
-    mutationSentFriendship.mutate(
+    mutationSentFriendship.mutateAsync(
       { targetUserId: targetUserAsReceiver.id },
       {
         onSuccess: () => {
@@ -244,7 +245,27 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
           }
         }
       }
-    );
+    )
+      .then(() => {
+        const messagePayload = {
+          createdAt: new Date().toString(),
+          user: {
+            _id: loggedInUserUuid,
+            avatar: loggedInUserProfile?.photos[0]?.url,
+            name: loggedInUserProfile?.username,
+            message: `${loggedInUserProfile?.username} has followed you!`,
+            isSeen: false
+          }
+        };
+        notificationService.sentNotificationToTargetUser(
+          messagePayload,
+          targetUserAsReceiver.uid, // to
+          loggedInUserUuid   // from
+        )
+          .then()
+          .catch();
+      })
+      .catch();
   };
 
   /**
@@ -257,6 +278,10 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
       targetUserAsReceiver.id,
       {
         onSuccess() {
+          notificationService
+            .deleteNotification(targetUserAsReceiver.uid, loggedInUserUuid)
+            .then()
+            .catch();
           queryClient.invalidateQueries({
             queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId]
           });

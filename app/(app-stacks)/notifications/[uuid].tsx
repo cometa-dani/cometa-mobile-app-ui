@@ -25,9 +25,9 @@ export default function NotificationsScreen(): JSX.Element {
 
   useFocusEffect(
     useCallback(() => {
-      const chatUUID = notificationsList.at(-1)?.chatUUID;
-      if (!chatUUID) return;
-      notificationService.setNotificationAsSeen(chatUUID, loggedInUserUUID)
+      const lastMessage = notificationsList.at(-1);
+      if (!lastMessage) return;
+      notificationService.setNotificationAsSeen(loggedInUserUUID, lastMessage.user._id)
         .then()
         .catch();
     }, [])
@@ -72,24 +72,19 @@ export default function NotificationsScreen(): JSX.Element {
                   </RectButton>
                 )}>
                 <BaseButton
-                  onPress={() => router.push(`/chat/${notification.user._id}`)}
+                  onPress={() => router.push(`/targetUserProfile/${notification.user._id}`)}
                   style={styles.container}
                 >
                   <View style={styles.imageContainer}>
                     <Image source={{ uri: notification.user?.avatar }} style={styles.image} />
                   </View>
-
-                  <Text>
-                    <Text>{notification.user.name} </Text>
-                    is your new match
-                  </Text>
+                  <Text>{notification.user?.message}</Text>
                 </BaseButton>
               </Swipeable>
             )}
           />
         )}
       />
-
     </SafeAreaView>
   );
 }

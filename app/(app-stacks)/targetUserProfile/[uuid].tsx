@@ -164,14 +164,15 @@ export default function TargerUserProfileScreen(): JSX.Element {
           _id: loggedInUserUuid,
           avatar: loggedInUserProfile?.photos[0]?.url,
           name: loggedInUserProfile?.username,
+          message: `${loggedInUserProfile?.username} is your new match!`,
           isSeen: false
         }
       };
       await
         notificationService.sentNotificationToTargetUser(
           messagePayload,
-          targetUserAsSender.uid,
-          newCreatedFriendship.chatuuid
+          targetUserAsSender.uid,  // to
+          loggedInUserUuid  // from
         );
     }
     catch (error) {
@@ -189,7 +190,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
     pendingButton.handleOptimisticUpdate(targetUserAsReceiver.uid);
 
     // 2. mutation
-    mutationSentFriendship.mutate(
+    mutationSentFriendship.mutateAsync(
       { targetUserId: targetUserAsReceiver.id },
       {
         onSuccess() {
@@ -208,7 +209,27 @@ export default function TargerUserProfileScreen(): JSX.Element {
           }
         }
       }
-    );
+    )
+      .then(() => {
+        const messagePayload = {
+          createdAt: new Date().toString(),
+          user: {
+            _id: loggedInUserUuid,
+            avatar: loggedInUserProfile?.photos[0]?.url,
+            name: loggedInUserProfile?.username,
+            message: `${loggedInUserProfile?.username} has followed you!`,
+            isSeen: false
+          }
+        };
+        notificationService.sentNotificationToTargetUser(
+          messagePayload,
+          targetUserAsReceiver.uid, // to
+          loggedInUserUuid   // from
+        )
+          .then()
+          .catch();
+      })
+      .catch();
   };
 
   /**
@@ -219,6 +240,10 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const cancelFriendshipInvitation = (targetUserAsReceiver: GetTargetUser): void => {
     mutationDeleteFriendship.mutate(targetUserAsReceiver.id, {
       onSuccess() {
+        notificationService
+          .deleteNotification(targetUserAsReceiver.uid, loggedInUserUuid)
+          .then()
+          .catch();
         if (urlParams.eventId) {
           queryClient.invalidateQueries({
             queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId]

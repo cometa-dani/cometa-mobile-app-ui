@@ -1,27 +1,34 @@
-import { ref, set, update } from 'firebase/database';
+import { ref, set, update, get, limitToLast, query } from 'firebase/database';
 import { realtimeDB } from '../config/firebase/firebase';
 
 
 class NotificationService {
-  sentNotificationToTargetUser = async (notificationPayload: object, targetUserUUID: string, chatUUID: string) => {
-    const notificationsRef = ref(realtimeDB, `notifications/${targetUserUUID}/${chatUUID}`);
-    return await set(notificationsRef, notificationPayload);
-  };
+  async sentNotificationToTargetUser(notificationPayload: object, targetUserUUID: string, msgKey: string) {
+    const notificationsRef = ref(realtimeDB, `notifications/${targetUserUUID}/${msgKey}`);
+    return set(notificationsRef, notificationPayload);
+  }
 
-  setNotificationAsSeen = async (chatUUID: string, loggedInUserUUID: string) => {
-    const notificationRef = ref(realtimeDB, `notifications/${loggedInUserUUID}/${chatUUID}/user`);
-    return await update(notificationRef, { isSeen: true });
-  };
+  async setNotificationAsSeen(loggedInUserUUID: string, msgKey: string) {
+    const notificationRef = ref(realtimeDB, `notifications/${loggedInUserUUID}/${msgKey}/user`);
+    return update(notificationRef, { isSeen: true });
+  }
 
-  deleteNotification = async (chatUUID: string, loggedInUserUUID: string) => {
-    const notificationRef = ref(realtimeDB, `notifications/${loggedInUserUUID}/${chatUUID}`);
-    return await set(notificationRef, null);
-  };
+  async deleteNotification(loggedInUserUUID: string, msgKey: string) {
+    const notificationRef = ref(realtimeDB, `notifications/${loggedInUserUUID}/${msgKey}`);
+    return set(notificationRef, null);
+  }
 
-  deleteAllNotifications = async (loggedInUserUUID: string) => {
+  async deleteLastNotification(loggedInUserUUID: string) {
+    const lastItem = query(ref(realtimeDB, `notifications/${loggedInUserUUID}`), limitToLast(1));
+    const { key } = await get(lastItem);
+    const notificationRef = ref(realtimeDB, `notifications/${loggedInUserUUID}/${key}`);
+    return set(notificationRef, null);
+  }
+
+  async deleteAllNotifications(loggedInUserUUID: string) {
     const notificationRef = ref(realtimeDB, `notifications/${loggedInUserUUID}`);
-    return await set(notificationRef, null);
-  };
+    return set(notificationRef, null);
+  }
 }
 
 
