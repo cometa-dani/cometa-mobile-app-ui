@@ -180,7 +180,9 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
           messagePayload,
           targetUserAsSender.uid, // to
           loggedInUserUuid // from
-        );
+        )
+          .then()
+          .catch();
     }
     catch (error) {
       return null;

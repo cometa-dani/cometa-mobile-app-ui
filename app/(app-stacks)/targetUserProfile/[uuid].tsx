@@ -173,7 +173,9 @@ export default function TargerUserProfileScreen(): JSX.Element {
           messagePayload,
           targetUserAsSender.uid,  // to
           loggedInUserUuid  // from
-        );
+        )
+          .then()
+          .catch();
     }
     catch (error) {
       return null;
