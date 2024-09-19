@@ -48,7 +48,7 @@ export default function AppLayout() {
   const loggedInUserUUID = useCometaStore(state => state.uid);
   const setIsCurrentUserAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const friendsLatestMessagesList = useCometaStore(state => state.friendsLatestMessagesList) ?? [];
-  const notificationIsSeen = useCometaStore(state => state.notificationsList).at(-1)?.user?.isSeen;
+  const notificationIsSeen = useCometaStore(state => state.notificationsList).at(0)?.user?.isSeen;
 
   const totalNewMessages = useMemo(() => (
     friendsLatestMessagesList.map(({ newMessagesCount }) => newMessagesCount ?? 0).reduce((prev, curr) => prev + curr, 0)

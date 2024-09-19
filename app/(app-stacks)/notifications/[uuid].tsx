@@ -25,7 +25,7 @@ export default function NotificationsScreen(): JSX.Element {
 
   useFocusEffect(
     useCallback(() => {
-      const lastMessage = notificationsList.at(-1);
+      const lastMessage = notificationsList.at(0);
       if (!lastMessage) return;
       notificationService.setNotificationAsSeen(loggedInUserUUID, lastMessage.user._id)
         .then()
