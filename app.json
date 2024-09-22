@@ -74,7 +74,6 @@
       }
     },
     "owner": "cometa-dani-expo",
-    "sdkVersion": "50.0.0"
-  },
-  "name": "cometa-ui-app"
+    "sdkVersion": "51.0.0"
+  }
 }
