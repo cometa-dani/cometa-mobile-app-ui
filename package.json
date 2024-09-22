@@ -3,6 +3,8 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
+    "build-debug:android": "expo build:android --profile preview --local",
+    "build-debug:ios": "expo build:ios --profile preview --local",
     "build-dev:android": "eas build -p android --profile preview",
     "build-dev:ios": "eas build -p ios --profile preview",
     "submit:ios": "eas submit -p ios --latest --profile preview",
@@ -14,7 +16,7 @@
     "upgrade": "npx expo install expo@latest --fix",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "eslint . --ext=.jsx,.js,.tsx,.ts"
+    "lint": "expo lint"
   },
   "jest": {
     "preset": "jest-expo"

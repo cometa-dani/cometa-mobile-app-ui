@@ -1,3 +1,4 @@
+import 'expo-dev-client';
 // components
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
@@ -32,6 +33,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
     Poppins: require('../assets/fonts/Poppins-Regular.ttf'),
+    PoppinsBold: require('../assets/fonts/Poppins-Bold.ttf'),
     ...FontAwesome.font,
   });
 
