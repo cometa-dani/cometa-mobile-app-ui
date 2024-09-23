@@ -286,23 +286,26 @@ export default function ChatWithFriendScreen(): JSX.Element {
             <Message  {...props} />
           )}
           renderAvatar={(props) => {
+            if (!targetUser?.uid || !loggedInUser?.uid) {
+              return null;
+            }
             const avatarProps = {
               ...props,
               currentMessage: {
-                ...props.currentMessage,
+                // ...props.currentMessage,
                 user: {
                   ...props.currentMessage?.user,
-                  avatar:
-                    props.currentMessage?.user?._id === targetUser?.uid ?
-                      targetUser?.photos[0]?.url : loggedInUser?.photos[0]?.url
+                  avatar: props.currentMessage?.user?._id === targetUser?.uid
+                    ? targetUser?.photos[0]?.url
+                    : loggedInUser?.photos[0]?.url
                 }
-              } as IMessage
+              } as IMessage,
             };
-
             return (
               <Avatar
+                position='right'
                 key={props.currentMessage?._id ?? -1}
-                {...avatarProps}
+                currentMessage={avatarProps.currentMessage}
               />
             );
           }}

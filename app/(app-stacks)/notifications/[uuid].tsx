@@ -20,13 +20,13 @@ export default function NotificationsScreen(): JSX.Element {
 
   const handleDeleteNotification = (notification: INotificationData) => {
     if (!notification?.chatUUID) return;
-    notificationService.deleteNotification(notification?.chatUUID, loggedInUserUUID);
+    notificationService.deleteNotification(loggedInUserUUID, notification.user._id);
   };
 
   useFocusEffect(
     useCallback(() => {
       const lastMessage = notificationsList.at(0);
-      if (!lastMessage) return;
+      if (!lastMessage || lastMessage?.user?.isSeen) return;
       notificationService.setNotificationAsSeen(loggedInUserUUID, lastMessage.user._id)
         .then()
         .catch();
@@ -78,7 +78,15 @@ export default function NotificationsScreen(): JSX.Element {
                   <View style={styles.imageContainer}>
                     <Image source={{ uri: notification.user?.avatar }} style={styles.image} />
                   </View>
-                  <Text>{notification.user?.message}</Text>
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode='tail'
+                    style={{
+                      maxWidth: '80%',
+                    }}
+                  >
+                    {notification.user?.message}
+                  </Text>
                 </BaseButton>
               </Swipeable>
             )}
@@ -109,8 +117,8 @@ const styles = StyleSheet.create({
   },
 
   imageContainer: {
-    width: 50,
-    height: 50,
+    width: 46,
+    height: 46,
     borderRadius: 25,
     overflow: 'hidden'
   },
