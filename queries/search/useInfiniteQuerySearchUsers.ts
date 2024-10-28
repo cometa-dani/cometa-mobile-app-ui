@@ -21,8 +21,8 @@ export const useInfiniteQuerySearchUsers = (username: string) => {
       }
     },
     getNextPageParam: (lastPage) => {
-      if (lastPage.hasNextCursor) {
-        return lastPage.nextCursor;
+      if (lastPage?.hasNextCursor) {
+        return lastPage?.nextCursor;
       }
       return null;
     },

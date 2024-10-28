@@ -28,7 +28,7 @@ export default function HomeScreen(): JSX.Element {
 
   // eventsData
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading, isRefetching } = useInfiniteQuerySearchEventsByQueryParams(searchQuery);
-  const evenstData = data?.pages.flatMap(page => page.events) || [];
+  const evenstData = data?.pages.flatMap(page => page.items) || [];
 
   // handling fetch when reaching the end
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
@@ -132,7 +132,7 @@ export const BottonSheetSearchEvents = forwardRef<BottomSheetModal, BottonSheetS
   const handleUserInfiniteScroll = () => !isLoading && hasNextPage && fetchNextPage();
 
   const memoizedSearchUsers = useMemo(() =>
-    usersSearchedList?.pages.flatMap(page => page.users) || [],
+    usersSearchedList?.pages.flatMap(page => page.items) || [],
     [usersSearchedList]);
 
   // debounce search input for users

@@ -30,7 +30,7 @@ export default function MatchedEventsScreen(): JSX.Element {
   // cached data
   const queryClient = useQueryClient();
   const bucketListCahedData = queryClient.getQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION]);
-  const eventByIdCachedData = bucketListCahedData?.pages.flatMap(page => page?.events)[+urlParams.eventIndex] ?? null;
+  const eventByIdCachedData = bucketListCahedData?.pages.flatMap(page => page?.items)[+urlParams.eventIndex] ?? null;
 
   // people state
   const newPeopleData = useInfiteQueryGetUsersWhoLikedSameEventByID(+urlParams.eventId);
@@ -41,7 +41,7 @@ export default function MatchedEventsScreen(): JSX.Element {
     newFriendsData.data?.pages.flatMap(page => page?.friendships) ?? []
   ), [newFriendsData.data?.pages]);
   const memoizedNewPeopleList = useMemo(() => (
-    newPeopleData.data?.pages.flatMap(page => page?.usersWhoLikedEvent) ?? []
+    newPeopleData.data?.pages.flatMap(page => page?.items) ?? []
   ), [newPeopleData.data?.pages]);
 
 
@@ -99,7 +99,7 @@ export default function MatchedEventsScreen(): JSX.Element {
               onInfiniteScroll={handleNewPeopleInfiniteScroll}
               users={memoizedNewPeopleList}
               isFetching={newPeopleData.isPending}
-              isEmpty={!newPeopleData.data?.pages[0]?.totalUsers}
+              isEmpty={!newPeopleData.data?.pages[0]?.totalItems}
             />
           )}
         />
@@ -110,7 +110,7 @@ export default function MatchedEventsScreen(): JSX.Element {
 
 
 interface FlashListProps {
-  users: GetMatchedUsersWhoLikedEventWithPagination['usersWhoLikedEvent'];
+  users: GetMatchedUsersWhoLikedEventWithPagination['items'];
   isFetching: boolean;
   isEmpty: boolean;
   onInfiniteScroll: () => void,
@@ -204,8 +204,8 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
             oldData?.pages
               .map((page) => ({
                 ...page,
-                usersWhoLikedEvent:
-                  page.usersWhoLikedEvent
+                items:
+                  page.items
                     .map(event => event.userId === userID ?
                       ({
                         ...event,

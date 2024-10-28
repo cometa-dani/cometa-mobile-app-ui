@@ -25,10 +25,10 @@ export const useInfiniteQueryGetLoggedInUserNewestFriends = () => {
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (!lastPage.nextCursor || lastPage.friendships.length < 5) {
-          return null; // makes hasNextPage evalutes to false
+        if (lastPage.hasNextCursor) {
+          return lastPage.nextCursor;
         }
-        return lastPage.nextCursor;
+        return null; // makes hasNextPage evalutes to false
       },
       retry: 2,
       retryDelay: 1_000 * 6,
@@ -57,10 +57,10 @@ export const useInfiniteQuerySearchFriendsByUserName = (friendUserName: string) 
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (!lastPage.nextCursor || lastPage.friendships.length < 10) {
-          return null; // makes hasNextPage evalutes to false
+        if (lastPage.hasNextCursor) {
+          return lastPage.nextCursor;
         }
-        return lastPage.nextCursor;
+        return null; // makes hasNextPage evalutes to false
       },
       retry: 2,
       retryDelay: 1_000 * 6,

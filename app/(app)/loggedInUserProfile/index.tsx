@@ -67,7 +67,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
   // bucketlist
   const bucketlistLikedEvents =
     loggedInUserBucketList?.pages.
-      flatMap(({ events }) => (
+      flatMap(({ items: events }) => (
         events.map(
           event => ({
             id: event?.photos[0]?.id,

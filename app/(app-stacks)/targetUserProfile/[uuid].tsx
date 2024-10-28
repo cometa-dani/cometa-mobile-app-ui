@@ -65,7 +65,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
 
   // memoized data
   const memoizedMatchedEvents = useMemo(() => (matchedEvents?.pages.flatMap(
-    page => page.events.map(
+    page => page.items.map(
       event => ({
         id: event.id,
         img: event.photos[0]?.url,
@@ -76,7 +76,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const memoizedBucketList = useMemo(() => (
     targetUserUrlParams?.eventId ?
       targetUserbucketList?.pages.flatMap(
-        page => page.events.map(
+        page => page.items.map(
           event => ({
             id: event.id,
             img: event?.photos[0]?.url ?? '',
@@ -87,7 +87,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
         .filter(event => event?.id !== +(targetUserUrlParams?.eventId ?? -1))
       :
       targetUserbucketList?.pages.flatMap(
-        page => page.events.map(
+        page => page.items.map(
           event => ({
             id: event.id,
             img: event?.photos[0]?.url ?? '',

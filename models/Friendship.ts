@@ -19,6 +19,7 @@ export interface GetLatestFriendships {
   totalFriendships: number;
   nextCursor: number;
   friendshipsPerPage: number;
+  hasNextCursor: boolean;
 }
 
 export type MutateFrienship = Pick<Friendship, (

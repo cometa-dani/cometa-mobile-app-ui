@@ -1,8 +1,9 @@
 export interface GetCitiesWithPagination {
-  cities: CityDatum[];
-  totalCities: number;
+  items: CityDatum[];
+  totalItems: number;
   nextCursor: number;
-  citiesPerPage: number;
+  itemsPerPage: number;
+  hasNextCursor: boolean;
 }
 
 export interface CityDatum {

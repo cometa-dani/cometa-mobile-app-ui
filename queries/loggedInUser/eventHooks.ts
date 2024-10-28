@@ -68,10 +68,10 @@ export const useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser = () => {
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (!lastPage.nextCursor || lastPage.events.length < 8) {
-          return null; // makes hasNextPage evalutes to false
+        if (lastPage?.hasNextCursor) {
+          return lastPage.nextCursor;
         }
-        return lastPage.nextCursor;
+        return null; // makes hasNextPage evalutes to false
       },
       retry: 2,
       retryDelay: 1_000 * 6,

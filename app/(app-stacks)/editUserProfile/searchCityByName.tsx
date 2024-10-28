@@ -25,7 +25,7 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
   const [triggerFetch, setTriggerFetch] = useState('');
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetCities(triggerFetch);
 
-  const citiesData = useMemo(() => data?.pages.flatMap(page => page.cities) || [], [data?.pages]);
+  const citiesData = useMemo(() => data?.pages.flatMap(page => page.items) || [], [data?.pages]);
 
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 

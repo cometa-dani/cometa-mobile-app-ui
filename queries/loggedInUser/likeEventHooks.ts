@@ -43,7 +43,7 @@ export const useMutationLikeOrDislikeEvent = () => {
                 (page) => (
                   {
                     ...page,
-                    events: page.events.map(event =>
+                    items: page.items.map(event =>
                       eventID === event.id ? (
                         {
                           ...event,
@@ -111,7 +111,7 @@ export const useMutationDeleteLikedEventFromBucketList = () => {
               (page) => (
                 {
                   ...page,
-                  events: page.events.filter(event => eventID !== event.id)
+                  items: page.items.filter(event => eventID !== event.id)
                 }
               )) || [],
             pageParams: oldData?.pageParams || []
@@ -128,7 +128,7 @@ export const useMutationDeleteLikedEventFromBucketList = () => {
               (page) => (
                 {
                   ...page,
-                  events: page.events.map(event =>
+                  items: page.items.map(event =>
                     eventID === event.id ? (
                       {
                         ...event,

@@ -103,11 +103,11 @@ export interface LoggedUserClientState extends Pick<GetBasicUserProfile, (
 }
 
 export interface GetMatchedUsersWhoLikedEventWithPagination {
-  usersWhoLikedEvent: MatchedUsersWhoLikedEvent[];
+  items: MatchedUsersWhoLikedEvent[];
   nextCursor: number;
-  totalUsers: number;
+  totalItems: number;
   hasNextCursor: boolean;
-  usersPerPage: number;
+  itemsPerPage: number;
 }
 
 export interface MatchedUsersWhoLikedEvent {
@@ -149,11 +149,11 @@ export interface GetBasicUserProfile extends
 
 
 export interface GetUsersWithPagination {
-  users: Omit<GetBasicUserProfile, 'outgoingFriendships' | 'incomingFriendships'>[];
+  items: Omit<GetBasicUserProfile, 'outgoingFriendships' | 'incomingFriendships'>[];
   nextCursor: number;
-  totalUsers: number;
-  usersPerPage: number;
+  totalItems: number;
   hasNextCursor: boolean;
+  itemsPerPage: number;
 }
 
 

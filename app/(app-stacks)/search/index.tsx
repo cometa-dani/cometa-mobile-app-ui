@@ -37,7 +37,7 @@ export default function SearchScreen(): JSX.Element {
 
   // search
   const usersData = useMemo(() => (
-    usersSearch.data?.pages.flatMap(page => page.users) || []
+    usersSearch.data?.pages.flatMap(page => page.items) || []
   ), [usersSearch.data?.pages]);
 
   const handleUserInfiniteScroll = () => !usersSearch.isLoading && usersSearch.hasNextPage && usersSearch.fetchNextPage();

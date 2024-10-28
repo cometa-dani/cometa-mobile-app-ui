@@ -51,11 +51,11 @@ export interface MatchedEvents {
 }
 
 export interface GetAllLatestEventsWithPagination {
-  events: LikeableEvent[];
-  totalEvents: number;
+  items: LikeableEvent[];
+  totalItems: number;
   nextCursor: number;
   hasNextCursor: boolean;
-  eventsPerPage: number;
+  itemsPerPage: number;
 }
 
 export interface LikeableEvent {

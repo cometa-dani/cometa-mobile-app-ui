@@ -44,7 +44,7 @@ export default function TargetUserBucketListScreen(): JSX.Element {
       <View style={styles.container}>
         <EventsFlashList
           initialScrollIndex={+initialScrollIndex}
-          items={data?.pages.flatMap(page => page.events.filter(event => event?.id !== +eventId)) || []}
+          items={data?.pages.flatMap(page => page.items.filter(event => event?.id !== +eventId)) || []}
           isLoading={isLoading}
           onInfiniteScroll={handleInfiniteFetch}
           targetUserId={targetUserProfileCached?.id}

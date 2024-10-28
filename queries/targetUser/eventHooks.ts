@@ -8,7 +8,6 @@ import { QueryKeys } from '../queryKeys';
 
 export const useInfiniteQueryGetLikedEventsForBucketListByTargerUser = (targetUserId?: number) => {
   const firstUserAccessToken = useCometaStore(state => state.accessToken);
-
   return (
     useInfiniteQuery({
       enabled: !!targetUserId,
@@ -26,10 +25,10 @@ export const useInfiniteQueryGetLikedEventsForBucketListByTargerUser = (targetUs
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (!lastPage.nextCursor || lastPage.events.length < 4) {
-          return null; // makes hasNextPage evalutes to false
+        if (lastPage?.hasNextCursor) {
+          return lastPage.nextCursor;
         }
-        return lastPage.nextCursor;
+        return null; // makes hasNextPage evalutes to false
       },
       retry: 2,
       retryDelay: 1_000 * 6
@@ -41,7 +40,6 @@ export const useInfiniteQueryGetLikedEventsForBucketListByTargerUser = (targetUs
 // Query to fetch users who liked the same event with infinite scrolling
 export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => {
   const accessToken = useCometaStore(state => state.accessToken);
-
   return (
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +eventID],
@@ -59,10 +57,10 @@ export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => 
       // Define when to stop refetching
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (!lastPage.hasNextCursor) {
-          return null; // makes hasNextPage evalutes to false
+        if (lastPage.hasNextCursor) {
+          return lastPage.nextCursor;
         }
-        return lastPage.nextCursor;
+        return null; // makes hasNextPage evalutes to false
       },
       retry: 2,
       retryDelay: 1_000 * 6,
@@ -74,7 +72,6 @@ export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => 
 
 export const useInfiniteQueryGetSameMatchedEventsByTwoUsers = (targetUserToken: string, take = 4, allPhotos = true) => {
   const loggedInUserToken = useCometaStore(state => state.accessToken);
-
   return (
     useInfiniteQuery({
       initialPageParam: -1,
@@ -90,14 +87,13 @@ export const useInfiniteQueryGetSameMatchedEventsByTwoUsers = (targetUserToken: 
       },
       getNextPageParam: (lastPage) => {
         // stops incrementing next page because there no more events left
-        if (!lastPage.nextCursor || lastPage.events.length < take) {
-          return null; // makes hasNextPage evalutes to false
+        if (lastPage.hasNextCursor) {
+          return lastPage.nextCursor;
         }
-        return lastPage.nextCursor;
+        return null; // makes hasNextPage evalutes to false
       },
       retry: 2,
       retryDelay: 1_000 * 6
     })
   );
 };
-

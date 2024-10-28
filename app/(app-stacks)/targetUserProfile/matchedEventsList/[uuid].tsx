@@ -51,7 +51,7 @@ export default function MatchedEventsListScreen(): JSX.Element {
         <EventsFlashList
           hideLikeAndShareButtons={true}
           initialScrollIndex={+urlParams.initialScrollIndex}
-          items={data?.pages.flatMap(page => page.events) || []}
+          items={data?.pages.flatMap(page => page.items) || []}
           isLoading={isLoading}
           onInfiniteScroll={handleInfiniteFetch}
         />

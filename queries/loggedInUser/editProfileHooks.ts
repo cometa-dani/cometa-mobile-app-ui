@@ -20,12 +20,10 @@ export const useInfiniteQueryGetCities = (prefixName: string, limit = 10) => {
       }
     },
     getNextPageParam: (lastPage) => {
-      if (!lastPage.cities.length || lastPage.cities.length < limit) {
-        return null;
-      }
-      else {
+      if (lastPage.hasNextCursor) {
         return lastPage.nextCursor;
       }
+      return null;
     },
     retry: 2,
     retryDelay: 1_000 * 6

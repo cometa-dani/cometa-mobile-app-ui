@@ -5,13 +5,10 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { SplashScreen, Stack, } from 'expo-router';
 import ToastManager from 'toastify-react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-
-
 // hooks
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
 import { useColorScheme, } from 'react-native';
-
 // query client for server state
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -22,7 +19,7 @@ export { ErrorBoundary } from 'expo-router';
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '/index',
+  initialRouteName: '/(app)/index',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.

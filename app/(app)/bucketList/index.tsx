@@ -22,7 +22,7 @@ import { EmptyMessage } from '../../../components/empty/Empty';
 export default function BuckectListScreen(): JSX.Element {
   const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
-  const memoizedLoggedInUserBucketList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
+  const memoizedLoggedInUserBucketList = useMemo(() => data?.pages.flatMap(page => page.items) || [], [data?.pages]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>

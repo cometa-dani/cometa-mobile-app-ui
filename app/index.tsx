@@ -120,7 +120,11 @@ export default function WelcomeScreen(): JSX.Element {
 
 
   return (
-    <ImageBackground style={styles.imageBackground} source={require('../assets/images/welcome-image.jpeg')}>
+    <ImageBackground
+      style={styles.imageBackground}
+      source={require('../assets/images/welcome-image.jpeg')}
+      resizeMode='cover'
+    >
       <View style={styles.textContainer}>
         <Image style={styles.logo} source={require('../assets/images/cometa-logo.png')} />
         <Text size='xl' style={styles.h1}>Discover New Experiences</Text>
