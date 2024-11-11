@@ -1,7 +1,7 @@
 import { ImageBackground, StyleSheet, View, Image } from 'react-native';
 import { router } from 'expo-router';
 import { LightButton } from '../components/buttons/buttons';
-import { useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { Unsubscribe, onAuthStateChanged } from 'firebase/auth'; // Import Firebase authentication functions.
 import { auth, realtimeDB } from '../config/firebase/firebase'; // Import Firebase authentication instance.
 import { onValue, ref } from 'firebase/database';
@@ -11,7 +11,7 @@ import { INotificationData } from '../store/slices/notificationSlice';
 import { Text } from '../components/Themed';
 
 
-export default function WelcomeScreen(): JSX.Element {
+export default function WelcomeScreen(): ReactNode {
   const isAuthenticated = useCometaStore(state => state.isAuthenticated);
   const setAccessToken = useCometaStore(state => state.setAccessToken);
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
@@ -38,7 +38,6 @@ export default function WelcomeScreen(): JSX.Element {
             setAccessToken(accessToken);
             setIsAuthenticated(true);
             setUserUid(user.uid);
-            // console.log(accessToken);
             resolve(true);
           }
           else {
@@ -68,19 +67,15 @@ export default function WelcomeScreen(): JSX.Element {
           router.push('/(app)/'); // automatically Navigate to the app if the user is authenticated.
         }
       });
-
     return () => unsubscribe && unsubscribe();
   }, []); // The empty dependency array ensures this code runs only once, like componentDidMount.
-
 
   useEffect(() => {
     let unsubscribeMessages!: Unsubscribe;
     let unsubscribeNotifications!: Unsubscribe;
-
     if (loggedInUserUUID) {
       const latestMessageRef = ref(realtimeDB, `latestMessages/${loggedInUserUUID}`);
       const notificationsRef = ref(realtimeDB, `notifications/${loggedInUserUUID}`);
-
       unsubscribeMessages = onValue(latestMessageRef, (snapshot) => {
         const messages: UserMessagesData[] = [];
         snapshot.forEach((child) => {
@@ -97,7 +92,6 @@ export default function WelcomeScreen(): JSX.Element {
         setFriendsLatestMessagesList(sorted);
       });
 
-
       unsubscribeNotifications = onValue(notificationsRef, (snapshot) => {
         const notifications: INotificationData[] = [];
         snapshot.forEach((child) => {
@@ -110,14 +104,12 @@ export default function WelcomeScreen(): JSX.Element {
         const sorted = notifications.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         setNotificationsList(sorted);
       });
-
       return () => {
         unsubscribeMessages && unsubscribeMessages();
         unsubscribeNotifications && unsubscribeNotifications();
       };
     }
   }, [loggedInUserUUID]);
-
 
   return (
     <ImageBackground
@@ -131,7 +123,6 @@ export default function WelcomeScreen(): JSX.Element {
 
         <Text size='lg' style={styles.h2}>Start exploring events near you and join like-minded people</Text>
       </View>
-
       <LightButton
         onPress={handleSlideNextScreen}
         text='Get Started'
@@ -146,27 +137,23 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center'
   },
-
   h2: {
     color: '#fff',
     maxWidth: 320,
     textAlign: 'center'
   },
-
   imageBackground: {
     flex: 1,
     flexGrow: 1,
     justifyContent: 'space-between',
     padding: 30
   },
-
   logo: {
     aspectRatio: 1,
     backgroundColor: '#fff',
     borderRadius: 12,
     height: 70
   },
-
   textContainer: {
     alignItems: 'center',
     gap: 10,

@@ -56,7 +56,7 @@ export const useMutationLoggedInUserProfileById = () => {
           });
       },
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE] });
+        // await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE] });
       },
       retry: 2,
       retryDelay: 1_000 * 6

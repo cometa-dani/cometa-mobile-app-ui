@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, {FC, ReactNode, useMemo} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, SafeAreaView } from 'react-native';
 import { Image } from 'expo-image';
@@ -19,7 +19,7 @@ import { SkeletonLoaderList } from '../../../components/lodingSkeletons/LoadingS
 import { EmptyMessage } from '../../../components/empty/Empty';
 
 
-export default function BuckectListScreen(): JSX.Element {
+export default function BuckectListScreen(): ReactNode {
   const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const memoizedLoggedInUserBucketList = useMemo(() => data?.pages.flatMap(page => page.items) || [], [data?.pages]);

@@ -49,6 +49,14 @@
     ],
     "react-native/no-color-literals": "off",
     "no-console": "warn",
-    "react-native/sort-styles": "off"
+    "react-native/sort-styles": "off",
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 2, // Maximum number of consecutive blank lines allowed
+        "maxEOF": 1, // Maximum number of blank lines allowed at the end of the file
+        "maxBOF": 0 // Maximum number of blank lines allowed at the beginning of the file
+      }
+    ]
   }
 }

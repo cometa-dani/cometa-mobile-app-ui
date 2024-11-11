@@ -7,7 +7,7 @@ import ToastManager from 'toastify-react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 // hooks
 import { useFonts } from 'expo-font';
-import { useEffect } from 'react';
+import {ReactNode, useEffect} from 'react';
 import { useColorScheme, } from 'react-native';
 // query client for server state
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -68,7 +68,7 @@ export default function RootLayout() {
 }
 
 
-function RootLayoutNav(): JSX.Element {
+function RootLayoutNav(): ReactNode {
   return (
     <Stack
       screenOptions={{

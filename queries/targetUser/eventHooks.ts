@@ -70,14 +70,14 @@ export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => 
 };
 
 
-export const useInfiniteQueryGetSameMatchedEventsByTwoUsers = (targetUserToken: string, take = 4, allPhotos = true) => {
+export const useInfiniteQueryGetSameMatchedEventsByTwoUsers = (targetUserID: string, take = 4, allPhotos = true) => {
   const loggedInUserToken = useCometaStore(state => state.accessToken);
   return (
     useInfiniteQuery({
       initialPageParam: -1,
-      queryKey: [QueryKeys.GET_SAME_MATCHED_EVENTS_BY_TWO_USERS_WITH_PAGINATION, targetUserToken],
+      queryKey: [QueryKeys.GET_SAME_MATCHED_EVENTS_BY_TWO_USERS_WITH_PAGINATION, targetUserID],
       queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
-        const res = await eventService.getSameMatchedEventsByTwoUsersWithPagination(targetUserToken, pageParam, take, loggedInUserToken, allPhotos);
+        const res = await eventService.getSameMatchedEventsByTwoUsersWithPagination(targetUserID, pageParam, take, loggedInUserToken, allPhotos);
         if (res.status === 200) {
           return res.data;
         }

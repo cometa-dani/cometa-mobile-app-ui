@@ -61,7 +61,7 @@ class EventService extends RestApiService {
     return (
       this.http
         .post<{ eventLikedOrDisliked: CreateEventLike }>
-        (`/events/${eventID}/like`, null, this.configAuthHeader(loggedInUserAccessToken))
+        (`/events/${eventID}/likes`, null, this.configAuthHeader(loggedInUserAccessToken))
     );
   }
 
