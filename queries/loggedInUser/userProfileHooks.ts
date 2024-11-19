@@ -4,7 +4,6 @@ import { GetBasicUserProfile, GetDetailedUserProfile, LoggedUserClientState } fr
 import { Photo } from '../../models/Photo';
 import { QueryKeys } from '../queryKeys';
 import { useCometaStore } from '../../store/cometaStore';
-import { ImagePickerAsset } from 'expo-image-picker';
 
 
 export const useQueryGetLoggedInUserProfileByUid = (dynamicParam: string) => {
@@ -164,46 +163,46 @@ export const useMutationDeleteLoggedInUserPhotoByUuid = (dynamicParam: string) =
 };
 
 
-type AvatarParams = { pickedImgFile: ImagePickerAsset, userID: number };
+// type AvatarParams = { pickedImgFile: ImagePickerAsset, userID: number };
 
-export const useMutationUpdateLoggedInUserAvatar = (dynamicParam: string) => {
-  const queryClient = useQueryClient();
+// export const useMutationUpdateLoggedInUserAvatar = (dynamicParam: string) => {
+//   const queryClient = useQueryClient();
 
-  return (
-    useMutation({
-      mutationFn:
-        async ({ userID, pickedImgFile }: AvatarParams): Promise<GetBasicUserProfile> => {
-          const res = await userService.uploadOrUpdateAvatarImgByLoggedInUserID(userID, pickedImgFile);
-          if (res.status === 200) {
-            return res.data;
-          }
-          else {
-            throw new Error('failed fech');
-          }
-        },
+//   return (
+//     useMutation({
+//       mutationFn:
+//         async ({ userID, pickedImgFile }: AvatarParams): Promise<GetBasicUserProfile> => {
+//           const res = await userService.uploadOrUpdateAvatarImgByLoggedInUserID(userID, pickedImgFile);
+//           if (res.status === 200) {
+//             return res.data;
+//           }
+//           else {
+//             throw new Error('failed fech');
+//           }
+//         },
 
-      onMutate: async ({ pickedImgFile }) => {
-        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam] });
+//       onMutate: async ({ pickedImgFile }) => {
+//         await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam] });
 
-        queryClient
-          .setQueryData<GetDetailedUserProfile>
-          ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam], (oldState): GetDetailedUserProfile => {
+//         queryClient
+//           .setQueryData<GetDetailedUserProfile>
+//           ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam], (oldState): GetDetailedUserProfile => {
 
-            const optimisticState = {
-              ...oldState,
-              avatar: pickedImgFile.uri
+//             const optimisticState = {
+//               ...oldState,
+//               avatar: pickedImgFile.uri
 
-            } as GetDetailedUserProfile;
+//             } as GetDetailedUserProfile;
 
-            return optimisticState;
-          });
-      },
+//             return optimisticState;
+//           });
+//       },
 
-      onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam] });
-      },
-      retry: 2,
-      retryDelay: 1_000 * 6
-    })
-  );
-};
+//       onSuccess: async () => {
+//         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam] });
+//       },
+//       retry: 2,
+//       retryDelay: 1_000 * 6
+//     })
+//   );
+// };

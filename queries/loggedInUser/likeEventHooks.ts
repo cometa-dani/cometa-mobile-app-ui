@@ -1,5 +1,4 @@
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCometaStore } from '../../store/cometaStore';
 import { CreateEventLike, GetAllLatestEventsWithPagination } from '../../models/Event';
 import eventService from '../../services/eventService';
 import { QueryKeys } from '../queryKeys';
@@ -11,13 +10,11 @@ type MutateEventLikeArgs = { eventID: number, targetUserId?: number };
 
 // Mutation to like or dislike an event
 export const useMutationLikeOrDislikeEvent = () => {
-  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
   const queryClient = useQueryClient();
-
   return (
     useMutation({
       mutationFn: async ({ eventID }: MutateEventLikeArgs): Promise<CreateEventLike | null> => {
-        const res = await eventService.createOrDeleteLikeByEventID(eventID, loggedInUserAccessToken);
+        const res = await eventService.createOrDeleteLikeByEventID(eventID);
         if (res.status === 201) {
           return res.data?.eventLikedOrDisliked;
         }
@@ -85,13 +82,11 @@ export const useMutationLikeOrDislikeEvent = () => {
 
 
 export const useMutationDeleteLikedEventFromBucketList = () => {
-  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
   const queryClient = useQueryClient();
-
   return (
     useMutation({
       mutationFn: async (eventID: number): Promise<CreateEventLike | null> => {
-        const res = await eventService.createOrDeleteLikeByEventID(eventID, loggedInUserAccessToken);
+        const res = await eventService.createOrDeleteLikeByEventID(eventID);
         if (res.status === 201) {
           return res.data?.eventLikedOrDisliked;
         }

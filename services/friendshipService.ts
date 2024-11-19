@@ -3,38 +3,38 @@ import { RestApiService } from './restService';
 import { FriendShipStatus } from '../models/Friendship';
 
 
-class FrienshipService extends RestApiService {
-  getAllLatest(cursor: number, limit: number, accessToken: string) {
+class FrienshipService {
+  private http = RestApiService.getInstance().http;
+
+  getAllLatest(cursor: number, limit: number) {
     const config = {
-      params: { cursor, limit },
-      ...this.configAuthHeader(accessToken)
+      params: { cursor, limit }
     };
     return this.http.get<GetLatestFriendships>('/friendships', config);
   }
 
-  searchFriendsByName(friendUserName: string, cursor: number, limit: number, accessToken: string) {
+  searchFriendsByName(friendUserName: string, cursor: number, limit: number) {
     const config = {
       params: { cursor, limit, friendUserName },
-      ...this.configAuthHeader(accessToken)
     };
     return this.http.get<GetLatestFriendships>('/friendships/search', config);
   }
 
-  public getFriendShipByTargetUserID(targetUserUUID: string, accessToken: string) {
-    return this.http.get<GetFriendShipWithSenderAndReceiver>(`/friendships/${targetUserUUID}`, this.configAuthHeader(accessToken));
+  public getFriendShipByTargetUserID(targetUserUUID: string) {
+    return this.http.get<GetFriendShipWithSenderAndReceiver>(`/friendships/${targetUserUUID}`);
   }
 
-  sentFriendShipInvitation(targerUserID: number, accessToken: string) {
+  sentFriendShipInvitation(targerUserID: number) {
     const payload = { id: targerUserID };
-    return this.http.post<MutateFrienship>('/friendships', payload, this.configAuthHeader(accessToken));
+    return this.http.post<MutateFrienship>('/friendships', payload);
   }
 
-  deleteFriendShipInvitation(receiverId: number, accessToken: string) {
-    return this.http.delete(`/friendships/${receiverId}`, this.configAuthHeader(accessToken));
+  deleteFriendShipInvitation(receiverId: number) {
+    return this.http.delete(`/friendships/${receiverId}`);
   }
 
-  updateFrienshipInvitation(friendShipId: number, status: FriendShipStatus, accessToken: string) {
-    return this.http.patch<MutateFrienship>(`/friendships/${friendShipId}`, { status }, this.configAuthHeader(accessToken));
+  updateFrienshipInvitation(friendShipId: number, status: FriendShipStatus) {
+    return this.http.patch<MutateFrienship>(`/friendships/${friendShipId}`, { status });
   }
 }
 

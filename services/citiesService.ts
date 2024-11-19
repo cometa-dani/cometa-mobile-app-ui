@@ -1,8 +1,14 @@
+import { AxiosInstance } from 'axios';
 import { GetCitiesWithPagination } from '../models/Cities';
 import { RestApiService } from './restService';
 
 
-class CitiesService extends RestApiService {
+class CitiesService {
+  private http: AxiosInstance;
+
+  constructor() {
+    this.http = RestApiService.getInstance().http;
+  }
   /**
    *
    * @param prefix {string}

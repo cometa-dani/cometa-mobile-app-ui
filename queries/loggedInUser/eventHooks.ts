@@ -8,9 +8,7 @@ import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEve
 
 // Query to fetch a list of events with infinite scrolling
 export const useInfiniteQuerySearchEventsByQueryParams = (eventName = '') => {
-  const accessToken = useCometaStore(state => state.accessToken);
   const categoriesSearchFilters = useCometaStore(state => state.searchFilters);
-
   return (
     useInfiniteQuery({
       queryKey: [QueryKeys.SEARCH_EVENTS_WITH_PAGINATION],
@@ -20,7 +18,6 @@ export const useInfiniteQuerySearchEventsByQueryParams = (eventName = '') => {
           await eventService.searchEventsWithPagination({
             cursor: pageParam,
             limit: 10,
-            loggedInUserAccessToken: accessToken,
             name: eventName,
             categories: categoriesSearchFilters
           });
@@ -47,8 +44,6 @@ export const useInfiniteQuerySearchEventsByQueryParams = (eventName = '') => {
 
 
 export const useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser = () => {
-  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
-
   return (
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION],
@@ -57,7 +52,7 @@ export const useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser = () => {
       //   return data?.pages.flatMap(page => page.events) ;
       // },
       queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
-        const res = await eventService.getLikedEventsByUserIdWithPagination(pageParam, 8, loggedInUserAccessToken);
+        const res = await eventService.getLikedEventsByUserIdWithPagination(pageParam, 8);
         if (res.status === 200) {
           return res.data;
         }

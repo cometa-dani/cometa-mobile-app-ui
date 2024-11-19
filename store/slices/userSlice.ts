@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { StateCreator } from 'zustand';
+import { RestApiService } from '../../services/restService';
 
 
 export type UserSlice = {
@@ -29,6 +30,7 @@ export const createUserSlice: StateCreator<UserSlice> = (set) => ({
   },
 
   setAccessToken: (authToken: string) => {
+    RestApiService.getInstance().setBearerToken(authToken);
     set({ accessToken: authToken });
   }
 });

@@ -1,7 +1,6 @@
 import { StateCreator } from 'zustand';
 
 
-
 export type SearchPlaceSlice = {
   searchQuery: string,
   scrollToIndex: number,

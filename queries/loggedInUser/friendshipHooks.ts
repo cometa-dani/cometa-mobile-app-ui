@@ -1,20 +1,17 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import friendshipService from '../../services/friendshipService';
 import { GetLatestFriendships, MutateFrienship } from '../../models/Friendship';
-import { useCometaStore } from '../../store/cometaStore';
 import { QueryKeys } from '../queryKeys';
 import { TypedAxiosError } from '../errors/typedError';
 
 
 export const useInfiniteQueryGetLoggedInUserNewestFriends = () => {
-  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
-
   return (
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetLatestFriendships> => {
-        const res = await friendshipService.getAllLatest(pageParam, 5, loggedInUserAccessToken);
+        const res = await friendshipService.getAllLatest(pageParam, 5);
         if (res.status == 200) {
           return res.data;
         }
@@ -38,15 +35,13 @@ export const useInfiniteQueryGetLoggedInUserNewestFriends = () => {
 
 
 export const useInfiniteQuerySearchFriendsByUserName = (friendUserName: string) => {
-  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
-
   return (
     useInfiniteQuery({
       queryKey: [QueryKeys.SEARCH_FRIENDS_BY_USERNAME, friendUserName],
       enabled: !!friendUserName,
       initialPageParam: -1,
       queryFn: async ({ pageParam }) => {
-        const res = await friendshipService.searchFriendsByName(friendUserName, pageParam, 10, loggedInUserAccessToken);
+        const res = await friendshipService.searchFriendsByName(friendUserName, pageParam, 10);
         if (res.status == 200) {
           return res.data;
         }
@@ -70,14 +65,12 @@ export const useInfiniteQuerySearchFriendsByUserName = (friendUserName: string) 
 
 
 export const useQueryGetFriendshipByTargetUserID = (targetUserUUID: string) => {
-  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
-
   return (
     useQuery({
       enabled: !!targetUserUUID,
       queryKey: [QueryKeys.GET_FRIENDSHIP_BY_TARGET_USER_ID, targetUserUUID],
       queryFn: async () => {
-        const res = await friendshipService.getFriendShipByTargetUserID(targetUserUUID, loggedInUserAccessToken);
+        const res = await friendshipService.getFriendShipByTargetUserID(targetUserUUID);
         if (res.status === 200) {
           return res.data;
         }
@@ -97,11 +90,10 @@ type FriendshipInvitationArgs = {
 };
 
 export const useMutationSentFriendshipInvitation = () => {
-  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
   return (
     useMutation<MutateFrienship, TypedAxiosError, FriendshipInvitationArgs>({
       mutationFn: async ({ targetUserId }: FriendshipInvitationArgs) => {
-        const res = await friendshipService.sentFriendShipInvitation(targetUserId, loggedInUserAccessToken);
+        const res = await friendshipService.sentFriendShipInvitation(targetUserId);
         if (res.status === 201 || res.status === 200) {
           return res.data;
         }
@@ -115,12 +107,11 @@ export const useMutationSentFriendshipInvitation = () => {
 
 
 export const useMutationDeleteFriendshipInvitation = () => {
-  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
   return (
     useMutation({
       mutationFn: async (targetUserID: number) => {
         const res =
-          await friendshipService.deleteFriendShipInvitation(targetUserID, loggedInUserAccessToken);
+          await friendshipService.deleteFriendShipInvitation(targetUserID);
         if (res.status === 204) {
           return res.data ?? null;
         }
@@ -134,12 +125,11 @@ export const useMutationDeleteFriendshipInvitation = () => {
 
 
 export const useMutationAcceptFriendshipInvitation = () => {
-  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
   return (
     useMutation<MutateFrienship, TypedAxiosError, number>({
       mutationFn: async (targetUserID: number) => {
         const res =
-          await friendshipService.updateFrienshipInvitation(targetUserID, 'ACCEPTED', loggedInUserAccessToken);
+          await friendshipService.updateFrienshipInvitation(targetUserID, 'ACCEPTED');
         if (res.status === 200) {
           return res.data;
         }
@@ -153,14 +143,12 @@ export const useMutationAcceptFriendshipInvitation = () => {
 
 
 export const useMutationResetFrienshipInvitation = () => {
-  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
   const queryClient = useQueryClient();
-
   return (
     useMutation<MutateFrienship, TypedAxiosError, number>({
       mutationFn: async (targetUserID: number) => {
         const res =
-          await friendshipService.updateFrienshipInvitation(targetUserID, 'PENDING', loggedInUserAccessToken);
+          await friendshipService.updateFrienshipInvitation(targetUserID, 'PENDING');
         if (res.status === 200) {
           return res.data;
         }

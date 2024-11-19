@@ -4,6 +4,7 @@ import { ImagePickerAsset } from 'expo-image-picker';
 import FormData from 'form-data';
 import uuid from 'react-native-uuid';
 import { Photo } from '../models/Photo';
+import { AxiosInstance } from 'axios';
 
 
 type CreateUser = Pick<LoggedUserClientState, (
@@ -15,7 +16,12 @@ type CreateUser = Pick<LoggedUserClientState, (
 )>
 
 
-class UsersService extends RestApiService {
+class UsersService {
+  private http: AxiosInstance;
+
+  constructor() {
+    this.http = RestApiService.getInstance().http;
+  }
 
   /**
    * TODO:
@@ -28,8 +34,8 @@ class UsersService extends RestApiService {
   }
 
 
-  public searchByUsernameWithPagination(username: string, cursor: number, limit = 10, loggedInUserAccessToken: string) {
-    const payload = { params: { username, limit, cursor }, headers: this.configAuthHeader(loggedInUserAccessToken).headers };
+  public searchByUsernameWithPagination(username: string, cursor: number, limit = 10) {
+    const payload = { params: { username, limit, cursor } };
     return this.http.get<GetUsersWithPagination>('/users/search', payload);
   }
 
@@ -56,8 +62,8 @@ class UsersService extends RestApiService {
  * @param {string} loggedInUserAccessToken
  * @returns
  */
-  public getTargetUserProfile(targetUser: string, loggedInUserAccessToken: string) {
-    return this.http.get<GetTargetUser>(`/users/${targetUser}/targets`, this.configAuthHeader(loggedInUserAccessToken));
+  public getTargetUserProfile(targetUser: string) {
+    return this.http.get<GetTargetUser>(`/users/${targetUser}/targets`,);
   }
 
 
@@ -82,19 +88,19 @@ class UsersService extends RestApiService {
   }
 
 
-  public uploadOrUpdateAvatarImgByLoggedInUserID(userID: number, pickedImgFile: ImagePickerAsset) {
-    const formData = new FormData();
-    const fileExtension = pickedImgFile.uri.split('.').at(-1);
-    const headers = { 'Content-Type': 'multipart/form-data', };
-    const imgFile = {
-      uri: pickedImgFile.uri,
-      type: `${pickedImgFile.type}/${fileExtension}`,
-      name: uuid.v4(),
-    };
-    formData.append('file', imgFile);
+  // public uploadOrUpdateAvatarImgByLoggedInUserID(userID: number, pickedImgFile: ImagePickerAsset) {
+  //   const formData = new FormData();
+  //   const fileExtension = pickedImgFile.uri.split('.').at(-1);
+  //   const headers = { 'Content-Type': 'multipart/form-data', };
+  //   const imgFile = {
+  //     uri: pickedImgFile.uri,
+  //     type: `${pickedImgFile.type}/${fileExtension}`,
+  //     name: uuid.v4(),
+  //   };
+  //   formData.append('file', imgFile);
 
-    return this.http.patch<GetBasicUserProfile>(`/users/${userID}/avatar`, formData, { headers });
-  }
+  //   return this.http.patch<GetBasicUserProfile>(`/users/${userID}/avatar`, formData, { headers });
+  // }
 
 
   public uploadManyPhotosByLoggedInUserId(loggedInUserID: number, pickedImgFiles: Pick<Photo, 'uuid' | 'url'>[]) {

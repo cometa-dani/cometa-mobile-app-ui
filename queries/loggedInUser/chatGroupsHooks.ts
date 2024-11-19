@@ -1,16 +1,13 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import chatGroupService from '../../services/chatGroupService';
-import { useCometaStore } from '../../store/cometaStore';
 
 
 export const useQueryGetChatGroupByID = (chatGroupID: string) => {
-  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
-
   return (
     useQuery({
       queryKey: ['chatGroup', chatGroupID],
       queryFn: async () => {
-        const res = await chatGroupService.getById(chatGroupID, loggedInUserAccessToken);
+        const res = await chatGroupService.getById(chatGroupID);
         if (res.status === 200) {
           return res.data;
         }
@@ -30,11 +27,10 @@ type MutationArgs = {
 }
 
 export const useMutationCreateChatGroup = () => {
-  const loggedInUserAccessToken = useCometaStore(state => state.accessToken);
   return (
     useMutation({
       mutationFn: async ({ groupName, members }: MutationArgs) => {
-        const res = await chatGroupService.create(groupName, members, loggedInUserAccessToken);
+        const res = await chatGroupService.create(groupName, members);
         if (res.status === 201) {
           return res.data;
         }

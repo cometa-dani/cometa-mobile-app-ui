@@ -1,13 +1,30 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { apiUrl } from '../constants/vars';
 
 
+/**
+ *
+ * @description Singleton to handle all the API requests
+ */
 export class RestApiService {
-  protected http = axios.create({
-    baseURL: apiUrl,
-  });
+  public http: AxiosInstance;
+  private static _instance: RestApiService;
 
-  protected configAuthHeader(accessToken: string): AxiosRequestConfig<Headers> {
-    return { headers: { Authorization: `Bearer ${accessToken}` } };
+  private constructor() {
+    this.http = axios.create({
+      baseURL: apiUrl,
+      timeout: 1_000 * 15, // 15 seconds
+    });
+  }
+
+  public static getInstance(): RestApiService {
+    if (!RestApiService._instance) {
+      RestApiService._instance = new RestApiService();
+    }
+    return RestApiService._instance;
+  }
+
+  public setBearerToken(accessToken: string) {
+    this.http.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
   }
 }
