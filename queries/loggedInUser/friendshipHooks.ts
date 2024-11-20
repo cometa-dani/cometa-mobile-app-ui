@@ -111,7 +111,7 @@ export const useMutationDeleteFriendshipInvitation = () => {
     useMutation({
       mutationFn: async (targetUserID: number) => {
         const res =
-          await friendshipService.deleteFriendShipInvitation(targetUserID);
+          await friendshipService.deleteFriendShipInvitationByQueryParams(targetUserID);
         if (res.status === 204) {
           return res.data ?? null;
         }
@@ -129,7 +129,7 @@ export const useMutationAcceptFriendshipInvitation = () => {
     useMutation<MutateFrienship, TypedAxiosError, number>({
       mutationFn: async (targetUserID: number) => {
         const res =
-          await friendshipService.updateFrienshipInvitation(targetUserID, 'ACCEPTED');
+          await friendshipService.updateFrienshipInvitationByID(targetUserID, 'ACCEPTED');
         if (res.status === 200) {
           return res.data;
         }
@@ -148,7 +148,7 @@ export const useMutationResetFrienshipInvitation = () => {
     useMutation<MutateFrienship, TypedAxiosError, number>({
       mutationFn: async (targetUserID: number) => {
         const res =
-          await friendshipService.updateFrienshipInvitation(targetUserID, 'PENDING');
+          await friendshipService.updateFrienshipInvitationByID(targetUserID, 'PENDING');
         if (res.status === 200) {
           return res.data;
         }

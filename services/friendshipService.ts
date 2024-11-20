@@ -25,16 +25,20 @@ class FrienshipService {
   }
 
   sentFriendShipInvitation(targerUserID: number) {
-    const payload = { id: targerUserID };
+    const payload = { targetUserId: targerUserID };
     return this.http.post<MutateFrienship>('/friendships', payload);
   }
 
-  deleteFriendShipInvitation(receiverId: number) {
-    return this.http.delete(`/friendships/${receiverId}`);
+  deleteFriendShipInvitationByQueryParams(receiverId: number) {
+    return this.http.delete(`/friendships?targetUserId=${receiverId}`);
   }
 
-  updateFrienshipInvitation(friendShipId: number, status: FriendShipStatus) {
+  updateFrienshipInvitationByID(friendShipId: number, status: FriendShipStatus) {
     return this.http.patch<MutateFrienship>(`/friendships/${friendShipId}`, { status });
+  }
+
+  updateFriendshipByQueryParams(targetUserId: number, status: FriendShipStatus) {
+    return this.http.put<MutateFrienship>(`/friendships?targetUserId=${targetUserId}`, { status });
   }
 }
 
