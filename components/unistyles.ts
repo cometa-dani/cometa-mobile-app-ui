@@ -11,29 +11,37 @@ export const breakpoints = {
   tvLike: 4000
 } as const;
 
+
 export const lightTheme = {
   colors: {
-    typography: '#000000',
-    background: '#ffffff'
+    red100: '#EA385C',
+    blue100: '#5ac8fa',
+    gray50: '#f0f0f0',
+    gray100: '#e5e5e5',
+    gray200: '#afafaa',
+    gray300: '#7C8591',
+    gray500: '#4f4f4f',
+    gray900: '#030303',
+    white50: '#fff',
+    backDrop: 'rgba(0, 0, 0, 0.4)',
   },
   margins: {
     sm: 2,
     md: 4,
     lg: 8,
     xl: 12
-  }
-} as const;
-
-export const darkTheme = {
-  colors: {
-    typography: '#ffffff',
-    background: '#000000'
   },
-  margins: {
-    sm: 2,
-    md: 4,
-    lg: 8,
-    xl: 12
+  text: {
+    fontFamily: 'Poppins',
+    fontSize: {
+      xs: 10,
+      sm: 12,
+      md: 15,
+      lg: 18,
+      xl: 24,
+      xxl: 30,
+      xxxl: 36,
+    }
   }
 } as const;
 
@@ -42,7 +50,7 @@ export const darkTheme = {
 type AppBreakpoints = typeof breakpoints
 type AppThemes = {
   light: typeof lightTheme,
-  dark: typeof darkTheme
+  // dark: typeof darkTheme
 }
 
 declare module 'react-native-unistyles' {
@@ -54,7 +62,7 @@ UnistylesRegistry
   .addBreakpoints(breakpoints)
   .addThemes({
     light: lightTheme,
-    dark: darkTheme,
+    // dark: darkTheme,
   })
   .addConfig({
     adaptiveThemes: true

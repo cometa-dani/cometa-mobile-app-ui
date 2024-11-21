@@ -7,6 +7,6 @@ const config = getDefaultConfig(__dirname, {
   // isCSSEnabled: true,
 });
 
-// config.resolver.sourceExts.push('cjs');
+// config.resolver.sourceExts.push('cjs');    // this is used to resolve .cjs files
 
 module.exports = config;
