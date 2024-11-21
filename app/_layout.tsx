@@ -1,14 +1,14 @@
 import 'expo-dev-client';
 // components
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+// import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack, } from 'expo-router';
 import ToastManager from 'toastify-react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 // hooks
 import { useFonts } from 'expo-font';
 import { ReactNode, useEffect } from 'react';
-import { useColorScheme, } from 'react-native';
+// import { useColorScheme, } from 'react-native';
 // query client for server state
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -27,7 +27,7 @@ SplashScreen.preventAutoHideAsync();
 
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  // const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
     Poppins: require('../assets/fonts/Poppins-Regular.ttf'),
     PoppinsBold: require('../assets/fonts/Poppins-Bold.ttf'),
