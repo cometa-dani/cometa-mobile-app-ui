@@ -1,6 +1,7 @@
 {
   "expo": {
     "jsEngine": "hermes",
+    "newArchEnabled": true,
     "name": "cometa",
     "slug": "cometa-app",
     "version": "1.0.0",
@@ -74,6 +75,6 @@
       }
     },
     "owner": "cometa-dani-expo",
-    "sdkVersion": "51.0.0"
+    "sdkVersion": "52.0.0"
   }
 }

@@ -50,20 +50,20 @@ export default function RootLayout() {
   }
 
   return (
-    //<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-    <QueryClientProvider client={new QueryClient()}>
-      <ToastManager
-        duration={2800 * 2}
-        animationOutTiming={800}
-        animationInTiming={800}
-      />
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <BottomSheetModalProvider>
-          <RootLayoutNav />
-        </BottomSheetModalProvider>
-      </GestureHandlerRootView>
-    </QueryClientProvider>
-    //</ThemeProvider>
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <QueryClientProvider client={new QueryClient()}>
+        <ToastManager
+          duration={2800 * 2}
+          animationOutTiming={800}
+          animationInTiming={800}
+        />
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <BottomSheetModalProvider>
+            <RootLayoutNav />
+          </BottomSheetModalProvider>
+        </GestureHandlerRootView>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 
@@ -80,7 +80,7 @@ function RootLayoutNav(): ReactNode {
         options={{ headerShown: false, animation: 'slide_from_right', animationDuration: 290 }}
       />
 
-      {/* <Stack.Screen
+      <Stack.Screen
         name="(onboarding)"
         options={{ headerShown: false, animation: 'slide_from_right', animationDuration: 290 }}
       />
@@ -88,7 +88,7 @@ function RootLayoutNav(): ReactNode {
       <Stack.Screen
         name="(app)"
         options={{ headerShown: false, animation: 'slide_from_right', animationDuration: 290 }}
-      /> */}
+      />
     </Stack>
   );
 }
