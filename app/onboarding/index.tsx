@@ -14,7 +14,8 @@ import { TextView } from '@/components/text/text';
 import BottomSheet, { BottomSheetScrollView, BottomSheetTextInput, BottomSheetView, } from '@gorhom/bottom-sheet';
 import { ProgressBar } from '@/components/progressBar/progressBar';
 import { useCometaStore } from '@/store/cometaStore';
-import { Formik } from 'formik';
+import { Formik, FormikHelpers } from 'formik';
+import { IUserClientState } from '@/models/User';
 
 const snapPoints = ['50%', '78%'];
 
@@ -28,7 +29,9 @@ export default function OnboardingScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   // callbacks
-  const handleNext = (): void => { };
+  const handleNext = (values: IUserClientState, actions: FormikHelpers<IUserClientState>): void => {
+    setOnboardingState(values);
+  };
 
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
@@ -172,22 +175,22 @@ export default function OnboardingScreen() {
         keyboardBehavior="fillParent"
         snapPoints={snapPoints}
       >
-        <SafeAreaView style={{ flex: 1 }}>
-          <BottomSheetView>
-            <ProgressBar value={20} />
-            <BottomSheetView>
-              <Center styles={{ paddingVertical: theme.spacing.md }}>
-                <Heading size='lg'>Create Your Profile</Heading>
-              </Center>
-            </BottomSheetView>
-          </BottomSheetView>
-          <BottomSheetScrollView style={{ paddingBottom: 100 }}>
-            <Formik
-              initialValues={onboardingState}
-              validationSchema={{}}
-              onSubmit={() => undefined}
-            >
-              {({ values, touched, errors }) => (
+        <Formik
+          initialValues={onboardingState}
+          // validationSchema={{}}
+          onSubmit={handleNext}
+        >
+          {({ values, touched, errors, handleSubmit, handleChange }) => (
+            <SafeAreaView style={{ flex: 1 }}>
+              <BottomSheetView>
+                <ProgressBar value={20} />
+                <BottomSheetView>
+                  <Center styles={{ paddingVertical: theme.spacing.md }}>
+                    <Heading size='lg'>Create Your Profile</Heading>
+                  </Center>
+                </BottomSheetView>
+              </BottomSheetView>
+              <BottomSheetScrollView style={{ paddingBottom: 100 }}>
                 <VStack>
                   <VStack styles={inputStyles.fiedContainer}>
                     <View style={inputStyles.fieldLabel}>
@@ -203,46 +206,35 @@ export default function OnboardingScreen() {
                     />
                     <BottomSheetTextInput
                       style={inputStyles.field(isFocused)}
-                      // secureTextEntry={true}
-                      // editable={true}
                       placeholder='Full Name'
                       keyboardType='default'
                       value={values.name}
-                      onChangeText={text => console.log(text)}
+                      onChangeText={handleChange('name')}
                       onBlur={() => setIsFocused(false)}
                       onFocus={() => setIsFocused(true)}
                     />
                   </VStack>
-                  {/* {touched.name && errors.name && (
-                    // <AppLabelFeedbackMsg position='bottom' text={errors.email} />
-                  )} */}
                   <Text style={inputStyles.fieldTextError}>{errors.name ?? 'Name is required in this field'}</Text>
-                  {/* {!isTyping && !isFetching && values.email.includes('@') && !errors.email && !isAvaibleToUse && (
-                // <AppLabelFeedbackMsg position='bottom' text='your email already exists' />
-              )}
-              {!isTyping && !isFetching && values.email.includes('@') && !errors.email && isAvaibleToUse && (
-                <AppLabelMsgOk position='bottom' text='email is available to use' />
-              )} */}
                 </VStack>
 
-              )}
-            </Formik>
-          </BottomSheetScrollView>
-          <BottomSheetView
-            style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
-          >
-            <Pressable
-              onPress={handleNext}
-              style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
-            >
-              {({ pressed }) => (
-                <Text style={buttonsStyles.buttonRedText(pressed)}>
-                  Next
-                </Text>
-              )}
-            </Pressable>
-          </BottomSheetView>
-        </SafeAreaView>
+              </BottomSheetScrollView>
+              <BottomSheetView
+                style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
+              >
+                <Pressable
+                  onPress={() => handleSubmit()}
+                  style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
+                >
+                  {({ pressed }) => (
+                    <Text style={buttonsStyles.buttonRedText(pressed)}>
+                      Next
+                    </Text>
+                  )}
+                </Pressable>
+              </BottomSheetView>
+            </SafeAreaView>
+          )}
+        </Formik>
       </BottomSheet>
     </>
   );

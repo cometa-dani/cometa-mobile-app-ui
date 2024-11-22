@@ -1,4 +1,4 @@
-import { GetBasicUserProfile, GetDetailedUserProfile, GetTargetUser, GetUsersWithPagination, LoggedUserClientState } from '../models/User';
+import { GetBasicUserProfile, GetDetailedUserProfile, GetTargetUser, GetUsersWithPagination, IUserClientState } from '../models/User';
 import { RestApiService } from './restService';
 import { ImagePickerAsset } from 'expo-image-picker';
 import FormData from 'form-data';
@@ -7,7 +7,7 @@ import { Photo } from '../models/Photo';
 import { AxiosInstance } from 'axios';
 
 
-type CreateUser = Pick<LoggedUserClientState, (
+type CreateUser = Pick<IUserClientState, (
   'uid' |
   'email' |
   'username' |
@@ -29,7 +29,7 @@ class UsersService {
    * @param userFields  can be either the loggedInUser or the targetUser
    * @returns
    */
-  public findUniqueByQueryParams(userFields: Partial<LoggedUserClientState>) {
+  public findUniqueByQueryParams(userFields: Partial<IUserClientState>) {
     return this.http.get<GetBasicUserProfile>('/users', { params: userFields });
   }
 
@@ -67,7 +67,7 @@ class UsersService {
   }
 
 
-  public updateById(loggedInUserID: number, payload: Partial<LoggedUserClientState>) {
+  public updateById(loggedInUserID: number, payload: Partial<IUserClientState>) {
     let updatedPayload;
 
     if (payload.languages?.length) {

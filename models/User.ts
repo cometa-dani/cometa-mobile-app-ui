@@ -85,7 +85,7 @@ enum Education {
 }
 
 // used in zustand store for global CLIENT STATE
-export interface LoggedUserClientState extends Pick<GetBasicUserProfile, (
+export interface IUserClientState extends Pick<GetBasicUserProfile, (
   'id' |
   'uid' |
   'username' |

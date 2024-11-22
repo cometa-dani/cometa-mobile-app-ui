@@ -1,22 +1,22 @@
 /* eslint-disable no-unused-vars */
 import { StateCreator } from 'zustand';
-import { LoggedUserClientState } from '../../models/User';
+import { IUserClientState } from '../../models/User';
 
 
 export type OnboardingSlice = {
   onboarding: {
-    user: LoggedUserClientState
+    user: IUserClientState
   }
 
-  setOnboarding: (user: Partial<LoggedUserClientState>) => void
+  setOnboarding: (user: Partial<IUserClientState>) => void
 }
 
 export const createOnboardingSlice: StateCreator<OnboardingSlice> = (set) => ({
   onboarding: {
-    user: {} as LoggedUserClientState
+    user: {} as IUserClientState
   },
 
-  setOnboarding: (user: Partial<LoggedUserClientState>) => {
+  setOnboarding: (user: Partial<IUserClientState>) => {
     set(prev => ({
       onboarding: {
         user: {

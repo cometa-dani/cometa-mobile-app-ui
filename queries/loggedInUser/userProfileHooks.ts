@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import userService from '../../services/userService';
-import { GetBasicUserProfile, GetDetailedUserProfile, LoggedUserClientState } from '../../models/User';
+import { GetBasicUserProfile, GetDetailedUserProfile, IUserClientState } from '../../models/User';
 import { Photo } from '../../models/Photo';
 import { QueryKeys } from '../queryKeys';
 import { useCometaStore } from '../../store/cometaStore';
@@ -33,7 +33,7 @@ export const useMutationLoggedInUserProfileById = () => {
 
   return (
     useMutation({
-      mutationFn: async (args: { userId: number, payload: Partial<LoggedUserClientState> }) => {
+      mutationFn: async (args: { userId: number, payload: Partial<IUserClientState> }) => {
         const res = await userService.updateById(args.userId, args.payload);
         if (res.status == 201) {
           return res.data;
