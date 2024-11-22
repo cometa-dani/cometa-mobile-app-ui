@@ -1,15 +1,14 @@
-/* eslint-disable react-native/no-raw-text */
+import { GradientHeading } from '@/components/text/gradientText';
 import { ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, SafeAreaView, Text, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import { GradientText } from 'universal-gradient-text';
 
 
 export default function OnboardingScreen() {
-  const { styles } = useStyles(stylesheet);
+  const { styles, theme } = useStyles(stylesheet);
   return (
     <>
       <StatusBar
@@ -29,13 +28,11 @@ export default function OnboardingScreen() {
         >
           <SafeAreaView>
             <View style={{ top: 50 }}>
-              <GradientText
-                style={{ fontFamily: 'PoppinsSemibold', fontSize: 36, textAlign: 'center' }}
-                colors={['#5ac8fa', '#449dd1', '#c2354a', '#EA385C']}
-                direction="ltr"
+              <GradientHeading
+                styles={{ fontSize: theme.text.size.xxxl }}
               >
                 cometa
-              </GradientText>
+              </GradientHeading>
             </View>
           </SafeAreaView>
         </LinearGradient>
@@ -46,16 +43,16 @@ export default function OnboardingScreen() {
         >
           <SafeAreaView>
             <View style={styles.buttonsContainer}>
-              <Pressable style={({ pressed, hovered }) => styles.buttonRed}>
+              <Pressable style={({ pressed }) => styles.buttonRed(pressed)}>
                 {({ pressed, hovered }) => (
-                  <Text style={styles.buttonRedText}>
+                  <Text style={styles.buttonRedText(pressed)}>
                     Login
                   </Text>
                 )}
               </Pressable>
-              <Pressable style={({ pressed, hovered }) => styles.buttonRedAlt}>
+              <Pressable style={({ pressed }) => styles.buttonRedAlt(pressed)}>
                 {({ pressed, hovered }) => (
-                  <Text style={styles.buttonRedAltText}>
+                  <Text style={styles.buttonRedAltText(pressed)}>
                     Register
                   </Text>
                 )}
@@ -92,28 +89,70 @@ const stylesheet = createStyleSheet((theme, runtime) => ({
     marginTop: 80,
     gap: theme.spacing.md
   },
-  buttonRedText: {
+  buttonRedText: (pressed: boolean) => ({
     textAlign: 'center',
-    color: theme.colors.white50,
-    fontFamily: theme.text.fontSemibold
-  },
-  buttonRed: {
+    color: theme.colors.white100,
+    fontFamily: theme.text.fontSemibold,
+    animationTimingFunction: 'ease-in-out',
+    transform: [
+      {
+        scale: pressed ? 0.98 : 1
+      }
+    ]
+  }),
+  buttonRed: (pressed: boolean) => ({
     width: '100%',
-    backgroundColor: theme.colors.red100,
+    backgroundColor: pressed ? theme.colors.red80 : theme.colors.red100,
     padding: theme.spacing.md,
-    borderRadius: theme.radius.xs
-  },
-  buttonRedAlt: {
+    borderRadius: theme.radius.sm,
+    borderWidth: 2,
+    borderColor: pressed ? theme.colors.red100 : theme.colors.red90,
+    shadowColor: theme.colors.red100,
+    shadowOpacity: pressed ? 0 : 0.4,
+    shadowOffset: pressed ? { width: 0, height: 3 } : undefined,
+    shadowRadius: 3,
+    elevation: pressed ? 0 : 2.5,
+    animationTimingFunction: 'ease-in-out',
+    transform: [
+      {
+        translateY: pressed ? 1 : 0,
+      },
+      {
+        scale: pressed ? 0.99 : 1
+      }
+    ],
+  }),
+  buttonRedAlt: (pressed: boolean) => ({
     width: '100%',
-    backgroundColor: theme.colors.white50,
+    backgroundColor: pressed ? theme.colors.white90 : theme.colors.white100,
     padding: theme.spacing.md,
-    borderRadius: theme.radius.xs,
-    borderWidth: 1.2,
-    borderColor: theme.colors.red100
-  },
-  buttonRedAltText: {
+    borderRadius: theme.radius.sm,
+    borderWidth: 2,
+    borderColor: pressed ? theme.colors.red90 : theme.colors.red100,
+    shadowColor: theme.colors.red100,
+    shadowOpacity: pressed ? 0 : 0.2,
+    shadowOffset: pressed ? { width: 0, height: 3 } : undefined,
+    shadowRadius: 2,
+    elevation: pressed ? 0 : 2.5,
+    animationTimingFunction: 'ease-in-out',
+    transform: [
+      {
+        translateY: pressed ? 1 : 0,
+      },
+      {
+        scale: pressed ? 0.99 : 1
+      }
+    ],
+  }),
+  buttonRedAltText: (pressed: boolean) => ({
     textAlign: 'center',
     color: theme.colors.red100,
-    fontFamily: theme.text.fontSemibold
-  }
+    fontFamily: theme.text.fontSemibold,
+    animationTimingFunction: 'ease-in-out',
+    transform: [
+      {
+        scale: pressed ? 0.98 : 1
+      }
+    ]
+  }),
 }));

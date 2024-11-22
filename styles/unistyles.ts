@@ -15,6 +15,10 @@ export const breakpoints = {
 export const lightTheme = {
   colors: {
     red100: '#EA385C',
+    red90: '#E93F65',
+    red80: '#E1335B',
+    red70: '#E0325C',
+
     blue100: '#5ac8fa',
     gray50: '#f0f0f0',
     gray100: '#e5e5e5',
@@ -22,7 +26,13 @@ export const lightTheme = {
     gray300: '#7C8591',
     gray500: '#4f4f4f',
     gray900: '#030303',
-    white50: '#fff',
+
+    white100: '#fff',
+
+    white70: '#F2F2F2', // (a light grayish-white color)
+    white80: '#F7F7F7', // (a very light grayish-white color)
+    white90: '#FAFAFA', // (a very light grayish-white color)
+
     backDrop: 'rgba(0, 0, 0, 0.4)',
   },
   radius: {

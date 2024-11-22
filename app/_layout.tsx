@@ -10,10 +10,8 @@ import { ReactNode, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-
 // Catch any errors thrown by the Layout component.
 export { ErrorBoundary } from 'expo-router';
-
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '/index',
@@ -53,6 +51,11 @@ export default function RootLayout() {
     return null;
   }
 
+  return <Root />;
+}
+
+
+function Root(): ReactNode {
   return (
     <QueryClientProvider client={new QueryClient()}>
       <ToastManager
@@ -62,39 +65,14 @@ export default function RootLayout() {
       />
       <GestureHandlerRootView>
         <BottomSheetModalProvider>
-          <RootLayoutNav />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              animation: 'slide_from_right',
+            }}>
+          </Stack>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
     </QueryClientProvider>
-  );
-}
-
-
-function RootLayoutNav(): ReactNode {
-  return (
-    <Stack
-      screenOptions={{
-        // headerTitleStyle: { fontFamily: 'Poppins' },
-        headerShown: false,
-        animation: 'slide_from_right',
-      }}>
-
-      {/* <Stack.Screen
-        name="onboarding"
-        options={{ headerShown: true, animation: 'slide_from_right', animationDuration: 290 }}
-      /> */}
-
-      {/* <Stack.Screen
-        name='index'
-        options={{ animation: 'slide_from_right', animationDuration: 290 }}
-      /> */}
-
-      {/*
-
-      <Stack.Screen
-        name="(app)"
-        options={{ headerShown: false, animation: 'slide_from_right', animationDuration: 290 }}
-      /> */}
-    </Stack>
   );
 }
