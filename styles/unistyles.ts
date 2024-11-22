@@ -42,7 +42,7 @@ export const lightTheme = {
     white80: '#F7F7F7', // (a very light grayish-white color)
     white90: '#FAFAFA', // (a very light grayish-white color)
 
-    backDrop: 'rgba(0, 0, 0, 0.4)',
+    backDrop: 'rgba(0, 0, 0, 0.7)',
   },
   radius: {
     xs: 10,

@@ -28,7 +28,6 @@ export default function OnboardingScreen() {
 
   const handleCompanyProfile = (): void => { };
 
-
   return (
     <>
       <StatusBar
@@ -36,7 +35,7 @@ export default function OnboardingScreen() {
       />
 
       <Modal
-        backdropColor='rgba(0,0,0,0.7)'
+        backdropColor={theme.colors.backDrop}
         animationOutTiming={300}
         isVisible={isModalVisible}
         onBackdropPress={setModalVisible}
@@ -94,11 +93,11 @@ export default function OnboardingScreen() {
         style={styles.imgBackground}
       >
         <LinearGradient
-          colors={['rgba(0,0,0,0.72)', 'rgba(0,0,0,0.53)', 'transparent']}
+          colors={['rgba(0,0,0,0.75)', 'rgba(0,0,0,0.58)', 'transparent']}
           style={styles.linearGradientTop}
         >
           <SafeAreaView>
-            <View style={{ top: 50 }}>
+            <View style={{ top: 60 }}>
               <GradientHeading
                 styles={{ fontSize: theme.text.size.xxxl }}
               >
@@ -153,7 +152,7 @@ const stylesheet = createStyleSheet((theme) => ({
   linearGradientTop: {
     position: 'absolute',
     top: 0,
-    height: 280,
+    height: 300,
     width: '100%'
   },
   linearGradient: {
