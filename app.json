@@ -9,11 +9,6 @@
     "icon": "./assets/favicons/android-icon-48x48.png",
     "scheme": "myapp",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/images/2.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -39,6 +34,14 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FB7185",
+          "image": "./assets/images/2.png",
+          "imageWidth": 360
+        }
+      ],
       [
         "expo-font",
         {

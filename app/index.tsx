@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { Text, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import '@/components/unistyles';
 
 
 export default function App() {

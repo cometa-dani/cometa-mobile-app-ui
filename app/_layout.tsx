@@ -9,7 +9,6 @@ import { useFonts } from 'expo-font';
 import { ReactNode, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import '@/components/unistyles';
 
 
 // Catch any errors thrown by the Layout component.
@@ -19,6 +18,7 @@ export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '/index',
 };
+
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -42,7 +42,7 @@ export default function RootLayout() {
       // TOOD:
       // read from local storage to check if user is logged in
       // if not, redirect to login screen
-      router.navigate('/onboarding');
+      router.replace('/onboarding');
       SplashScreen.hideAsync();
     }
   }, [loaded]);
@@ -74,7 +74,7 @@ function RootLayoutNav(): ReactNode {
       screenOptions={{
         // headerTitleStyle: { fontFamily: 'Poppins' },
         headerShown: false,
-        // animation: 'slide_from_right',
+        animation: 'slide_from_right',
       }}>
 
       {/* <Stack.Screen

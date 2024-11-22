@@ -1,6 +1,5 @@
 import { ImageBackground } from 'expo-image';
 import { Stack } from 'expo-router';
-import { Text, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
@@ -14,6 +13,7 @@ export default function App() {
       <ImageBackground
         source={require('../../assets/images/welcome-image.jpeg')}
         contentFit='cover'
+
         style={styles.container}
       />
     </>
