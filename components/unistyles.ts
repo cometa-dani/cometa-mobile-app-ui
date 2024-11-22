@@ -25,15 +25,28 @@ export const lightTheme = {
     white50: '#fff',
     backDrop: 'rgba(0, 0, 0, 0.4)',
   },
-  margins: {
-    sm: 2,
-    md: 4,
-    lg: 8,
-    xl: 12
+  radius: {
+    xs: 10,
+    sm: 15,
+    md: 20,
+    lg: 30,
+    xl: 40,
+    xxl: 50
+  },
+  spacing: {
+    xs: 4,
+    sm: 8,
+    md: 12,
+    lg: 16,
+    xl: 24,
+    xxl: 32
   },
   text: {
-    fontFamily: 'Poppins',
-    fontSize: {
+    fontRegular: 'Poppins',
+    fontMedium: 'PoppinsMedium',
+    fontSemibold: 'PoppinsSemibold',
+    fontBold: 'PoppinsBold',
+    size: {
       xs: 10,
       sm: 12,
       md: 15,
@@ -65,5 +78,6 @@ UnistylesRegistry
     // dark: darkTheme,
   })
   .addConfig({
+    initialTheme: 'light',
     adaptiveThemes: true
   });
