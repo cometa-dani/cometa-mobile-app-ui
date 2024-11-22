@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-unused-styles */
 import { Tabs, router } from 'expo-router';
 import { Platform, Pressable, StyleSheet } from 'react-native';
-import { View, useColors, Text } from '../../components/Themed';
+import { View, useColors, Text } from '../../legacy_components/Themed';
 import { StatusBar } from 'expo-status-bar';
 import { FC, ReactNode, useEffect, useMemo } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -11,7 +11,7 @@ import { Image } from 'expo-image';
 import { icons, titles } from '../../constants/assets';
 import { RectButton } from 'react-native-gesture-handler';
 import { red_100, white_50 } from '../../constants/colors';
-import { If } from '../../components/utils/ifElse';
+import { If } from '../../legacy_components/utils/ifElse';
 // icons
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';

@@ -1,11 +1,11 @@
 import React, { FC, useMemo, useState } from 'react';
 import { SafeAreaView, StyleSheet, Pressable, Image as HeaderImage } from 'react-native';
-import { Text, View } from '../../../components/Themed';
+import { Text, View } from '../../../legacy_components/Themed';
 import { Stack, router, useGlobalSearchParams } from 'expo-router';
 import { useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../../queries/targetUser/eventHooks';
 import { Image } from 'expo-image';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { AppButton } from '../../../components/buttons/buttons';
+import { AppButton } from '../../../legacy_components/buttons/buttons';
 import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../../queries/loggedInUser/friendshipHooks';
 import { useCometaStore } from '../../../store/cometaStore';
 import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination } from '../../../models/User';
@@ -16,12 +16,12 @@ import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/loggedInUs
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../../queries/queryKeys';
 import { GetLikedEventsForBucketListWithPagination } from '../../../models/LikedEvent';
-import { If } from '../../../components/utils';
+import { If } from '../../../legacy_components/utils';
 import { GetLatestFriendships, MutateFrienship } from '../../../models/Friendship';
 import notificationService from '../../../services/notificationService';
-import { SkeletonLoaderList } from '../../../components/lodingSkeletons/LoadingSkeletonList';
+import { SkeletonLoaderList } from '../../../legacy_components/lodingSkeletons/LoadingSkeletonList';
 import { ErrorMessage } from '../../../queries/errors/errorMessages';
-import { ModalNewFriendship } from '../../../components/modal/modalNewFriendship';
+import { ModalNewFriendship } from '../../../legacy_components/modal/modalNewFriendship';
 import { titles } from '../../../constants/assets';
 
 

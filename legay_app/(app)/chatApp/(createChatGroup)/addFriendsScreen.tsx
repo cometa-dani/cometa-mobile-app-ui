@@ -1,5 +1,5 @@
 import { StyleSheet, SafeAreaView, TextInput, Pressable, Image, View as TransparentView } from 'react-native';
-import { Text, View } from '../../../../components/Themed';
+import { Text, View } from '../../../../legacy_components/Themed';
 import { BaseButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
 import { blue_100, gray_900, red_100 } from '../../../../constants/colors';
@@ -10,7 +10,7 @@ import { defaultImgPlaceholder } from '../../../../constants/vars';
 import { UserMessagesData } from '../../../../store/slices/messagesSlices';
 import { useInfiniteQuerySearchFriendsByUserName } from '../../../../queries/loggedInUser/friendshipHooks';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
-import { If } from '../../../../components/utils';
+import { If } from '../../../../legacy_components/utils';
 
 
 export function AddFriendsScreen(): JSX.Element {

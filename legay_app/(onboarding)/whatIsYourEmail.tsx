@@ -1,12 +1,12 @@
 import { Image, StyleSheet } from 'react-native';
-import { Text, View } from '../../components/Themed';
+import { Text, View } from '../../legacy_components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { router } from 'expo-router';
-import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboarding/WrapperOnBoarding';
+import { AppWrapperOnBoarding, onBoardingStyles } from '../../legacy_components/onboarding/WrapperOnBoarding';
 import { useCometaStore } from '../../store/cometaStore';
-import { AppButton } from '../../components/buttons/buttons';
-import { AppLabelFeedbackMsg, AppLabelMsgOk, AppTextInput } from '../../components/textInput/AppTextInput';
+import { AppButton } from '../../legacy_components/buttons/buttons';
+import { AppLabelFeedbackMsg, AppLabelMsgOk, AppTextInput } from '../../legacy_components/textInput/AppTextInput';
 import { FC, useEffect, useState } from 'react';
 import userService from '../../services/userService';
 

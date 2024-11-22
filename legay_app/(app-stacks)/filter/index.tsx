@@ -1,5 +1,5 @@
 import { StyleSheet, SafeAreaView, View } from 'react-native';
-import { useColors, Text, } from '../../../components/Themed';
+import { useColors, Text, } from '../../../legacy_components/Themed';
 import { Stack, router } from 'expo-router';
 import { RectButton } from 'react-native-gesture-handler';
 import Checkbox from 'expo-checkbox';
@@ -10,7 +10,7 @@ import { EventCategory } from '../../../models/Event';
 import { useCometaStore } from '../../../store/cometaStore';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../../queries/queryKeys';
-import { AppButton } from '../../../components/buttons/buttons';
+import { AppButton } from '../../../legacy_components/buttons/buttons';
 
 
 export default function SettingsScreen(): JSX.Element {

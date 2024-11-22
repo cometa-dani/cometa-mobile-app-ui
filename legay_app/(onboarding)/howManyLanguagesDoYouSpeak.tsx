@@ -1,12 +1,12 @@
 import { Image, StyleSheet } from 'react-native';
-import { Text, View } from '../../components/Themed';
+import { Text, View } from '../../legacy_components/Themed';
 import { router } from 'expo-router';
-import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboarding/WrapperOnBoarding';
-import { AppButton } from '../../components/buttons/buttons';
-import { ForEach, If } from '../../components/utils';
+import { AppWrapperOnBoarding, onBoardingStyles } from '../../legacy_components/onboarding/WrapperOnBoarding';
+import { AppButton } from '../../legacy_components/buttons/buttons';
+import { ForEach, If } from '../../legacy_components/utils';
 import { BaseButton } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
-import { badgesStyles } from '../../components/profile/badges';
+import { badgesStyles } from '../../legacy_components/profile/badges';
 import { useCometaStore } from '../../store/cometaStore';
 import { useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
 import { FC } from 'react';

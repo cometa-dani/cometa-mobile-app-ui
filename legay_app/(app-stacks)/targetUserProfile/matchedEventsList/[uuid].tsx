@@ -1,15 +1,15 @@
 import React from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
-import { View, useColors } from '../../../../components/Themed';
+import { View, useColors } from '../../../../legacy_components/Themed';
 import { useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../../../queries/targetUser/eventHooks';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { EventsFlashList } from '../../../../components/eventsFlashList/eventsFlashList';
+import { EventsFlashList } from '../../../../legacy_components/eventsFlashList/eventsFlashList';
 import { useQueryClient } from '@tanstack/react-query';
 import { GetDetailedUserProfile } from '../../../../models/User';
 import { QueryKeys } from '../../../../queries/queryKeys';
 import { useQueryGetLoggedInUserProfileByUid } from '../../../../queries/loggedInUser/userProfileHooks';
 import { useCometaStore } from '../../../../store/cometaStore';
-import { CustomHeader } from '../../../../components/customHeader/customHeader';
+import { CustomHeader } from '../../../../legacy_components/customHeader/customHeader';
 
 
 export default function MatchedEventsListScreen(): JSX.Element {

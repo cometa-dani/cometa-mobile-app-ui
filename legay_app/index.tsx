@@ -1,6 +1,6 @@
 import { ImageBackground, StyleSheet, View, Image } from 'react-native';
 import { router } from 'expo-router';
-import { LightButton } from '../components/buttons/buttons';
+import { LightButton } from '../legacy_components/buttons/buttons';
 import { ReactNode, useEffect } from 'react';
 import { Unsubscribe, onAuthStateChanged } from 'firebase/auth'; // Import Firebase authentication functions.
 import { auth, realtimeDB } from '../config/firebase/firebase'; // Import Firebase authentication instance.
@@ -8,7 +8,7 @@ import { onValue, ref } from 'firebase/database';
 import { useCometaStore } from '../store/cometaStore';
 import { UserMessagesData } from '../store/slices/messagesSlices';
 import { INotificationData } from '../store/slices/notificationSlice';
-import { Text } from '../components/Themed';
+import { Text } from '../legacy_components/Themed';
 
 
 export default function WelcomeScreen(): ReactNode {

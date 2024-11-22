@@ -1,9 +1,9 @@
 import { Image, Platform, StyleSheet } from 'react-native';
-import { Text, View } from '../../components/Themed';
+import { Text, View } from '../../legacy_components/Themed';
 import { router } from 'expo-router';
-import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboarding/WrapperOnBoarding';
-import { AppButton } from '../../components/buttons/buttons';
-import { AppPhotosGrid } from '../../components/profile/photosGrid';
+import { AppWrapperOnBoarding, onBoardingStyles } from '../../legacy_components/onboarding/WrapperOnBoarding';
+import { AppButton } from '../../legacy_components/buttons/buttons';
+import { AppPhotosGrid } from '../../legacy_components/profile/photosGrid';
 import { useMutationUploadLoggedInUserPhotos } from '../../queries/loggedInUser/userProfileHooks';
 import { PhotoRef } from '../../models/Photo';
 import * as ImagePicker from 'expo-image-picker';
@@ -14,10 +14,9 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import userService from '../../services/userService';
 import { auth } from '../../config/firebase/firebase';
 import uuid from 'react-native-uuid';
-import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
-import { If } from '../../components/utils';
+import { AppLabelFeedbackMsg } from '../../legacy_components/textInput/AppTextInput';
+import { If } from '../../legacy_components/utils';
 import ToastContainer, { Toast } from 'toastify-react-native';
-
 
 
 const maximumPhotos = 5;

@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-raw-text */
 import { StyleSheet, SafeAreaView, TextInput, Pressable, Image, View as TransparentView } from 'react-native';
-import { Text, View } from '../../../components/Themed';
+import { Text, View } from '../../../legacy_components/Themed';
 import { BaseButton, RectButton, Swipeable } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
@@ -11,14 +11,14 @@ import { useCometaStore } from '../../../store/cometaStore';
 import { defaultImgPlaceholder } from '../../../constants/vars';
 import { titles } from '../../../constants/assets';
 import chatWithFriendService from '../../../services/chatWithFriendService';
-import { If } from '../../../components/utils';
+import { If } from '../../../legacy_components/utils';
 import { UserMessagesData } from '../../../store/slices/messagesSlices';
 import { useInfiniteQuerySearchFriendsByUserName } from '../../../queries/loggedInUser/friendshipHooks';
 import { FontAwesome5 } from '@expo/vector-icons';
 import ReactNativeModal from 'react-native-modal';
-import { appButtonstyles } from '../../../components/buttons/buttons';
+import { appButtonstyles } from '../../../legacy_components/buttons/buttons';
 import Checkbox from 'expo-checkbox';
-import { AppSearchInput } from '../../../components/textInput/AppSearchInput';
+import { AppSearchInput } from '../../../legacy_components/textInput/AppSearchInput';
 import { useMMKV } from 'react-native-mmkv';
 
 

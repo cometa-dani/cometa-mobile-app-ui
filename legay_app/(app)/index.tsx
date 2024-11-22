@@ -1,23 +1,23 @@
 import React, { FC, forwardRef, useCallback, useRef, useState, RefObject, useEffect, useMemo, } from 'react';
 import { StyleSheet, SafeAreaView, Pressable, View, TouchableOpacity } from 'react-native';
-import { Text, useColors } from '../../components/Themed';
+import { Text, useColors } from '../../legacy_components/Themed';
 import { useInfiniteQuerySearchEventsByQueryParams } from '../../queries/loggedInUser/eventHooks';
-import { EventsFlashList } from '../../components/eventsFlashList/eventsFlashList';
+import { EventsFlashList } from '../../legacy_components/eventsFlashList/eventsFlashList';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
-import { If } from '../../components/utils';
+import { If } from '../../legacy_components/utils';
 import { gray_200, gray_300, gray_500, gray_900, red_100 } from '../../constants/colors';
 import { RectButton, TextInput } from 'react-native-gesture-handler';
 import { Tabs, router } from 'expo-router';
 import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetFlatList, BottomSheetFooter, BottomSheetFooterProps, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { LikeableEvent } from '../../models/Event';
 import { Image } from 'expo-image';
-import { AppSearchInput } from '../../components/textInput/AppSearchInput';
+import { AppSearchInput } from '../../legacy_components/textInput/AppSearchInput';
 import { useInfiniteQuerySearchUsers } from '../../queries/search/useInfiniteQuerySearchUsers';
 import { GetBasicUserProfile } from '../../models/User';
 import { defaultImgPlaceholder } from '../../constants/vars';
-import { SkeletonLoaderList } from '../../components/lodingSkeletons/LoadingSkeletonList';
+import { SkeletonLoaderList } from '../../legacy_components/lodingSkeletons/LoadingSkeletonList';
 import { useCometaStore } from '../../store/cometaStore';
-import { EmptyMessage } from '../../components/empty/Empty';
+import { EmptyMessage } from '../../legacy_components/empty/Empty';
 
 
 export default function HomeScreen(): JSX.Element {

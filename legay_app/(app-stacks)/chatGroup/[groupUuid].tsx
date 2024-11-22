@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Bubble, GiftedChat, IMessage, Avatar } from 'react-native-gifted-chat';
 import { StyleSheet } from 'react-native';
-import { Text, View, useColors } from '../../../components/Themed';
+import { Text, View, useColors } from '../../../legacy_components/Themed';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native';
 import { Image as ImageWithPlaceholder } from 'expo-image';
@@ -11,7 +11,7 @@ import { Unsubscribe } from 'firebase/auth';
 import { useCometaStore } from '../../../store/cometaStore';
 import { useQueryGetChatGroupByID } from '../../../queries/loggedInUser/chatGroupsHooks';
 import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/loggedInUser/userProfileHooks';
-import { If } from '../../../components/utils';
+import { If } from '../../../legacy_components/utils';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { gray_900 } from '../../../constants/colors';
 // firebase

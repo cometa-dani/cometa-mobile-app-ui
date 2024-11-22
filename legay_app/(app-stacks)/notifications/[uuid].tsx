@@ -1,5 +1,5 @@
 import { StyleSheet, SafeAreaView, View } from 'react-native';
-import { useColors, Text } from '../../../components/Themed';
+import { useColors, Text } from '../../../legacy_components/Themed';
 import { Stack, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
@@ -9,7 +9,7 @@ import { gray_50, red_100 } from '../../../constants/colors';
 import { useCometaStore } from '../../../store/cometaStore';
 import notificationService from '../../../services/notificationService';
 import { INotificationData } from '../../../store/slices/notificationSlice';
-import { If } from '../../../components/utils';
+import { If } from '../../../legacy_components/utils';
 import { useCallback } from 'react';
 
 

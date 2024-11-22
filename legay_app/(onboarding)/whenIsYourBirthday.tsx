@@ -1,16 +1,16 @@
 import { Image, Pressable, StyleSheet } from 'react-native';
-import { Text, View } from '../../components/Themed';
+import { Text, View } from '../../legacy_components/Themed';
 import { router } from 'expo-router';
-import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboarding/WrapperOnBoarding';
+import { AppWrapperOnBoarding, onBoardingStyles } from '../../legacy_components/onboarding/WrapperOnBoarding';
 import { useCometaStore } from '../../store/cometaStore';
-import { AppButton, appButtonstyles } from '../../components/buttons/buttons';
+import { AppButton, appButtonstyles } from '../../legacy_components/buttons/buttons';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useState } from 'react';
 import { calAge } from '../../helpers/calcAge';
 import { buttonColors } from '../../constants/colors';
-import { If } from '../../components/utils';
+import { If } from '../../legacy_components/utils';
 import ReactNativeModal from 'react-native-modal';
-import { AppLabelFeedbackMsg } from '../../components/textInput/AppTextInput';
+import { AppLabelFeedbackMsg } from '../../legacy_components/textInput/AppTextInput';
 
 
 const initialDate = new Date('1990');

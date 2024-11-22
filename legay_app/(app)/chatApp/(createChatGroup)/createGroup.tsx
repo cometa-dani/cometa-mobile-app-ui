@@ -1,5 +1,5 @@
 import { StyleSheet, SafeAreaView, TextInput, Image, View as TransparentView } from 'react-native';
-import { Text, View } from '../../../../components/Themed';
+import { Text, View } from '../../../../legacy_components/Themed';
 import { BaseButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Stack, router } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -12,8 +12,8 @@ import { useMemo, useRef } from 'react';
 import { UserMessagesData } from '../../../../store/slices/messagesSlices';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import * as Yup from 'yup';
-import { If } from '../../../../components/utils';
-import { AppLabelFeedbackMsg } from '../../../../components/textInput/AppTextInput';
+import { If } from '../../../../legacy_components/utils';
+import { AppLabelFeedbackMsg } from '../../../../legacy_components/textInput/AppTextInput';
 import * as ImagePicker from 'expo-image-picker';
 import { useMutationCreateChatGroup } from '../../../../queries/loggedInUser/chatGroupsHooks';
 import uuid from 'react-native-uuid';

@@ -1,5 +1,5 @@
 import { StyleSheet, View as TransparentView } from 'react-native';
-import { Text, View } from '../../../components/Themed';
+import { Text, View } from '../../../legacy_components/Themed';
 import { Stack } from 'expo-router';
 import { animationDuration } from '../../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
@@ -8,13 +8,13 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useQueryGetAllLanguages } from '../../../queries/loggedInUser/editProfileHooks';
 import { gray_50, gray_900 } from '../../../constants/colors';
 import Checkbox from 'expo-checkbox';
-import { AppButton } from '../../../components/buttons/buttons';
-import { AppTextInput } from '../../../components/textInput/AppTextInput';
+import { AppButton } from '../../../legacy_components/buttons/buttons';
+import { AppTextInput } from '../../../legacy_components/textInput/AppTextInput';
 import { RectButton } from 'react-native-gesture-handler';
-import { If } from '../../../components/utils/ifElse';
+import { If } from '../../../legacy_components/utils/ifElse';
 import { useCometaStore } from '../../../store/cometaStore';
 import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/loggedInUser/userProfileHooks';
-import { FadingLoader } from '../../../components/lodingSkeletons/FadingList';
+import { FadingLoader } from '../../../legacy_components/lodingSkeletons/FadingList';
 
 
 const MAXIMUN_LANGUAGES = 5;

@@ -1,12 +1,12 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
-import { Text, View, useColors } from '../../../components/Themed';
+import { Text, View, useColors } from '../../../legacy_components/Themed';
 import { Stack, router } from 'expo-router';
-import { AppSearchInput } from '../../../components/textInput/AppSearchInput';
+import { AppSearchInput } from '../../../legacy_components/textInput/AppSearchInput';
 import { RectButton, } from 'react-native-gesture-handler';
-import { If } from '../../../components/utils';
+import { If } from '../../../legacy_components/utils';
 import { useInfiniteQuerySearchUsers } from '../../../queries/search/useInfiniteQuerySearchUsers';
-import { SkeletonLoaderList } from '../../../components/lodingSkeletons/LoadingSkeletonList';
+import { SkeletonLoaderList } from '../../../legacy_components/lodingSkeletons/LoadingSkeletonList';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import { defaultImgPlaceholder } from '../../../constants/vars';

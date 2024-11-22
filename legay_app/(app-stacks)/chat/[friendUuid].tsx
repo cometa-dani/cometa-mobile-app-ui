@@ -2,7 +2,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { Bubble, GiftedChat, IMessage, Avatar, Message } from 'react-native-gifted-chat';
 import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import { Text, View, useColors } from '../../../components/Themed';
+import { Text, View, useColors } from '../../../legacy_components/Themed';
 import { Stack, useLocalSearchParams, router, useFocusEffect } from 'expo-router';
 import { SafeAreaView, RefreshControl } from 'react-native';
 import { Image as ImageWithPlaceholder } from 'expo-image';
@@ -15,7 +15,7 @@ import chatWithFriendService from '../../../services/chatWithFriendService';
 import { UserMessagesData } from '../../../store/slices/messagesSlices';
 import { Entypo } from '@expo/vector-icons';
 import { blue_100, gray_50 } from '../../../constants/colors';
-import { If } from '../../../components/utils';
+import { If } from '../../../legacy_components/utils';
 
 
 type ChatWithFriendMessage = Map<string | number, UserMessagesData>

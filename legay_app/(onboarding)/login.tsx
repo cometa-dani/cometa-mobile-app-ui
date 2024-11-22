@@ -1,18 +1,18 @@
 import { Image, StyleSheet } from 'react-native';
-import { Text, View } from '../../components/Themed';
+import { Text, View } from '../../legacy_components/Themed';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { router } from 'expo-router';
-import { AppWrapperOnBoarding, onBoardingStyles } from '../../components/onboarding/WrapperOnBoarding';
+import { AppWrapperOnBoarding, onBoardingStyles } from '../../legacy_components/onboarding/WrapperOnBoarding';
 
 // // auth services
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../config/firebase/firebase';
 import { useState } from 'react';
 import { useCometaStore } from '../../store/cometaStore';
-import { AppButton, LightButton } from '../../components/buttons/buttons';
-import { AppLabelFeedbackMsg, AppTextInput } from '../../components/textInput/AppTextInput';
-import { If } from '../../components/utils';
+import { AppButton, LightButton } from '../../legacy_components/buttons/buttons';
+import { AppLabelFeedbackMsg, AppTextInput } from '../../legacy_components/textInput/AppTextInput';
+import { If } from '../../legacy_components/utils';
 import ToastManager, { Toast } from 'toastify-react-native';
 
 

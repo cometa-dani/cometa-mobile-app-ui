@@ -1,4 +1,4 @@
-import React, {FC, ReactNode, useMemo} from 'react';
+import React, { FC, ReactNode, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, SafeAreaView } from 'react-native';
 import { Image } from 'expo-image';
@@ -8,15 +8,15 @@ import { useMutationDeleteLikedEventFromBucketList } from '../../../queries/logg
 import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../../queries/loggedInUser/eventHooks';
 import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
-import { View, Text } from '../../../components/Themed';
+import { View, Text } from '../../../legacy_components/Themed';
 import { FontAwesome } from '@expo/vector-icons';
 import { gray_50, red_100 } from '../../../constants/colors';
-import { If } from '../../../components/utils/ifElse';
-import { ForEach } from '../../../components/utils';
+import { If } from '../../../legacy_components/utils/ifElse';
+import { ForEach } from '../../../legacy_components/utils';
 import { LikeableEvent } from '../../../models/Event';
 import { defaultImgPlaceholder } from '../../../constants/vars';
-import { SkeletonLoaderList } from '../../../components/lodingSkeletons/LoadingSkeletonList';
-import { EmptyMessage } from '../../../components/empty/Empty';
+import { SkeletonLoaderList } from '../../../legacy_components/lodingSkeletons/LoadingSkeletonList';
+import { EmptyMessage } from '../../../legacy_components/empty/Empty';
 
 
 export default function BuckectListScreen(): ReactNode {
