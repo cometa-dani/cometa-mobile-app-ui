@@ -6,17 +6,26 @@ import { StatusBar } from 'expo-status-bar';
 import { Pressable, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Modal from 'react-native-modal';
-import { useReducer } from 'react';
-import { HStack, VStack } from '@/components/utils/utils';
+import { useCallback, useMemo, useReducer, useRef } from 'react';
+import { Center, HStack, VStack } from '@/components/utils/stacks';
 import { AntDesign } from '@expo/vector-icons';
 import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
+import BottomSheet, { BottomSheetScrollView, BottomSheetView, } from '@gorhom/bottom-sheet';
+import { ProgressBar } from '@/components/progressBar/progressBar';
 
+const snapPoints = ['50%', '78%'];
 
 export default function OnboardingScreen() {
   const { styles, theme } = useStyles(stylesheet);
   const { styles: buttonsStyles } = useStyles(buttonsStyleSheet);
   const [isModalVisible, setModalVisible] = useReducer(prev => !prev, false);
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  // callbacks
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index);
+  }, []);
 
   const handleLogin = (): void => { };
 
@@ -24,9 +33,30 @@ export default function OnboardingScreen() {
     setModalVisible();
   };
 
-  const handleUserProfile = (): void => { };
+  const handleUserProfile = (): void => {
+    setModalVisible();
+    setTimeout(() => bottomSheetRef.current?.expand(), 200);
+  };
 
   const handleCompanyProfile = (): void => { };
+
+  const data = useMemo(
+    () =>
+      Array(50)
+        .fill(0)
+        .map((_, index) => `index-${index}`),
+    []
+  );
+
+  // render
+  const renderItem = useCallback(
+    (item: string) => (
+      <View key={item} style={styles.itemContainer}>
+        <Text>{item}</Text>
+      </View>
+    ),
+    []
+  );
 
   return (
     <>
@@ -137,8 +167,31 @@ export default function OnboardingScreen() {
               </VStack>
             </View>
           </SafeAreaView>
-        </LinearGradient >
+        </LinearGradient>
+
       </ImageBackground>
+
+      <BottomSheet
+        $modal={false}
+        ref={bottomSheetRef}
+        index={-1}
+        onChange={handleSheetChanges}
+        enableDynamicSizing={false}
+        enablePanDownToClose={true}
+        keyboardBehavior="fillParent"
+        snapPoints={snapPoints}
+      >
+        <BottomSheetView>
+          <ProgressBar value={20} />
+          <Center styles={{ paddingVertical: theme.spacing.md }}>
+            <Heading size='lg'>Create Your Profile</Heading>
+          </Center>
+        </BottomSheetView>
+        <BottomSheetScrollView style={{ paddingBottom: 100 }}>
+          {data.map(renderItem)}
+          <View style={{ height: 40 }} />
+        </BottomSheetScrollView>
+      </BottomSheet>
     </>
   );
 }
@@ -174,5 +227,20 @@ const stylesheet = createStyleSheet((theme) => ({
   logo: {
     width: 48,
     aspectRatio: 1
-  }
+  },
+
+  container: {
+    flex: 1,
+    backgroundColor: 'grey',
+  },
+  contentContainer: {
+    flex: 1,
+    padding: 36,
+    alignItems: 'center',
+  },
+  itemContainer: {
+    padding: 6,
+    margin: 6,
+    backgroundColor: '#eee',
+  },
 }));

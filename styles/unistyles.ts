@@ -11,21 +11,43 @@ export const breakpoints = {
   tvLike: 4000
 } as const;
 
-
 export const lightTheme = {
+  utils: {
+    // you can even use functions here
+    lighter: (color: string, percentage: number) => {
+
+      const hslRegex = /^hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)$/;
+      const match = color.match(hslRegex);
+      if (!match) {
+        throw new Error(`Invalid HSL color: ${color}`);
+      }
+      const hue = parseInt(match[1]);
+      const saturation = parseInt(match[2]);
+      const lightness = parseInt(match[3]);
+      const newLightness = Math.min(100, lightness + (percentage / 100) * (100 - lightness));
+      return `hsl(${hue}, ${saturation}%, ${newLightness}%)`;
+    },
+    darker: (color: string, percentage: number) => {
+      const hslRegex = /^hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)$/;
+      const match = color.match(hslRegex);
+      if (!match) {
+        throw new Error(`Invalid HSL color: ${color}`);
+      }
+      const hue = parseInt(match[1]);
+      const saturation = parseInt(match[2]);
+      const lightness = parseInt(match[3]);
+      const newLightness = Math.max(0, lightness - (percentage / 100) * lightness);
+      return `hsl(${hue}, ${saturation}%, ${newLightness}%)`;
+    }
+  },
   colors: {
-    red100: '#EA385C',
+    red100: '#E43F62',
     red90: '#EA4C6C',
     red80: '#EA5F7C',
     red70: '#EA708C',
 
-    // red90: '#E93F65',
-    // red70: '#E64C6F',
-    // red80: '#E53C6C',
-
-
     blue100: '#5ac8fa',
-    blue90: '#65cfff',
+    blue90: '#51C3E3',
     blue80: '#75d9ff',
     blue70: '#85dbff',
 
@@ -82,8 +104,8 @@ export const lightTheme = {
   }
 } as const;
 
-// define other themes
 
+// define other themes
 type AppBreakpoints = typeof breakpoints
 type AppThemes = {
   light: typeof lightTheme,
