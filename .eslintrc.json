@@ -49,7 +49,7 @@
     ],
     "react-native/no-color-literals": "off",
     "no-console": "warn",
-    "react-native/sort-styles": "off",
+    "react-native/sort-styles": "warn",
     "react-native/no-raw-text": "off",
     "no-multiple-empty-lines": [
       "error",

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { createOnboardingSlice, OnboardingSlice } from './slices/onBoarding';
+import { createOnboardingSlice, OnboardingSlice } from './slices/onBoardingSlice';
 import { createUserSlice, UserSlice } from './slices/userSlice';
 import { createNewPeopleSlice, NewPeopleSlice } from './slices/newPeopleSlice';
 import { LatestMessagesSlice, createLatestMessagesSlice } from './slices/messagesSlices';

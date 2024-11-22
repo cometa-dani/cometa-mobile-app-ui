@@ -26,26 +26,21 @@ export const ProgressBar: FC<ProgressBarProps> = ({ value }) => {
   }, [value]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.progressBar}>
-        <Animated.View
-          style={[
-            styles.progress,
-            {
-              width: progressWidth,
-            },
-          ]}
-        />
-      </View>
+    <View style={styles.progressBar}>
+      <Animated.View
+        style={[
+          styles.progress,
+          {
+            width: progressWidth,
+          },
+        ]}
+      />
     </View>
   );
 };
 
 
-const styleSheet = createStyleSheet((theme, runtime) => ({
-  container: {
-    padding: 20,
-  },
+const styleSheet = createStyleSheet((theme) => ({
   progressBar: {
     height: theme.spacing.xs,
     backgroundColor: theme.colors.white70,

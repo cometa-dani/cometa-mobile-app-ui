@@ -4,25 +4,32 @@ import { Image, ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
-import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import Modal from 'react-native-modal';
-import { useCallback, useMemo, useReducer, useRef } from 'react';
+import { useCallback, useReducer, useRef, useState } from 'react';
 import { Center, HStack, VStack } from '@/components/utils/stacks';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
-import BottomSheet, { BottomSheetScrollView, BottomSheetView, } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetScrollView, BottomSheetTextInput, BottomSheetView, } from '@gorhom/bottom-sheet';
 import { ProgressBar } from '@/components/progressBar/progressBar';
+import { useCometaStore } from '@/store/cometaStore';
+import { Formik } from 'formik';
 
 const snapPoints = ['50%', '78%'];
 
 export default function OnboardingScreen() {
+  const setOnboardingState = useCometaStore(state => state.setOnboarding);
+  const onboardingState = useCometaStore(state => state.onboarding.user);
   const { styles, theme } = useStyles(stylesheet);
   const { styles: buttonsStyles } = useStyles(buttonsStyleSheet);
+  const { styles: inputStyles } = useStyles(inputSheet);
   const [isModalVisible, setModalVisible] = useReducer(prev => !prev, false);
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   // callbacks
+  const handleNext = (): void => { };
+
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
   }, []);
@@ -40,24 +47,8 @@ export default function OnboardingScreen() {
 
   const handleCompanyProfile = (): void => { };
 
-  const data = useMemo(
-    () =>
-      Array(50)
-        .fill(0)
-        .map((_, index) => `index-${index}`),
-    []
-  );
-
-  // render
-  const renderItem = useCallback(
-    (item: string) => (
-      <View key={item} style={styles.itemContainer}>
-        <Text>{item}</Text>
-      </View>
-    ),
-    []
-  );
-
+  // input
+  const [isFocused, setIsFocused] = useState(false);
   return (
     <>
       <StatusBar
@@ -174,23 +165,84 @@ export default function OnboardingScreen() {
       <BottomSheet
         $modal={false}
         ref={bottomSheetRef}
-        index={-1}
+        index={1}
         onChange={handleSheetChanges}
         enableDynamicSizing={false}
         enablePanDownToClose={true}
         keyboardBehavior="fillParent"
         snapPoints={snapPoints}
       >
-        <BottomSheetView>
-          <ProgressBar value={20} />
-          <Center styles={{ paddingVertical: theme.spacing.md }}>
-            <Heading size='lg'>Create Your Profile</Heading>
-          </Center>
-        </BottomSheetView>
-        <BottomSheetScrollView style={{ paddingBottom: 100 }}>
-          {data.map(renderItem)}
-          <View style={{ height: 40 }} />
-        </BottomSheetScrollView>
+        <SafeAreaView style={{ flex: 1 }}>
+          <BottomSheetView>
+            <ProgressBar value={20} />
+            <BottomSheetView>
+              <Center styles={{ paddingVertical: theme.spacing.md }}>
+                <Heading size='lg'>Create Your Profile</Heading>
+              </Center>
+            </BottomSheetView>
+          </BottomSheetView>
+          <BottomSheetScrollView style={{ paddingBottom: 100 }}>
+            <Formik
+              initialValues={onboardingState}
+              validationSchema={{}}
+              onSubmit={() => undefined}
+            >
+              {({ values, touched, errors }) => (
+                <VStack>
+                  <VStack styles={inputStyles.fiedContainer}>
+                    <View style={inputStyles.fieldLabel}>
+                      <Text style={inputStyles.fieldTextLabel}>
+                        Full Name
+                      </Text>
+                    </View>
+                    <FontAwesome
+                      style={inputStyles.fieldIcon}
+                      name="user"
+                      size={theme.icons.lg}
+                      color={isFocused ? theme.colors.blue100 : theme.colors.gray300}
+                    />
+                    <BottomSheetTextInput
+                      style={inputStyles.field(isFocused)}
+                      // secureTextEntry={true}
+                      // editable={true}
+                      placeholder='Full Name'
+                      keyboardType='default'
+                      value={values.name}
+                      onChangeText={text => console.log(text)}
+                      onBlur={() => setIsFocused(false)}
+                      onFocus={() => setIsFocused(true)}
+                    />
+                  </VStack>
+                  {/* {touched.name && errors.name && (
+                    // <AppLabelFeedbackMsg position='bottom' text={errors.email} />
+                  )} */}
+                  <Text style={inputStyles.fieldTextError}>{errors.name ?? 'Name is required in this field'}</Text>
+                  {/* {!isTyping && !isFetching && values.email.includes('@') && !errors.email && !isAvaibleToUse && (
+                // <AppLabelFeedbackMsg position='bottom' text='your email already exists' />
+              )}
+              {!isTyping && !isFetching && values.email.includes('@') && !errors.email && isAvaibleToUse && (
+                <AppLabelMsgOk position='bottom' text='email is available to use' />
+              )} */}
+                </VStack>
+
+              )}
+            </Formik>
+          </BottomSheetScrollView>
+          <BottomSheetView
+            style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
+          >
+            <Pressable
+              onPress={handleNext}
+              style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
+            >
+              {({ pressed }) => (
+                <Text style={buttonsStyles.buttonRedText(pressed)}>
+                  Next
+                </Text>
+              )}
+            </Pressable>
+          </BottomSheetView>
+        </SafeAreaView>
       </BottomSheet>
     </>
   );
@@ -227,20 +279,59 @@ const stylesheet = createStyleSheet((theme) => ({
   logo: {
     width: 48,
     aspectRatio: 1
+  }
+}));
+
+
+const inputSheet = createStyleSheet((theme) => ({
+
+  fieldTextError: {
+    color: theme.colors.red100,
+    fontFamily: theme.text.fontRegular,
+    fontSize: theme.text.size.sm,
+    opacity: 0.8,
+    paddingVertical: theme.spacing.xs
   },
 
-  container: {
-    flex: 1,
-    backgroundColor: 'grey',
+  fiedContainer: {
+    position: 'relative',
+    justifyContent: 'center'
   },
-  contentContainer: {
-    flex: 1,
-    padding: 36,
-    alignItems: 'center',
+  fieldLabel: {
+    position: 'absolute',
+    zIndex: 1,
+    left: 59,
+    top: 6
   },
-  itemContainer: {
-    padding: 6,
-    margin: 6,
-    backgroundColor: '#eee',
+  fieldTextLabel: {
+    fontSize: theme.text.size.xs,
+    color: theme.colors.gray300,
+    fontFamily: theme.text.fontMedium
   },
+  fieldIcon: {
+    position: 'absolute',
+    zIndex: 1,
+    left: 16,
+    borderRightColor: theme.colors.gray200,
+    borderRightWidth: 1,
+    paddingVertical: 3,
+    paddingRight: theme.spacing.md
+  },
+  field: (isFocused: boolean) => ({
+    backgroundColor: theme.colors.white80,
+    paddingHorizontal: theme.spacing.lg,
+    paddingLeft: 59,
+    paddingBottom: theme.spacing.md,
+    paddingTop: theme.spacing.xl,
+    borderRadius: theme.radius.sm,
+    fontFamily: theme.text.fontMedium,
+    borderWidth: 1.6,
+    borderColor: isFocused ? theme.colors.blue100 : 'transparent',
+    shadowColor: isFocused ? theme.colors.blue100 : undefined,
+    shadowOpacity: isFocused ? 0.18 : 0,
+    shadowOffset: isFocused ? { width: 0, height: 3 } : undefined,
+    shadowRadius: isFocused ? 2 : 0,
+    elevation: isFocused ? 1 : 0,
+    animationTimingFunction: 'ease-in-out',
+  })
 }));
