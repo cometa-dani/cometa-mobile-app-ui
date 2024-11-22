@@ -1,24 +1,93 @@
 import { GradientHeading } from '@/components/text/gradientText';
 import { buttonsStyleSheet } from '@/styles/buttonsStyles';
-import { ImageBackground } from 'expo-image';
+import { Image, ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, SafeAreaView, Text, View } from 'react-native';
+import { Pressable, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import Modal from 'react-native-modal';
+import { useReducer } from 'react';
+import { HStack, VStack } from '@/components/utils/utils';
+import { AntDesign } from '@expo/vector-icons';
+import { Heading } from '@/components/text/heading';
+import { TextView } from '@/components/text/text';
 
 
 export default function OnboardingScreen() {
   const { styles, theme } = useStyles(stylesheet);
   const { styles: buttonsStyles } = useStyles(buttonsStyleSheet);
+  const [isModalVisible, setModalVisible] = useReducer(prev => !prev, false);
+
+  const handleLogin = (): void => { };
+
+  const handleRegister = (): void => {
+    setModalVisible();
+  };
+
+  const handleUserProfile = (): void => { };
+
+  const handleCompanyProfile = (): void => { };
+
+
   return (
     <>
       <StatusBar
         style='inverted'
       />
-      <Stack.Screen
-        options={{ animation: 'slide_from_right' }}
-      />
+
+      <Modal
+        backdropColor='rgba(0,0,0,0.7)'
+        animationOutTiming={300}
+        isVisible={isModalVisible}
+        onBackdropPress={setModalVisible}
+        style={{ justifyContent: 'flex-end' }}
+      >
+        <SafeAreaView>
+          <View style={styles.modal}>
+            <HStack h='space-between' v='center'>
+              <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
+              <TouchableOpacity
+                onPress={setModalVisible}
+              >
+                <AntDesign name="closecircle" size={theme.icons.md} color={theme.colors.gray900} />
+              </TouchableOpacity>
+            </HStack>
+
+            <VStack
+              gap={theme.spacing.lg}
+              styles={{ marginTop: theme.spacing.xl }}
+            >
+              <Heading size='lg'>
+                Join to Discover & Connect!
+              </Heading>
+              <TextView>
+                Create you profile and start matching with others who share your bucket list goals
+              </TextView>
+              <Pressable
+                onPress={handleUserProfile}
+                style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
+              >
+                {({ pressed }) => (
+                  <Text style={buttonsStyles.buttonRedText(pressed)}>
+                    User Profile
+                  </Text>
+                )}
+              </Pressable>
+              <Pressable
+                onPress={handleCompanyProfile}
+                style={({ pressed }) => buttonsStyles.buttonBlueAlt(pressed)}
+              >
+                {({ pressed }) => (
+                  <Text style={buttonsStyles.buttonBlueAltText(pressed)}>
+                    Company Profile
+                  </Text>
+                )}
+              </Pressable>
+            </VStack>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
       <ImageBackground
         source={require('../../assets/images/welcome-image.jpeg')}
         contentFit='cover'
@@ -45,25 +114,28 @@ export default function OnboardingScreen() {
         >
           <SafeAreaView>
             <View style={styles.buttonsContainer}>
-              <Pressable
-                onPress={() => console.log('Login')}
-                style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
-              >
-                {({ pressed }) => (
-                  <Text style={buttonsStyles.buttonRedText(pressed)}>
-                    Login
-                  </Text>
-                )}
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => buttonsStyles.buttonRedAlt(pressed)}
-              >
-                {({ pressed }) => (
-                  <Text style={buttonsStyles.buttonRedAltText(pressed)}>
-                    Register
-                  </Text>
-                )}
-              </Pressable>
+              <VStack gap={theme.spacing.lg}>
+                <Pressable
+                  onPress={handleLogin}
+                  style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
+                >
+                  {({ pressed }) => (
+                    <Text style={buttonsStyles.buttonRedText(pressed)}>
+                      Login
+                    </Text>
+                  )}
+                </Pressable>
+                <Pressable
+                  onPress={handleRegister}
+                  style={({ pressed }) => buttonsStyles.buttonRedAlt(pressed)}
+                >
+                  {({ pressed }) => (
+                    <Text style={buttonsStyles.buttonRedAltText(pressed)}>
+                      Register
+                    </Text>
+                  )}
+                </Pressable>
+              </VStack>
             </View>
           </SafeAreaView>
         </LinearGradient >
@@ -91,9 +163,17 @@ const stylesheet = createStyleSheet((theme) => ({
     width: '100%'
   },
   buttonsContainer: {
-    width: '100%',
     padding: theme.spacing.xl,
     marginTop: 80,
-    gap: theme.spacing.md
+  },
+  modal: {
+    backgroundColor: theme.colors.white100,
+    padding: theme.spacing.xl,
+    borderRadius: theme.radius.md,
+    minHeight: 300
+  },
+  logo: {
+    width: 48,
+    aspectRatio: 1
   }
 }));
