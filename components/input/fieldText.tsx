@@ -34,10 +34,15 @@ export const FieldText: FC<IFieldTextProps> = ({
     <Controller
       name={name}
       control={control}
-      render={({ field: { onChange, onBlur, value }, fieldState }) => {
-        const { error } = fieldState;
+      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => {
         const errorMessage = error?.message;
-        const iconColor = errorMessage ? theme.colors.red80 : isFocused ? theme.colors.blue100 : theme.colors.gray300;
+        const iconColor = (
+          errorMessage ?
+            theme.colors.red80 :
+            isFocused ?
+              theme.colors.blue100 :
+              theme.colors.gray300  // default color
+        );
         return (
           <VStack>
             <VStack styles={inputStyles.fiedContainer}>

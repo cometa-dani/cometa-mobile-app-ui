@@ -6,7 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Pressable, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import Modal from 'react-native-modal';
-import { useCallback, useReducer, useRef } from 'react';
+import { useReducer, useRef } from 'react';
 import { Center, HStack, VStack } from '@/components/utils/stacks';
 import { AntDesign } from '@expo/vector-icons';
 import { Heading } from '@/components/text/heading';
@@ -68,7 +68,7 @@ export default function OnboardingScreen() {
   const { styles: buttonsStyles } = useStyles(buttonsStyleSheet);
   const [isModalVisible, setModalVisible] = useReducer(prev => !prev, false);
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const formMethods = useForm<FormValues>({ defaultValues, resolver: yupResolver(validationSchema) });
+  const formProps = useForm<FormValues>({ defaultValues, resolver: yupResolver(validationSchema) });
 
   // callbacks
   const handleNext = (values: FormValues): void => {
@@ -224,7 +224,7 @@ export default function OnboardingScreen() {
         snapPoints={snapPoints}
       >
         <FormProvider
-          {...formMethods}
+          {...formProps}
         >
           <SafeAreaView style={{ flex: 1 }}>
             <BottomSheetView>
@@ -232,7 +232,7 @@ export default function OnboardingScreen() {
                 paddingTop: theme.spacing.sp2,
                 paddingHorizontal: theme.spacing.sp10,
               }}>
-                <ProgressBar value={20} />
+                <ProgressBar value={50} />
               </BottomSheetView>
               <BottomSheetView>
                 <Center styles={{
@@ -298,7 +298,7 @@ export default function OnboardingScreen() {
                 style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
               >
                 <Pressable
-                  onPress={formMethods.handleSubmit(handleNext)}
+                  onPress={formProps.handleSubmit(handleNext)}
                   style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
                 >
                   {({ pressed }) => (

@@ -1,8 +1,10 @@
 import React, { FC } from 'react';
-import { View, Dimensions } from 'react-native';
-import Animated, { useSharedValue, withSpring, interpolate, useDerivedValue } from 'react-native-reanimated';
-import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import { View } from 'react-native';
+import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 
+
+const screenWidth = UnistylesRuntime.screen.width;
 
 interface ProgressBarProps {
   value: number
@@ -11,18 +13,11 @@ interface ProgressBarProps {
 export const ProgressBar: FC<ProgressBarProps> = ({ value }) => {
   const { styles } = useStyles(styleSheet);
   const progress = useSharedValue(0);
-  const screenWidth = Dimensions.get('window').width;
-
-  const progressWidth = useDerivedValue(() => {
-    return interpolate(
-      progress.value,
-      [0, 100],
-      [0, screenWidth],
-    );
-  });
 
   React.useEffect(() => {
-    progress.value = withSpring(progress.value + value);
+    const onePercent = screenWidth / 100;
+    const increment = onePercent * (value % 101);
+    progress.value = withSpring(increment);
   }, [value]);
 
   return (
@@ -31,7 +26,7 @@ export const ProgressBar: FC<ProgressBarProps> = ({ value }) => {
         style={[
           styles.progress,
           {
-            width: progressWidth,
+            width: progress,
           },
         ]}
       />
