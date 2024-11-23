@@ -12,7 +12,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
-import { BottomSheet } from '@/components/onboarding/bottomSheet';
+import { BottomSheet } from '@/components/onboarding/bottomSheet/bottomSheet';
 
 
 export default function OnboardingScreen() {
@@ -20,6 +20,7 @@ export default function OnboardingScreen() {
   const { styles: buttonsStyles } = useStyles(buttonsStyleSheet);
   const [isUserProfileModalVisible, setUserProfileModalVisible] = useReducer(prev => !prev, false);
   const bottomSheetRef = useRef<BottomSheetMethods>(null);
+  const [nextStep, setNextStep] = useReducer(prev => (++prev % 3), 0);
 
   const toggleLoginModal = (): void => { };
 
@@ -29,7 +30,7 @@ export default function OnboardingScreen() {
 
   const openUserProfileBottomSheet = (): void => {
     setUserProfileModalVisible();
-    setTimeout(() => bottomSheetRef?.current?.expand(), 240);
+    setTimeout(() => bottomSheetRef?.current?.expand(), 280);
     // bottomSheetRef?.current?.snapToIndex(1)
   };
 
