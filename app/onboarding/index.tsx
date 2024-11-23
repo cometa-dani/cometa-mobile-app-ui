@@ -18,6 +18,7 @@ import { FieldText } from '@/components/input/fieldText';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
+import Animated, { FadeIn, FadeOut, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 
 
 const errorMessages = {
@@ -68,6 +69,7 @@ export default function OnboardingScreen() {
   const { styles: buttonsStyles } = useStyles(buttonsStyleSheet);
   const [isModalVisible, setModalVisible] = useReducer(prev => !prev, false);
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const [step, setStep] = useReducer(prev => (++prev % 3), 0);
   const formProps = useForm<FormValues>({ defaultValues, resolver: yupResolver(validationSchema) });
 
   // callbacks
@@ -223,7 +225,6 @@ export default function OnboardingScreen() {
         keyboardBehavior="extend"
         snapPoints={snapPoints}
       >
-
         <SafeAreaView style={{ flex: 1 }}>
           <BottomSheetView style={{
             paddingTop: theme.spacing.sp2,
@@ -231,84 +232,175 @@ export default function OnboardingScreen() {
           }}>
             <ProgressBar value={60} />
           </BottomSheetView>
+          {step === 0 && (
+            <Animated.View
+              entering={FadeIn}
+              exiting={FadeOut}
+            >
+              <FormProvider {...formProps}>
+                <BottomSheetView>
+                  <Center styles={{
+                    paddingTop: theme.spacing.sp12,
+                    paddingBottom: theme.spacing.sp2
+                  }}>
+                    <Heading size='s7'>Create Your Profile</Heading>
+                  </Center>
+                </BottomSheetView>
+                <BottomSheetScrollView
+                  contentContainerStyle={{
+                    paddingVertical: theme.spacing.sp8,
+                    paddingHorizontal: theme.spacing.sp10,
+                    gap: theme.spacing.sp7
+                  }}>
+                  <FieldText
+                    label='Full Name'
+                    name='name'
+                    placeholder='Enter your Full Name'
+                    iconName='user'
+                    defaultErrMessage={errorMessages.name}
+                  />
+                  <FieldText
+                    label='User Name'
+                    name='username'
+                    placeholder='Enter your User Name'
+                    iconName='at'
+                    defaultErrMessage={errorMessages.username}
+                  />
+                  <FieldText
+                    label='Birthday'
+                    name='birthday'
+                    placeholder='Enter your birthday'
+                    iconName='calendar-check-o'
+                    defaultErrMessage={errorMessages.birthday}
+                  />
+                  <FieldText
+                    label='Email'
+                    name='email'
+                    placeholder='Enter your Email'
+                    iconName='envelope'
+                    keyboardType='email-address'
+                    defaultErrMessage={errorMessages.email}
+                  />
+                  <FieldText
+                    secureTextEntry={true}
+                    label='Password'
+                    name='password'
+                    placeholder='Enter your password'
+                    iconName='lock'
+                    defaultErrMessage={errorMessages.password}
+                  />
+                  <FieldText
+                    secureTextEntry={true}
+                    label='Re-enter Password'
+                    name='repassword'
+                    placeholder='Enter your password again'
+                    iconName='lock'
+                    defaultErrMessage={errorMessages.repeatPassword}
+                  />
+                  <View
+                    style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
+                  >
+                    <Pressable
+                      onPress={() => setStep()}
+                      // onPress={formProps.handleSubmit(handleNext)}
+                      style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
+                    >
+                      {({ pressed }) => (
+                        <Text style={buttonsStyles.buttonRedText(pressed)}>
+                          Next
+                        </Text>
+                      )}
+                    </Pressable>
+                  </View>
+                </BottomSheetScrollView>
+              </FormProvider>
+            </Animated.View>
+          )}
 
-          <FormProvider {...formProps}>
-            <BottomSheetView>
-              <Center styles={{
-                paddingTop: theme.spacing.sp12,
-                paddingBottom: theme.spacing.sp2
-              }}>
-                <Heading size='s7'>Create Your Profile</Heading>
-              </Center>
-            </BottomSheetView>
-            <BottomSheetScrollView
-              contentContainerStyle={{
-                paddingVertical: theme.spacing.sp8,
-                paddingHorizontal: theme.spacing.sp10,
-                gap: theme.spacing.sp7
-              }}>
-              <FieldText
-                label='Full Name'
-                name='name'
-                placeholder='Enter your Full Name'
-                iconName='user'
-                defaultErrMessage={errorMessages.name}
-              />
-              <FieldText
-                label='User Name'
-                name='username'
-                placeholder='Enter your User Name'
-                iconName='at'
-                defaultErrMessage={errorMessages.username}
-              />
-              <FieldText
-                label='Birthday'
-                name='birthday'
-                placeholder='Enter your birthday'
-                iconName='calendar-check-o'
-                defaultErrMessage={errorMessages.birthday}
-              />
-              <FieldText
-                label='Email'
-                name='email'
-                placeholder='Enter your Email'
-                iconName='envelope'
-                keyboardType='email-address'
-                defaultErrMessage={errorMessages.email}
-              />
-              <FieldText
-                secureTextEntry={true}
-                label='Password'
-                name='password'
-                placeholder='Enter your password'
-                iconName='lock'
-                defaultErrMessage={errorMessages.password}
-              />
-              <FieldText
-                secureTextEntry={true}
-                label='Re-enter Password'
-                name='repassword'
-                placeholder='Enter your password again'
-                iconName='lock'
-                defaultErrMessage={errorMessages.repeatPassword}
-              />
-              <View
-                style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
-              >
-                <Pressable
-                  onPress={formProps.handleSubmit(handleNext)}
-                  style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
-                >
-                  {({ pressed }) => (
-                    <Text style={buttonsStyles.buttonRedText(pressed)}>
-                      Next
-                    </Text>
-                  )}
-                </Pressable>
-              </View>
-            </BottomSheetScrollView>
-          </FormProvider>
-
+          {step === 1 && (
+            <Animated.View
+              entering={SlideInRight}
+              exiting={SlideOutLeft}
+            >
+              <FormProvider {...formProps}>
+                <BottomSheetView>
+                  <Center styles={{
+                    paddingTop: theme.spacing.sp12,
+                    paddingBottom: theme.spacing.sp2
+                  }}>
+                    <Heading size='s7'>About YourSelf</Heading>
+                  </Center>
+                </BottomSheetView>
+                <BottomSheetScrollView
+                  contentContainerStyle={{
+                    paddingVertical: theme.spacing.sp8,
+                    paddingHorizontal: theme.spacing.sp10,
+                    gap: theme.spacing.sp7
+                  }}>
+                  <FieldText
+                    label='Full Name'
+                    name='name'
+                    placeholder='Enter your Full Name'
+                    iconName='user'
+                    defaultErrMessage={errorMessages.name}
+                  />
+                  <FieldText
+                    label='User Name'
+                    name='username'
+                    placeholder='Enter your User Name'
+                    iconName='at'
+                    defaultErrMessage={errorMessages.username}
+                  />
+                  <FieldText
+                    label='Birthday'
+                    name='birthday'
+                    placeholder='Enter your birthday'
+                    iconName='calendar-check-o'
+                    defaultErrMessage={errorMessages.birthday}
+                  />
+                  <FieldText
+                    label='Email'
+                    name='email'
+                    placeholder='Enter your Email'
+                    iconName='envelope'
+                    keyboardType='email-address'
+                    defaultErrMessage={errorMessages.email}
+                  />
+                  <FieldText
+                    secureTextEntry={true}
+                    label='Password'
+                    name='password'
+                    placeholder='Enter your password'
+                    iconName='lock'
+                    defaultErrMessage={errorMessages.password}
+                  />
+                  <FieldText
+                    secureTextEntry={true}
+                    label='Re-enter Password'
+                    name='repassword'
+                    placeholder='Enter your password again'
+                    iconName='lock'
+                    defaultErrMessage={errorMessages.repeatPassword}
+                  />
+                  <View
+                    style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
+                  >
+                    <Pressable
+                      onPress={() => setStep()}
+                      // onPress={formProps.handleSubmit(handleNext)}
+                      style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
+                    >
+                      {({ pressed }) => (
+                        <Text style={buttonsStyles.buttonRedText(pressed)}>
+                          Next
+                        </Text>
+                      )}
+                    </Pressable>
+                  </View>
+                </BottomSheetScrollView>
+              </FormProvider>
+            </Animated.View>
+          )}
         </SafeAreaView>
       </BottomSheet>
     </>
