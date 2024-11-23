@@ -4,104 +4,36 @@ import { Image, ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
-import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Modal from 'react-native-modal';
 import { useReducer, useRef } from 'react';
-import { Center, HStack, VStack } from '@/components/utils/stacks';
+import { HStack, VStack } from '@/components/utils/stacks';
 import { AntDesign } from '@expo/vector-icons';
 import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
-import BottomSheet, { BottomSheetScrollView, BottomSheetView, } from '@gorhom/bottom-sheet';
-import { ProgressBar } from '@/components/progressBar/progressBar';
-import { useCometaStore } from '@/store/cometaStore';
-import { FieldText } from '@/components/input/fieldText';
-import { FormProvider, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
-import Animated, { FadeIn, FadeOut, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
-
-
-const errorMessages = {
-  email: 'Email is required',
-  password: 'Password is required',
-  repeatPassword: 'Verify Password again',
-  name: 'Name is required',
-  username: 'User Name is required',
-  birthday: 'Birthday is required',
-};
-
-type FormValues = {
-  email: string;
-  password: string;
-  repassword: string;
-  name: string;
-  username: string;
-  birthday: string;
-}
-
-const validationSchema = Yup.object<FormValues>().shape({
-  email: Yup.string().email().required(errorMessages.email),
-  password: Yup.string().min(6).max(18).required(errorMessages.password),
-  repassword:
-    Yup.string()
-      .oneOf([Yup.ref('password'), ''])
-      .required(errorMessages.repeatPassword),
-  name: Yup.string().min(3).max(26).required(errorMessages.name),
-  username: Yup.string().min(3).max(18).required(errorMessages.username),
-  birthday: Yup.string().min(3).max(18).required(errorMessages.birthday),
-});
-
-const defaultValues: FormValues = {
-  email: '',
-  password: '',
-  repassword: '',
-  name: '',
-  username: '',
-  birthday: '',
-};
-
-const snapPoints = ['50%', '78%', '100%'];
+import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
+import { BottomSheet } from '@/components/onboarding/bottomSheet';
 
 
 export default function OnboardingScreen() {
-  const setOnboardingState = useCometaStore(state => state.setOnboarding);
   const { styles, theme } = useStyles(stylesheet);
   const { styles: buttonsStyles } = useStyles(buttonsStyleSheet);
-  const [isModalVisible, setModalVisible] = useReducer(prev => !prev, false);
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const [step, setStep] = useReducer(prev => (++prev % 3), 0);
-  const formProps = useForm<FormValues>({ defaultValues, resolver: yupResolver(validationSchema) });
+  const [isUserProfileModalVisible, setUserProfileModalVisible] = useReducer(prev => !prev, false);
+  const bottomSheetRef = useRef<BottomSheetMethods>(null);
 
-  // callbacks
-  const handleNext = (values: FormValues): void => {
-    setOnboardingState(values);
-    console.log('handleNext', values);
+  const toggleLoginModal = (): void => { };
+
+  const toggleRegisterModal = (): void => {
+    setUserProfileModalVisible();
   };
 
-  const handleLogin = (): void => { };
-
-  const handleRegister = (): void => {
-    setModalVisible();
+  const openUserProfileBottomSheet = (): void => {
+    setUserProfileModalVisible();
+    setTimeout(() => bottomSheetRef?.current?.expand(), 240);
+    // bottomSheetRef?.current?.snapToIndex(1)
   };
 
-  const handleUserProfile = (): void => {
-    setModalVisible();
-    setTimeout(() => bottomSheetRef.current?.snapToIndex(1), 200);
-  };
-
-  const handleCompanyProfile = (): void => { };
-
-  // useEffect(() => {
-  //   const keyboardDidShowListener = Keyboard.addListener(
-  //     'keyboardDidShow',
-  //     () => {
-  //       bottomSheetRef.current?.expand();
-  //     }
-  //   );
-  //   return () => {
-  //     keyboardDidShowListener.remove();
-  //   };
-  // }, []);
+  const openCompanyProfileModal = (): void => { };
 
   return (
     <>
@@ -112,8 +44,8 @@ export default function OnboardingScreen() {
       <Modal
         backdropColor={theme.colors.backDrop}
         animationOutTiming={300}
-        isVisible={isModalVisible}
-        onBackdropPress={setModalVisible}
+        isVisible={isUserProfileModalVisible}
+        onBackdropPress={setUserProfileModalVisible}
         style={{ justifyContent: 'flex-end' }}
       >
         <SafeAreaView>
@@ -121,7 +53,7 @@ export default function OnboardingScreen() {
             <HStack h='space-between' v='center'>
               <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
               <TouchableOpacity
-                onPress={setModalVisible}
+                onPress={setUserProfileModalVisible}
               >
                 <AntDesign name="closecircle" size={theme.icons.md} color={theme.colors.gray900} />
               </TouchableOpacity>
@@ -138,7 +70,7 @@ export default function OnboardingScreen() {
                 Create you profile and start matching with others who share your bucket list goals
               </TextView>
               <Pressable
-                onPress={handleUserProfile}
+                onPress={openUserProfileBottomSheet}
                 style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
               >
                 {({ pressed }) => (
@@ -148,7 +80,7 @@ export default function OnboardingScreen() {
                 )}
               </Pressable>
               <Pressable
-                onPress={handleCompanyProfile}
+                onPress={openCompanyProfileModal}
                 style={({ pressed }) => buttonsStyles.buttonBlueAlt(pressed)}
               >
                 {({ pressed }) => (
@@ -190,7 +122,7 @@ export default function OnboardingScreen() {
             <View style={styles.buttonsContainer}>
               <VStack gap={theme.spacing.sp8}>
                 <Pressable
-                  onPress={handleLogin}
+                  onPress={toggleLoginModal}
                   style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
                 >
                   {({ pressed }) => (
@@ -200,7 +132,7 @@ export default function OnboardingScreen() {
                   )}
                 </Pressable>
                 <Pressable
-                  onPress={handleRegister}
+                  onPress={toggleRegisterModal}
                   style={({ pressed }) => buttonsStyles.buttonRedAlt(pressed)}
                 >
                   {({ pressed }) => (
@@ -213,196 +145,11 @@ export default function OnboardingScreen() {
             </View>
           </SafeAreaView>
         </LinearGradient>
-
       </ImageBackground>
 
       <BottomSheet
-        $modal={false}
         ref={bottomSheetRef}
-        index={1}
-        enableDynamicSizing={false}
-        enablePanDownToClose={true}
-        keyboardBehavior="extend"
-        snapPoints={snapPoints}
-      >
-        <SafeAreaView style={{ flex: 1 }}>
-          <BottomSheetView style={{
-            paddingTop: theme.spacing.sp2,
-            paddingHorizontal: theme.spacing.sp10,
-          }}>
-            <ProgressBar value={60} />
-          </BottomSheetView>
-          {step === 0 && (
-            <Animated.View
-              entering={FadeIn}
-              exiting={FadeOut}
-            >
-              <FormProvider {...formProps}>
-                <BottomSheetView>
-                  <Center styles={{
-                    paddingTop: theme.spacing.sp12,
-                    paddingBottom: theme.spacing.sp2
-                  }}>
-                    <Heading size='s7'>Create Your Profile</Heading>
-                  </Center>
-                </BottomSheetView>
-                <BottomSheetScrollView
-                  contentContainerStyle={{
-                    paddingVertical: theme.spacing.sp8,
-                    paddingHorizontal: theme.spacing.sp10,
-                    gap: theme.spacing.sp7
-                  }}>
-                  <FieldText
-                    label='Full Name'
-                    name='name'
-                    placeholder='Enter your Full Name'
-                    iconName='user'
-                    defaultErrMessage={errorMessages.name}
-                  />
-                  <FieldText
-                    label='User Name'
-                    name='username'
-                    placeholder='Enter your User Name'
-                    iconName='at'
-                    defaultErrMessage={errorMessages.username}
-                  />
-                  <FieldText
-                    label='Birthday'
-                    name='birthday'
-                    placeholder='Enter your birthday'
-                    iconName='calendar-check-o'
-                    defaultErrMessage={errorMessages.birthday}
-                  />
-                  <FieldText
-                    label='Email'
-                    name='email'
-                    placeholder='Enter your Email'
-                    iconName='envelope'
-                    keyboardType='email-address'
-                    defaultErrMessage={errorMessages.email}
-                  />
-                  <FieldText
-                    secureTextEntry={true}
-                    label='Password'
-                    name='password'
-                    placeholder='Enter your password'
-                    iconName='lock'
-                    defaultErrMessage={errorMessages.password}
-                  />
-                  <FieldText
-                    secureTextEntry={true}
-                    label='Re-enter Password'
-                    name='repassword'
-                    placeholder='Enter your password again'
-                    iconName='lock'
-                    defaultErrMessage={errorMessages.repeatPassword}
-                  />
-                  <View
-                    style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
-                  >
-                    <Pressable
-                      onPress={() => setStep()}
-                      // onPress={formProps.handleSubmit(handleNext)}
-                      style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
-                    >
-                      {({ pressed }) => (
-                        <Text style={buttonsStyles.buttonRedText(pressed)}>
-                          Next
-                        </Text>
-                      )}
-                    </Pressable>
-                  </View>
-                </BottomSheetScrollView>
-              </FormProvider>
-            </Animated.View>
-          )}
-
-          {step === 1 && (
-            <Animated.View
-              entering={SlideInRight}
-              exiting={SlideOutLeft}
-            >
-              <FormProvider {...formProps}>
-                <BottomSheetView>
-                  <Center styles={{
-                    paddingTop: theme.spacing.sp12,
-                    paddingBottom: theme.spacing.sp2
-                  }}>
-                    <Heading size='s7'>About YourSelf</Heading>
-                  </Center>
-                </BottomSheetView>
-                <BottomSheetScrollView
-                  contentContainerStyle={{
-                    paddingVertical: theme.spacing.sp8,
-                    paddingHorizontal: theme.spacing.sp10,
-                    gap: theme.spacing.sp7
-                  }}>
-                  <FieldText
-                    label='Full Name'
-                    name='name'
-                    placeholder='Enter your Full Name'
-                    iconName='user'
-                    defaultErrMessage={errorMessages.name}
-                  />
-                  <FieldText
-                    label='User Name'
-                    name='username'
-                    placeholder='Enter your User Name'
-                    iconName='at'
-                    defaultErrMessage={errorMessages.username}
-                  />
-                  <FieldText
-                    label='Birthday'
-                    name='birthday'
-                    placeholder='Enter your birthday'
-                    iconName='calendar-check-o'
-                    defaultErrMessage={errorMessages.birthday}
-                  />
-                  <FieldText
-                    label='Email'
-                    name='email'
-                    placeholder='Enter your Email'
-                    iconName='envelope'
-                    keyboardType='email-address'
-                    defaultErrMessage={errorMessages.email}
-                  />
-                  <FieldText
-                    secureTextEntry={true}
-                    label='Password'
-                    name='password'
-                    placeholder='Enter your password'
-                    iconName='lock'
-                    defaultErrMessage={errorMessages.password}
-                  />
-                  <FieldText
-                    secureTextEntry={true}
-                    label='Re-enter Password'
-                    name='repassword'
-                    placeholder='Enter your password again'
-                    iconName='lock'
-                    defaultErrMessage={errorMessages.repeatPassword}
-                  />
-                  <View
-                    style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
-                  >
-                    <Pressable
-                      onPress={() => setStep()}
-                      // onPress={formProps.handleSubmit(handleNext)}
-                      style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
-                    >
-                      {({ pressed }) => (
-                        <Text style={buttonsStyles.buttonRedText(pressed)}>
-                          Next
-                        </Text>
-                      )}
-                    </Pressable>
-                  </View>
-                </BottomSheetScrollView>
-              </FormProvider>
-            </Animated.View>
-          )}
-        </SafeAreaView>
-      </BottomSheet>
+      />
     </>
   );
 }

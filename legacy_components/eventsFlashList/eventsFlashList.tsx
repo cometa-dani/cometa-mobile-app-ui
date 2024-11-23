@@ -371,11 +371,11 @@ const stylesEventItem = StyleSheet.create({
 
   paginationContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0)',
-    position: 'absolute',
-    padding: 0,
-    margin: 0,
-    width: '100%',
     bottom: -14,
+    margin: 0,
+    padding: 0,
+    position: 'absolute',
+    width: '100%',
   },
 
   paginationDots: {
@@ -383,8 +383,8 @@ const stylesEventItem = StyleSheet.create({
     borderRadius: 10,
     height: 8,
     marginHorizontal: -2,
-    width: 8,
     position: 'relative',
+    width: 8,
   },
 
   positionedButtons: {
