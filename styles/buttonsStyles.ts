@@ -11,7 +11,7 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
   buttonRed: (pressed: boolean) => ({
     width: '100%',
     backgroundColor: pressed ? theme.colors.red90 : theme.colors.red100,
-    padding: theme.spacing.md,
+    padding: theme.spacing.sp4,
     borderRadius: theme.radius.sm,
     borderWidth: 2,
     borderColor: pressed ? theme.colors.red100 : theme.colors.red90,
@@ -33,7 +33,7 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
   buttonRedAlt: (pressed: boolean) => ({
     width: '100%',
     backgroundColor: pressed ? theme.colors.white90 : theme.colors.white100,
-    padding: theme.spacing.md,
+    padding: theme.spacing.sp4,
     borderRadius: theme.radius.sm,
     borderWidth: 2,
     borderColor: pressed ? theme.colors.red90 : theme.colors.red100,
@@ -62,7 +62,7 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
   buttonBlueAlt: (pressed: boolean) => ({
     width: '100%',
     backgroundColor: pressed ? theme.colors.white90 : theme.colors.white100,
-    padding: theme.spacing.md,
+    padding: theme.spacing.sp4,
     borderRadius: theme.radius.sm,
     borderWidth: 2,
     borderColor: pressed ? theme.colors.blue90 : theme.colors.blue100,

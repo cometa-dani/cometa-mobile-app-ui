@@ -3,9 +3,9 @@ import { useFormikContext } from 'formik';
 import { FC, useState } from 'react';
 import { VStack } from '../utils/stacks';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import { KeyboardTypeOptions, Text, TextInput, View } from 'react-native';
+import { KeyboardTypeOptions, Text, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-// import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 
 
 interface IFieldTextProps {
@@ -37,7 +37,7 @@ export const FieldText: FC<IFieldTextProps> = ({ label, name, secureTextEntry, k
             color={isFocused ? theme.colors.blue100 : theme.colors.gray300}
           />
         </View>
-        <TextInput
+        <BottomSheetTextInput
           secureTextEntry={secureTextEntry}
           style={inputStyles.field(isFocused)}
           placeholder={placeholder}
@@ -61,7 +61,7 @@ const inputSheet = createStyleSheet((theme) => ({
     fontFamily: theme.text.fontRegular,
     fontSize: theme.text.size.sm,
     opacity: 0.8,
-    paddingVertical: theme.spacing.xs
+    paddingVertical: theme.spacing.sp1
   },
   fiedContainer: {
     position: 'relative',
@@ -93,10 +93,10 @@ const inputSheet = createStyleSheet((theme) => ({
   },
   field: (isFocused: boolean) => ({
     backgroundColor: theme.colors.white80,
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.sp6,
     paddingLeft: 60,
-    paddingBottom: theme.spacing.md,
-    paddingTop: theme.spacing.xl,
+    paddingBottom: theme.spacing.sp4,
+    paddingTop: theme.spacing.sp8,
     borderRadius: theme.radius.sm,
     fontFamily: theme.text.fontMedium,
     borderWidth: 1.6,

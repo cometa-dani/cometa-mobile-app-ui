@@ -99,6 +99,7 @@ export interface IUserClientState extends Pick<GetBasicUserProfile, (
   'languages'
 )> {
   password: string;
+  repassword: string;
   imageRef: ImagePickerAsset;
 }
 

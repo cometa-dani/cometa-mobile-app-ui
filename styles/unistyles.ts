@@ -75,13 +75,20 @@ export const lightTheme = {
     xxl: 50
   },
   spacing: {
-    xs: 4,
-    sm: 8,
-    md: 12,
-    lg: 16,
-    xl: 24,
-    xxl: 32,
-    xxxl: 40
+    sp1: 4,
+    sp2: 8,
+    sp4: 12,
+    sp6: 16,
+    sp7: 18,
+    sp8: 20,
+    sp10: 24,
+    sp12: 32,
+    sp14: 40,
+    sp16: 48,
+    sp18: 56,
+    sp20: 64,
+    sp24: 80,
+    sp32: 96
   },
   icons: {
     sm: 16,

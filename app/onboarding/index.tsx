@@ -18,7 +18,7 @@ import { Formik, FormikHelpers } from 'formik';
 import { IUserClientState } from '@/models/User';
 import { FieldText } from '@/components/input/fieldText';
 
-const snapPoints = ['50%', '78%'];
+const snapPoints = ['50%', '78%', '100%'];
 
 export default function OnboardingScreen() {
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
@@ -46,7 +46,7 @@ export default function OnboardingScreen() {
 
   const handleUserProfile = (): void => {
     setModalVisible();
-    setTimeout(() => bottomSheetRef.current?.expand(), 200);
+    setTimeout(() => bottomSheetRef.current?.snapToIndex(1), 200);
   };
 
   const handleCompanyProfile = (): void => { };
@@ -76,8 +76,8 @@ export default function OnboardingScreen() {
             </HStack>
 
             <VStack
-              gap={theme.spacing.lg}
-              styles={{ marginTop: theme.spacing.xl }}
+              gap={theme.spacing.sp6}
+              styles={{ marginTop: theme.spacing.sp8 }}
             >
               <Heading size='lg'>
                 Join to Discover & Connect!
@@ -136,7 +136,7 @@ export default function OnboardingScreen() {
         >
           <SafeAreaView>
             <View style={styles.buttonsContainer}>
-              <VStack gap={theme.spacing.lg}>
+              <VStack gap={theme.spacing.sp6}>
                 <Pressable
                   onPress={handleLogin}
                   style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
@@ -171,7 +171,7 @@ export default function OnboardingScreen() {
         onChange={handleSheetChanges}
         enableDynamicSizing={false}
         enablePanDownToClose={true}
-        keyboardBehavior="fillParent"
+        keyboardBehavior="extend"
         snapPoints={snapPoints}
       >
         <Formik
@@ -179,22 +179,38 @@ export default function OnboardingScreen() {
           // validationSchema={{}}
           onSubmit={handleNext}
         >
-          {({ values, touched, errors, handleSubmit, handleChange }) => (
+          {({ handleSubmit }) => (
             <SafeAreaView style={{ flex: 1 }}>
               <BottomSheetView>
                 <ProgressBar value={20} />
                 <BottomSheetView>
-                  <Center styles={{ paddingVertical: theme.spacing.md }}>
+                  <Center styles={{ paddingTop: theme.spacing.sp10 }}>
                     <Heading size='lg'>Create Your Profile</Heading>
                   </Center>
                 </BottomSheetView>
               </BottomSheetView>
-              <BottomSheetScrollView style={{ paddingBottom: 100 }}>
+              <BottomSheetScrollView
+                contentContainerStyle={{
+                  padding: theme.spacing.sp8,
+                  gap: theme.spacing.sp6
+                }}>
                 <FieldText
                   label='Full Name'
                   name='name'
                   placeholder='Full Name'
                   iconName='user'
+                />
+                <FieldText
+                  label='User Name'
+                  name='username'
+                  placeholder='User Name'
+                  iconName='at'
+                />
+                <FieldText
+                  label='Birthday'
+                  name='birthday'
+                  placeholder='Enter your birthday'
+                  iconName='calendar-check-o'
                 />
                 <FieldText
                   label='Email'
@@ -203,21 +219,35 @@ export default function OnboardingScreen() {
                   iconName='envelope'
                   keyboardType='email-address'
                 />
-              </BottomSheetScrollView>
-              <BottomSheetView
-                style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
-              >
-                <Pressable
-                  onPress={() => handleSubmit()}
-                  style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
+                <FieldText
+                  secureTextEntry={true}
+                  label='Password'
+                  name='password'
+                  placeholder='Enter your password'
+                  iconName='lock'
+                />
+                <FieldText
+                  secureTextEntry={true}
+                  label='Re-enter Password'
+                  name='repassword'
+                  placeholder='Enter your password again'
+                  iconName='lock'
+                />
+                <View
+                  style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
                 >
-                  {({ pressed }) => (
-                    <Text style={buttonsStyles.buttonRedText(pressed)}>
-                      Next
-                    </Text>
-                  )}
-                </Pressable>
-              </BottomSheetView>
+                  <Pressable
+                    onPress={() => handleSubmit()}
+                    style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
+                  >
+                    {({ pressed }) => (
+                      <Text style={buttonsStyles.buttonRedText(pressed)}>
+                        Next
+                      </Text>
+                    )}
+                  </Pressable>
+                </View>
+              </BottomSheetScrollView>
             </SafeAreaView>
           )}
         </Formik>
@@ -245,12 +275,12 @@ const stylesheet = createStyleSheet((theme) => ({
     width: '100%'
   },
   buttonsContainer: {
-    padding: theme.spacing.xl,
+    padding: theme.spacing.sp8,
     marginTop: 80,
   },
   modal: {
     backgroundColor: theme.colors.white100,
-    padding: theme.spacing.xl,
+    padding: theme.spacing.sp8,
     borderRadius: theme.radius.md,
     minHeight: 300
   },
