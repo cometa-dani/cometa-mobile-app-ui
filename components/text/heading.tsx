@@ -6,12 +6,12 @@ import { useStyles } from 'react-native-unistyles';
 
 interface Props {
   children: React.ReactNode;
-  size?: 'xxxl' | 'xxl' | 'xl' | 'lg' | 'md' | 'sm' | 'xs';
+  size?: 's1' | 's2' | 's4' | 's6' | 's7' | 's8' | 's10' | 's12' | 's14'
 }
 
 export const Heading: FC<Props> = ({ children, size }) => {
   const { styles, theme } = useStyles(textStyleSheet);
   return (
-    <Text style={styles.heading(theme.text.size[size || 'md'])}>{children}</Text>
+    <Text style={styles.heading(theme.text.size[size || 's4'])}>{children}</Text>
   );
 };

@@ -20,7 +20,6 @@ export const createOnboardingSlice: StateCreator<OnboardingSlice> = (set) => ({
       email: '',
       password: '',
       repassword: '',
-      imageRef: {} as ImagePickerAsset,
       birthday: new Date(),
       homeTown: '',
       currentLocation: '',

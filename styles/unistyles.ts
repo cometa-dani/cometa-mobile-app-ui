@@ -91,6 +91,7 @@ export const lightTheme = {
     sp32: 96
   },
   icons: {
+    xs: 14,
     sm: 16,
     md: 22,
     lg: 26
@@ -101,13 +102,15 @@ export const lightTheme = {
     fontSemibold: 'PoppinsSemibold',
     fontBold: 'PoppinsBold',
     size: {
-      xs: 10,
-      sm: 12,
-      md: 15,
-      lg: 18,
-      xl: 24,
-      xxl: 30,
-      xxxl: 36,
+      s1: 10,
+      s2: 12,
+      s4: 15,
+      s6: 18,
+      s7: 20,
+      s8: 24,
+      s10: 30,
+      s12: 36,
+      s14: 40
     }
   }
 } as const;

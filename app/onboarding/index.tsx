@@ -14,23 +14,64 @@ import { TextView } from '@/components/text/text';
 import BottomSheet, { BottomSheetScrollView, BottomSheetView, } from '@gorhom/bottom-sheet';
 import { ProgressBar } from '@/components/progressBar/progressBar';
 import { useCometaStore } from '@/store/cometaStore';
-import { Formik, FormikHelpers } from 'formik';
-import { IUserClientState } from '@/models/User';
 import { FieldText } from '@/components/input/fieldText';
+import { FormProvider, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
 
+
+const errorMessages = {
+  email: 'Email is required in this field',
+  password: 'Password is required in this field',
+  repeatPassword: 'Verify Password',
+  name: 'Name is required in this field',
+  username: 'User Name is required in this field',
+  birthday: 'Birthday is required in this field',
+};
+
+type FormValues = {
+  email: string;
+  password: string;
+  repassword: string;
+  name: string;
+  username: string;
+  birthday: string;
+}
+
+const validationSchema = Yup.object<FormValues>().shape({
+  email: Yup.string().email().required(errorMessages.email),
+  password: Yup.string().min(6).max(18).required(errorMessages.password),
+  repassword:
+    Yup.string()
+      .oneOf([Yup.ref('password'), ''])
+      .required(errorMessages.repeatPassword),
+  name: Yup.string().min(3).max(26).required(errorMessages.name),
+  username: Yup.string().min(3).max(18).required(errorMessages.username),
+  birthday: Yup.string().min(3).max(18).required(errorMessages.birthday),
+});
+
+const defaultValues: FormValues = {
+  email: '',
+  password: '',
+  repassword: '',
+  name: '',
+  username: '',
+  birthday: '',
+};
 
 const snapPoints = ['50%', '78%', '100%'];
 
+
 export default function OnboardingScreen() {
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
-  const onboardingState = useCometaStore(state => state.onboarding.user);
   const { styles, theme } = useStyles(stylesheet);
   const { styles: buttonsStyles } = useStyles(buttonsStyleSheet);
   const [isModalVisible, setModalVisible] = useReducer(prev => !prev, false);
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const formMethods = useForm<FormValues>({ defaultValues });
 
   // callbacks
-  const handleNext = (values: IUserClientState, actions: FormikHelpers<IUserClientState>): void => {
+  const handleNext = (values: FormValues): void => {
     setOnboardingState(values);
     console.log('handleNext', values);
   };
@@ -92,7 +133,7 @@ export default function OnboardingScreen() {
               gap={theme.spacing.sp6}
               styles={{ marginTop: theme.spacing.sp8 }}
             >
-              <Heading size='lg'>
+              <Heading size='s6'>
                 Join to Discover & Connect!
               </Heading>
               <TextView>
@@ -129,13 +170,13 @@ export default function OnboardingScreen() {
         style={styles.imgBackground}
       >
         <LinearGradient
-          colors={['rgba(0,0,0,0.75)', 'rgba(0,0,0,0.58)', 'transparent']}
+          colors={['rgba(0,0,0,0.76)', 'rgba(0,0,0,0.6)', 'transparent']}
           style={styles.linearGradientTop}
         >
           <SafeAreaView>
             <View style={{ top: 60 }}>
               <GradientHeading
-                styles={{ fontSize: theme.text.size.xxxl }}
+                styles={{ fontSize: theme.text.size.s14 }}
               >
                 cometa
               </GradientHeading>
@@ -187,92 +228,94 @@ export default function OnboardingScreen() {
         keyboardBehavior="extend"
         snapPoints={snapPoints}
       >
-        <Formik
-          initialValues={onboardingState}
-          // validationSchema={{}}
-          onSubmit={handleNext}
+        <FormProvider
+          {...formMethods}
         >
-          {({ handleSubmit }) => (
-            <SafeAreaView style={{ flex: 1 }}>
-              <BottomSheetView>
-                <BottomSheetView style={{
-                  paddingTop: theme.spacing.sp2,
-                  paddingHorizontal: theme.spacing.sp10,
-                }}>
-                  <ProgressBar value={20} />
-                </BottomSheetView>
-                <BottomSheetView>
-                  <Center styles={{
-                    paddingTop: theme.spacing.sp12,
-                    paddingBottom: theme.spacing.sp2
-                  }}>
-                    <Heading size='lg'>Create Your Profile</Heading>
-                  </Center>
-                </BottomSheetView>
+          <SafeAreaView style={{ flex: 1 }}>
+            <BottomSheetView>
+              <BottomSheetView style={{
+                paddingTop: theme.spacing.sp2,
+                paddingHorizontal: theme.spacing.sp10,
+              }}>
+                <ProgressBar value={20} />
               </BottomSheetView>
-              <BottomSheetScrollView
-                contentContainerStyle={{
-                  paddingVertical: theme.spacing.sp8,
-                  paddingHorizontal: theme.spacing.sp10,
-                  gap: theme.spacing.sp8
+              <BottomSheetView>
+                <Center styles={{
+                  paddingTop: theme.spacing.sp12,
+                  paddingBottom: theme.spacing.sp2
                 }}>
-                <FieldText
-                  label='Full Name'
-                  name='name'
-                  placeholder='Full Name'
-                  iconName='user'
-                />
-                <FieldText
-                  label='User Name'
-                  name='username'
-                  placeholder='User Name'
-                  iconName='at'
-                />
-                <FieldText
-                  label='Birthday'
-                  name='birthday'
-                  placeholder='Enter your birthday'
-                  iconName='calendar-check-o'
-                />
-                <FieldText
-                  label='Email'
-                  name='email'
-                  placeholder='Email'
-                  iconName='envelope'
-                  keyboardType='email-address'
-                />
-                <FieldText
-                  secureTextEntry={true}
-                  label='Password'
-                  name='password'
-                  placeholder='Enter your password'
-                  iconName='lock'
-                />
-                <FieldText
-                  secureTextEntry={true}
-                  label='Re-enter Password'
-                  name='repassword'
-                  placeholder='Enter your password again'
-                  iconName='lock'
-                />
-                <View
-                  style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
+                  <Heading size='s7'>Create Your Profile</Heading>
+                </Center>
+              </BottomSheetView>
+            </BottomSheetView>
+            <BottomSheetScrollView
+              contentContainerStyle={{
+                paddingVertical: theme.spacing.sp8,
+                paddingHorizontal: theme.spacing.sp10,
+                gap: theme.spacing.sp10
+              }}>
+              <FieldText
+                label='Full Name'
+                name='name'
+                placeholder='Enter your Full Name'
+                iconName='user'
+                msgErrorText={errorMessages.name}
+              />
+              <FieldText
+                label='User Name'
+                name='username'
+                placeholder='Enter your User Name'
+                iconName='at'
+                msgErrorText={errorMessages.username}
+              />
+              <FieldText
+                label='Birthday'
+                name='birthday'
+                placeholder='Enter your birthday'
+                iconName='calendar-check-o'
+                msgErrorText={errorMessages.birthday}
+              />
+              <FieldText
+                label='Email'
+                name='email'
+                placeholder='Enter your Email'
+                iconName='envelope'
+                keyboardType='email-address'
+                msgErrorText={errorMessages.email}
+              />
+              <FieldText
+                secureTextEntry={true}
+                label='Password'
+                name='password'
+                placeholder='Enter your password'
+                iconName='lock'
+                msgErrorText={errorMessages.password}
+              />
+              <FieldText
+                secureTextEntry={true}
+                label='Re-enter Password'
+                name='repassword'
+                placeholder='Enter your password again'
+                iconName='lock'
+                msgErrorText={errorMessages.repeatPassword}
+              />
+              <View
+                style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
+              >
+                <Pressable
+                  onPress={formMethods.handleSubmit(handleNext)}
+                  style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
                 >
-                  <Pressable
-                    onPress={() => handleSubmit()}
-                    style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
-                  >
-                    {({ pressed }) => (
-                      <Text style={buttonsStyles.buttonRedText(pressed)}>
-                        Next
-                      </Text>
-                    )}
-                  </Pressable>
-                </View>
-              </BottomSheetScrollView>
-            </SafeAreaView>
-          )}
-        </Formik>
+                  {({ pressed }) => (
+                    <Text style={buttonsStyles.buttonRedText(pressed)}>
+                      Next
+                    </Text>
+                  )}
+                </Pressable>
+              </View>
+            </BottomSheetScrollView>
+          </SafeAreaView>
+        </FormProvider>
       </BottomSheet>
     </>
   );
@@ -287,18 +330,19 @@ const stylesheet = createStyleSheet((theme) => ({
   linearGradientTop: {
     position: 'absolute',
     top: 0,
-    height: 300,
+    height: 314,
     width: '100%'
   },
   linearGradient: {
     position: 'absolute',
     bottom: 0,
-    height: 300,
-    width: '100%'
+    height: 314,
+    width: '100%',
+    justifyContent: 'flex-end'
   },
   buttonsContainer: {
     padding: theme.spacing.sp10,
-    marginTop: 80,
+    paddingBottom: theme.spacing.sp16
   },
   modal: {
     backgroundColor: theme.colors.white100,

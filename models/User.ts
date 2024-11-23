@@ -100,7 +100,7 @@ export interface IUserClientState extends Pick<GetBasicUserProfile, (
 )> {
   password: string;
   repassword: string;
-  imageRef: ImagePickerAsset;
+  imageRef?: ImagePickerAsset;
 }
 
 export interface GetMatchedUsersWhoLikedEventWithPagination {
@@ -168,7 +168,7 @@ export interface GetDetailedUserProfile {
   biography: string;
   email: string;
   phone?: string;
-
+  birthday?: Date | string;
   currentLocation?: string;
   homeTown?: string;
   languages?: string[];
@@ -192,7 +192,7 @@ export interface GetDetailedUserProfile {
   gender?: Gender
   diet?: Diet
   exerciseFrequency?: ExerciseFrequency
-  birthday?: Date;
+
   interests?: EventCategory[];
   activateNotifications: boolean;
 
