@@ -21,12 +21,12 @@ import * as Yup from 'yup';
 
 
 const errorMessages = {
-  email: 'Email is required in this field',
-  password: 'Password is required in this field',
-  repeatPassword: 'Verify Password',
-  name: 'Name is required in this field',
-  username: 'User Name is required in this field',
-  birthday: 'Birthday is required in this field',
+  email: 'Email is required',
+  password: 'Password is required',
+  repeatPassword: 'Verify Password again',
+  name: 'Name is required',
+  username: 'User Name is required',
+  birthday: 'Birthday is required',
 };
 
 type FormValues = {
@@ -68,17 +68,13 @@ export default function OnboardingScreen() {
   const { styles: buttonsStyles } = useStyles(buttonsStyleSheet);
   const [isModalVisible, setModalVisible] = useReducer(prev => !prev, false);
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const formMethods = useForm<FormValues>({ defaultValues });
+  const formMethods = useForm<FormValues>({ defaultValues, resolver: yupResolver(validationSchema) });
 
   // callbacks
   const handleNext = (values: FormValues): void => {
     setOnboardingState(values);
     console.log('handleNext', values);
   };
-
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
 
   const handleLogin = (): void => { };
 
@@ -222,7 +218,6 @@ export default function OnboardingScreen() {
         $modal={false}
         ref={bottomSheetRef}
         index={1}
-        onChange={handleSheetChanges}
         enableDynamicSizing={false}
         enablePanDownToClose={true}
         keyboardBehavior="extend"
@@ -252,28 +247,28 @@ export default function OnboardingScreen() {
               contentContainerStyle={{
                 paddingVertical: theme.spacing.sp8,
                 paddingHorizontal: theme.spacing.sp10,
-                gap: theme.spacing.sp10
+                gap: theme.spacing.sp7
               }}>
               <FieldText
                 label='Full Name'
                 name='name'
                 placeholder='Enter your Full Name'
                 iconName='user'
-                msgErrorText={errorMessages.name}
+                defaultErrMessage={errorMessages.name}
               />
               <FieldText
                 label='User Name'
                 name='username'
                 placeholder='Enter your User Name'
                 iconName='at'
-                msgErrorText={errorMessages.username}
+                defaultErrMessage={errorMessages.username}
               />
               <FieldText
                 label='Birthday'
                 name='birthday'
                 placeholder='Enter your birthday'
                 iconName='calendar-check-o'
-                msgErrorText={errorMessages.birthday}
+                defaultErrMessage={errorMessages.birthday}
               />
               <FieldText
                 label='Email'
@@ -281,7 +276,7 @@ export default function OnboardingScreen() {
                 placeholder='Enter your Email'
                 iconName='envelope'
                 keyboardType='email-address'
-                msgErrorText={errorMessages.email}
+                defaultErrMessage={errorMessages.email}
               />
               <FieldText
                 secureTextEntry={true}
@@ -289,7 +284,7 @@ export default function OnboardingScreen() {
                 name='password'
                 placeholder='Enter your password'
                 iconName='lock'
-                msgErrorText={errorMessages.password}
+                defaultErrMessage={errorMessages.password}
               />
               <FieldText
                 secureTextEntry={true}
@@ -297,7 +292,7 @@ export default function OnboardingScreen() {
                 name='repassword'
                 placeholder='Enter your password again'
                 iconName='lock'
-                msgErrorText={errorMessages.repeatPassword}
+                defaultErrMessage={errorMessages.repeatPassword}
               />
               <View
                 style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
