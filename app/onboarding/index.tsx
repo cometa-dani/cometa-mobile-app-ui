@@ -6,16 +6,17 @@ import { StatusBar } from 'expo-status-bar';
 import { Pressable, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import Modal from 'react-native-modal';
-import { useCallback, useReducer, useRef, useState } from 'react';
+import { useCallback, useReducer, useRef } from 'react';
 import { Center, HStack, VStack } from '@/components/utils/stacks';
-import { AntDesign, FontAwesome } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
-import BottomSheet, { BottomSheetScrollView, BottomSheetTextInput, BottomSheetView, } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetScrollView, BottomSheetView, } from '@gorhom/bottom-sheet';
 import { ProgressBar } from '@/components/progressBar/progressBar';
 import { useCometaStore } from '@/store/cometaStore';
 import { Formik, FormikHelpers } from 'formik';
 import { IUserClientState } from '@/models/User';
+import { FieldText } from '@/components/input/fieldText';
 
 const snapPoints = ['50%', '78%'];
 
@@ -24,13 +25,13 @@ export default function OnboardingScreen() {
   const onboardingState = useCometaStore(state => state.onboarding.user);
   const { styles, theme } = useStyles(stylesheet);
   const { styles: buttonsStyles } = useStyles(buttonsStyleSheet);
-  const { styles: inputStyles } = useStyles(inputSheet);
   const [isModalVisible, setModalVisible] = useReducer(prev => !prev, false);
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   // callbacks
   const handleNext = (values: IUserClientState, actions: FormikHelpers<IUserClientState>): void => {
     setOnboardingState(values);
+    console.log('handleNext', values);
   };
 
   const handleSheetChanges = useCallback((index: number) => {
@@ -50,8 +51,6 @@ export default function OnboardingScreen() {
 
   const handleCompanyProfile = (): void => { };
 
-  // input
-  const [isFocused, setIsFocused] = useState(false);
   return (
     <>
       <StatusBar
@@ -191,32 +190,19 @@ export default function OnboardingScreen() {
                 </BottomSheetView>
               </BottomSheetView>
               <BottomSheetScrollView style={{ paddingBottom: 100 }}>
-                <VStack>
-                  <VStack styles={inputStyles.fiedContainer}>
-                    <View style={inputStyles.fieldLabel}>
-                      <Text style={inputStyles.fieldTextLabel}>
-                        Full Name
-                      </Text>
-                    </View>
-                    <FontAwesome
-                      style={inputStyles.fieldIcon}
-                      name="user"
-                      size={theme.icons.lg}
-                      color={isFocused ? theme.colors.blue100 : theme.colors.gray300}
-                    />
-                    <BottomSheetTextInput
-                      style={inputStyles.field(isFocused)}
-                      placeholder='Full Name'
-                      keyboardType='default'
-                      value={values.name}
-                      onChangeText={handleChange('name')}
-                      onBlur={() => setIsFocused(false)}
-                      onFocus={() => setIsFocused(true)}
-                    />
-                  </VStack>
-                  <Text style={inputStyles.fieldTextError}>{errors.name ?? 'Name is required in this field'}</Text>
-                </VStack>
-
+                <FieldText
+                  label='Full Name'
+                  name='name'
+                  placeholder='Full Name'
+                  iconName='user'
+                />
+                <FieldText
+                  label='Email'
+                  name='email'
+                  placeholder='Email'
+                  iconName='envelope'
+                  keyboardType='email-address'
+                />
               </BottomSheetScrollView>
               <BottomSheetView
                 style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
@@ -272,58 +258,4 @@ const stylesheet = createStyleSheet((theme) => ({
     width: 48,
     aspectRatio: 1
   }
-}));
-
-
-const inputSheet = createStyleSheet((theme) => ({
-
-  fieldTextError: {
-    color: theme.colors.red100,
-    fontFamily: theme.text.fontRegular,
-    fontSize: theme.text.size.sm,
-    opacity: 0.8,
-    paddingVertical: theme.spacing.xs
-  },
-
-  fiedContainer: {
-    position: 'relative',
-    justifyContent: 'center'
-  },
-  fieldLabel: {
-    position: 'absolute',
-    zIndex: 1,
-    left: 59,
-    top: 6
-  },
-  fieldTextLabel: {
-    fontSize: theme.text.size.xs,
-    color: theme.colors.gray300,
-    fontFamily: theme.text.fontMedium
-  },
-  fieldIcon: {
-    position: 'absolute',
-    zIndex: 1,
-    left: 16,
-    borderRightColor: theme.colors.gray200,
-    borderRightWidth: 1,
-    paddingVertical: 3,
-    paddingRight: theme.spacing.md
-  },
-  field: (isFocused: boolean) => ({
-    backgroundColor: theme.colors.white80,
-    paddingHorizontal: theme.spacing.lg,
-    paddingLeft: 59,
-    paddingBottom: theme.spacing.md,
-    paddingTop: theme.spacing.xl,
-    borderRadius: theme.radius.sm,
-    fontFamily: theme.text.fontMedium,
-    borderWidth: 1.6,
-    borderColor: isFocused ? theme.colors.blue100 : 'transparent',
-    shadowColor: isFocused ? theme.colors.blue100 : undefined,
-    shadowOpacity: isFocused ? 0.18 : 0,
-    shadowOffset: isFocused ? { width: 0, height: 3 } : undefined,
-    shadowRadius: isFocused ? 2 : 0,
-    elevation: isFocused ? 1 : 0,
-    animationTimingFunction: 'ease-in-out',
-  })
 }));
