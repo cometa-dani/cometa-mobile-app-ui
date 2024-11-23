@@ -18,6 +18,7 @@ import { Formik, FormikHelpers } from 'formik';
 import { IUserClientState } from '@/models/User';
 import { FieldText } from '@/components/input/fieldText';
 
+
 const snapPoints = ['50%', '78%', '100%'];
 
 export default function OnboardingScreen() {
@@ -50,6 +51,18 @@ export default function OnboardingScreen() {
   };
 
   const handleCompanyProfile = (): void => { };
+
+  // useEffect(() => {
+  //   const keyboardDidShowListener = Keyboard.addListener(
+  //     'keyboardDidShow',
+  //     () => {
+  //       bottomSheetRef.current?.expand();
+  //     }
+  //   );
+  //   return () => {
+  //     keyboardDidShowListener.remove();
+  //   };
+  // }, []);
 
   return (
     <>
@@ -136,7 +149,7 @@ export default function OnboardingScreen() {
         >
           <SafeAreaView>
             <View style={styles.buttonsContainer}>
-              <VStack gap={theme.spacing.sp6}>
+              <VStack gap={theme.spacing.sp8}>
                 <Pressable
                   onPress={handleLogin}
                   style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
@@ -182,17 +195,26 @@ export default function OnboardingScreen() {
           {({ handleSubmit }) => (
             <SafeAreaView style={{ flex: 1 }}>
               <BottomSheetView>
-                <ProgressBar value={20} />
+                <BottomSheetView style={{
+                  paddingTop: theme.spacing.sp2,
+                  paddingHorizontal: theme.spacing.sp10,
+                }}>
+                  <ProgressBar value={20} />
+                </BottomSheetView>
                 <BottomSheetView>
-                  <Center styles={{ paddingTop: theme.spacing.sp10 }}>
+                  <Center styles={{
+                    paddingTop: theme.spacing.sp12,
+                    paddingBottom: theme.spacing.sp2
+                  }}>
                     <Heading size='lg'>Create Your Profile</Heading>
                   </Center>
                 </BottomSheetView>
               </BottomSheetView>
               <BottomSheetScrollView
                 contentContainerStyle={{
-                  padding: theme.spacing.sp8,
-                  gap: theme.spacing.sp6
+                  paddingVertical: theme.spacing.sp8,
+                  paddingHorizontal: theme.spacing.sp10,
+                  gap: theme.spacing.sp8
                 }}>
                 <FieldText
                   label='Full Name'
@@ -275,12 +297,12 @@ const stylesheet = createStyleSheet((theme) => ({
     width: '100%'
   },
   buttonsContainer: {
-    padding: theme.spacing.sp8,
+    padding: theme.spacing.sp10,
     marginTop: 80,
   },
   modal: {
     backgroundColor: theme.colors.white100,
-    padding: theme.spacing.sp8,
+    padding: theme.spacing.sp10,
     borderRadius: theme.radius.md,
     minHeight: 300
   },

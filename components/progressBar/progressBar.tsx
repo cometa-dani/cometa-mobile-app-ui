@@ -42,16 +42,16 @@ export const ProgressBar: FC<ProgressBarProps> = ({ value }) => {
 
 const styleSheet = createStyleSheet((theme) => ({
   progressBar: {
-    height: theme.spacing.sp - 1,
+    height: theme.spacing.sp1,
     backgroundColor: theme.colors.white70,
     borderRadius: theme.radius.xs,
     overflow: 'hidden',
     width: '100%',
   },
   progress: {
-    height: theme.spacing.sp - 1,
+    height: theme.spacing.sp1,
     backgroundColor: theme.colors.red80,
-    opacity: 0.7,
+    opacity: 0.9,
     borderRadius: theme.radius.xs,
   }
 }));
