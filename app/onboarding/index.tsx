@@ -223,25 +223,23 @@ export default function OnboardingScreen() {
         keyboardBehavior="extend"
         snapPoints={snapPoints}
       >
-        <FormProvider
-          {...formProps}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
+
+        <SafeAreaView style={{ flex: 1 }}>
+          <BottomSheetView style={{
+            paddingTop: theme.spacing.sp2,
+            paddingHorizontal: theme.spacing.sp10,
+          }}>
+            <ProgressBar value={60} />
+          </BottomSheetView>
+
+          <FormProvider {...formProps}>
             <BottomSheetView>
-              <BottomSheetView style={{
-                paddingTop: theme.spacing.sp2,
-                paddingHorizontal: theme.spacing.sp10,
+              <Center styles={{
+                paddingTop: theme.spacing.sp12,
+                paddingBottom: theme.spacing.sp2
               }}>
-                <ProgressBar value={50} />
-              </BottomSheetView>
-              <BottomSheetView>
-                <Center styles={{
-                  paddingTop: theme.spacing.sp12,
-                  paddingBottom: theme.spacing.sp2
-                }}>
-                  <Heading size='s7'>Create Your Profile</Heading>
-                </Center>
-              </BottomSheetView>
+                <Heading size='s7'>Create Your Profile</Heading>
+              </Center>
             </BottomSheetView>
             <BottomSheetScrollView
               contentContainerStyle={{
@@ -309,8 +307,9 @@ export default function OnboardingScreen() {
                 </Pressable>
               </View>
             </BottomSheetScrollView>
-          </SafeAreaView>
-        </FormProvider>
+          </FormProvider>
+
+        </SafeAreaView>
       </BottomSheet>
     </>
   );

@@ -38,7 +38,7 @@ export const ProgressBar: FC<ProgressBarProps> = ({ value }) => {
 const styleSheet = createStyleSheet((theme) => ({
   progressBar: {
     height: 6,
-    backgroundColor: theme.colors.white70,
+    backgroundColor: theme.colors.white80,
     borderRadius: theme.radius.xs,
     overflow: 'hidden',
     width: '100%',
