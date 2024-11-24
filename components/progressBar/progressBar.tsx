@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { View } from 'react-native';
-import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { Easing, useSharedValue, withTiming } from 'react-native-reanimated';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 
 
@@ -17,7 +17,7 @@ export const ProgressBar: FC<ProgressBarProps> = ({ value }) => {
   React.useEffect(() => {
     const onePercent = screenWidth / 100;
     const increment = onePercent * (value % 101);
-    progress.value = withSpring(increment);
+    progress.value = withTiming(increment, { duration: 800, easing: Easing.inOut(Easing.quad) });
   }, [value]);
 
   return (
@@ -37,7 +37,7 @@ export const ProgressBar: FC<ProgressBarProps> = ({ value }) => {
 
 const styleSheet = createStyleSheet((theme) => ({
   progressBar: {
-    height: 6,
+    height: 4.2,
     backgroundColor: theme.colors.white80,
     borderRadius: theme.radius.xs,
     overflow: 'hidden',
@@ -46,7 +46,7 @@ const styleSheet = createStyleSheet((theme) => ({
   progress: {
     height: 6,
     backgroundColor: theme.colors.red80,
-    opacity: 0.9,
+    opacity: 0.7,
     borderRadius: theme.radius.xs,
   }
 }));

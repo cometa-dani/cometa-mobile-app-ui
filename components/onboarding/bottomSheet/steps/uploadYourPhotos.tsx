@@ -1,72 +1,26 @@
 import { FC } from 'react';
 import { buttonsStyleSheet } from '@/styles/buttonsStyles';
-import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
-import { FieldText } from '@/components/input/fieldText';
-import { FormProvider, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
+import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { useCometaStore } from '@/store/cometaStore';
-import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
-import { Center } from '@/components/utils/stacks';
+import { BottomSheetView } from '@gorhom/bottom-sheet';
+import { Center, HStack, VStack } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { Pressable, Text, View } from 'react-native';
+import { FlatList, Pressable, Text, View } from 'react-native';
+import { Image } from 'expo-image';
+import { AntDesign, FontAwesome6 } from '@expo/vector-icons';
 
-
-const errorMessages = {
-  email: 'Email is required',
-  password: 'Password is required',
-  repeatPassword: 'Verify Password again',
-  name: 'Name is required',
-  username: 'User Name is required',
-  birthday: 'Birthday is required',
-};
-
-type FormValues = {
-  email: string;
-  password: string;
-  repassword: string;
-  name: string;
-  username: string;
-  birthday: string;
-}
-
-const validationSchema = Yup.object<FormValues>().shape({
-  email: Yup.string().email().required(errorMessages.email),
-  password: Yup.string().min(6).max(18).required(errorMessages.password),
-  repassword:
-    Yup.string()
-      .oneOf([Yup.ref('password'), ''])
-      .required(errorMessages.repeatPassword),
-  name: Yup.string().min(3).max(26).required(errorMessages.name),
-  username: Yup.string().min(3).max(18).required(errorMessages.username),
-  birthday: Yup.string().min(3).max(18).required(errorMessages.birthday),
-});
-
-const defaultValues: FormValues = {
-  email: '',
-  password: '',
-  repassword: '',
-  name: '',
-  username: '',
-  birthday: '',
-};
 
 interface IProps {
   onNextStep: () => void;
 }
 
 export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
+  const { styles } = useStyles(uploadYourPhotosSheet);
   const { styles: buttonsStyles, theme } = useStyles(buttonsStyleSheet);
-  const formProps = useForm<FormValues>({ defaultValues, resolver: yupResolver(validationSchema) });
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
 
-  const handleFormSubmit = (values: FormValues): void => {
-    setOnboardingState(values);
-    console.log('handleNext', values);
-  };
-
   return (
-    <FormProvider {...formProps}>
+    <>
       <BottomSheetView>
         <Center styles={{
           paddingTop: theme.spacing.sp12,
@@ -75,60 +29,58 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
           <Heading size='s7'>Upload your Photos</Heading>
         </Center>
       </BottomSheetView>
-      <BottomSheetScrollView
-        contentContainerStyle={{
+      <BottomSheetView
+        style={{
           paddingVertical: theme.spacing.sp8,
           paddingHorizontal: theme.spacing.sp10,
-          gap: theme.spacing.sp7
+          gap: theme.spacing.sp12
         }}>
-        <FieldText
-          label='Full Name'
-          name='name'
-          placeholder='Enter your Full Name'
-          iconName='user'
-          defaultErrMessage={errorMessages.name}
-        />
-        <FieldText
-          label='User Name'
-          name='username'
-          placeholder='Enter your User Name'
-          iconName='at'
-          defaultErrMessage={errorMessages.username}
-        />
-        <FieldText
-          label='Birthday'
-          name='birthday'
-          placeholder='Enter your birthday'
-          iconName='calendar-check-o'
-          defaultErrMessage={errorMessages.birthday}
-        />
-        <FieldText
-          label='Email'
-          name='email'
-          placeholder='Enter your Email'
-          iconName='envelope'
-          keyboardType='email-address'
-          defaultErrMessage={errorMessages.email}
-        />
-        <FieldText
-          secureTextEntry={true}
-          label='Password'
-          name='password'
-          placeholder='Enter your password'
-          iconName='lock'
-          defaultErrMessage={errorMessages.password}
-        />
-        <FieldText
-          secureTextEntry={true}
-          label='Re-enter Password'
-          name='repassword'
-          placeholder='Enter your password again'
-          iconName='lock'
-          defaultErrMessage={errorMessages.repeatPassword}
-        />
-        <View
-          style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
+
+        <VStack gap={theme.spacing.sp2}>
+          <Pressable style={({ pressed }) => styles.mainImageViewer(pressed)}>
+            <Image />
+            <FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />
+            <View style={styles.imageNum}>
+              <Text style={styles.imageNumText}>{1}</Text>
+            </View>
+          </Pressable>
+          <FlatList
+            data={[1, 2, 3, 4, 5, 6]} // replace with your actual data
+            numColumns={3}
+            columnWrapperStyle={{ gap: theme.spacing.sp2 }}
+            contentContainerStyle={{ gap: theme.spacing.sp2 }}
+            renderItem={({ item, index }) => (
+              <Pressable style={({ pressed }) => styles.imageViewer(pressed)}>
+                <Image />
+                <FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />
+
+                <View style={styles.imageNum}>
+                  <Text style={styles.imageNumText}>{index + 2}</Text>
+                </View>
+              </Pressable>
+            )}
+            keyExtractor={(item) => item.toString()}
+          />
+        </VStack>
+
+        <HStack
+          v='center'
+          h='center'
+          gap={theme.spacing.sp1}
+          styles={{
+            paddingLeft: theme.spacing.sp8
+          }}
         >
+          <AntDesign
+            name={'exclamationcircleo'}
+            size={theme.icons.xs}
+            color={theme.colors.blue100}
+          />
+          <Text style={{ color: theme.colors.blue100 }}>
+            Add at least 4 photos
+          </Text>
+        </HStack>
+        <View style={{ paddingBottom: UnistylesRuntime.insets.bottom }}>
           <Pressable
             onPress={() => onNextStep()}
             // onPress={formProps.handleSubmit(handleNext)}
@@ -141,7 +93,53 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
             )}
           </Pressable>
         </View>
-      </BottomSheetScrollView>
-    </FormProvider>
+      </BottomSheetView>
+    </>
   );
 };
+
+
+const uploadYourPhotosSheet = createStyleSheet((theme) => ({
+  mainImageViewer: (isPressed: boolean) => ({
+    aspectRatio: 2.4,
+    borderWidth: 2,
+    backgroundColor: isPressed ? theme.colors.white80 : theme.colors.white100,
+    borderColor: theme.colors.gray100,
+    borderStyle: 'dashed',
+    borderRadius: theme.radius.md,
+    alignItems: 'center',
+    justifyContent: 'center'
+  }),
+  imageViewer: (isPressed: boolean) => ({
+    position: 'relative',
+    flex: 1,
+    aspectRatio: 1.05,
+    borderWidth: 2,
+    backgroundColor: isPressed ? theme.colors.white80 : theme.colors.white100,
+    borderColor: theme.colors.gray100,
+    borderStyle: 'dashed',
+    borderRadius: theme.radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }),
+  imageNum: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    backgroundColor: theme.colors.white70,
+    shadowColor: theme.colors.gray900,
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 1,
+    borderRadius: 9999,
+    width: theme.spacing.sp7,
+    aspectRatio: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  imageNumText: {
+    color: theme.colors.gray900,
+    fontFamily: theme.text.fontSemibold,
+    fontSize: theme.text.size.s2
+  }
+}));

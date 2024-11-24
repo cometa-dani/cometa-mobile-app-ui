@@ -20,7 +20,6 @@ export default function OnboardingScreen() {
   const { styles: buttonsStyles } = useStyles(buttonsStyleSheet);
   const [isUserProfileModalVisible, setUserProfileModalVisible] = useReducer(prev => !prev, false);
   const bottomSheetRef = useRef<BottomSheetMethods>(null);
-  const [nextStep, setNextStep] = useReducer(prev => (++prev % 3), 0);
 
   const toggleLoginModal = (): void => { };
 
