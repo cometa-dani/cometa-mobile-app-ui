@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { buttonsStyleSheet } from '@/styles/buttonsStyles';
 import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { FieldText } from '@/components/input/fieldText';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -9,7 +8,8 @@ import { useCometaStore } from '@/store/cometaStore';
 import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { Pressable, Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Button } from '@/components/button/button';
 
 
 const errorMessages = {
@@ -56,7 +56,7 @@ interface IProps {
 }
 
 export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
-  const { styles: buttonsStyles, theme } = useStyles(buttonsStyleSheet);
+  const { theme } = useStyles();
   const formProps = useForm<FormValues>({ defaultValues, resolver: yupResolver(validationSchema) });
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
 
@@ -126,20 +126,10 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           iconName='lock'
           defaultErrMessage={errorMessages.repeatPassword}
         />
-        <View
-          style={{ paddingBottom: UnistylesRuntime.insets.bottom }}
-        >
-          <Pressable
-            onPress={() => onNextStep()}
-            // onPress={formProps.handleSubmit(handleNext)}
-            style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
-          >
-            {({ pressed }) => (
-              <Text style={buttonsStyles.buttonRedText(pressed)}>
-                Next
-              </Text>
-            )}
-          </Pressable>
+        <View style={{ paddingBottom: UnistylesRuntime.insets.bottom }}>
+          <Button variant='primary' onPressed={onNextStep}>
+            Next
+          </Button>
         </View>
       </BottomSheetScrollView>
     </FormProvider>

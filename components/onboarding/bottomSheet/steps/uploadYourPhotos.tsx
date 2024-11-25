@@ -1,5 +1,4 @@
 import { FC, useState } from 'react';
-import { buttonsStyleSheet } from '@/styles/buttonsStyles';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { useCometaStore } from '@/store/cometaStore';
 import { BottomSheetFlatList as BsFlatList, BottomSheetView as BsView } from '@gorhom/bottom-sheet';
@@ -9,6 +8,7 @@ import { Pressable, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { AntDesign, FontAwesome6 } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { Button } from '@/components/button/button';
 
 
 type ImagePickerAsset = ImagePicker.ImagePickerAsset
@@ -92,8 +92,7 @@ interface IProps {
   onNextStep: () => void;
 }
 export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
-  const { styles } = useStyles(uploadYourPhotosSheet);
-  const { styles: buttonsStyles, theme } = useStyles(buttonsStyleSheet);
+  const { styles, theme } = useStyles(uploadYourPhotosSheet);
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
   const [userPhotos = [], setUserPhotos] = useState<PhotoPlaceholder[]>(photosPlaceholder);
   const [firstPhoto, ...restPhotos] = userPhotos;
@@ -209,17 +208,9 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
         </HStack>
 
         <View style={{ paddingBottom: UnistylesRuntime.insets.bottom }}>
-          <Pressable
-            onPress={() => onNextStep()}
-            // onPress={formProps.handleSubmit(handleNext)}
-            style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
-          >
-            {({ pressed }) => (
-              <Text style={buttonsStyles.buttonRedText(pressed)}>
-                Next
-              </Text>
-            )}
-          </Pressable>
+          <Button variant='primary' onPressed={onNextStep}>
+            Next
+          </Button>
         </View>
       </BsView>
     </>

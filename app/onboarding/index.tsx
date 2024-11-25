@@ -1,9 +1,8 @@
 import { GradientHeading } from '@/components/text/gradientText';
-import { buttonsStyleSheet } from '@/styles/buttonsStyles';
 import { Image, ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Modal from 'react-native-modal';
 import { useReducer, useRef } from 'react';
@@ -13,11 +12,11 @@ import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { BottomSheet } from '@/components/onboarding/bottomSheet/bottomSheet';
+import { Button } from '@/components/button/button';
 
 
 export default function OnboardingScreen() {
   const { styles, theme } = useStyles(stylesheet);
-  const { styles: buttonsStyles } = useStyles(buttonsStyleSheet);
   const [isUserProfileModalVisible, setUserProfileModalVisible] = useReducer(prev => !prev, false);
   const bottomSheetRef = useRef<BottomSheetMethods>(null);
 
@@ -69,26 +68,12 @@ export default function OnboardingScreen() {
               <TextView>
                 Create you profile and start matching with others who share your bucket list goals
               </TextView>
-              <Pressable
-                onPress={openUserProfileBottomSheet}
-                style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
-              >
-                {({ pressed }) => (
-                  <Text style={buttonsStyles.buttonRedText(pressed)}>
-                    User Profile
-                  </Text>
-                )}
-              </Pressable>
-              <Pressable
-                onPress={openCompanyProfileModal}
-                style={({ pressed }) => buttonsStyles.buttonBlueAlt(pressed)}
-              >
-                {({ pressed }) => (
-                  <Text style={buttonsStyles.buttonBlueAltText(pressed)}>
-                    Company Profile
-                  </Text>
-                )}
-              </Pressable>
+              <Button variant='primary' onPressed={openUserProfileBottomSheet}>
+                User Profile
+              </Button>
+              <Button variant='secondary-alt' onPressed={openCompanyProfileModal}>
+                Company Profile
+              </Button>
             </VStack>
           </View>
         </SafeAreaView>
@@ -105,9 +90,7 @@ export default function OnboardingScreen() {
         >
           <SafeAreaView>
             <View style={{ top: 60 }}>
-              <GradientHeading
-                styles={{ fontSize: theme.text.size.s14 }}
-              >
+              <GradientHeading styles={{ fontSize: theme.text.size.s14 }}>
                 cometa
               </GradientHeading>
             </View>
@@ -121,35 +104,19 @@ export default function OnboardingScreen() {
           <SafeAreaView>
             <View style={styles.buttonsContainer}>
               <VStack gap={theme.spacing.sp8}>
-                <Pressable
-                  onPress={toggleLoginModal}
-                  style={({ pressed }) => buttonsStyles.buttonRed(pressed)}
-                >
-                  {({ pressed }) => (
-                    <Text style={buttonsStyles.buttonRedText(pressed)}>
-                      Login
-                    </Text>
-                  )}
-                </Pressable>
-                <Pressable
-                  onPress={toggleRegisterModal}
-                  style={({ pressed }) => buttonsStyles.buttonRedAlt(pressed)}
-                >
-                  {({ pressed }) => (
-                    <Text style={buttonsStyles.buttonRedAltText(pressed)}>
-                      Register
-                    </Text>
-                  )}
-                </Pressable>
+                <Button variant='primary' onPressed={toggleLoginModal}>
+                  Login
+                </Button>
+                <Button variant='primary-alt' onPressed={toggleRegisterModal}>
+                  Register
+                </Button>
               </VStack>
             </View>
           </SafeAreaView>
         </LinearGradient>
       </ImageBackground>
 
-      <BottomSheet
-        ref={bottomSheetRef}
-      />
+      <BottomSheet ref={bottomSheetRef} />
     </>
   );
 }
