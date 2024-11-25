@@ -8,7 +8,7 @@ interface IfElseProps<T> {
   elseRender?: ReactNode
 }
 
-export function If<T>({ children, condition, render, elseRender }: IfElseProps<T>) {
+export function If<T>({ children, condition: condition, render: render, elseRender: elseRender }: IfElseProps<T>) {
   if (condition && children) {
     return children;
   }

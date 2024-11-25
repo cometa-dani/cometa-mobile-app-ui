@@ -6,6 +6,7 @@ import { Pressable, Text, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { BottomSheetFlatList as BsFlatList } from '@gorhom/bottom-sheet';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import { If } from '@/components/utils/ifElse';
 
 
 type ImagePickerAsset = ImagePicker.ImagePickerAsset
@@ -122,15 +123,19 @@ export const PhotosGrid: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, a
         onPress={() => handlePickMultipleImages(0, !!firstPhoto.asset?.uri)}
         style={({ pressed }) => styles.mainImageViewer(pressed, !firstPhoto?.asset)}
       >
-        {firstPhoto?.asset ? (
-          <Image
-            style={styles.mainImage}
-            source={{ uri: firstPhoto.asset?.uri }}
-            contentFit='cover'
-          />
-        ) : (
-          <FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />
-        )}
+        <If
+          condition={firstPhoto?.asset}
+          render={
+            <Image
+              style={styles.mainImage}
+              source={{ uri: firstPhoto?.asset?.uri }}
+              contentFit='cover'
+            />
+          }
+          elseRender={
+            <FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />
+          }
+        />
         <View style={styles.imageNum}>
           <Text style={styles.imageNumText}>{1}</Text>
         </View>
@@ -147,15 +152,19 @@ export const PhotosGrid: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, a
               onPress={() => handlePickMultipleImages(item.position, !!item?.asset?.uri)}
               style={({ pressed }) => styles.imageViewer(pressed, !item?.asset)}
             >
-              {item.asset ? (
-                <Image
-                  style={styles.image}
-                  source={{ uri: item.asset?.uri }}
-                  contentFit='cover'
-                />
-              ) : (
-                <FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />
-              )}
+              <If
+                condition={item?.asset}
+                render={
+                  <Image
+                    style={styles.image}
+                    source={{ uri: item?.asset?.uri }}
+                    contentFit='cover'
+                  />
+                }
+                elseRender={
+                  <FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />
+                }
+              />
               <View style={styles.imageNum}>
                 <Text style={styles.imageNumText}>{index + 2}</Text>
               </View>
