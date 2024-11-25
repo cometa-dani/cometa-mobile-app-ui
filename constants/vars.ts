@@ -17,3 +17,4 @@ export const screenOptions = { headerShown: false, animation: 'slide_from_right'
 export const defaultImgPlaceholder = 'https://placehold.co/400';
 export const maximunNumberOfPhotos = 5;
 export const MAX_NUMBER_PHOTOS = 7;
+export const MIN_NUMBER_PHOTOS = 4;

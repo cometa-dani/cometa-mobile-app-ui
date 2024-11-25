@@ -7,12 +7,11 @@ import { Heading } from '@/components/text/heading';
 import { Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { Button } from '@/components/button/button';
-import { createEmptyPlaceholders, IPhotoPlaceholder, PhotosGrid } from '../photosGrid/photosGrid';
-import { MAX_NUMBER_PHOTOS } from '@/constants/vars';
+import { createEmptyPlaceholders, hasAsset, IPhotoPlaceholder, PhotosGrid } from '../photosGrid/photosGrid';
+import { MAX_NUMBER_PHOTOS, MIN_NUMBER_PHOTOS } from '@/constants/vars';
 
 
 const setInitialPlaceholders = () => createEmptyPlaceholders(MAX_NUMBER_PHOTOS);
-
 
 interface IProps {
   onNextStep: () => void;
@@ -23,13 +22,13 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
   const userPhotos = useCometaStore(state => state.onboarding.user.photos) ?? [];
 
   const handleUserState = (photos: IPhotoPlaceholder[]) => {
-    const filteredPhotos = photos.filter(photo => photo?.asset);
+    const filteredPhotos = photos.filter(hasAsset);
     console.log('handlePhotosUpload', filteredPhotos);
     setOnboardingState({ photos: filteredPhotos });
   };
 
   const handleNextStep = () => {
-    if (userPhotos.filter(photo => photo?.asset).length < 4) return;
+    if (userPhotos.filter(hasAsset).length < MIN_NUMBER_PHOTOS) return;
     onNextStep();
   };
 
@@ -70,7 +69,7 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
             color={theme.colors.blue100}
           />
           <Text style={{ color: theme.colors.blue100 }}>
-            Add at least 4 photos
+            Add at least {MIN_NUMBER_PHOTOS} photos
           </Text>
         </HStack>
 

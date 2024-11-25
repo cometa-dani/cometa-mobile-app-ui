@@ -28,10 +28,12 @@ export const createEmptyPlaceholders = (x: number): IPhotoPlaceholder[] => (
     )
 );
 
+export const hasAsset = (photo: IPhotoPlaceholder) => photo?.asset;
+
 const appendPhoto = (pickedPhotos: ImagePickerAsset[]) => {
   const appendPhoto = (prev: IPhotoPlaceholder[]) => {
     let counter = 0;
-    const currentAssets = prev.filter(photo => photo?.asset);
+    const currentAssets = prev.filter(hasAsset);
     return (
       prev.map((photo, index, arr) => {
         const shouldReplace = (index + 1) > (currentAssets.length);
@@ -82,7 +84,7 @@ export const PhotosGrid: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, a
   const [firstPhoto, ...restPhotos] = userPhotos;
 
   const handlePickMultipleImages = async (selectedPosition = 0, isPositionSelected = false) => {
-    const currentAssets = userPhotos.filter(photo => photo?.asset); // filter out the already exisisting images
+    const currentAssets = userPhotos.filter(hasAsset); // filter out the already exisisting images
     const isGridFull = userPhotos.length === currentAssets.length;
     try {
       const takePhotos: number = userPhotos.length - currentAssets.length; // take a number below the limit
