@@ -104,8 +104,9 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
       const takePhotos: number = MAX_NUMBER_PHOTOS - currentAssets.length; // take a number below the limit
       const pickedPhotos = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
-        allowsMultipleSelection: true, // picks multiple images
+        allowsMultipleSelection: !isGridFull, // picks multiple images
         selectionLimit: isGridFull ? 1 : takePhotos,
+        allowsEditing: isGridFull,
         aspect: [4, 3],
         quality: 1,
       });

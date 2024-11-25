@@ -1,19 +1,10 @@
-import { GetBasicUserProfile, GetDetailedUserProfile, GetTargetUser, GetUsersWithPagination, IUserClientState } from '../models/User';
+import { ICreateUser, GetBasicUserProfile, GetDetailedUserProfile, GetTargetUser, GetUsersWithPagination, IUserClientState } from '../models/User';
 import { RestApiService } from './restService';
 import { ImagePickerAsset } from 'expo-image-picker';
 import FormData from 'form-data';
 import uuid from 'react-native-uuid';
 import { Photo } from '../models/Photo';
 import { AxiosInstance } from 'axios';
-
-
-type CreateUser = Pick<IUserClientState, (
-  'uid' |
-  'email' |
-  'username' |
-  'name' |
-  'birthday'
-)>
 
 
 class UsersService {
@@ -40,7 +31,7 @@ class UsersService {
   }
 
 
-  public create(payload: CreateUser) {
+  public create(payload: ICreateUser) {
     return this.http.post<GetBasicUserProfile>('/users', payload);
   }
 

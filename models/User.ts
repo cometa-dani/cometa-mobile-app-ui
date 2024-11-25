@@ -103,6 +103,18 @@ export interface IUserClientState extends Pick<GetBasicUserProfile, (
   imageRef?: ImagePickerAsset;
 }
 
+export type ICreateUser = Pick<IUserClientState, (
+  'uid' |
+  'email' |
+  'username' |
+  'name' |
+  'birthday'
+)>
+
+export type IUpdateUser = Partial<Omit<GetDetailedUserProfile, (
+  'outgoingFriendships' | 'incomingFriendships' | 'likedEvents' | 'id'
+)>>
+
 export interface GetMatchedUsersWhoLikedEventWithPagination {
   items: MatchedUsersWhoLikedEvent[];
   nextCursor: number;
@@ -160,7 +172,6 @@ export interface GetUsersWithPagination {
 
 export interface GetDetailedUserProfile {
   id: number;
-  avatar?: string;
   photos: Photo[];
   maxNumPhotos: number;
   username: string;

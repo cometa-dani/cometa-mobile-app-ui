@@ -15,7 +15,9 @@ interface IFieldTextProps {
   keyboardType?: KeyboardTypeOptions,
   secureTextEntry?: boolean,
   iconName: React.ComponentProps<typeof FontAwesome>['name'],
-  defaultErrMessage?: string
+  defaultErrMessage?: string,
+  multiline?: boolean,
+  editable?: boolean
 }
 
 export const FieldText: FC<IFieldTextProps> = ({
@@ -25,7 +27,9 @@ export const FieldText: FC<IFieldTextProps> = ({
   keyboardType = 'default',
   placeholder,
   iconName,
-  defaultErrMessage
+  defaultErrMessage,
+  multiline = false,
+  editable = true
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const { styles: inputStyles, theme } = useStyles(inputSheet);
@@ -59,6 +63,9 @@ export const FieldText: FC<IFieldTextProps> = ({
                 />
               </View>
               <BottomSheetTextInput
+                editable={editable}
+                multiline={multiline}
+                numberOfLines={multiline ? 4 : 1}
                 secureTextEntry={secureTextEntry}
                 style={inputStyles.field(isFocused, Boolean(errorMessage))}
                 placeholder={placeholder}
