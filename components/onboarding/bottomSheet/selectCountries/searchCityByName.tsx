@@ -6,7 +6,7 @@ import { animationDuration } from '../../../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { useInfiniteQueryGetCities } from '../../../../queries/loggedInUser/editProfileHooks';
+import { useInfiniteQueryGetCities } from '../../../../queries/currentUser/editProfileHooks';
 import { gray_50 } from '../../../../constants/colors';
 import { If } from '../../../../legacy_components/utils/ifElse';
 import { FadingLoader } from '../../../../legacy_components/lodingSkeletons/FadingList';

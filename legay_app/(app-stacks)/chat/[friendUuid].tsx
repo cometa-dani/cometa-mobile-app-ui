@@ -7,7 +7,7 @@ import { Stack, useLocalSearchParams, router, useFocusEffect } from 'expo-router
 import { SafeAreaView, RefreshControl } from 'react-native';
 import { Image as ImageWithPlaceholder } from 'expo-image';
 import { useCometaStore } from '../../../store/cometaStore';
-import { useQueryGetFriendshipByTargetUserID } from '../../../queries/loggedInUser/friendshipHooks';
+import { useQueryGetFriendshipByTargetUserID } from '../../../queries/currentUser/friendshipHooks';
 // firebase
 import { realtimeDB } from '../../../config/firebase/firebase';
 import { limitToLast, query, ref, onValue, endBefore } from 'firebase/database';
@@ -329,14 +329,14 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize'
   },
 
+  container: {
+    flex: 1,
+  },
+
   targetUser: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: 10,
     marginLeft: -16
-  },
-
-  container: {
-    flex: 1,
   }
 });

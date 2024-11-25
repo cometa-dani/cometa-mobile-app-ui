@@ -4,7 +4,7 @@ import { StyleSheet, DimensionValue, Pressable, Dimensions, View as TransParentV
 import { FlashList } from '@shopify/flash-list';
 import { Text, View, useColors } from '../Themed';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import { useMutationLikeOrDislikeEvent } from '../../queries/loggedInUser/likeEventHooks';
+import { useMutationLikeOrDislikeEvent } from '../../queries/currentUser/likeEventHooks';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel, { Pagination } from 'react-native-snap-carousel';

@@ -13,7 +13,7 @@ import { titles } from '../../../constants/assets';
 import chatWithFriendService from '../../../services/chatWithFriendService';
 import { If } from '../../../legacy_components/utils';
 import { UserMessagesData } from '../../../store/slices/messagesSlices';
-import { useInfiniteQuerySearchFriendsByUserName } from '../../../queries/loggedInUser/friendshipHooks';
+import { useInfiniteQuerySearchFriendsByUserName } from '../../../queries/currentUser/friendshipHooks';
 import { FontAwesome5 } from '@expo/vector-icons';
 import ReactNativeModal from 'react-native-modal';
 import { appButtonstyles } from '../../../legacy_components/buttons/buttons';
@@ -291,36 +291,13 @@ export default function ChatLatestMessagesScreen(): JSX.Element {
 
 
 const styles = StyleSheet.create({
-  modalContainer: {
-    minHeight: 200,
-    width: 300,
-    padding: 24,
-    borderRadius: 20,
-    alignSelf: 'center'
-  },
-  modalTitle: {
-    fontSize: 20,
-    textAlign: 'center'
-  },
-  modalCheckboxContainer: {
+  baseButton: {
+    backgroundColor: white_50,
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    justifyContent: 'center',
-    width: '100%'
-  },
-  modalButtonsContainer: {
     justifyContent: 'space-between',
-    flexDirection: 'row',
-    width: '100%'
+    paddingHorizontal: 24,
+    paddingVertical: 20
   },
-  safeArea: {
-    flex: 1
-  },
-  mainView: {
-    flex: 1
-  },
-
   deleteButton: {
     backgroundColor: gray_50,
     borderRadius: 20,
@@ -328,52 +305,75 @@ const styles = StyleSheet.create({
     marginRight: 20,
     padding: 24
   },
-
-  baseButton: {
-    backgroundColor: white_50,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 20,
-    paddingHorizontal: 24
-  },
-  transparentView1: {
-    flexDirection: 'row',
-    gap: 20,
-    alignItems: 'center',
-    flex: 1,
-  },
-  transparentView2: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    overflow: 'hidden'
-  },
   image: {
-    width: 60,
-    height: 60
+    height: 60,
+    width: 60
   },
-  transparentView3: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flexGrow: 1,
-    position: 'relative',
-    height: '100%',
-    gap: 14
+  mainView: {
+    flex: 1
   },
   messagesCount: {
-    backgroundColor: messages.ok,
-    width: 22,
-    height: 22,
-    borderRadius: 50,
     alignItems: 'center',
+    alignSelf: 'center',
+    backgroundColor: messages.ok,
+    borderRadius: 50,
+    height: 22,
     justifyContent: 'center',
-    alignSelf: 'center'
+    width: 22
   },
   messagesCountText: {
     color: '#fff',
   },
+
+  modalButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%'
+  },
+
+  modalCheckboxContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 14,
+    justifyContent: 'center',
+    width: '100%'
+  },
+  modalContainer: {
+    alignSelf: 'center',
+    borderRadius: 20,
+    minHeight: 200,
+    padding: 24,
+    width: 300
+  },
+  modalTitle: {
+    fontSize: 20,
+    textAlign: 'center'
+  },
+  safeArea: {
+    flex: 1
+  },
   textGray: {
     color: 'gray',
+  },
+  transparentView1: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flex: 1,
+    gap: 20,
+  },
+  transparentView2: {
+    borderRadius: 30,
+    height: 60,
+    overflow: 'hidden',
+    width: 60
+  },
+  transparentView3: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    gap: 14,
+    height: '100%',
+    justifyContent: 'space-between',
+    position: 'relative'
   },
   transparentView4: {
     alignSelf: 'center',

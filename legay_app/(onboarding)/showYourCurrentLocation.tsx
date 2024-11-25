@@ -9,7 +9,7 @@ import { BaseButton } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { badgesStyles } from '../../legacy_components/profile/badges';
 import { useCometaStore } from '../../store/cometaStore';
-import { useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
+import { useQueryGetLoggedInUserProfileByUid } from '../../queries/currentUser/userProfileHooks';
 
 
 export default function ShowCurrentLocationScreen(): JSX.Element {

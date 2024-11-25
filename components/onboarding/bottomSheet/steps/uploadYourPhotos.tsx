@@ -7,7 +7,7 @@ import { Heading } from '@/components/text/heading';
 import { Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { Button } from '@/components/button/button';
-import { createEmptyPlaceholders, PhotosGrid } from '../photosGrid/photosGrid';
+import { createEmptyPlaceholders, PhotoPlaceholder, PhotosGrid } from '../photosGrid/photosGrid';
 import { MAX_NUMBER_PHOTOS } from '@/constants/vars';
 
 
@@ -20,6 +20,18 @@ interface IProps {
 export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
   const { theme } = useStyles();
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
+  const userPhotos = useCometaStore(state => state.onboarding.user.photos) ?? [];
+
+  const handleUserState = (photos: PhotoPlaceholder[]) => {
+    const filterdPhotos = photos.filter(photo => photo?.asset);
+    console.log('handlePhotosUpload', filterdPhotos);
+    setOnboardingState({ photos: filterdPhotos });
+  };
+
+  const handleNextStep = () => {
+    if (userPhotos.filter(photo => photo?.asset).length < 4) return;
+    onNextStep();
+  };
 
   return (
     <>
@@ -39,8 +51,9 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
         }}>
 
         <PhotosGrid
+          action='create'
           setInitialPhotos={setInitialPlaceholders}
-          onSelect={(values) => { console.log(values); }}
+          onSelect={handleUserState}
         />
 
         <HStack
@@ -62,7 +75,7 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
         </HStack>
 
         <View style={{ paddingBottom: UnistylesRuntime.insets.bottom }}>
-          <Button variant='primary' onPressed={onNextStep}>
+          <Button variant='primary' onPressed={handleNextStep}>
             Next
           </Button>
         </View>

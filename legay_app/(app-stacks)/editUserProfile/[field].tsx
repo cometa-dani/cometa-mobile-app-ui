@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { SearchCityByName } from './searchCityByName';
 import { SelectLanguages } from './selectLanguages';
 import { If } from '../../../legacy_components/utils/ifElse';
-import { useMutationLoggedInUserProfileById } from '../../../queries/loggedInUser/userProfileHooks';
+import { useMutationLoggedInUserProfileById } from '../../../queries/currentUser/userProfileHooks';
 
 
 type UserProfileFields = 'homeTown' | 'currentLocation' | 'languages';

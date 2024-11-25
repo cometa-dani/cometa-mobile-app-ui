@@ -5,7 +5,7 @@ import { animationDuration } from '../../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { FC, useEffect, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { useQueryGetAllLanguages } from '../../../queries/loggedInUser/editProfileHooks';
+import { useQueryGetAllLanguages } from '../../../queries/currentUser/editProfileHooks';
 import { gray_50, gray_900 } from '../../../constants/colors';
 import Checkbox from 'expo-checkbox';
 import { AppButton } from '../../../legacy_components/buttons/buttons';
@@ -13,7 +13,7 @@ import { AppTextInput } from '../../../legacy_components/textInput/AppTextInput'
 import { RectButton } from 'react-native-gesture-handler';
 import { If } from '../../../legacy_components/utils/ifElse';
 import { useCometaStore } from '../../../store/cometaStore';
-import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/loggedInUser/userProfileHooks';
+import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/currentUser/userProfileHooks';
 import { FadingLoader } from '../../../legacy_components/lodingSkeletons/FadingList';
 
 
@@ -137,37 +137,37 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
 }
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    borderTopColor: gray_50,
+    borderTopWidth: 1,
+    bottom: 0,
+    justifyContent: 'center',
+    padding: 20,
+    position: 'absolute',
+    width: '100%'
+  },
+
+  checkbox: {
+    borderRadius: 5,
+    position: 'absolute',
+    right: 20,
+    zIndex: 10,
+  },
+
   language: {
     height: 70,
-    width: '100%',
-    paddingVertical: 24,
     paddingHorizontal: 20,
+    paddingVertical: 24,
+    width: '100%',
   },
 
   languageContainer: {
     justifyContent: 'center',
   },
 
-  checkbox: {
-    borderRadius: 5,
-    zIndex: 10,
-    position: 'absolute',
-    right: 20,
-  },
-
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    justifyContent: 'center',
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: gray_50
-  },
-
   titleContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: 8
   }
 });

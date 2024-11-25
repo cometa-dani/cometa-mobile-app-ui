@@ -1,7 +1,7 @@
 import React, { FC, forwardRef, useCallback, useRef, useState, RefObject, useEffect, useMemo, } from 'react';
 import { StyleSheet, SafeAreaView, Pressable, View, TouchableOpacity } from 'react-native';
 import { Text, useColors } from '../../legacy_components/Themed';
-import { useInfiniteQuerySearchEventsByQueryParams } from '../../queries/loggedInUser/eventHooks';
+import { useInfiniteQuerySearchEventsByQueryParams } from '../../queries/currentUser/eventHooks';
 import { EventsFlashList } from '../../legacy_components/eventsFlashList/eventsFlashList';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { If } from '../../legacy_components/utils';
@@ -85,21 +85,21 @@ export default function HomeScreen(): JSX.Element {
 
 const styles = StyleSheet.create({
 
-  eventItem: {
-    paddingHorizontal: 20,
-    width: '100%',
-    height: 54,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 20
-  },
-
   container: {
     borderRadius: 16,
     flex: 1,
     marginHorizontal: 10,
     overflow: 'hidden',
+  },
+
+  eventItem: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 20,
+    height: 54,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    width: '100%'
   }
 });
 
@@ -397,31 +397,11 @@ const bottomSheetStyles = StyleSheet.create({
     shadowRadius: 5,
   },
 
-  tabs: {
-    flexDirection: 'row',
-    width: '70%',
-    justifyContent: 'space-between',
-    paddingHorizontal: 6
-  },
-
-  tab: {
-    fontSize: 17,
-    fontWeight: '700',
-    paddingHorizontal: 10,
-    paddingVertical: 2,
-    color: gray_500
-  },
-
-  tabActive: {
-    borderBottomWidth: 2,
-    borderColor: gray_200
-  },
-
   contentContainer: {
     alignItems: 'center',
+    gap: 16,
     paddingTop: 10,
-    padding: 20,
-    gap: 16
+    padding: 20
   },
 
   footerContainer: {
@@ -441,5 +421,25 @@ const bottomSheetStyles = StyleSheet.create({
       width: 4,
       height: 5,
     },
+  },
+
+  tab: {
+    color: gray_500,
+    fontSize: 17,
+    fontWeight: '700',
+    paddingHorizontal: 10,
+    paddingVertical: 2
+  },
+
+  tabActive: {
+    borderBottomWidth: 2,
+    borderColor: gray_200
+  },
+
+  tabs: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 6,
+    width: '70%'
   }
 });

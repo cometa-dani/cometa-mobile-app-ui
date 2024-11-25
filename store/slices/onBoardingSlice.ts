@@ -26,6 +26,7 @@ export const createOnboardingSlice: StateCreator<OnboardingSlice> = (set) => ({
       languages: [],
       occupation: '',
       biography: '',
+      photos: [],
       id: -1,
       uid: ''
     }

@@ -8,7 +8,7 @@ import { FlashList } from '@shopify/flash-list';
 import { useCometaStore } from '../../../../store/cometaStore';
 import { defaultImgPlaceholder } from '../../../../constants/vars';
 import { UserMessagesData } from '../../../../store/slices/messagesSlices';
-import { useInfiniteQuerySearchFriendsByUserName } from '../../../../queries/loggedInUser/friendshipHooks';
+import { useInfiniteQuerySearchFriendsByUserName } from '../../../../queries/currentUser/friendshipHooks';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { If } from '../../../../legacy_components/utils';
 
@@ -147,72 +147,52 @@ export function AddFriendsScreen(): JSX.Element {
 
 const styles = StyleSheet.create({
 
-  checkbox: {
-    borderRadius: 5,
-    zIndex: 10,
-    position: 'absolute',
-    right: 0,
-    alignSelf: 'center'
+  baseButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingVertical: 20
   },
 
-  safeArea: {
-    flex: 1
+  checkbox: {
+    alignSelf: 'center',
+    borderRadius: 5,
+    position: 'absolute',
+    right: 0,
+    zIndex: 10
   },
-  mainView: {
-    flex: 1
+  image: {
+    height: 60,
+    width: 60
   },
   innerView: {
     paddingHorizontal: 20,
     paddingVertical: 12,
   },
-  relativeView: {
-    position: 'relative',
-    justifyContent: 'center'
-  },
   input: {
     backgroundColor: '#F4F4F4',
     borderRadius: 50,
-    paddingVertical: 10,
     paddingHorizontal: 20,
-    paddingLeft: 56
+    paddingLeft: 56,
+    paddingVertical: 10
+  },
+  mainView: {
+    flex: 1
   },
   pressable: {
-    position: 'absolute',
-    zIndex: 30,
-    left: 20,
     backgroundColor: blue_100,
     borderRadius: 50,
-    padding: 4.4
+    left: 20,
+    padding: 4.4,
+    position: 'absolute',
+    zIndex: 30
   },
-  baseButton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 20,
-    paddingHorizontal: 24
+  relativeView: {
+    justifyContent: 'center',
+    position: 'relative'
   },
-  transparentView1: {
-    flexDirection: 'row',
-    gap: 20,
-    alignItems: 'center',
-    flex: 1,
-  },
-  transparentView2: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    overflow: 'hidden'
-  },
-  image: {
-    width: 60,
-    height: 60
-  },
-  transparentView3: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flexGrow: 1,
-    position: 'relative',
-    height: '100%',
-    gap: 14
+  safeArea: {
+    flex: 1
   },
   textBold: {
     fontSize: 20,
@@ -220,5 +200,25 @@ const styles = StyleSheet.create({
   },
   textGray: {
     color: 'gray'
+  },
+  transparentView1: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flex: 1,
+    gap: 20,
+  },
+  transparentView2: {
+    borderRadius: 30,
+    height: 60,
+    overflow: 'hidden',
+    width: 60
+  },
+  transparentView3: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    gap: 14,
+    height: '100%',
+    justifyContent: 'space-between',
+    position: 'relative'
   }
 });

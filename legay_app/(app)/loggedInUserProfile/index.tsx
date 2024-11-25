@@ -3,7 +3,7 @@ import { Text, View, useColors } from '../../../legacy_components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../../config/firebase/firebase';
 import { useCometaStore } from '../../../store/cometaStore';
-import { useMutationDeleteLoggedInUserPhotoByUuid, useMutationUploadLoggedInUserPhotos, useMutationLoggedInUserProfileById, useQueryGetLoggedInUserProfileByUid } from '../../../queries/loggedInUser/userProfileHooks';
+import { useMutationDeleteLoggedInUserPhotoByUuid, useMutationUploadLoggedInUserPhotos, useMutationLoggedInUserProfileById, useQueryGetLoggedInUserProfileByUid } from '../../../queries/currentUser/userProfileHooks';
 import { AppButton } from '../../../legacy_components/buttons/buttons';
 import { FC, useEffect, useRef, useState } from 'react';
 import { Stack, router } from 'expo-router';
@@ -25,7 +25,7 @@ import { Photo } from '../../../models/Photo';
 import { GetBasicUserProfile } from '../../../models/User';
 import { ForEach, If, ON, OFF } from '../../../legacy_components/utils';
 import ContentLoader, { Rect } from 'react-content-loader/native';
-import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../../queries/loggedInUser/eventHooks';
+import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../../queries/currentUser/eventHooks';
 import { maximunNumberOfPhotos } from '../../../constants/vars';
 import uuid from 'react-native-uuid';
 

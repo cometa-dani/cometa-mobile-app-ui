@@ -15,7 +15,7 @@ import * as Yup from 'yup';
 import { If } from '../../../../legacy_components/utils';
 import { AppLabelFeedbackMsg } from '../../../../legacy_components/textInput/AppTextInput';
 import * as ImagePicker from 'expo-image-picker';
-import { useMutationCreateChatGroup } from '../../../../queries/loggedInUser/chatGroupsHooks';
+import { useMutationCreateChatGroup } from '../../../../queries/currentUser/chatGroupsHooks';
 import uuid from 'react-native-uuid';
 import { ChatGroup } from '../../../../models/ChatGroup';
 import chatWithGroupService from '../../../../services/chatWithGroupService';
@@ -216,63 +216,43 @@ export function CreateChatGroupScreen(): JSX.Element {
 
 const styles = StyleSheet.create({
 
-  checkbox: {
-    borderRadius: 5,
-    zIndex: 10,
-    position: 'absolute',
-    right: 0,
-    alignSelf: 'center'
+  baseButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingVertical: 20
   },
 
-  safeArea: {
-    flex: 1
+  checkbox: {
+    alignSelf: 'center',
+    borderRadius: 5,
+    position: 'absolute',
+    right: 0,
+    zIndex: 10
   },
-  mainView: {
-    flex: 1
+  image: {
+    height: 60,
+    width: 60
   },
   innerView: {
     paddingHorizontal: 20,
     paddingVertical: 12,
   },
+  mainView: {
+    flex: 1
+  },
   relativeView: {
-    position: 'relative',
     alignItems: 'center',
-    gap: 20,
     backgroundColor: '#F2F2F2',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
     borderRadius: 16,
-    flexDirection: 'row'
-  },
-  baseButton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 20,
-    paddingHorizontal: 24
-  },
-  transparentView1: {
     flexDirection: 'row',
     gap: 20,
-    alignItems: 'center',
-    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    position: 'relative'
   },
-  transparentView2: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    overflow: 'hidden'
-  },
-  image: {
-    width: 60,
-    height: 60
-  },
-  transparentView3: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flexGrow: 1,
-    position: 'relative',
-    height: '100%',
-    gap: 14
+  safeArea: {
+    flex: 1
   },
   textBold: {
     fontSize: 20,
@@ -280,5 +260,25 @@ const styles = StyleSheet.create({
   },
   textGray: {
     color: 'gray'
+  },
+  transparentView1: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flex: 1,
+    gap: 20,
+  },
+  transparentView2: {
+    borderRadius: 30,
+    height: 60,
+    overflow: 'hidden',
+    width: 60
+  },
+  transparentView3: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    gap: 14,
+    height: '100%',
+    justifyContent: 'space-between',
+    position: 'relative'
   },
 });

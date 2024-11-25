@@ -6,13 +6,13 @@ import { useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../../queries/ta
 import { Image } from 'expo-image';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { AppButton } from '../../../legacy_components/buttons/buttons';
-import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../../queries/loggedInUser/friendshipHooks';
+import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../../queries/currentUser/friendshipHooks';
 import { useCometaStore } from '../../../store/cometaStore';
 import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination } from '../../../models/User';
 import { animationDuration, defaultImgPlaceholder } from '../../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { gray_200, gray_300, gray_500 } from '../../../constants/colors';
-import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/loggedInUser/userProfileHooks';
+import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/currentUser/userProfileHooks';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../../queries/queryKeys';
 import { GetLikedEventsForBucketListWithPagination } from '../../../models/LikedEvent';
@@ -518,8 +518,8 @@ const styles = StyleSheet.create({
 
   imgHeader: {
     borderRadius: 20,
-    objectFit: 'cover',
     height: 180,
+    objectFit: 'cover',
     width: 'auto',
   },
 
@@ -528,9 +528,9 @@ const styles = StyleSheet.create({
   },
 
   tab: {
+    color: gray_500,
     paddingHorizontal: 10,
-    paddingVertical: 2,
-    color: gray_500
+    paddingVertical: 2
   },
 
   tabActive: {

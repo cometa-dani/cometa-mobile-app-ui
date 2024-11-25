@@ -60,9 +60,10 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
   const formProps = useForm<FormValues>({ defaultValues, resolver: yupResolver(validationSchema) });
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
 
-  const handleFormSubmit = (values: FormValues): void => {
+  const handleUserState = (values: FormValues): void => {
     setOnboardingState(values);
     console.log('handleNext', values);
+    onNextStep();
   };
 
   return (
@@ -127,7 +128,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.repeatPassword}
         />
         <View style={{ paddingBottom: UnistylesRuntime.insets.bottom }}>
-          <Button variant='primary' onPressed={onNextStep}>
+          <Button variant='primary' onPressed={formProps.handleSubmit(handleUserState)}>
             Next
           </Button>
         </View>

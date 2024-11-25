@@ -47,8 +47,10 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
   const { theme } = useStyles();
   const formProps = useForm({ defaultValues, resolver: yupResolver<FormValues>(validationSchema) });
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
+  const userState = useCometaStore(state => state.onboarding.user);
+  // const createUser = useMutation
 
-  const handleFormSubmit = (values: FormValues): void => {
+  const handleUserCreation = (values: FormValues): void => {
     setOnboardingState(values);
     console.log('handleNext', values);
   };
@@ -110,8 +112,8 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
         />
 
         <View style={{ paddingBottom: UnistylesRuntime.insets.bottom }}>
-          <Button variant='primary' onPressed={onNextStep}>
-            Next
+          <Button variant='primary' onPressed={formProps.handleSubmit(handleUserCreation)}>
+            Register
           </Button>
         </View>
       </BottomSheetScrollView>

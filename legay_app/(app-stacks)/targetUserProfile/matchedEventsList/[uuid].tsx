@@ -7,7 +7,7 @@ import { EventsFlashList } from '../../../../legacy_components/eventsFlashList/e
 import { useQueryClient } from '@tanstack/react-query';
 import { GetDetailedUserProfile } from '../../../../models/User';
 import { QueryKeys } from '../../../../queries/queryKeys';
-import { useQueryGetLoggedInUserProfileByUid } from '../../../../queries/loggedInUser/userProfileHooks';
+import { useQueryGetLoggedInUserProfileByUid } from '../../../../queries/currentUser/userProfileHooks';
 import { useCometaStore } from '../../../../store/cometaStore';
 import { CustomHeader } from '../../../../legacy_components/customHeader/customHeader';
 

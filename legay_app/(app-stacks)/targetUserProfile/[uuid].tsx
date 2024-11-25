@@ -11,7 +11,7 @@ import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser, useInfiniteQue
 import { AppButton, appButtonstyles } from '../../../legacy_components/buttons/buttons';
 import { AppCarousel } from '../../../legacy_components/carousels/carousel';
 import { useCometaStore } from '../../../store/cometaStore';
-import { useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation, useQueryGetFriendshipByTargetUserID } from '../../../queries/loggedInUser/friendshipHooks';
+import { useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation, useQueryGetFriendshipByTargetUserID } from '../../../queries/currentUser/friendshipHooks';
 import { GetBasicUserProfile, GetTargetUser } from '../../../models/User';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../../queries/queryKeys';
@@ -25,7 +25,7 @@ import ReactNativeModal from 'react-native-modal';
 import { gray_100, pink_200 } from '../../../constants/colors';
 import { ErrorMessage } from '../../../queries/errors/errorMessages';
 import notificationService from '../../../services/notificationService';
-import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/loggedInUser/userProfileHooks';
+import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/currentUser/userProfileHooks';
 import { MutateFrienship } from '../../../models/Friendship';
 import { ModalNewFriendship } from '../../../legacy_components/modal/modalNewFriendship';
 import chatWithFriendService from '../../../services/chatWithFriendService';
@@ -476,11 +476,11 @@ export default function TargerUserProfileScreen(): JSX.Element {
 
 const styles = StyleSheet.create({
   modalContainer: {
-    minHeight: 180,
-    width: 300,
-    justifyContent: 'center',
-    padding: 20,
+    alignSelf: 'center',
     borderRadius: 20,
-    alignSelf: 'center'
+    justifyContent: 'center',
+    minHeight: 180,
+    padding: 20,
+    width: 300
   }
 });

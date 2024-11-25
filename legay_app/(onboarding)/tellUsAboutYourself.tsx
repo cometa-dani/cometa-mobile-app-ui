@@ -9,7 +9,7 @@ import { AppLabelFeedbackMsg, AppTextInput } from '../../legacy_components/textI
 import { If } from '../../legacy_components/utils';
 import { profileStyles } from '../../legacy_components/profile/profileStyles';
 import { gray_300 } from '../../constants/colors';
-import { useMutationLoggedInUserProfileById, useQueryGetLoggedInUserProfileByUid } from '../../queries/loggedInUser/userProfileHooks';
+import { useMutationLoggedInUserProfileById, useQueryGetLoggedInUserProfileByUid } from '../../queries/currentUser/userProfileHooks';
 import { useCometaStore } from '../../store/cometaStore';
 
 

@@ -9,8 +9,8 @@ import { SafeAreaView } from 'react-native';
 import { Image as ImageWithPlaceholder } from 'expo-image';
 import { Unsubscribe } from 'firebase/auth';
 import { useCometaStore } from '../../../store/cometaStore';
-import { useQueryGetChatGroupByID } from '../../../queries/loggedInUser/chatGroupsHooks';
-import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/loggedInUser/userProfileHooks';
+import { useQueryGetChatGroupByID } from '../../../queries/currentUser/chatGroupsHooks';
+import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/currentUser/userProfileHooks';
 import { If } from '../../../legacy_components/utils';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { gray_900 } from '../../../constants/colors';
@@ -199,14 +199,14 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize'
   },
 
+  container: {
+    flex: 1,
+  },
+
   targetUser: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: 10,
     marginLeft: -16
-  },
-
-  container: {
-    flex: 1,
   }
 });
