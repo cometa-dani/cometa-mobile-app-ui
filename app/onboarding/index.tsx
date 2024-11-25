@@ -50,7 +50,7 @@ export default function OnboardingScreen() {
       >
         <SafeAreaView>
           <View style={styles.modal}>
-            <HStack h='space-between' v='center'>
+            <HStack $x='space-between' $y='center'>
               <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
               <TouchableOpacity
                 onPress={setUserProfileModalVisible}

@@ -68,7 +68,7 @@ export const lightTheme = {
   },
   radius: {
     xs: 10,
-    sm: 15,
+    sm: 16,
     md: 20,
     lg: 30,
     xl: 40,

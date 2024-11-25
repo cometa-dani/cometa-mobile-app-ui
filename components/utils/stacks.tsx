@@ -4,13 +4,13 @@ import { FlexStyle, View } from 'react-native';
 
 interface IStackProps {
   children: React.ReactNode;
-  h?: FlexStyle['justifyContent'],
-  v?: FlexStyle['alignItems'],
+  $x?: FlexStyle['justifyContent'],
+  $y?: FlexStyle['alignItems'],
   styles?: FlexStyle,
   gap?: number,
 }
 
-export const HStack: FC<IStackProps> = ({ children, h, v, gap, styles = {} }) => {
+export const HStack: FC<IStackProps> = ({ children, $x: h, $y: v, gap, styles = {} }) => {
   return (
     <View style={[{ flexDirection: 'row', justifyContent: h, alignItems: v, gap }, styles]}>
       {children}
@@ -19,7 +19,7 @@ export const HStack: FC<IStackProps> = ({ children, h, v, gap, styles = {} }) =>
 };
 
 
-export const VStack: FC<IStackProps> = ({ children, h, v, gap, styles }) => {
+export const VStack: FC<IStackProps> = ({ children, $x: h, $y: v, gap, styles }) => {
   return (
     <View style={[{ flexDirection: 'column', justifyContent: h, alignItems: v, gap }, styles]}>
       {children}

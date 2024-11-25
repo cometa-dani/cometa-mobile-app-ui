@@ -71,7 +71,7 @@ export const FieldText: FC<IFieldTextProps> = ({
             </VStack>
 
             <HStack
-              v='center'
+              $y='center'
               gap={theme.spacing.sp1}
               styles={{
                 paddingLeft: theme.spacing.sp8

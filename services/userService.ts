@@ -114,9 +114,6 @@ class UsersService {
         type: `image/${fileExtension}`,
         name: pickedImgFile.uuid ?? uuid.v4(),
       });
-      // Include the order in the field name
-      // formData.append(`files[${order}]`, imgFile);
-
       formData.append(`files[${index}]`, imgFile);
     });
     return this.http.post<GetBasicUserProfile>(`/users/${loggedInUserID}/photos`, formData, { headers });
