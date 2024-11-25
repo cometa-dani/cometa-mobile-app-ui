@@ -54,7 +54,6 @@ const defaultValues: FormValues = {
 interface IProps {
   onNextStep: () => void;
 }
-
 export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
   const { theme } = useStyles();
   const formProps = useForm<FormValues>({ defaultValues, resolver: yupResolver(validationSchema) });

@@ -11,7 +11,7 @@ import { Heading } from '@/components/text/heading';
 import { View } from 'react-native';
 import { Button } from '@/components/button/button';
 import { ICreateUser, IUpdateUser } from '@/models/User';
-import { useMutationCreateUser, useMutationUploadUserPhotos } from '@/queries/currentUser/userHooks';
+import { useMutationCreateUser, useMutationUpdateUserById, useMutationUploadUserPhotos } from '@/queries/currentUser/userHooks';
 
 
 const errorMessages = {
@@ -43,17 +43,15 @@ const defaultValues: FormValues = {
 interface IProps {
   onNextStep: () => void;
 }
-
 export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
   const { theme } = useStyles();
   const formProps = useForm({ defaultValues, resolver: yupResolver<FormValues>(validationSchema) });
-  const setOnboardingState = useCometaStore(state => state.setOnboarding);
   const userState = useCometaStore(state => state.onboarding.user);
   const createUser = useMutationCreateUser();
+  const updateUser = useMutationUpdateUserById();
   const uploadPhotos = useMutationUploadUserPhotos();
 
   const handleUserCreation = async (values: FormValues): Promise<void> => {
-    setOnboardingState(values);
     const createUserPayload: ICreateUser = {
       email: userState.email,
       name: userState.name,
@@ -61,9 +59,17 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
       uid: userState.uid, // from firebase
       birthday: userState.birthday,
     };
+    const updateUserPayload: IUpdateUser = {
+      biography: values.biography,
+      currentLocation: values.currentLocation,
+      homeTown: values.homeTown,
+      languages: values.languages,
+      occupation: values.occupation
+    };
     try {
       const newUser = await createUser.mutateAsync(createUserPayload);
-      uploadPhotos.mutateAsync({ userID: newUser.id, pickedImgFiles: userState.photos });
+      await uploadPhotos.mutateAsync({ userId: newUser.id, pickedImgFiles: userState.photos });
+      await updateUser.mutateAsync({ userId: newUser.id, payload: updateUserPayload });
     } catch (error) {
       return;
     }

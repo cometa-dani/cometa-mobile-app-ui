@@ -23,9 +23,9 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
   const userPhotos = useCometaStore(state => state.onboarding.user.photos) ?? [];
 
   const handleUserState = (photos: IPhotoPlaceholder[]) => {
-    const filterdPhotos = photos.filter(photo => photo?.asset);
-    console.log('handlePhotosUpload', filterdPhotos);
-    setOnboardingState({ photos: filterdPhotos });
+    const filteredPhotos = photos.filter(photo => photo?.asset);
+    console.log('handlePhotosUpload', filteredPhotos);
+    setOnboardingState({ photos: filteredPhotos });
   };
 
   const handleNextStep = () => {
@@ -83,4 +83,3 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
     </>
   );
 };
-

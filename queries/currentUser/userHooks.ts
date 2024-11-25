@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import userService from '../../services/userService';
-import { GetBasicUserProfile, GetDetailedUserProfile, ICreateUser, IUpdateUser, IUserClientState } from '../../models/User';
+import { GetBasicUserProfile, GetDetailedUserProfile, ICreateUser, IUpdateUser } from '../../models/User';
 import { Photo } from '../../models/Photo';
 import { QueryKeys } from '../queryKeys';
 import { useCometaStore } from '../../store/cometaStore';
@@ -83,7 +83,7 @@ export const useQueryGetUserByUid = (dynamicParam: string) => {
 
 type PhotosParams = {
   pickedImgFiles: IPhotoPlaceholder[],
-  userID: number
+  userId: number
 };
 
 /**
@@ -96,8 +96,8 @@ export const useMutationUploadUserPhotos = (uuId?: string) => {
   return (
     useMutation({
       mutationFn:
-        async ({ userID, pickedImgFiles }: PhotosParams): Promise<GetBasicUserProfile> => {
-          const res = await userService.uploadUserPhotos(userID, pickedImgFiles);
+        async ({ userId, pickedImgFiles }: PhotosParams): Promise<GetBasicUserProfile> => {
+          const res = await userService.uploadUserPhotos(userId, pickedImgFiles);
           if (res.status === 200) {
             return res.data;
           }

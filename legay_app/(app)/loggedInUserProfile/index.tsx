@@ -102,7 +102,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
           const pickedImages = (result.assets).map((asset) => ({ url: asset.uri, uuid: uuid.v4().toString() }));
 
           mutateLoggedInUserPhotosUpload.mutate({
-            userID: loggedInuserProfile?.id,
+            userId: loggedInuserProfile?.id,
             pickedImgFiles: pickedImages
           });
         }
