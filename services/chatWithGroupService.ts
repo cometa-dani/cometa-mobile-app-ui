@@ -1,9 +1,9 @@
 import { push, ref, set, update, increment } from 'firebase/database';
 import { realtimeDB } from '../config/firebase/firebase';
-import { GetBasicUserProfile } from '../models/User';
+import { IGetBasicUserProfile } from '../models/User';
 
 
-export type UserData = Pick<GetBasicUserProfile, ('uid' | 'name' | 'photos')>;
+export type UserData = Pick<IGetBasicUserProfile, ('uid' | 'name' | 'photos')>;
 
 
 type ChatGroup = {

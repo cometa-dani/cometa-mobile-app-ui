@@ -21,8 +21,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import { AppLabelFeedbackMsg, AppTextInput } from '../../../legacy_components/textInput/AppTextInput';
 import { gray_300 } from '../../../constants/colors';
 import { BaseButton } from 'react-native-gesture-handler';
-import { Photo } from '../../../models/Photo';
-import { GetBasicUserProfile } from '../../../models/User';
+import { IPhoto } from '../../../models/Photo';
+import { IGetBasicUserProfile } from '../../../models/User';
 import { ForEach, If, ON, OFF } from '../../../legacy_components/utils';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../../queries/currentUser/eventHooks';
@@ -30,7 +30,7 @@ import { maximunNumberOfPhotos } from '../../../constants/vars';
 import uuid from 'react-native-uuid';
 
 
-type userAttributes = keyof GetBasicUserProfile
+type userAttributes = keyof IGetBasicUserProfile
 
 type ProfileValues = {
   occupation: string,
@@ -58,7 +58,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
   // queries
   const { data: loggedInUserBucketList } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
   const { data: loggedInuserProfile, isLoading } = useQueryGetUserByUid(loggedInUserUuid);
-  const userPhotos: Photo[] = loggedInuserProfile?.photos ?? [];
+  const userPhotos: IPhoto[] = loggedInuserProfile?.photos ?? [];
   const remainingPhotosToUpload: number = maximunNumberOfPhotos - (userPhotos?.length || 0);
 
   // toggle edit mode

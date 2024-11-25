@@ -1,4 +1,4 @@
-import { ICreateUser, GetBasicUserProfile, GetDetailedUserProfile, GetTargetUser, GetUsersWithPagination, IUserClientState, IUpdateUser } from '../models/User';
+import { ICreateUser, IGetBasicUserProfile, IGetDetailedUserProfile, IGetTargetUser, IGetPaginatedUsers, IUserOnboarding, IUpdateUser } from '../models/User';
 import { RestApiService } from './restService';
 import { ImagePickerAsset } from 'expo-image-picker';
 import FormData from 'form-data';
@@ -19,17 +19,17 @@ class UsersService {
    * @param userFields  can be either the loggedInUser or the targetUser
    * @returns
    */
-  public findUniqueByQueryParams(userFields: Partial<IUserClientState>) {
-    return this.http.get<GetBasicUserProfile>('/users', { params: userFields });
+  public findUniqueByQueryParams(userFields: Partial<IUserOnboarding>) {
+    return this.http.get<IGetBasicUserProfile>('/users', { params: userFields });
   }
 
   public searchByUsernameWithPagination(username: string, cursor: number, limit = 10) {
     const payload = { params: { username, limit, cursor } };
-    return this.http.get<GetUsersWithPagination>('/users/search', payload);
+    return this.http.get<IGetPaginatedUsers>('/users/search', payload);
   }
 
   public create(payload: ICreateUser) {
-    return this.http.post<GetBasicUserProfile>('/users', payload);
+    return this.http.post<IGetBasicUserProfile>('/users', payload);
   }
 
   public updateById(loggedInUserID: number, payload: Partial<IUpdateUser>) {
@@ -44,7 +44,7 @@ class UsersService {
     else {
       updatedPayload = payload;
     }
-    return this.http.patch<GetBasicUserProfile>(`/users/${loggedInUserID}`, updatedPayload);
+    return this.http.patch<IGetBasicUserProfile>(`/users/${loggedInUserID}`, updatedPayload);
   }
 
   /**
@@ -54,7 +54,7 @@ class UsersService {
    * @returns
    */
   public getUserInfoByUidWithLikedEvents(userUuid: string) {
-    return this.http.get<GetDetailedUserProfile>(`/users/${userUuid}`);
+    return this.http.get<IGetDetailedUserProfile>(`/users/${userUuid}`);
   }
 
   /**
@@ -64,7 +64,7 @@ class UsersService {
  * @returns
  */
   public getTargetUserProfile(targetUser: string) {
-    return this.http.get<GetTargetUser>(`/users/${targetUser}/targets`,);
+    return this.http.get<IGetTargetUser>(`/users/${targetUser}/targets`,);
   }
 
   public deleteUserById(loggedInUserID: number) {
@@ -84,7 +84,7 @@ class UsersService {
       });
       formData.append(`files[${index}]`, imgFile);
     });
-    return this.http.post<GetBasicUserProfile>(`/users/${userId}/photos`, formData, { headers });
+    return this.http.post<IGetBasicUserProfile>(`/users/${userId}/photos`, formData, { headers });
   }
 
   public deletePhotoById(loggedInUserID: number, photoId: number | string) {
@@ -105,7 +105,7 @@ class UsersService {
 
       formData.append('files', imgFile);
     });
-    return this.http.patch<GetBasicUserProfile>(`/users/${loggedInUserID}/photos`, formData, { headers });
+    return this.http.patch<IGetBasicUserProfile>(`/users/${loggedInUserID}/photos`, formData, { headers });
   }
 }
 

@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { GetCitiesWithPagination } from '../models/Cities';
+import { IGetPaginatedCities } from '../models/Cities';
 import { RestApiService } from './restService';
 
 
@@ -16,7 +16,7 @@ class CitiesService {
    * @returns
    */
   searchCitiesByPrefix(prefix: string, cursor: number, limit = 10) {
-    return this.http.get<GetCitiesWithPagination>(`/world-cities?limit=${limit}&cursor=${cursor}&cityName=${prefix}`);
+    return this.http.get<IGetPaginatedCities>(`/world-cities?limit=${limit}&cursor=${cursor}&cityName=${prefix}`);
   }
 }
 

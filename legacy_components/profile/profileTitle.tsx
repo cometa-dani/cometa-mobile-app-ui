@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Text, View } from '../Themed';
-import { GetDetailedUserProfile } from '../../models/User';
+import { IGetDetailedUserProfile } from '../../models/User';
 import { calAge } from '../../helpers/calcAge';
 import { FontAwesome } from '@expo/vector-icons';
 import { If } from '../utils/ifElse';
@@ -24,7 +24,7 @@ const SkeletonLoader: FC = () => (
 );
 
 interface ProfileHeaderProps {
-  userProfile?: GetDetailedUserProfile;
+  userProfile?: IGetDetailedUserProfile;
   isLoading?: boolean;
 }
 

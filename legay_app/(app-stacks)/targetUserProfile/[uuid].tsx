@@ -12,7 +12,7 @@ import { AppButton, appButtonstyles } from '../../../legacy_components/buttons/b
 import { AppCarousel } from '../../../legacy_components/carousels/carousel';
 import { useCometaStore } from '../../../store/cometaStore';
 import { useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation, useQueryGetFriendshipByTargetUserID } from '../../../queries/currentUser/friendshipHooks';
-import { GetBasicUserProfile, GetTargetUser } from '../../../models/User';
+import { IGetBasicUserProfile, IGetTargetUser } from '../../../models/User';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../../queries/queryKeys';
 import { ProfileCarousel } from '../../../legacy_components/profile/profileCarousel';
@@ -59,7 +59,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const hasIncommingFriendship: boolean = targetUserProfile?.hasIncommingFriendship ?? false;
   const hasOutgoingFriendship: boolean = targetUserProfile?.hasOutgoingFriendship ?? false;
 
-  const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState({} as GetBasicUserProfile);
+  const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState({} as IGetBasicUserProfile);
   const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
   const [toggleModal, setToggleModal] = useState(false);
 
@@ -105,12 +105,12 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const pendingButton = {
     handleOptimisticUpdate: (targetUserID: string) => (
       queryClient
-        .setQueryData<GetTargetUser>(
+        .setQueryData<IGetTargetUser>(
           [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserID],
           (oldata) => ({
             ...oldata,
             hasIncommingFriendship: true
-          } as GetTargetUser)
+          } as IGetTargetUser)
         )
     )
   };
@@ -119,9 +119,9 @@ export default function TargerUserProfileScreen(): JSX.Element {
   /**
   *
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
-  * @param {GetBasicUserProfile} targetUserAsSender the sender of the friendship invitation
+  * @param {IGetBasicUserProfile} targetUserAsSender the sender of the friendship invitation
   */
-  const acceptPendingInvitation = async (targetUserAsSender: GetTargetUser) => {
+  const acceptPendingInvitation = async (targetUserAsSender: IGetTargetUser) => {
     try {
       // 1. set button to pending
       if (!targetUserAsSender.hasOutgoingFriendship) {
@@ -185,9 +185,9 @@ export default function TargerUserProfileScreen(): JSX.Element {
   /**
   *
   * @description for a receiver user, sends a friendship invitation with status 'PENDING'
-  * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
+  * @param {IGetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const sentFriendshipInvitation = (targetUserAsReceiver: GetTargetUser): void => {
+  const sentFriendshipInvitation = (targetUserAsReceiver: IGetTargetUser): void => {
     // 1. set button to pending
     pendingButton.handleOptimisticUpdate(targetUserAsReceiver.uid);
 
@@ -237,9 +237,9 @@ export default function TargerUserProfileScreen(): JSX.Element {
   /**
   *
   * @description cancels a friendship invitation with status 'PENDING'
-  * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
+  * @param {IGetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const cancelFriendshipInvitation = (targetUserAsReceiver: GetTargetUser): void => {
+  const cancelFriendshipInvitation = (targetUserAsReceiver: IGetTargetUser): void => {
     mutationDeleteFriendship.mutate(targetUserAsReceiver.id, {
       onSuccess() {
         notificationService
@@ -280,12 +280,12 @@ export default function TargerUserProfileScreen(): JSX.Element {
           ]);
         },
       });
-      queryClient.setQueryData<GetTargetUser>(
+      queryClient.setQueryData<IGetTargetUser>(
         [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUrlParams.uuid],
         (oldData) => ({
           ...oldData,
           isFriend: !oldData?.isFriend
-        }) as GetTargetUser
+        }) as IGetTargetUser
       );
     }
   };

@@ -23,7 +23,7 @@ export const BottomSheet = forwardRef<BottomSheetMethods, IProps>((props, ref) =
     <DefaultBottomSheet
       $modal={false}
       ref={ref}
-      index={2}
+      index={-1}
       enableDynamicSizing={false}
       enablePanDownToClose={true}
       keyboardBehavior="extend"

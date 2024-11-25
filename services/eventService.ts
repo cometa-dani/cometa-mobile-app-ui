@@ -1,7 +1,7 @@
-import { GetAllLatestEventsWithPagination, CreateEventLike, EventCategory } from '../models/Event';
+import { IGetLatestPaginatedEvents, CreateEventLike, EventCategory } from '../models/Event';
 import { GetEventByID } from '../models/EventLike';
-import { GetLikedEventsForBucketListWithPagination } from '../models/LikedEvent';
-import { GetMatchedUsersWhoLikedEventWithPagination } from '../models/User';
+import { IGetPaginatedLikedEventsBucketList } from '../models/LikedEvent';
+import { IGetPaginatedUsersWhoLikedSameEvent } from '../models/User';
 import { RestApiService } from './restService';
 
 
@@ -50,7 +50,7 @@ class EventService {
     const config = {
       params
     };
-    return this.http.get<GetAllLatestEventsWithPagination>('/events', config);
+    return this.http.get<IGetLatestPaginatedEvents>('/events', config);
   }
 
 
@@ -67,7 +67,7 @@ class EventService {
   public getLikedEventsByUserIdWithPagination(cursor: number, limit: number, targerUserID?: number) {
     const params = { cursor, limit, userId: targerUserID };
     const config = { params };
-    return this.http.get<GetLikedEventsForBucketListWithPagination>('/events/liked', config);
+    return this.http.get<IGetPaginatedLikedEventsBucketList>('/events/liked', config);
   }
 
 
@@ -83,14 +83,14 @@ class EventService {
   public getAllUsersWhoLikedSameEventWithPagination(eventID: number, cursor: number, limit: number) {
     const params = { cursor, limit };
     const config = { params };
-    return this.http.get<GetMatchedUsersWhoLikedEventWithPagination>(`/events/liked/${eventID}/users`, config);
+    return this.http.get<IGetPaginatedUsersWhoLikedSameEvent>(`/events/liked/${eventID}/users`, config);
   }
 
 
   public getSameMatchedEventsByTwoUsersWithPagination(targetUserUuid: string, cursor: number, limit: number, allPhotos?: boolean,) {
     const params = { cursor, limit, allPhotos };
     const config = { params };
-    return this.http.get<GetLikedEventsForBucketListWithPagination>(`/events/liked/matches/${targetUserUuid}`, config);
+    return this.http.get<IGetPaginatedLikedEventsBucketList>(`/events/liked/matches/${targetUserUuid}`, config);
   }
 }
 

@@ -1,15 +1,12 @@
-/* eslint-disable no-unused-vars */
 import { StateCreator } from 'zustand';
-import { IUserClientState } from '../../models/User';
-import { ImagePickerAsset } from 'expo-image-picker';
+import { IUserOnboarding } from '../../models/User';
 
 
 export type OnboardingSlice = {
   onboarding: {
-    user: IUserClientState
+    user: IUserOnboarding
   }
-
-  setOnboarding: (user: Partial<IUserClientState>) => void
+  setOnboarding: (user: Partial<IUserOnboarding>) => void
 }
 
 export const createOnboardingSlice: StateCreator<OnboardingSlice> = (set) => ({
@@ -18,21 +15,20 @@ export const createOnboardingSlice: StateCreator<OnboardingSlice> = (set) => ({
       name: '',
       username: '',
       email: '',
+      birthday: '',
       password: '',
       repassword: '',
-      birthday: new Date(),
       homeTown: '',
       currentLocation: '',
       languages: [],
       occupation: '',
       biography: '',
       photos: [],
-      id: -1,
       uid: ''
     }
   },
 
-  setOnboarding: (user: Partial<IUserClientState>) => {
+  setOnboarding: (user: Partial<IUserOnboarding>) => {
     set(prev => ({
       onboarding: {
         user: {

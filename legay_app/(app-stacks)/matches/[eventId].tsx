@@ -8,14 +8,14 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { AppButton } from '../../../legacy_components/buttons/buttons';
 import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../../queries/currentUser/friendshipHooks';
 import { useCometaStore } from '../../../store/cometaStore';
-import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination } from '../../../models/User';
+import { IGetBasicUserProfile, IGetPaginatedUsersWhoLikedSameEvent } from '../../../models/User';
 import { animationDuration, defaultImgPlaceholder } from '../../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { gray_200, gray_300, gray_500 } from '../../../constants/colors';
 import { useQueryGetUserByUid } from '../../../queries/currentUser/userHooks';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../../queries/queryKeys';
-import { GetLikedEventsForBucketListWithPagination } from '../../../models/LikedEvent';
+import { IGetPaginatedLikedEventsBucketList } from '../../../models/LikedEvent';
 import { If } from '../../../legacy_components/utils';
 import { GetLatestFriendships, MutateFrienship } from '../../../models/Friendship';
 import notificationService from '../../../services/notificationService';
@@ -29,7 +29,7 @@ export default function MatchedEventsScreen(): JSX.Element {
   const urlParams = useGlobalSearchParams<{ eventId: string, eventIndex: string }>();
   // cached data
   const queryClient = useQueryClient();
-  const bucketListCahedData = queryClient.getQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION]);
+  const bucketListCahedData = queryClient.getQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION]);
   const eventByIdCachedData = bucketListCahedData?.pages.flatMap(page => page?.items)[+urlParams.eventIndex] ?? null;
 
   // people state
@@ -110,7 +110,7 @@ export default function MatchedEventsScreen(): JSX.Element {
 
 
 interface FlashListProps {
-  users: GetMatchedUsersWhoLikedEventWithPagination['items'];
+  users: IGetPaginatedUsersWhoLikedSameEvent['items'];
   isFetching: boolean;
   isEmpty: boolean;
   onInfiniteScroll: () => void,
@@ -121,7 +121,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   const loggedInUserUuid = useCometaStore(state => state.uid);
   const { data: loggedInUserProfile } = useQueryGetUserByUid(loggedInUserUuid);
   const urlParams = useGlobalSearchParams<{ eventId: string }>();
-  const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState<GetBasicUserProfile | undefined>(undefined);
+  const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState<IGetBasicUserProfile | undefined>(undefined);
   const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
   const [toggleModal, setToggleModal] = useState(false);
 
@@ -134,7 +134,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   *
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
   */
-  const acceptPendingInvitation = async (targetUserAsSender: GetBasicUserProfile) => {
+  const acceptPendingInvitation = async (targetUserAsSender: IGetBasicUserProfile) => {
     try {
       // 1. set button to pending
       if (!targetUserAsSender.hasOutgoingFriendship) {
@@ -196,7 +196,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
      * @description sets the button to pending optimistically
      */
     handleOptimisticUpdate: (userID: number) => {
-      queryClient.setQueryData<InfiniteData<GetMatchedUsersWhoLikedEventWithPagination>>(
+      queryClient.setQueryData<InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>>(
         [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId],
         (oldData) => ({
           pageParams: oldData?.pageParams,
@@ -218,7 +218,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
                     )
               }))
 
-        }) as InfiniteData<GetMatchedUsersWhoLikedEventWithPagination>);
+        }) as InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>);
     }
   };
 
@@ -226,9 +226,9 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   /**
   *
   * @description for a receiver user, sends a friendship invitation with status 'PENDING'
-  * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
+  * @param {IGetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const sentFriendshipInvitation = (targetUserAsReceiver: GetBasicUserProfile): void => {
+  const sentFriendshipInvitation = (targetUserAsReceiver: IGetBasicUserProfile): void => {
     // 1. set button to pending
     pendingButton.handleOptimisticUpdate(targetUserAsReceiver.id);
 
@@ -273,9 +273,9 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   /**
   *
   * @description cancels a friendship invitation with status 'PENDING'
-  * @param {GetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
+  * @param {IGetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const cancelFriendshipInvitation = (targetUserAsReceiver: GetBasicUserProfile): void => {
+  const cancelFriendshipInvitation = (targetUserAsReceiver: IGetBasicUserProfile): void => {
     mutationCancelFriendship.mutate(
       targetUserAsReceiver.id,
       {

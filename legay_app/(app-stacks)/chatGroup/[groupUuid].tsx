@@ -17,7 +17,7 @@ import { gray_900 } from '../../../constants/colors';
 // firebase
 import { realtimeDB } from '../../../config/firebase/firebase';
 import { limitToLast, onChildAdded, query, ref } from 'firebase/database';
-import { GetBasicUserProfile } from '../../../models/User';
+import { IGetBasicUserProfile } from '../../../models/User';
 import chatWithGroupService from '../../../services/chatWithGroupService';
 
 
@@ -30,7 +30,7 @@ export default function ChatGroupScreen(): JSX.Element {
   const { data: targetChatGroup } = useQueryGetChatGroupByID(chatgroupUUID);
   const [messages, setMessages] = useState<IMessage[]>([]);
 
-  const targetChatGroupMembers: Map<string, GetBasicUserProfile> = useMemo(() => (
+  const targetChatGroupMembers: Map<string, IGetBasicUserProfile> = useMemo(() => (
     new Map(Object.entries(targetChatGroup?.members ?? {}))
   ), [targetChatGroup?.members]);
 

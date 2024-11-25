@@ -3,7 +3,7 @@ import { Dimensions, StyleSheet } from 'react-native';
 import { View } from '../Themed';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { Image } from 'expo-image';
-import { Photo } from '../../models/Photo';
+import { IPhoto } from '../../models/Photo';
 import { If } from '../utils/ifElse';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 
@@ -25,7 +25,7 @@ const SkeletonLoader: FC = () => (
 );
 
 interface ProfileCarouselProps {
-  userPhotos: Photo[],
+  userPhotos: IPhoto[],
   isLoading?: boolean
 }
 

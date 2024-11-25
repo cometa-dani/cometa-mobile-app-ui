@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import eventService from '../../services/eventService';
-import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEvent';
-import { GetMatchedUsersWhoLikedEventWithPagination } from '../../models/User';
+import { IGetPaginatedLikedEventsBucketList } from '../../models/LikedEvent';
+import { IGetPaginatedUsersWhoLikedSameEvent } from '../../models/User';
 import { QueryKeys } from '../queryKeys';
 
 
@@ -11,7 +11,7 @@ export const useInfiniteQueryGetLikedEventsForBucketListByTargerUser = (targetUs
       enabled: !!targetUserId,
       queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_TARGET_USER_ID_WITH_PAGINATION, targetUserId],
       initialPageParam: -1,
-      queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
+      queryFn: async ({ pageParam }): Promise<IGetPaginatedLikedEventsBucketList> => {
         const res = await eventService.getLikedEventsByUserIdWithPagination(pageParam, 4, targetUserId);
         if (res.status === 200) {
           return res.data;
@@ -42,7 +42,7 @@ export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => 
       queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +eventID],
       initialPageParam: -1,
       enabled: !!eventID,
-      queryFn: async ({ pageParam }): Promise<GetMatchedUsersWhoLikedEventWithPagination> => {
+      queryFn: async ({ pageParam }): Promise<IGetPaginatedUsersWhoLikedSameEvent> => {
         const res = await eventService.getAllUsersWhoLikedSameEventWithPagination(eventID, pageParam, 5);
         if (res.status === 200) {
           return res.data;
@@ -72,7 +72,7 @@ export const useInfiniteQueryGetSameMatchedEventsByTwoUsers = (targetUserID: str
     useInfiniteQuery({
       initialPageParam: -1,
       queryKey: [QueryKeys.GET_SAME_MATCHED_EVENTS_BY_TWO_USERS_WITH_PAGINATION, targetUserID],
-      queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
+      queryFn: async ({ pageParam }): Promise<IGetPaginatedLikedEventsBucketList> => {
         const res = await eventService.getSameMatchedEventsByTwoUsersWithPagination(targetUserID, pageParam, take, allPhotos);
         if (res.status === 200) {
           return res.data;

@@ -1,4 +1,4 @@
-import { GetBasicUserProfile } from './User';
+import { IGetBasicUserProfile } from './User';
 
 
 export interface Friendship {
@@ -9,7 +9,7 @@ export interface Friendship {
   receiverId: number;
   chatuuid: string;
   status: FriendShipStatus;
-  friend: GetBasicUserProfile
+  friend: IGetBasicUserProfile
 }
 
 export type FriendShipStatus = 'PENDING' | 'ACCEPTED' | 'BLOCKED'
@@ -33,6 +33,6 @@ export type MutateFrienship = Pick<Friendship, (
 )>
 
 export interface GetFriendShipWithSenderAndReceiver extends Omit<Friendship, 'friend'> {
-  sender: GetBasicUserProfile;
-  receiver: GetBasicUserProfile;
+  sender: IGetBasicUserProfile;
+  receiver: IGetBasicUserProfile;
 }

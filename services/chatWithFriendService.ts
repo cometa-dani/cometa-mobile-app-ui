@@ -1,10 +1,10 @@
 import { increment, push, ref, set, update } from 'firebase/database';
-import { GetBasicUserProfile } from '../models/User';
+import { IGetBasicUserProfile } from '../models/User';
 import { realtimeDB } from '../config/firebase/firebase';
 import { UserMessagesData } from '../store/slices/messagesSlices';
 
 
-export type UserData = Pick<GetBasicUserProfile, ('uid' | 'name' | 'photos')>;
+export type UserData = Pick<IGetBasicUserProfile, ('uid' | 'name' | 'photos')>;
 
 
 class ChatWithFriendService {

@@ -5,13 +5,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Pressable } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { Photo } from '../../models/Photo';
+import { IPhoto } from '../../models/Photo';
 import { If } from '../utils';
 
 
 interface CustomHeaderProps {
-  user1?: Photo;
-  user2?: Photo;
+  user1?: IPhoto;
+  user2?: IPhoto;
 }
 
 export const CustomHeader: FC<CustomHeaderProps> = ({ user1, user2 }) => {

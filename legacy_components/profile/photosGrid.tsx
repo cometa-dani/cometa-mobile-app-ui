@@ -4,14 +4,14 @@ import { Pressable, PressableProps, StyleSheet, Image } from 'react-native';
 import { View, useColors } from '../Themed';
 import { FontAwesome } from '@expo/vector-icons';
 import { gray_50 } from '../../constants/colors';
-import { Photo } from '../../models/Photo';
+import { IPhoto } from '../../models/Photo';
 import { RectButton } from 'react-native-gesture-handler';
 import { maximunNumberOfPhotos } from '../../constants/vars';
 import { ForEach, If } from '../utils';
 
 
 function range(length: number) {
-  return Array.from({ length }, () => ({} as Partial<Photo>));
+  return Array.from({ length }, () => ({} as Partial<IPhoto>));
 }
 
 interface CloseBtnProps extends PressableProps {
@@ -21,7 +21,7 @@ interface CloseBtnProps extends PressableProps {
 interface AppPhotoGridProps {
   onHandlePickImage?: () => void,
   onDeleteImage?: (uuid: string) => void,
-  photosList: Partial<Photo>[],
+  photosList: Partial<IPhoto>[],
   placeholders?: number,
   height?: number
 }
@@ -50,7 +50,7 @@ export const AppPhotosGrid: FC<AppPhotoGridProps> = ({ onHandlePickImage, onDele
   };
 
 
-  const FirstPhoto: FC<{ photo: Partial<Photo> }> = ({ photo }) => (
+  const FirstPhoto: FC<{ photo: Partial<IPhoto> }> = ({ photo }) => (
     <View style={{ flex: 1, position: 'relative' }}>
       <If
         condition={photo?.url}

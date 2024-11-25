@@ -1,4 +1,4 @@
-export interface Photo {
+export interface IPhoto {
   id: number;
   createdAt: string;
   updatedAt: string;
@@ -8,4 +8,4 @@ export interface Photo {
   order: number;
 }
 
-export type PhotoRef = Pick<Photo, 'uuid' | 'url' | 'placeholder'>
+export type PhotoRef = Pick<IPhoto, 'uuid' | 'url' | 'placeholder'>

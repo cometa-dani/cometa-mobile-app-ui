@@ -10,7 +10,7 @@ import { SkeletonLoaderList } from '../../../legacy_components/lodingSkeletons/L
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import { defaultImgPlaceholder } from '../../../constants/vars';
-import { GetBasicUserProfile } from '../../../models/User';
+import { IGetBasicUserProfile } from '../../../models/User';
 
 
 export default function SearchScreen(): JSX.Element {
@@ -93,7 +93,7 @@ export default function SearchScreen(): JSX.Element {
 
 
 interface UserItem {
-  user: GetBasicUserProfile,
+  user: IGetBasicUserProfile,
   onPress: () => void;
 }
 
@@ -127,12 +127,12 @@ const UserItem: FC<UserItem> = ({ user, onPress }) => {
 
 const styles = StyleSheet.create({
   eventItem: {
-    paddingHorizontal: 20,
-    width: '100%',
-    height: 64,
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
+    gap: 20,
+    height: 64,
     justifyContent: 'space-between',
-    gap: 20
+    paddingHorizontal: 20,
+    width: '100%'
   }
 });

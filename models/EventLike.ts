@@ -1,16 +1,16 @@
-import { LikeableEvent } from './Event';
-import { GetBasicUserProfile } from './User';
+import { ILikeableEvent } from './Event';
+import { IGetBasicUserProfile } from './User';
 
 
 export interface EventLike {
   id: number;
   eventId: number;
   userId: number;
-  user: Pick<GetBasicUserProfile, 'photos'>;
+  user: Pick<IGetBasicUserProfile, 'photos'>;
 }
 
 export type GetEventByID =
-  Pick<LikeableEvent, (
+  Pick<ILikeableEvent, (
     'id' |
     'createdAt' |
     'updatedAt' |

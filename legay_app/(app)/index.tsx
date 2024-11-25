@@ -9,11 +9,11 @@ import { gray_200, gray_300, gray_500, gray_900, red_100 } from '../../constants
 import { RectButton, TextInput } from 'react-native-gesture-handler';
 import { Tabs, router } from 'expo-router';
 import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetFlatList, BottomSheetFooter, BottomSheetFooterProps, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
-import { LikeableEvent } from '../../models/Event';
+import { ILikeableEvent } from '../../models/Event';
 import { Image } from 'expo-image';
 import { AppSearchInput } from '../../legacy_components/textInput/AppSearchInput';
 import { useInfiniteQuerySearchUsers } from '../../queries/search/useInfiniteQuerySearchUsers';
-import { GetBasicUserProfile } from '../../models/User';
+import { IGetBasicUserProfile } from '../../models/User';
 import { defaultImgPlaceholder } from '../../constants/vars';
 import { SkeletonLoaderList } from '../../legacy_components/lodingSkeletons/LoadingSkeletonList';
 import { useCometaStore } from '../../store/cometaStore';
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
 const snapPoints = ['35%', '50%'];
 
 interface BottonSheetSearchEventsProps {
-  events: LikeableEvent[],
+  events: ILikeableEvent[],
   isLoading: boolean,
   onPressEventItem: (index: number) => void,
   onInfiniteScroll: () => void,
@@ -320,7 +320,7 @@ BottonSheetSearchEvents.displayName = 'BottonSheetModalSearchEvents';
 
 
 interface ItemProps {
-  event: LikeableEvent;
+  event: ILikeableEvent;
   onPress: () => void;
 }
 
@@ -349,7 +349,7 @@ const EventItem: FC<ItemProps> = ({ event, onPress }) => {
 
 
 interface UserItem {
-  user: Omit<GetBasicUserProfile, 'outgoingFriendships' | 'incomingFriendships'>,
+  user: Omit<IGetBasicUserProfile, 'outgoingFriendships' | 'incomingFriendships'>,
   onPress: () => void;
 }
 

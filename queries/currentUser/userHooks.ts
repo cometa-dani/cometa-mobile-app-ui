@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import userService from '../../services/userService';
-import { GetBasicUserProfile, GetDetailedUserProfile, ICreateUser, IUpdateUser } from '../../models/User';
-import { Photo } from '../../models/Photo';
+import { IGetBasicUserProfile, IGetDetailedUserProfile, ICreateUser, IUpdateUser } from '../../models/User';
+import { IPhoto } from '../../models/Photo';
 import { QueryKeys } from '../queryKeys';
 import { useCometaStore } from '../../store/cometaStore';
 import { IPhotoPlaceholder } from '@/components/onboarding/bottomSheet/photosGrid/photosGrid';
@@ -40,12 +40,12 @@ export const useMutationUpdateUserById = () => {
       },
       onMutate: async ({ payload }) => {
         queryClient
-          .setQueryData<GetDetailedUserProfile>
-          ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuid], (oldState): GetDetailedUserProfile => {
+          .setQueryData<IGetDetailedUserProfile>
+          ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuid], (oldState): IGetDetailedUserProfile => {
             const optimisticState = {
               ...oldState,
               ...payload
-            } as GetDetailedUserProfile;
+            } as IGetDetailedUserProfile;
 
             return optimisticState;
           });
@@ -65,7 +65,7 @@ export const useQueryGetUserByUid = (dynamicParam: string) => {
     useQuery({
       enabled: !!dynamicParam,
       queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam],
-      queryFn: async (): Promise<GetDetailedUserProfile> => {
+      queryFn: async (): Promise<IGetDetailedUserProfile> => {
         const res = await userService.getUserInfoByUidWithLikedEvents(dynamicParam);
         if (res.status === 200) {
           return res.data;
@@ -96,7 +96,7 @@ export const useMutationUploadUserPhotos = (uuId?: string) => {
   return (
     useMutation({
       mutationFn:
-        async ({ userId, pickedImgFiles }: PhotosParams): Promise<GetBasicUserProfile> => {
+        async ({ userId, pickedImgFiles }: PhotosParams): Promise<IGetBasicUserProfile> => {
           const res = await userService.uploadUserPhotos(userId, pickedImgFiles);
           if (res.status === 200) {
             return res.data;
@@ -108,14 +108,14 @@ export const useMutationUploadUserPhotos = (uuId?: string) => {
       onMutate: async ({ pickedImgFiles }) => {
         await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuId] });
         queryClient
-          .setQueryData<GetDetailedUserProfile>
-          ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuId], (oldState): GetDetailedUserProfile => {
+          .setQueryData<IGetDetailedUserProfile>
+          ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuId], (oldState): IGetDetailedUserProfile => {
 
             const optimisticState = {
               ...oldState,
               photos: [...(oldState?.photos || []), ...pickedImgFiles]
 
-            } as GetDetailedUserProfile;
+            } as IGetDetailedUserProfile;
 
             return optimisticState;
           });
@@ -137,7 +137,7 @@ export const useMutationDeleteUserById = (dynamicParam: string) => {
   return (
     useMutation({
       mutationFn:
-        async ({ userID, photoUuid }: DeletePhotoArgs): Promise<GetBasicUserProfile> => {
+        async ({ userID, photoUuid }: DeletePhotoArgs): Promise<IGetBasicUserProfile> => {
           const res = await userService.deletePhotoById(userID, photoUuid);
           if (res.status === 204) {
             return res.data;
@@ -150,15 +150,15 @@ export const useMutationDeleteUserById = (dynamicParam: string) => {
         await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam] });
         // TODO
         queryClient
-          .setQueryData<GetDetailedUserProfile>
-          ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam], (oldState): GetDetailedUserProfile => {
-            const filteredPhotos: Photo[] = oldState?.photos.filter(({ uuid }) => photoUuid !== uuid) || [];
+          .setQueryData<IGetDetailedUserProfile>
+          ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam], (oldState): IGetDetailedUserProfile => {
+            const filteredPhotos: IPhoto[] = oldState?.photos.filter(({ uuid }) => photoUuid !== uuid) || [];
 
             const optimisticState = {
               ...oldState,
               photos: filteredPhotos
 
-            } as GetDetailedUserProfile;
+            } as IGetDetailedUserProfile;
 
             return optimisticState;
           });

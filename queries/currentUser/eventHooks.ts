@@ -1,9 +1,9 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useCometaStore } from '../../store/cometaStore';
 import { QueryKeys } from '../queryKeys';
-import { GetAllLatestEventsWithPagination } from '../../models/Event';
+import { IGetLatestPaginatedEvents } from '../../models/Event';
 import eventService from '../../services/eventService';
-import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEvent';
+import { IGetPaginatedLikedEventsBucketList } from '../../models/LikedEvent';
 
 
 // Query to fetch a list of events with infinite scrolling
@@ -13,7 +13,7 @@ export const useInfiniteQuerySearchEventsByQueryParams = (eventName = '') => {
     useInfiniteQuery({
       queryKey: [QueryKeys.SEARCH_EVENTS_WITH_PAGINATION],
       initialPageParam: -1,
-      queryFn: async ({ pageParam }): Promise<GetAllLatestEventsWithPagination> => {
+      queryFn: async ({ pageParam }): Promise<IGetLatestPaginatedEvents> => {
         const res =
           await eventService.searchEventsWithPagination({
             cursor: pageParam,
@@ -51,7 +51,7 @@ export const useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser = () => {
       // select(data): GetLikedEventsForBucketListWithPagination{
       //   return data?.pages.flatMap(page => page.events) ;
       // },
-      queryFn: async ({ pageParam }): Promise<GetLikedEventsForBucketListWithPagination> => {
+      queryFn: async ({ pageParam }): Promise<IGetPaginatedLikedEventsBucketList> => {
         const res = await eventService.getLikedEventsByUserIdWithPagination(pageParam, 8);
         if (res.status === 200) {
           return res.data;

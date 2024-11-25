@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { LikeableEvent, } from '../../models/Event';
+import { ILikeableEvent, } from '../../models/Event';
 import { StyleSheet, DimensionValue, Pressable, Dimensions, View as TransParentView } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Text, View, useColors } from '../Themed';
@@ -11,7 +11,7 @@ import Carousel, { Pagination } from 'react-native-snap-carousel';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 import { Reds, white_50 } from '../../constants/colors';
 import { If } from '../utils/ifElse';
-import { Photo } from '../../models/Photo';
+import { IPhoto } from '../../models/Photo';
 import { ForEach } from '../utils/ForEach';
 
 //icons
@@ -23,7 +23,7 @@ const carouselEstimatedWidth = Dimensions.get('window').width - 20;
 
 
 interface EventsListProps {
-  items: LikeableEvent[],
+  items: ILikeableEvent[],
   onInfiniteScroll: () => void,
   isLoading: boolean,
   hideLikeAndShareButtons?: boolean,
@@ -38,7 +38,7 @@ export const EventsFlashList: FC<EventsListProps> = ({ onInfiniteScroll, isLoadi
   const onHandleLikeButtonPress = (eventID: number) => {
     mutateEventLike.mutate({ eventID, targetUserId });
   };
-  const listRef = useRef<FlashList<LikeableEvent>>(null);
+  const listRef = useRef<FlashList<ILikeableEvent>>(null);
 
 
   useEffect(() => {
@@ -141,7 +141,7 @@ const SkeletonLoader: FC = () => {
 
 // Define the props for the memoized list item
 interface ListItemProps {
-  item: LikeableEvent,
+  item: ILikeableEvent,
   layoutHeight: DimensionValue,
   hideLikeAndShareButtons?: boolean,
   onHandleLikeButtonPress: (id: number) => void,
@@ -319,7 +319,7 @@ const EventItem: FC<ListItemProps> = ({ item, layoutHeight, hideLikeAndShareButt
 // }
 
 
-const renderCarouselItem = ({ item }: { item: Photo }) => (
+const renderCarouselItem = ({ item }: { item: IPhoto }) => (
   <CarouselItem key={item.id} item={item} />
 );
 
@@ -343,7 +343,7 @@ function arePropsEqual(prevProps: ListItemProps, nextProps: ListItemProps): bool
 const MemoizedEventItem = React.memo(EventItem, arePropsEqual);
 
 
-const CarouselItem: FC<{ item: Photo }> = ({ item }) => {
+const CarouselItem: FC<{ item: IPhoto }> = ({ item }) => {
   return (
     <Image
       source={item.url}

@@ -1,4 +1,4 @@
-import { IUserClientState } from '@/models/User';
+import { IUserOnboarding } from '@/models/User';
 import { FC, useState } from 'react';
 import { HStack, VStack } from '../utils/stacks';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
@@ -10,7 +10,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 interface IFieldTextProps {
   label: string,
-  name: keyof IUserClientState,
+  name: keyof IUserOnboarding,
   placeholder?: string,
   keyboardType?: KeyboardTypeOptions,
   secureTextEntry?: boolean,

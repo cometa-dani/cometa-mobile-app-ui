@@ -1,19 +1,19 @@
 /* eslint-disable no-unused-vars */
 import { StateCreator } from 'zustand';
-import { LikeableEvent } from '../../models/Event';
+import { ILikeableEvent } from '../../models/Event';
 
 
 export type EventAcionSheetSlice = {
   toggleActionSheet: boolean,
   setToggleActionSheet: (openOrClose: boolean) => void,
-  likedEvent: LikeableEvent
-  setLikedEvent: (likedEvent: LikeableEvent) => void,
+  likedEvent: ILikeableEvent
+  setLikedEvent: (likedEvent: ILikeableEvent) => void,
 }
 
 export const createEventActionSheetSlice: StateCreator<EventAcionSheetSlice> = (set) => {
   return ({
     toggleActionSheet: false,
-    likedEvent: {} as LikeableEvent,
+    likedEvent: {} as ILikeableEvent,
 
     setLikedEvent: (likedEvent) => {
       set(prev => ({ likedEvent }));

@@ -2,7 +2,8 @@
 import { EventLike } from './EventLike';
 import { Location } from './Localization';
 import { Organization } from './Organization';
-import { Photo } from './Photo';
+import { IPhoto } from './Photo';
+import { IPaginated } from './utils/Paginated';
 
 
 export enum EventCategory {
@@ -35,30 +36,12 @@ export type CreateEventLike =
 
 
 export interface MatchedEvents {
-  event: LikeableEvent
-  // Pick<LikableEvent, (
-  //   'id' |
-  //   'createdAt' |
-  //   'updatedAt' |
-  //   'date' |
-  //   'name' |
-  //   'description' |
-  //   'photos' |
-  //   'locationId' |
-  //   'organizationId' |
-  //   'categories'
-  // )>;
+  event: ILikeableEvent
 }
 
-export interface GetAllLatestEventsWithPagination {
-  items: LikeableEvent[];
-  totalItems: number;
-  nextCursor: number;
-  hasNextCursor: boolean;
-  itemsPerPage: number;
-}
+export interface IGetLatestPaginatedEvents extends IPaginated<ILikeableEvent> { }
 
-export interface LikeableEvent {
+export interface ILikeableEvent {
   id: number;
   createdAt: string;
   updatedAt: string;
@@ -71,13 +54,13 @@ export interface LikeableEvent {
   organization?: Organization;
   location?: Location;
 
-  photos: Array<Photo>; // 1 or 3
+  photos: Array<IPhoto>; // 1 or 3
   likes?: EventLike[]
-  _count: Count;
+  _count: ICount;
   isLiked: boolean;
 }
 
-export interface Count {
+export interface ICount {
   likes: number;
   shares: number
 }

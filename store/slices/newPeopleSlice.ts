@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 import { StateCreator } from 'zustand';
-import { GetBasicUserProfile, GetDetailedUserProfile } from '../../models/User';
+import { IGetBasicUserProfile, IGetDetailedUserProfile } from '../../models/User';
 
 
-type User = GetBasicUserProfile | GetDetailedUserProfile
+type User = IGetBasicUserProfile | IGetDetailedUserProfile
 
 export type NewPeopleSlice = {
   toggleModal: boolean,

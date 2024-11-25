@@ -1,8 +1,8 @@
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
-import { CreateEventLike, GetAllLatestEventsWithPagination } from '../../models/Event';
+import { CreateEventLike, IGetLatestPaginatedEvents } from '../../models/Event';
 import eventService from '../../services/eventService';
 import { QueryKeys } from '../queryKeys';
-import { GetLikedEventsForBucketListWithPagination } from '../../models/LikedEvent';
+import { IGetPaginatedLikedEventsBucketList } from '../../models/LikedEvent';
 
 
 type MutateEventLikeArgs = { eventID: number, targetUserId?: number };
@@ -33,7 +33,7 @@ export const useMutationLikeOrDislikeEvent = () => {
         );
         // Update the cache with the new liked state
         queryClient
-          .setQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>
+          .setQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>
           (queryKeys,
             (oldData) => ({
               pages: oldData?.pages.map(
@@ -100,7 +100,7 @@ export const useMutationDeleteLikedEventFromBucketList = () => {
       onMutate: (eventID) => {
         // Update the cache with the new liked state
         queryClient
-          .setQueryData<InfiniteData<GetLikedEventsForBucketListWithPagination, number>>
+          .setQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>
           ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION], (oldData) => ({
             pages: oldData?.pages.map(
               (page) => (
@@ -117,7 +117,7 @@ export const useMutationDeleteLikedEventFromBucketList = () => {
       // Invalidate queries after the mutation succeeds
       onSuccess: async (_, eventID) => {
         queryClient
-          .setQueryData<InfiniteData<GetAllLatestEventsWithPagination, number>>
+          .setQueryData<InfiniteData<IGetLatestPaginatedEvents, number>>
           ([QueryKeys.SEARCH_EVENTS_WITH_PAGINATION], (oldData) => ({
             pages: oldData?.pages.map(
               (page) => (

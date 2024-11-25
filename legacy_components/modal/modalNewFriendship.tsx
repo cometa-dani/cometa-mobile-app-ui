@@ -7,7 +7,7 @@ import { Formik, FormikHelpers } from 'formik';
 import uuid from 'react-native-uuid';
 import chatWithFriendService from '../../services/chatWithFriendService';
 import * as Yup from 'yup';
-import { GetBasicUserProfile, GetDetailedUserProfile } from '../../models/User';
+import { IGetBasicUserProfile, IGetDetailedUserProfile } from '../../models/User';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, TextInput } from 'react-native';
 
@@ -22,8 +22,8 @@ const messageSchemmaValidation = Yup.object<Message>({
 interface ModalNewFrienshipProps {
   toggle: boolean,
   onclose: () => void,
-  loggedInUserProfile?: GetDetailedUserProfile,
-  targetUser?: GetBasicUserProfile,
+  loggedInUserProfile?: IGetDetailedUserProfile,
+  targetUser?: IGetBasicUserProfile,
   frienshipUUID: string
 }
 

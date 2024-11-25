@@ -13,7 +13,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { gray_50, red_100 } from '../../../constants/colors';
 import { If } from '../../../legacy_components/utils/ifElse';
 import { ForEach } from '../../../legacy_components/utils';
-import { LikeableEvent } from '../../../models/Event';
+import { ILikeableEvent } from '../../../models/Event';
 import { defaultImgPlaceholder } from '../../../constants/vars';
 import { SkeletonLoaderList } from '../../../legacy_components/lodingSkeletons/LoadingSkeletonList';
 import { EmptyMessage } from '../../../legacy_components/empty/Empty';
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
 });
 
 
-const renderBucketItem = ({ item, index }: { item: LikeableEvent, index: number }) => {
+const renderBucketItem = ({ item, index }: { item: ILikeableEvent, index: number }) => {
   return (
     <>
       <BucketItem
@@ -132,7 +132,7 @@ const renderBucketItem = ({ item, index }: { item: LikeableEvent, index: number 
 // const AnimatedImage  = Animated.createAnimatedComponent(Image);
 
 interface BucketItemProps {
-  item: LikeableEvent,
+  item: ILikeableEvent,
   index: number
 }
 const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
