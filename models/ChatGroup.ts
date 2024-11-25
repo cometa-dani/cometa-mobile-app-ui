@@ -1,7 +1,7 @@
 import { IPhoto } from './Photo';
 import { IGetBasicUserProfile } from './User';
 
-export interface ChatGroup {
+export interface IChatGroup {
   id: string;
   createdAt: Date;
   updatedAt: Date;
@@ -14,7 +14,7 @@ export interface ChatGroup {
   adminId: number;
 }
 
-export interface GetChatGroupById extends ChatGroup {
+export interface IGetChatGroupById extends IChatGroup {
   members: {
     [key: string]: IGetBasicUserProfile
   }

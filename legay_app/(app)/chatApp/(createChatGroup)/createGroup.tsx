@@ -17,7 +17,7 @@ import { AppLabelFeedbackMsg } from '../../../../legacy_components/textInput/App
 import * as ImagePicker from 'expo-image-picker';
 import { useMutationCreateChatGroup } from '../../../../queries/currentUser/chatGroupsHooks';
 import uuid from 'react-native-uuid';
-import { ChatGroup } from '../../../../models/ChatGroup';
+import { IChatGroup } from '../../../../models/ChatGroup';
 import chatWithGroupService from '../../../../services/chatWithGroupService';
 
 
@@ -64,7 +64,7 @@ export function CreateChatGroupScreen(): JSX.Element {
     try {
       // 1 create the group in database
       const chatGroupMembersUUIDs = chatGroupMembers.keys();
-      const res = await createChatGroup.mutateAsync({ groupName: values.name, members: [...chatGroupMembersUUIDs, loggedInUserUUID] }) as ChatGroup;
+      const res = await createChatGroup.mutateAsync({ groupName: values.name, members: [...chatGroupMembersUUIDs, loggedInUserUUID] }) as IChatGroup;
 
       // 2 create the group in firebase
       const groupUUID = res?.id;

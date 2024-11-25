@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { EventLike } from './EventLike';
-import { Location } from './Localization';
-import { Organization } from './Organization';
+import { ILocation } from './Localization';
+import { IOrganization } from './Organization';
 import { IPhoto } from './Photo';
 import { IPaginated } from './utils/Paginated';
 
@@ -51,8 +51,8 @@ export interface ILikeableEvent {
   categories: EventCategory[];
   locationId?: number;
   organizationId?: number;
-  organization?: Organization;
-  location?: Location;
+  organization?: IOrganization;
+  location?: ILocation;
 
   photos: Array<IPhoto>; // 1 or 3
   likes?: EventLike[]

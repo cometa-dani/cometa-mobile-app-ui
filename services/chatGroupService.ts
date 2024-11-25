@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { ChatGroup, GetChatGroupById } from '../models/ChatGroup';
+import { IChatGroup, IGetChatGroupById } from '../models/ChatGroup';
 import { RestApiService } from './restService';
 
 
@@ -19,7 +19,7 @@ class ChatGroupService {
    */
   create(groupName: string, members: (string | number)[]) {
     return (
-      this.http.post<ChatGroup>(
+      this.http.post<IChatGroup>(
         '/chat-groups',
         { groupName, members },
       )
@@ -28,7 +28,7 @@ class ChatGroupService {
 
   getById(id: string) {
     return (
-      this.http.get<GetChatGroupById>(
+      this.http.get<IGetChatGroupById>(
         `/chat-groups/${id}`,
       )
     );

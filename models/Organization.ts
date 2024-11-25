@@ -1,5 +1,4 @@
-
-export interface Organization {
+export interface IOrganization {
   id: number;
   createdAt: string;
   updatedAt: string;
