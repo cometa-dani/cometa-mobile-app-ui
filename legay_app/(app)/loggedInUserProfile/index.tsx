@@ -3,7 +3,7 @@ import { Text, View, useColors } from '../../../legacy_components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../../config/firebase/firebase';
 import { useCometaStore } from '../../../store/cometaStore';
-import { useMutationDeleteLoggedInUserPhotoByUuid, useMutationUploadLoggedInUserPhotos, useMutationLoggedInUserProfileById, useQueryGetLoggedInUserProfileByUid } from '../../../queries/currentUser/userProfileHooks';
+import { useMutationDeleteUserById, useMutationUploadUserPhotos, useMutationUpdateUserById, useQueryGetUserByUid } from '../../../queries/currentUser/userHooks';
 import { AppButton } from '../../../legacy_components/buttons/buttons';
 import { FC, useEffect, useRef, useState } from 'react';
 import { Stack, router } from 'expo-router';
@@ -51,13 +51,13 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
   const loggedInUserUuid = useCometaStore(state => state.uid); // this can be abstracted
 
   // mutations
-  const mutateLoggedInUserPhotosUpload = useMutationUploadLoggedInUserPhotos(loggedInUserUuid);
-  const mutateLoggedInUserPhotosDelete = useMutationDeleteLoggedInUserPhotoByUuid(loggedInUserUuid);
-  const mutateLoggedInUserProfileById = useMutationLoggedInUserProfileById();
+  const mutateLoggedInUserPhotosUpload = useMutationUploadUserPhotos(loggedInUserUuid);
+  const mutateLoggedInUserPhotosDelete = useMutationDeleteUserById(loggedInUserUuid);
+  const mutateLoggedInUserProfileById = useMutationUpdateUserById();
 
   // queries
   const { data: loggedInUserBucketList } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
-  const { data: loggedInuserProfile, isLoading } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
+  const { data: loggedInuserProfile, isLoading } = useQueryGetUserByUid(loggedInUserUuid);
   const userPhotos: Photo[] = loggedInuserProfile?.photos ?? [];
   const remainingPhotosToUpload: number = maximunNumberOfPhotos - (userPhotos?.length || 0);
 

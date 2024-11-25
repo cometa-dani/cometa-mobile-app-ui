@@ -8,7 +8,7 @@ import { BaseButton } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { badgesStyles } from '../../legacy_components/profile/badges';
 import { useCometaStore } from '../../store/cometaStore';
-import { useQueryGetLoggedInUserProfileByUid } from '../../queries/currentUser/userProfileHooks';
+import { useQueryGetUserByUid } from '../../queries/currentUser/userHooks';
 import { FC } from 'react';
 
 
@@ -16,7 +16,7 @@ export default function HowManyLanguagesScreen(): JSX.Element {
 
   const uid = useCometaStore(state => state.uid); // this can be abstracted
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
-  const { data: userProfile } = useQueryGetLoggedInUserProfileByUid(uid); // TODO store loggedIn user in globalState
+  const { data: userProfile } = useQueryGetUserByUid(uid); // TODO store loggedIn user in globalState
 
   const pushToEditProfileScreen = (field: string): void => {
     router.push(`/editUserProfile/${field}?userId=${userProfile?.id}`);

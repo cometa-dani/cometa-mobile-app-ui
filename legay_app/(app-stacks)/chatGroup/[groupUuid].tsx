@@ -10,7 +10,7 @@ import { Image as ImageWithPlaceholder } from 'expo-image';
 import { Unsubscribe } from 'firebase/auth';
 import { useCometaStore } from '../../../store/cometaStore';
 import { useQueryGetChatGroupByID } from '../../../queries/currentUser/chatGroupsHooks';
-import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/currentUser/userProfileHooks';
+import { useQueryGetUserByUid } from '../../../queries/currentUser/userHooks';
 import { If } from '../../../legacy_components/utils';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { gray_900 } from '../../../constants/colors';
@@ -26,7 +26,7 @@ export default function ChatGroupScreen(): JSX.Element {
 
   const chatgroupUUID = useLocalSearchParams<{ groupUuid: string }>()['groupUuid']; // TODO: can be uuid
   const loggedInUserUuid = useCometaStore(state => state.uid);
-  const { data: loggedInUser } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
+  const { data: loggedInUser } = useQueryGetUserByUid(loggedInUserUuid);
   const { data: targetChatGroup } = useQueryGetChatGroupByID(chatgroupUUID);
   const [messages, setMessages] = useState<IMessage[]>([]);
 

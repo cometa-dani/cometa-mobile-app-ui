@@ -1,41 +1,37 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import userService from '../../services/userService';
-import { GetBasicUserProfile, GetDetailedUserProfile, IUserClientState } from '../../models/User';
+import { GetBasicUserProfile, GetDetailedUserProfile, ICreateUser, IUpdateUser, IUserClientState } from '../../models/User';
 import { Photo } from '../../models/Photo';
 import { QueryKeys } from '../queryKeys';
 import { useCometaStore } from '../../store/cometaStore';
+import { IPhotoPlaceholder } from '@/components/onboarding/bottomSheet/photosGrid/photosGrid';
 
 
-export const useQueryGetLoggedInUserProfileByUid = (dynamicParam: string) => {
+export const useMutationCreateUser = () => {
   return (
-    useQuery({
-      enabled: !!dynamicParam,
-      queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam],
-      queryFn: async (): Promise<GetDetailedUserProfile> => {
-        const res = await userService.getUserInfoByUidWithLikedEvents(dynamicParam);
-        if (res.status === 200) {
+    useMutation({
+      mutationFn: async (payload: ICreateUser) => {
+        const res = await userService.create(payload);
+        if (res.status === 201) {
           return res.data;
         }
         else {
-          throw new Error('failed to fetched');
+          throw new Error('failed fech');
         }
-      },
-      retry: 2,
-      retryDelay: 1_000 * 6
+      }
     })
   );
 };
 
 
-export const useMutationLoggedInUserProfileById = () => {
+export const useMutationUpdateUserById = () => {
   const queryClient = useQueryClient();
   const uuid = useCometaStore(state => state.uid);
-
   return (
     useMutation({
-      mutationFn: async (args: { userId: number, payload: Partial<IUserClientState> }) => {
+      mutationFn: async (args: { userId: number, payload: Partial<IUpdateUser> }) => {
         const res = await userService.updateById(args.userId, args.payload);
-        if (res.status == 201) {
+        if (res.status == 200 || res.status == 201) {
           return res.data;
         }
         else {
@@ -64,8 +60,29 @@ export const useMutationLoggedInUserProfileById = () => {
 };
 
 
+export const useQueryGetUserByUid = (dynamicParam: string) => {
+  return (
+    useQuery({
+      enabled: !!dynamicParam,
+      queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam],
+      queryFn: async (): Promise<GetDetailedUserProfile> => {
+        const res = await userService.getUserInfoByUidWithLikedEvents(dynamicParam);
+        if (res.status === 200) {
+          return res.data;
+        }
+        else {
+          throw new Error('failed to fetched');
+        }
+      },
+      retry: 2,
+      retryDelay: 1_000 * 6
+    })
+  );
+};
+
+
 type PhotosParams = {
-  pickedImgFiles: Pick<Photo, 'uuid' | 'url'>[],
+  pickedImgFiles: IPhotoPlaceholder[],
   userID: number
 };
 
@@ -74,14 +91,13 @@ type PhotosParams = {
  * @param uuId universal unique id
  * @returns
  */
-export const useMutationUploadLoggedInUserPhotos = (uuId: string) => {
+export const useMutationUploadUserPhotos = (uuId?: string) => {
   const queryClient = useQueryClient();
-
   return (
     useMutation({
       mutationFn:
         async ({ userID, pickedImgFiles }: PhotosParams): Promise<GetBasicUserProfile> => {
-          const res = await userService.uploadManyPhotosByLoggedInUserId(userID, pickedImgFiles);
+          const res = await userService.uploadUserPhotos(userID, pickedImgFiles);
           if (res.status === 200) {
             return res.data;
           }
@@ -89,10 +105,8 @@ export const useMutationUploadLoggedInUserPhotos = (uuId: string) => {
             throw new Error('failed fech');
           }
         },
-
       onMutate: async ({ pickedImgFiles }) => {
         await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuId] });
-
         queryClient
           .setQueryData<GetDetailedUserProfile>
           ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuId], (oldState): GetDetailedUserProfile => {
@@ -106,7 +120,6 @@ export const useMutationUploadLoggedInUserPhotos = (uuId: string) => {
             return optimisticState;
           });
       },
-
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuId] });
       },
@@ -119,14 +132,13 @@ export const useMutationUploadLoggedInUserPhotos = (uuId: string) => {
 
 type DeletePhotoArgs = { userID: number, photoUuid: string }
 
-export const useMutationDeleteLoggedInUserPhotoByUuid = (dynamicParam: string) => {
+export const useMutationDeleteUserById = (dynamicParam: string) => {
   const queryClient = useQueryClient();
-
   return (
     useMutation({
       mutationFn:
         async ({ userID, photoUuid }: DeletePhotoArgs): Promise<GetBasicUserProfile> => {
-          const res = await userService.deletePhotoByUuid(userID, photoUuid);
+          const res = await userService.deletePhotoById(userID, photoUuid);
           if (res.status === 204) {
             return res.data;
           }
@@ -134,7 +146,6 @@ export const useMutationDeleteLoggedInUserPhotoByUuid = (dynamicParam: string) =
             throw new Error('failed fech');
           }
         },
-
       onMutate: async ({ photoUuid }) => {
         await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam] });
         // TODO
@@ -152,7 +163,6 @@ export const useMutationDeleteLoggedInUserPhotoByUuid = (dynamicParam: string) =
             return optimisticState;
           });
       },
-
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam] });
       },

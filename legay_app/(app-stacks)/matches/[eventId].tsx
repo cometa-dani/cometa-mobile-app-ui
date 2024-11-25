@@ -12,7 +12,7 @@ import { GetBasicUserProfile, GetMatchedUsersWhoLikedEventWithPagination } from 
 import { animationDuration, defaultImgPlaceholder } from '../../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { gray_200, gray_300, gray_500 } from '../../../constants/colors';
-import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/currentUser/userProfileHooks';
+import { useQueryGetUserByUid } from '../../../queries/currentUser/userHooks';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../../queries/queryKeys';
 import { GetLikedEventsForBucketListWithPagination } from '../../../models/LikedEvent';
@@ -119,7 +119,7 @@ interface FlashListProps {
 const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users, onInfiniteScroll }) => {
   const queryClient = useQueryClient();
   const loggedInUserUuid = useCometaStore(state => state.uid);
-  const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
+  const { data: loggedInUserProfile } = useQueryGetUserByUid(loggedInUserUuid);
   const urlParams = useGlobalSearchParams<{ eventId: string }>();
   const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState<GetBasicUserProfile | undefined>(undefined);
   const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);

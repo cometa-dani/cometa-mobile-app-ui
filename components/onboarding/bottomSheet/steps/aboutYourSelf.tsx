@@ -10,7 +10,8 @@ import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
 import { View } from 'react-native';
 import { Button } from '@/components/button/button';
-import { IUpdateUser } from '@/models/User';
+import { ICreateUser, IUpdateUser } from '@/models/User';
+import { useMutationCreateUser, useMutationUploadUserPhotos } from '@/queries/currentUser/userHooks';
 
 
 const errorMessages = {
@@ -48,11 +49,24 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
   const formProps = useForm({ defaultValues, resolver: yupResolver<FormValues>(validationSchema) });
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
   const userState = useCometaStore(state => state.onboarding.user);
-  // const createUser = useMutation
+  const createUser = useMutationCreateUser();
+  const uploadPhotos = useMutationUploadUserPhotos();
 
-  const handleUserCreation = (values: FormValues): void => {
+  const handleUserCreation = async (values: FormValues): Promise<void> => {
     setOnboardingState(values);
-    console.log('handleNext', values);
+    const createUserPayload: ICreateUser = {
+      email: userState.email,
+      name: userState.name,
+      username: userState.username,
+      uid: userState.uid, // from firebase
+      birthday: userState.birthday,
+    };
+    try {
+      const newUser = await createUser.mutateAsync(createUserPayload);
+      uploadPhotos.mutateAsync({ userID: newUser.id, pickedImgFiles: userState.photos });
+    } catch (error) {
+      return;
+    }
   };
 
   return (

@@ -13,7 +13,7 @@ import { AppTextInput } from '../../../../legacy_components/textInput/AppTextInp
 import { RectButton } from 'react-native-gesture-handler';
 import { If } from '../../../../legacy_components/utils/ifElse';
 import { useCometaStore } from '../../../../store/cometaStore';
-import { useQueryGetLoggedInUserProfileByUid } from '../../../../queries/currentUser/userProfileHooks';
+import { useQueryGetUserByUid } from '../../../../queries/currentUser/userHooks';
 import { FadingLoader } from '../../../../legacy_components/lodingSkeletons/FadingList';
 
 

@@ -3,7 +3,7 @@ import { ImagePickerAsset } from 'expo-image-picker';
 import { EventCategory, LikeableEvent } from './Event';
 import { Friendship } from './Friendship';
 import { Photo } from './Photo';
-import { PhotoPlaceholder } from '@/components/onboarding/bottomSheet/photosGrid/photosGrid';
+import { IPhotoPlaceholder } from '@/components/onboarding/bottomSheet/photosGrid/photosGrid';
 
 
 enum Gender {
@@ -100,7 +100,7 @@ export interface IUserClientState extends Pick<GetBasicUserProfile, (
   'languages'
   // 'photos'
 )> {
-  photos: PhotoPlaceholder[]
+  photos: IPhotoPlaceholder[]
   password: string;
   repassword: string;
   imageRef?: ImagePickerAsset;

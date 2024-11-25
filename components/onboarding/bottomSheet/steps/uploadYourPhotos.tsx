@@ -7,7 +7,7 @@ import { Heading } from '@/components/text/heading';
 import { Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { Button } from '@/components/button/button';
-import { createEmptyPlaceholders, PhotoPlaceholder, PhotosGrid } from '../photosGrid/photosGrid';
+import { createEmptyPlaceholders, IPhotoPlaceholder, PhotosGrid } from '../photosGrid/photosGrid';
 import { MAX_NUMBER_PHOTOS } from '@/constants/vars';
 
 
@@ -22,7 +22,7 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
   const userPhotos = useCometaStore(state => state.onboarding.user.photos) ?? [];
 
-  const handleUserState = (photos: PhotoPlaceholder[]) => {
+  const handleUserState = (photos: IPhotoPlaceholder[]) => {
     const filterdPhotos = photos.filter(photo => photo?.asset);
     console.log('handlePhotosUpload', filterdPhotos);
     setOnboardingState({ photos: filterdPhotos });

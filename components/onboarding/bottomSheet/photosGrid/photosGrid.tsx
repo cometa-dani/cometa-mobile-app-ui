@@ -12,12 +12,12 @@ import { If } from '@/components/utils/ifElse';
 type ImagePickerAsset = ImagePicker.ImagePickerAsset
 
 
-export type PhotoPlaceholder = {
+export type IPhotoPlaceholder = {
   position: number;
   asset?: ImagePickerAsset
 }
 
-export const createEmptyPlaceholders = (x: number): PhotoPlaceholder[] => (
+export const createEmptyPlaceholders = (x: number): IPhotoPlaceholder[] => (
   Array
     .from({ length: x })
     .map(
@@ -29,7 +29,7 @@ export const createEmptyPlaceholders = (x: number): PhotoPlaceholder[] => (
 );
 
 const appendPhoto = (pickedPhotos: ImagePickerAsset[]) => {
-  const appendPhoto = (prev: PhotoPlaceholder[]) => {
+  const appendPhoto = (prev: IPhotoPlaceholder[]) => {
     let counter = 0;
     const currentAssets = prev.filter(photo => photo?.asset);
     return (
@@ -51,7 +51,7 @@ const appendPhoto = (pickedPhotos: ImagePickerAsset[]) => {
 };
 
 const replacePhoto = (pickedPhotos: ImagePickerAsset[], selectedPosition: number) => {
-  const replacePhoto = (prev: PhotoPlaceholder[]) => {
+  const replacePhoto = (prev: IPhotoPlaceholder[]) => {
     return prev.map(photo => {
       const isSelected = photo.position === selectedPosition;
       if (isSelected) {
@@ -72,13 +72,13 @@ interface IPhotosGridProps {
    *
    * @description if acttion is 'update' returns 1 photo, if 'create' returns all photos
    */
-  onSelect: (photos: PhotoPlaceholder[]) => void
-  setInitialPhotos: () => PhotoPlaceholder[],
+  onSelect: (photos: IPhotoPlaceholder[]) => void
+  setInitialPhotos: () => IPhotoPlaceholder[],
   action?: 'create' | 'update'
 }
 export const PhotosGrid: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, action = 'create' }) => {
   const { styles, theme } = useStyles(uploadYourPhotosSheet);
-  const [userPhotos = [], setUserPhotos] = useState<PhotoPlaceholder[]>(setInitialPhotos);
+  const [userPhotos = [], setUserPhotos] = useState<IPhotoPlaceholder[]>(setInitialPhotos);
   const [firstPhoto, ...restPhotos] = userPhotos;
 
   const handlePickMultipleImages = async (selectedPosition = 0, isPositionSelected = false) => {

@@ -25,7 +25,7 @@ import ReactNativeModal from 'react-native-modal';
 import { gray_100, pink_200 } from '../../../constants/colors';
 import { ErrorMessage } from '../../../queries/errors/errorMessages';
 import notificationService from '../../../services/notificationService';
-import { useQueryGetLoggedInUserProfileByUid } from '../../../queries/currentUser/userProfileHooks';
+import { useQueryGetUserByUid } from '../../../queries/currentUser/userHooks';
 import { MutateFrienship } from '../../../models/Friendship';
 import { ModalNewFriendship } from '../../../legacy_components/modal/modalNewFriendship';
 import chatWithFriendService from '../../../services/chatWithFriendService';
@@ -41,7 +41,7 @@ const searchParamsSchemma = Yup.object({
 export default function TargerUserProfileScreen(): JSX.Element {
   // client state
   const loggedInUserUuid = useCometaStore(state => state.uid);
-  const { data: loggedInUserProfile } = useQueryGetLoggedInUserProfileByUid(loggedInUserUuid);
+  const { data: loggedInUserProfile } = useQueryGetUserByUid(loggedInUserUuid);
 
   // colors
   const { background } = useColors();
