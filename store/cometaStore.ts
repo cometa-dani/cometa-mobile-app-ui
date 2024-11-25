@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { createOnboardingSlice, OnboardingSlice } from './slices/onBoardingSlice';
+import { createOnboardingSlice, IOnboardingSlice } from './slices/onBoardingSlice';
 import { createUserSlice, UserSlice } from './slices/userSlice';
 import { createNewPeopleSlice, NewPeopleSlice } from './slices/newPeopleSlice';
 import { LatestMessagesSlice, createLatestMessagesSlice } from './slices/messagesSlices';
@@ -9,7 +9,7 @@ import { createSearchFiltersSlice, SearchFiltersSlice } from './slices/searchFil
 import { createSearchPlaceSlice, SearchPlaceSlice } from './slices/searchPlacesSlide';
 
 
-type StoreSlices = OnboardingSlice & UserSlice & NewPeopleSlice & LatestMessagesSlice & ChatGroupSlice & NotificationsSlice & SearchFiltersSlice & SearchPlaceSlice;
+type StoreSlices = IOnboardingSlice & UserSlice & NewPeopleSlice & LatestMessagesSlice & ChatGroupSlice & NotificationsSlice & SearchFiltersSlice & SearchPlaceSlice;
 
 export const useCometaStore = create<StoreSlices>(
   (...args) => ({

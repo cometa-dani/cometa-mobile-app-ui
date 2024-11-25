@@ -10,6 +10,7 @@ import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
 import { View } from 'react-native';
 import { Button } from '@/components/button/button';
+import { IUserOnboarding } from '@/models/User';
 
 
 const errorMessages = {
@@ -21,16 +22,16 @@ const errorMessages = {
   birthday: 'Birthday is required',
 };
 
-type FormValues = {
-  email: string;
-  password: string;
-  repassword: string;
-  name: string;
-  username: string;
-  birthday: string;
-}
+type IFormValues = Pick<IUserOnboarding, (
+  'email' |
+  'password' |
+  'repassword' |
+  'name' |
+  'username' |
+  'birthday'
+)>
 
-const validationSchema = Yup.object<FormValues>().shape({
+const validationSchema = Yup.object<IFormValues>().shape({
   email: Yup.string().email().required(errorMessages.email),
   password: Yup.string().min(6).max(18).required(errorMessages.password),
   repassword:
@@ -42,7 +43,7 @@ const validationSchema = Yup.object<FormValues>().shape({
   birthday: Yup.string().min(3).max(18).required(errorMessages.birthday),
 });
 
-const defaultValues: FormValues = {
+const defaultValues: IFormValues = {
   email: '',
   password: '',
   repassword: '',
@@ -56,10 +57,10 @@ interface IProps {
 }
 export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
   const { theme } = useStyles();
-  const formProps = useForm<FormValues>({ defaultValues, resolver: yupResolver(validationSchema) });
+  const formProps = useForm({ defaultValues, resolver: yupResolver<IFormValues>(validationSchema) });
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
 
-  const handleUserState = (values: FormValues): void => {
+  const handleUserState = (values: IFormValues): void => {
     setOnboardingState(values);
     console.log('handleNext', values);
     onNextStep();

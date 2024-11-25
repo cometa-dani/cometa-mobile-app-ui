@@ -8,6 +8,7 @@ import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { CreateYourProfileForm } from './steps/createYourProfile';
 import { AboutYourSelfForm } from './steps/aboutYourSelf';
 import { UploadYouPhotosForm } from './steps/uploadYourPhotos';
+import { useRouter } from 'expo-router';
 
 
 const snapPoints = ['50%', '78%', '100%'];
@@ -16,9 +17,15 @@ const snapPoints = ['50%', '78%', '100%'];
 interface IProps {
   name?: string,
 }
-export const BottomSheet = forwardRef<BottomSheetMethods, IProps>((props, ref) => {
+export const BottomSheet = forwardRef<BottomSheetMethods, IProps>((_, ref) => {
+  // const bottomSheetRef = (ref as RefObject<BottomSheetMethods>);
+  const router = useRouter();
   const { theme } = useStyles();
   const [nextStep, setNextStep] = useReducer(prev => (++prev % 3), 0);
+  const handleLastStep = () => {
+    setNextStep();
+    router.push('/(tabs)/index');
+  };
   return (
     <DefaultBottomSheet
       $modal={false}
@@ -36,6 +43,7 @@ export const BottomSheet = forwardRef<BottomSheetMethods, IProps>((props, ref) =
         }}>
           <ProgressBar value={(nextStep + 1) * 33.3333} />
         </BottomSheetView>
+
         {nextStep === 0 && (
           <Animated.View
             entering={SlideInRight}
@@ -46,7 +54,6 @@ export const BottomSheet = forwardRef<BottomSheetMethods, IProps>((props, ref) =
             />
           </Animated.View>
         )}
-
         {nextStep === 1 && (
           <Animated.View
             entering={SlideInRight}
@@ -57,14 +64,13 @@ export const BottomSheet = forwardRef<BottomSheetMethods, IProps>((props, ref) =
             />
           </Animated.View>
         )}
-
         {nextStep === 2 && (
           <Animated.View
             entering={SlideInRight}
             exiting={SlideOutLeft}
           >
             <AboutYourSelfForm
-              onNextStep={setNextStep}
+              onNextStep={handleLastStep}
             />
           </Animated.View>
         )}

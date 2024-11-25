@@ -10,7 +10,7 @@ import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
 import { View } from 'react-native';
 import { Button } from '@/components/button/button';
-import { ICreateUser, IUpdateUser } from '@/models/User';
+import { ICreateUser, IUpdateUser, IUserOnboarding } from '@/models/User';
 import { useMutationCreateUser, useMutationUpdateUserById, useMutationUploadUserPhotos } from '@/queries/currentUser/userHooks';
 
 
@@ -22,9 +22,15 @@ const errorMessages = {
   languages: 'How many languages do you speak',
 };
 
-type FormValues = Pick<IUpdateUser, ('occupation' | 'biography' | 'currentLocation' | 'homeTown' | 'languages')>
+type IFormValues = Partial<Pick<IUserOnboarding, (
+  'occupation' |
+  'biography' |
+  'currentLocation' |
+  'homeTown' |
+  'languages'
+)>>
 
-const validationSchema = Yup.object<FormValues>().shape({
+const validationSchema = Yup.object<IFormValues>().shape({
   occupation: Yup.string().min(5).max(120).optional(),
   biography: Yup.string().min(5).max(200).optional(),
   currentLocation: Yup.string().min(5).max(120).optional(),
@@ -32,7 +38,7 @@ const validationSchema = Yup.object<FormValues>().shape({
   languages: Yup.array().min(1).optional(),
 });
 
-const defaultValues: FormValues = {
+const defaultValues: IFormValues = {
   occupation: '',
   biography: '',
   currentLocation: '',
@@ -45,13 +51,13 @@ interface IProps {
 }
 export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
   const { theme } = useStyles();
-  const formProps = useForm({ defaultValues, resolver: yupResolver<FormValues>(validationSchema) });
+  const formProps = useForm({ defaultValues, resolver: yupResolver<IFormValues>(validationSchema) });
   const userState = useCometaStore(state => state.onboarding.user);
   const createUser = useMutationCreateUser();
   const updateUser = useMutationUpdateUserById();
   const uploadPhotos = useMutationUploadUserPhotos();
 
-  const handleUserCreation = async (values: FormValues): Promise<void> => {
+  const handleUserCreation = async (values: IFormValues): Promise<void> => {
     const createUserPayload: ICreateUser = {
       email: userState.email,
       name: userState.name,
@@ -70,6 +76,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
       const newUser = await createUser.mutateAsync(createUserPayload);
       await uploadPhotos.mutateAsync({ userId: newUser.id, pickedImgFiles: userState.photos });
       await updateUser.mutateAsync({ userId: newUser.id, payload: updateUserPayload });
+      onNextStep();
     } catch (error) {
       return;
     }

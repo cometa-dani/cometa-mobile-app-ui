@@ -84,8 +84,7 @@ enum Education {
   OTHER
 }
 
-export interface IUserOnboarding extends Pick<IGetBasicUserProfile, (
-  // 'id' |
+export interface IUserOnboarding extends Pick<IGetBasicUserProfile, (|
   'uid' |
   'username' |
   'birthday' |
@@ -158,21 +157,22 @@ export interface IGetPaginatedUsers extends
 
 export interface IGetDetailedUserProfile {
   id: number;
-  uid?: string;
-  likedEvents: LikedEvent[];
+  uid: string;
   photos: IPhoto[];
   username: string;
-  name: string
-  biography: string;
   email: string;
+  name: string
+  biography?: string;
   phone?: string;
-  birthday?: Date | string;
+  birthday?: string;
+  occupation?: string;
   currentLocation?: string;
   homeTown?: string;
   languages?: string[];
+  likedEvents?: LikedEvent[];
+
   height?: number;
   weight?: number;
-  occupation?: string;
   interests?: EventCategory[];
   favoriteSports?: string[];
   music?: string[];
