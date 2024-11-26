@@ -8,9 +8,10 @@ import { useCometaStore } from '@/store/cometaStore';
 import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { SafeAreaView, View } from 'react-native';
 import { Button } from '@/components/button/button';
 import { IUserOnboarding } from '@/models/User';
+import { View } from 'react-native';
+import { useKeyboard } from '@/hooks/useKeyBoardHeight';
 
 
 const testIds = {
@@ -68,6 +69,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
   const { theme } = useStyles();
   const formProps = useForm({ defaultValues, resolver: yupResolver<IFormValues>(validationSchema) });
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
+  const keyboard = useKeyboard();
 
   const handleUserState = (values: IFormValues): void => {
     setOnboardingState(values);
@@ -89,8 +91,8 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
       </BottomSheetView>
       <BottomSheetScrollView
         contentContainerStyle={{
-          paddingVertical: theme.spacing.sp8,
           paddingHorizontal: theme.spacing.sp10,
+          paddingVertical: theme.spacing.sp8,
           gap: theme.spacing.sp7,
         }}>
         <FieldText
@@ -146,12 +148,14 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
           iconName='lock'
           defaultErrMessage={errorMessages.repeatPassword}
         />
-        <Button
-          variant='primary'
-          onPressed={formProps.handleSubmit(handleUserState)}
-        >
-          Next
-        </Button>
+        <View style={{ marginBottom: keyboard.height / 2 }}>
+          <Button
+            variant='primary'
+            onPressed={formProps.handleSubmit(handleUserState)}
+          >
+            Next
+          </Button>
+        </View>
       </BottomSheetScrollView>
     </FormProvider>
   );

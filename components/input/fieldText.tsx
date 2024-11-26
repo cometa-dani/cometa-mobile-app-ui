@@ -7,6 +7,7 @@ import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Controller, useFormContext } from 'react-hook-form';
 import DatePicker from 'react-native-date-picker';
+import { nodeEnv } from '@/constants/vars';
 
 
 interface IFieldTextProps {
@@ -41,6 +42,7 @@ export const FieldText: FC<IFieldTextProps> = ({
   const { control, setValue } = useFormContext();
   const [date, setDate] = useState<Date | undefined>();
   const [openDatePicker, setOpenDatePicker] = useState(false);
+  console.log('nodeEnv', nodeEnv);
   return (
     <Controller
       name={name}
@@ -89,10 +91,11 @@ export const FieldText: FC<IFieldTextProps> = ({
                 editable={editable}
                 multiline={multiline}
                 numberOfLines={multiline ? 4 : 1}
-                secureTextEntry={secureTextEntry}
+                secureTextEntry={nodeEnv === 'development' ? false : secureTextEntry}
                 style={styles.field(isFocused, Boolean(errorMessage))}
                 placeholder={placeholder}
-                keyboardType={keyboardType}
+                keyboardType="ascii-capable"
+                autoCapitalize='none'
                 value={value}
                 onChangeText={onChange}
                 onBlur={() => { onBlur(); setIsFocused(false); }}

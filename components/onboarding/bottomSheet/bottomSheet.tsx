@@ -1,8 +1,8 @@
-import { forwardRef, useEffect, useReducer, useState } from 'react';
+import { forwardRef, useReducer } from 'react';
 import DefaultBottomSheet, { BottomSheetView, } from '@gorhom/bottom-sheet';
 import { ProgressBar } from '@/components/progressBar/progressBar';
 import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
-import { Keyboard, Platform, SafeAreaView } from 'react-native';
+import { Platform, SafeAreaView } from 'react-native';
 import { useStyles } from 'react-native-unistyles';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { CreateYourProfileForm } from './steps/createYourProfile';
@@ -23,20 +23,6 @@ export const BottomSheet = forwardRef<BottomSheetMethods, IProps>((_, ref) => {
   const { theme } = useStyles();
   const [nextStep, setNextStep] = useReducer(prev => (++prev % 3), 0);
   const handleLastStep = () => router.push('/(tabs)/index');
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-
-  useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', (event) => {
-      setKeyboardHeight(event.endCoordinates.height);
-    });
-    Keyboard.addListener('keyboardDidHide', () => {
-      setKeyboardHeight(0);
-    });
-    return () => {
-      Keyboard.removeAllListeners('keyboardDidShow');
-      Keyboard.removeAllListeners('keyboardDidHide');
-    };
-  }, []);
 
   return (
     <DefaultBottomSheet

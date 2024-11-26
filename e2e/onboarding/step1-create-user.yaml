@@ -26,19 +26,13 @@ appId: com.cometadaniexpo.cometaapp
     text: ${output.birthday.text}
 
 - scroll
-
 - tapOn:
     id: ${output.email.id}
 - inputText: ${output.email.text}
 
-- hideKeyboard
-- scroll
-
 - tapOn:
     id: ${output.password.id}
 - inputText: ${output.password.text}
-
-- scroll
 
 - tapOn:
     id: ${output.repeatPassword.id}
