@@ -55,14 +55,14 @@ export const FieldText: FC<IFieldTextProps> = ({
         return (
           <VStack>
             <DatePicker
-              modal
+              modal={true}
               mode='date'
               open={openDatePicker}
               date={date ? date : new Date()}
               onConfirm={(date) => {
-                setOpenDatePicker(false);
                 setDate(date);
                 setValue(name, new Intl.DateTimeFormat('en-US').format(date));
+                setOpenDatePicker(false);
               }}
               onCancel={() => {
                 setOpenDatePicker(false);
