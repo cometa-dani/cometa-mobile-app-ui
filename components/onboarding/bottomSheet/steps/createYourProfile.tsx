@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
+import { useStyles } from 'react-native-unistyles';
 import { FieldText } from '@/components/input/fieldText';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';

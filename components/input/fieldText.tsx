@@ -42,7 +42,6 @@ export const FieldText: FC<IFieldTextProps> = ({
   const { control, setValue } = useFormContext();
   const [date, setDate] = useState<Date | undefined>();
   const [openDatePicker, setOpenDatePicker] = useState(false);
-  console.log('nodeEnv', nodeEnv);
   return (
     <Controller
       name={name}
