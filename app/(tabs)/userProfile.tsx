@@ -3,12 +3,12 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import '@/styles/unistyles';
 
 
-export default function AppScreen() {
+export default function UserProfileScreen() {
   const { styles } = useStyles(stylesheet);
   return (
     <>
       <View style={styles.container}>
-        <Text>Lets go!</Text>
+        <Text>User profile</Text>
       </View>
     </>
   );

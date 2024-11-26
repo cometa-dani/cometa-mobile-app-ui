@@ -5,8 +5,8 @@ import { AppWrapperOnBoarding, onBoardingStyles } from '../../legacy_components/
 import { useCometaStore } from '../../store/cometaStore';
 import { AppButton, appButtonstyles } from '../../legacy_components/buttons/buttons';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import { useState } from 'react';
 import { calAge } from '../../helpers/calcAge';
+import { useState } from 'react';
 import { buttonColors } from '../../constants/colors';
 import { If } from '../../legacy_components/utils';
 import ReactNativeModal from 'react-native-modal';

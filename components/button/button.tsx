@@ -40,13 +40,13 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
     animationTimingFunction: 'ease-in-out',
     variants: {
       color: {
-        primary: {
+        'primary': {
           color: theme.colors.white100,
         },
         'primary-alt': {
           color: theme.colors.red100,
         },
-        secondary: {
+        'secondary': {
           color: theme.colors.white100,
         },
         'secondary-alt': {
@@ -75,7 +75,7 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
     ],
     variants: {
       color: {
-        primary: {
+        'primary': {
           backgroundColor: pressed ? theme.colors.red90 : theme.colors.red100,
           borderColor: pressed ? theme.colors.red100 : theme.colors.red90,
           shadowColor: theme.colors.red100,
@@ -85,7 +85,7 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
           borderColor: pressed ? theme.colors.red90 : theme.colors.red100,
           shadowColor: theme.colors.red100,
         },
-        secondary: {
+        'secondary': {
           backgroundColor: pressed ? theme.colors.blue90 : theme.colors.blue100,
           borderColor: pressed ? theme.colors.blue100 : theme.colors.blue90,
           shadowColor: theme.colors.blue100,

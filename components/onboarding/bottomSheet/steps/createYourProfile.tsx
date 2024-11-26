@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { FieldText } from '@/components/input/fieldText';
 import { FormProvider, useForm } from 'react-hook-form';

@@ -1,7 +1,7 @@
 import 'expo-dev-client';
 // components
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { SplashScreen, Stack, useRouter, } from 'expo-router';
+import { SplashScreen, Stack } from 'expo-router';
 import ToastManager from 'toastify-react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 // hooks
@@ -17,13 +17,11 @@ export const unstable_settings = {
   initialRouteName: '/index',
 };
 
-
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 
 export default function RootLayout() {
-  const router = useRouter();
   const [loaded, error] = useFonts({
     Poppins: require('../assets/fonts/Poppins-Regular.ttf'),
     PoppinsMedium: require('../assets/fonts/Poppins-Medium.ttf'),
@@ -39,10 +37,6 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      // TOOD:
-      // read from local storage to check if user is logged in
-      // if not, redirect to login screen
-      router.replace('/onboarding');
       SplashScreen.hideAsync();
     }
   }, [loaded]);
@@ -50,7 +44,6 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
-
   return <Root />;
 }
 
@@ -65,11 +58,9 @@ function Root(): ReactNode {
       />
       <GestureHandlerRootView>
         <BottomSheetModalProvider>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              animation: 'slide_from_right',
-            }}>
+          <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
+            <Stack.Screen name='onboarding/index' />
+            <Stack.Screen name='(tabs)' />
           </Stack>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
