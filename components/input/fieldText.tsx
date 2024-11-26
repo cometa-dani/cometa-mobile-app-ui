@@ -10,6 +10,7 @@ import DatePicker from 'react-native-date-picker';
 
 
 interface IFieldTextProps {
+  testId?: string,
   label: string,
   name: keyof IUserOnboarding,
   placeholder?: string,
@@ -32,7 +33,8 @@ export const FieldText: FC<IFieldTextProps> = ({
   defaultErrMessage,
   multiline = false,
   editable = true,
-  isDateTimePicker = false
+  isDateTimePicker = false,
+  testId
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const { styles, theme } = useStyles(inputSheet);
@@ -82,6 +84,7 @@ export const FieldText: FC<IFieldTextProps> = ({
                 />
               </View>
               <BottomSheetTextInput
+                testID={testId}
                 onPress={() => isDateTimePicker && setOpenDatePicker(true)}
                 editable={editable}
                 multiline={multiline}
@@ -153,7 +156,6 @@ const inputSheet = createStyleSheet((theme) => ({
     zIndex: 1,
     left: 8,
     width: 44,
-    // backgroundColor: theme.colors.red70,
     borderRightColor: theme.colors.gray200,
     borderRightWidth: 1,
     paddingVertical: 3,

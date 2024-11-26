@@ -8,10 +8,19 @@ import { useCometaStore } from '@/store/cometaStore';
 import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { View } from 'react-native';
+import { SafeAreaView, View } from 'react-native';
 import { Button } from '@/components/button/button';
 import { IUserOnboarding } from '@/models/User';
 
+
+const testIds = {
+  fullname: '#fullname',
+  email: '#email',
+  password: '#password',
+  repeatPassword: '#repeatPassword',
+  username: '#username',
+  birthday: '#birthday',
+};
 
 const errorMessages = {
   email: 'Email is required',
@@ -67,7 +76,9 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
   };
 
   return (
-    <FormProvider {...formProps}>
+    <FormProvider
+      {...formProps}
+    >
       <BottomSheetView>
         <Center styles={{
           paddingTop: theme.spacing.sp12,
@@ -80,9 +91,10 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
         contentContainerStyle={{
           paddingVertical: theme.spacing.sp8,
           paddingHorizontal: theme.spacing.sp10,
-          gap: theme.spacing.sp7
+          gap: theme.spacing.sp7,
         }}>
         <FieldText
+          testId={testIds.fullname}
           label='Full Name'
           name='name'
           placeholder='Enter your Full Name'
@@ -90,6 +102,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.name}
         />
         <FieldText
+          testId={testIds.username}
           label='User Name'
           name='username'
           placeholder='Enter your User Name'
@@ -97,6 +110,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.username}
         />
         <FieldText
+          testId={testIds.birthday}
           label='Birthday'
           name='birthday'
           placeholder='Enter your birthday'
@@ -106,6 +120,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.birthday}
         />
         <FieldText
+          testId={testIds.email}
           label='Email'
           name='email'
           placeholder='Enter your Email'
@@ -114,6 +129,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.email}
         />
         <FieldText
+          testId={testIds.password}
           secureTextEntry={true}
           label='Password'
           name='password'
@@ -122,6 +138,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.password}
         />
         <FieldText
+          testId={testIds.repeatPassword}
           secureTextEntry={true}
           label='Re-enter Password'
           name='repassword'
@@ -129,11 +146,12 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
           iconName='lock'
           defaultErrMessage={errorMessages.repeatPassword}
         />
-        <View style={{ paddingBottom: UnistylesRuntime.insets.bottom }}>
-          <Button variant='primary' onPressed={formProps.handleSubmit(handleUserState)}>
-            Next
-          </Button>
-        </View>
+        <Button
+          variant='primary'
+          onPressed={formProps.handleSubmit(handleUserState)}
+        >
+          Next
+        </Button>
       </BottomSheetScrollView>
     </FormProvider>
   );

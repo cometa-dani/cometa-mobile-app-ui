@@ -1,0 +1,48 @@
+appId: com.cometadaniexpo.cometaapp
+---
+
+# launch the app
+- launchApp:
+    appId: com.cometadaniexpo.cometaapp
+
+#  filling in the form "create user"
+- runScript: testIds.js
+- tapOn:
+    text: "Register"
+- tapOn:
+    text: "User Profile"
+
+- tapOn:
+    id: ${output.fullname.id}
+- inputText: ${output.fullname.text}
+
+- tapOn:
+    id: ${output.username.id}
+- inputText: ${output.username.text}
+
+- tapOn:
+    id: ${output.birthday.id}
+- tapOn:
+    text: ${output.birthday.text}
+
+- scroll
+
+- tapOn:
+    id: ${output.email.id}
+- inputText: ${output.email.text}
+
+- hideKeyboard
+- scroll
+
+- tapOn:
+    id: ${output.password.id}
+- inputText: ${output.password.text}
+
+- scroll
+
+- tapOn:
+    id: ${output.repeatPassword.id}
+- inputText: ${output.password.text}
+
+- tapOn:
+    text: "Next"
