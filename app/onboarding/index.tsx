@@ -29,7 +29,6 @@ export default function OnboardingScreen() {
   const openUserProfileBottomSheet = (): void => {
     setUserProfileModalVisible();
     setTimeout(() => bottomSheetRef?.current?.expand(), 280);
-    // bottomSheetRef?.current?.snapToIndex(1)
   };
 
   const openCompanyProfileModal = (): void => { };

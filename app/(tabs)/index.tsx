@@ -3,7 +3,7 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import '@/styles/unistyles';
 
 
-export default function AppScreen() {
+export default function HomeScreen() {
   const { styles } = useStyles(stylesheet);
   return (
     <>
