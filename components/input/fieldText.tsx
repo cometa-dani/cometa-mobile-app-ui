@@ -6,6 +6,7 @@ import { KeyboardTypeOptions, Text, View } from 'react-native';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Controller, useFormContext } from 'react-hook-form';
+import DatePicker from 'react-native-date-picker';
 
 
 interface IFieldTextProps {
@@ -17,7 +18,8 @@ interface IFieldTextProps {
   iconName: React.ComponentProps<typeof FontAwesome>['name'],
   defaultErrMessage?: string,
   multiline?: boolean,
-  editable?: boolean
+  editable?: boolean,
+  isDateTimePicker?: boolean
 }
 
 export const FieldText: FC<IFieldTextProps> = ({
@@ -29,11 +31,14 @@ export const FieldText: FC<IFieldTextProps> = ({
   iconName,
   defaultErrMessage,
   multiline = false,
-  editable = true
+  editable = true,
+  isDateTimePicker = false
 }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const { styles: inputStyles, theme } = useStyles(inputSheet);
-  const { control } = useFormContext();
+  const { styles, theme } = useStyles(inputSheet);
+  const { control, setValue } = useFormContext();
+  const [date, setDate] = useState<Date | undefined>();
+  const [openDatePicker, setOpenDatePicker] = useState(false);
   return (
     <Controller
       name={name}
@@ -49,13 +54,27 @@ export const FieldText: FC<IFieldTextProps> = ({
         );
         return (
           <VStack>
-            <VStack styles={inputStyles.fiedContainer}>
-              <View style={inputStyles.fieldLabel}>
-                <Text style={inputStyles.fieldTextLabel}>
+            <DatePicker
+              modal
+              mode='date'
+              open={openDatePicker}
+              date={date ? date : new Date()}
+              onConfirm={(date) => {
+                setOpenDatePicker(false);
+                setDate(date);
+                setValue(name, new Intl.DateTimeFormat('en-US').format(date));
+              }}
+              onCancel={() => {
+                setOpenDatePicker(false);
+              }}
+            />
+            <VStack styles={styles.fiedContainer}>
+              <View style={styles.fieldLabel}>
+                <Text style={styles.fieldTextLabel}>
                   {label}
                 </Text>
               </View>
-              <View style={inputStyles.iconContainer}>
+              <View style={styles.iconContainer}>
                 <FontAwesome
                   name={iconName}
                   size={theme.icons.lg}
@@ -63,11 +82,12 @@ export const FieldText: FC<IFieldTextProps> = ({
                 />
               </View>
               <BottomSheetTextInput
+                onPress={() => isDateTimePicker && setOpenDatePicker(true)}
                 editable={editable}
                 multiline={multiline}
                 numberOfLines={multiline ? 4 : 1}
                 secureTextEntry={secureTextEntry}
-                style={inputStyles.field(isFocused, Boolean(errorMessage))}
+                style={styles.field(isFocused, Boolean(errorMessage))}
                 placeholder={placeholder}
                 keyboardType={keyboardType}
                 value={value}
@@ -89,7 +109,7 @@ export const FieldText: FC<IFieldTextProps> = ({
                 size={theme.icons.xs}
                 color={iconColor}
               />
-              <Text style={inputStyles.fieldTextMessage(Boolean(errorMessage), isFocused)}>
+              <Text style={styles.fieldTextMessage(Boolean(errorMessage), isFocused)}>
                 {errorMessage || defaultErrMessage}
               </Text>
             </HStack>
@@ -143,7 +163,7 @@ const inputSheet = createStyleSheet((theme) => ({
     paddingHorizontal: theme.spacing.sp6,
     paddingLeft: 60,
     paddingBottom: theme.spacing.sp4,
-    paddingTop: theme.spacing.sp8,
+    paddingTop: theme.spacing.sp10,
     borderRadius: theme.radius.sm,
     fontFamily: theme.text.fontMedium,
     borderWidth: 1.6,
@@ -154,5 +174,11 @@ const inputSheet = createStyleSheet((theme) => ({
     shadowRadius: isFocused || isError ? 2 : 0,
     elevation: isFocused || isError ? 1 : 0,
     animationTimingFunction: 'ease-in-out',
-  })
+  }),
+  calendar: {
+    backgroundColor: theme.colors.white100,
+    paddingVertical: theme.spacing.sp8,
+    paddingHorizontal: theme.spacing.sp6,
+    borderRadius: theme.radius.sm
+  }
 }));

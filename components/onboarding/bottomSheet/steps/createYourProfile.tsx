@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { FieldText } from '@/components/input/fieldText';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -101,6 +101,8 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
           name='birthday'
           placeholder='Enter your birthday'
           iconName='calendar-check-o'
+          isDateTimePicker={true}
+          editable={false}
           defaultErrMessage={errorMessages.birthday}
         />
         <FieldText

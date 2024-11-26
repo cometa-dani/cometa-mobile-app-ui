@@ -28,16 +28,14 @@ export default function OnboardingScreen() {
 
   const openUserProfileBottomSheet = (): void => {
     setUserProfileModalVisible();
-    setTimeout(() => bottomSheetRef?.current?.expand(), 280);
+    setTimeout(() => bottomSheetRef?.current?.expand(), 300);
   };
 
   const openCompanyProfileModal = (): void => { };
 
   return (
     <>
-      <StatusBar
-        style='inverted'
-      />
+      <StatusBar style='inverted' />
 
       <Modal
         backdropColor={theme.colors.backDrop}

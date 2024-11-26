@@ -22,10 +22,8 @@ export const BottomSheet = forwardRef<BottomSheetMethods, IProps>((_, ref) => {
   const router = useRouter();
   const { theme } = useStyles();
   const [nextStep, setNextStep] = useReducer(prev => (++prev % 3), 0);
-  const handleLastStep = () => {
-    setNextStep();
-    router.push('/(tabs)/index');
-  };
+  const handleLastStep = () => router.push('/(tabs)/index');
+
   return (
     <DefaultBottomSheet
       $modal={false}
