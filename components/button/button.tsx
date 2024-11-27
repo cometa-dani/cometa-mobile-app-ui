@@ -1,25 +1,47 @@
 import { createStyleSheet } from 'react-native-unistyles';
 import { forwardRef, ReactNode } from 'react';
-import { GestureResponderEvent, Pressable, Text, View } from 'react-native';
+import { GestureResponderEvent, Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
 import { useStyles } from 'react-native-unistyles';
+import { TouchableOpacity } from '@gorhom/bottom-sheet';
 
 
 interface IButtonProps {
   children: ReactNode,
   variant: 'primary' | 'primary-alt' | 'secondary' | 'secondary-alt',
   size?: 'sm' | 'md' | 'lg',
-  onPressed: (event: GestureResponderEvent) => void
+  onPress: (event: GestureResponderEvent) => void,
+  isInsideBottomSheet?: boolean,
+  style?: StyleProp<ViewStyle>
 }
 
-export const Button = forwardRef<View, IButtonProps>(({ children, onPressed, variant }, ref) => {
+export const Button = forwardRef<View, IButtonProps>(({
+  children,
+  onPress,
+  variant,
+  isInsideBottomSheet = false,
+  style = {}
+},
+  ref
+) => {
   const { styles: buttonsStyles } = useStyles(buttonsStyleSheet, {
     color: variant
   });
+
+  if (isInsideBottomSheet) {
+    return (
+      <TouchableOpacity
+        style={[buttonsStyles.buttonContainer(), style]}
+        onPress={onPress}
+      >
+        <Text style={buttonsStyles.buttonText()}>{children}</Text>
+      </TouchableOpacity>
+    );
+  }
   return (
     <Pressable
       ref={ref}
-      onPress={onPressed}
-      style={({ pressed }) => buttonsStyles.buttonContainer(pressed)}
+      onPress={onPress}
+      style={({ pressed }) => [buttonsStyles.buttonContainer(pressed), style]}
     >
       {() => (
         <Text style={buttonsStyles.buttonText()}>
@@ -59,11 +81,11 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
     width: '100%',
     padding: theme.spacing.sp4,
     borderRadius: theme.radius.sm,
-    borderWidth: 2,
-    shadowOpacity: pressed ? 0 : 0.4,
-    shadowOffset: pressed ? { width: 0, height: 3 } : undefined,
-    shadowRadius: 3,
-    elevation: pressed ? 0 : 2.5,
+    borderWidth: 1.6,
+    shadowOpacity: pressed ? 0 : 0.2,
+    shadowOffset: pressed ? { width: 0, height: 2 } : undefined,
+    shadowRadius: 2,
+    elevation: pressed ? 0 : 1.5,
     animationTimingFunction: 'ease-in-out',
     transform: [
       {

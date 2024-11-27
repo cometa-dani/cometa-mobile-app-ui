@@ -1,10 +1,9 @@
 import { forwardRef, useReducer } from 'react';
-import DefaultBottomSheet, { BottomSheetView, } from '@gorhom/bottom-sheet';
+import DefaultBottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { ProgressBar } from '@/components/progressBar/progressBar';
 import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import { Platform, SafeAreaView } from 'react-native';
 import { useStyles } from 'react-native-unistyles';
-import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { CreateYourProfileForm } from './steps/createYourProfile';
 import { AboutYourSelfForm } from './steps/aboutYourSelf';
 import { UploadYouPhotosForm } from './steps/uploadYourPhotos';
@@ -17,7 +16,7 @@ const snapPoints = ['50%', '78%', '100%'];
 interface IProps {
   name?: string,
 }
-export const BottomSheet = forwardRef<BottomSheetMethods, IProps>((_, ref) => {
+export const BottomSheet = forwardRef<DefaultBottomSheet, IProps>((_, ref) => {
   // const bottomSheetRef = (ref as RefObject<BottomSheetMethods>);
   const router = useRouter();
   const { theme } = useStyles();
@@ -27,18 +26,24 @@ export const BottomSheet = forwardRef<BottomSheetMethods, IProps>((_, ref) => {
   return (
     <DefaultBottomSheet
       // needed for e2e testing
+      // animationConfigs={{
+      //   reduceMotion: ReduceMotion.System
+      // }}
       accessible={Platform.select({
         // setting it to false on Android seems
         // to cause issues with TalkBack instead
         ios: false
       })}
-      $modal={false}
       ref={ref}
       index={-1}
       enableDynamicSizing={false}
       enablePanDownToClose={true}
       keyboardBehavior="extend"
       snapPoints={snapPoints}
+      // footerComponent={renderFooter}
+      containerStyle={{
+        flex: 1
+      }}
     >
       <SafeAreaView style={{ flex: 1 }}>
         <BottomSheetView style={{
@@ -52,6 +57,7 @@ export const BottomSheet = forwardRef<BottomSheetMethods, IProps>((_, ref) => {
           <Animated.View
             entering={SlideInRight}
             exiting={SlideOutLeft}
+            style={{ flex: 1 }}
           >
             <CreateYourProfileForm
               onNextStep={setNextStep}
@@ -62,6 +68,7 @@ export const BottomSheet = forwardRef<BottomSheetMethods, IProps>((_, ref) => {
           <Animated.View
             entering={SlideInRight}
             exiting={SlideOutLeft}
+            style={{ flex: 1 }}
           >
             <UploadYouPhotosForm
               onNextStep={setNextStep}
@@ -72,6 +79,7 @@ export const BottomSheet = forwardRef<BottomSheetMethods, IProps>((_, ref) => {
           <Animated.View
             entering={SlideInRight}
             exiting={SlideOutLeft}
+            style={{ flex: 1 }}
           >
             <AboutYourSelfForm
               onNextStep={handleLastStep}

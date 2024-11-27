@@ -2,7 +2,7 @@ import { IUserOnboarding } from '@/models/User';
 import { FC, useState } from 'react';
 import { HStack, VStack } from '../utils/stacks';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import { KeyboardTypeOptions, Text, View } from 'react-native';
+import { KeyboardTypeOptions, Text, View, TextInput } from 'react-native';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -21,7 +21,8 @@ interface IFieldTextProps {
   defaultErrMessage?: string,
   multiline?: boolean,
   editable?: boolean,
-  isDateTimePicker?: boolean
+  isDateTimePicker?: boolean,
+  isInsideBottomSheet?: boolean
 }
 
 export const FieldText: FC<IFieldTextProps> = ({
@@ -35,13 +36,15 @@ export const FieldText: FC<IFieldTextProps> = ({
   multiline = false,
   editable = true,
   isDateTimePicker = false,
-  testId
+  testId,
+  isInsideBottomSheet = false
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const { styles, theme } = useStyles(inputSheet);
   const { control, setValue, setError } = useFormContext();
   const [date, setDate] = useState<Date | undefined>();
   const [openDatePicker, setOpenDatePicker] = useState(false);
+  const DynamicTextInput = isInsideBottomSheet ? BottomSheetTextInput : TextInput;
   return (
     <Controller
       name={name}
@@ -85,7 +88,7 @@ export const FieldText: FC<IFieldTextProps> = ({
                   color={iconColor}
                 />
               </View>
-              <BottomSheetTextInput
+              <DynamicTextInput
                 testID={testId}
                 onPress={() => isDateTimePicker && setOpenDatePicker(true)}
                 editable={editable}
@@ -175,8 +178,8 @@ const inputSheet = createStyleSheet((theme) => ({
     borderColor: isError ? theme.colors.red70 : isFocused ? theme.colors.blue100 : 'transparent',
     shadowColor: isError ? theme.colors.red70 : isFocused ? theme.colors.blue100 : undefined,
     shadowOpacity: isFocused || isError ? 0.1 : 0,
-    shadowOffset: isFocused || isError ? { width: 0, height: 3 } : undefined,
-    shadowRadius: isFocused || isError ? 2 : 0,
+    shadowOffset: isFocused || isError ? { width: 0, height: 2 } : undefined,
+    shadowRadius: isFocused || isError ? 1 : 0,
     elevation: isFocused || isError ? 1 : 0,
     animationTimingFunction: 'ease-in-out',
   }),

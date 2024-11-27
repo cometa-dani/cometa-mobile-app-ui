@@ -1,14 +1,15 @@
 import { FC } from 'react';
 import { useStyles } from 'react-native-unistyles';
 import { useCometaStore } from '@/store/cometaStore';
-import { BottomSheetView as BsView, TouchableOpacity } from '@gorhom/bottom-sheet';
+import { BottomSheetView as BsView } from '@gorhom/bottom-sheet';
 import { Center, HStack } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { Text } from 'react-native';
+import { Platform, Text } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { buttonsStyleSheet } from '@/components/button/button';
+import { Button } from '@/components/button/button';
 import { createEmptyPlaceholders, hasAsset, IPhotoPlaceholder, PhotosGrid } from '../photosGrid/photosGrid';
 import { MAX_NUMBER_PHOTOS, MIN_NUMBER_PHOTOS } from '@/constants/vars';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 
 const setInitialPlaceholders = () => createEmptyPlaceholders(MAX_NUMBER_PHOTOS);
@@ -20,9 +21,6 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
   const { theme } = useStyles();
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
   const userPhotos = useCometaStore(state => state.onboarding.user.photos) ?? [];
-  const { styles: buttonsStyles } = useStyles(buttonsStyleSheet, {
-    color: 'primary'
-  });
 
   const handleUserState = (photos: IPhotoPlaceholder[]) => {
     const filteredPhotos = photos.filter(hasAsset);
@@ -76,12 +74,18 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
           </Text>
         </HStack>
 
-        <TouchableOpacity
-          style={buttonsStyles.buttonContainer()}
-          onPress={handleNextStep}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          <Text style={buttonsStyles.buttonText()}>Next</Text>
-        </TouchableOpacity>
+          <Button
+            style={{ marginTop: theme.spacing.sp8 }}
+            isInsideBottomSheet={true}
+            variant='primary'
+            onPress={handleNextStep}
+          >
+            Next
+          </Button>
+        </KeyboardAvoidingView>
       </BsView>
     </>
   );

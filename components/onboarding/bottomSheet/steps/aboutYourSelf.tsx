@@ -5,18 +5,18 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useCometaStore } from '@/store/cometaStore';
-import { BottomSheetView, TouchableOpacity } from '@gorhom/bottom-sheet';
+import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { Text } from 'react-native';
-import { buttonsStyleSheet } from '@/components/button/button';
+import { Platform } from 'react-native';
+import { Button } from '@/components/button/button';
 import { ICreateUser, IUpdateUser, IUserOnboarding } from '@/models/User';
 import {
   useMutationCreateUser,
   useMutationUpdateUserById,
   useMutationUploadUserPhotos
 } from '@/queries/currentUser/userHooks';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { KeyboardAvoidingView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 
 const errorMessages = {
@@ -61,9 +61,6 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
   const createUser = useMutationCreateUser();
   const updateUser = useMutationUpdateUserById();
   const uploadPhotos = useMutationUploadUserPhotos();
-  const { styles: buttonsStyles } = useStyles(buttonsStyleSheet, {
-    color: 'primary'
-  });
 
   const handleUserCreation = async (values: IFormValues): Promise<void> => {
     const createUserPayload: ICreateUser = {
@@ -108,6 +105,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           gap: theme.spacing.sp7,
         }}>
         <FieldText
+          isInsideBottomSheet={true}
           label='Occupation'
           name='occupation'
           placeholder='Enter your Occupation'
@@ -115,6 +113,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.occupation}
         />
         <FieldText
+          isInsideBottomSheet={true}
           label='Bio'
           multiline={true}
           name='biography'
@@ -123,6 +122,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.biography}
         />
         <FieldText
+          isInsideBottomSheet={true}
           editable={false}
           label='Languages you know'
           name='languages'
@@ -131,6 +131,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.languages}
         />
         <FieldText
+          isInsideBottomSheet={true}
           editable={false}
           label='Location'
           name='currentLocation'
@@ -139,6 +140,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.currentLocation}
         />
         <FieldText
+          isInsideBottomSheet={true}
           editable={false}
           label='Home Town'
           name='homeTown'
@@ -147,12 +149,18 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.homeTown}
         />
 
-        <TouchableOpacity
-          style={buttonsStyles.buttonContainer()}
-          onPress={formProps.handleSubmit(handleUserCreation)}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          <Text style={buttonsStyles.buttonText()}>Next</Text>
-        </TouchableOpacity>
+          <Button
+            isInsideBottomSheet={true}
+            style={{ marginTop: theme.spacing.sp8 }}
+            variant='primary'
+            onPress={formProps.handleSubmit(handleUserCreation)}
+          >
+            Register
+          </Button>
+        </KeyboardAvoidingView>
       </KeyboardAwareScrollView>
     </FormProvider>
   );

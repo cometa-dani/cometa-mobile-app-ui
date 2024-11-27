@@ -1,15 +1,11 @@
 import { GradientHeading } from '@/components/text/gradientText';
-import { Image, ImageBackground } from 'expo-image';
+import { ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { Platform, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { Platform, SafeAreaView, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import Modal from 'react-native-modal';
 import { useReducer, useRef } from 'react';
-import { HStack, VStack } from '@/components/utils/stacks';
-import { AntDesign } from '@expo/vector-icons';
-import { Heading } from '@/components/text/heading';
-import { TextView } from '@/components/text/text';
+import { VStack } from '@/components/utils/stacks';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { BottomSheet } from '@/components/onboarding/bottomSheet/bottomSheet';
 import { Button } from '@/components/button/button';
@@ -23,8 +19,8 @@ export default function OnboardingScreen() {
   const toggleLoginModal = (): void => { };
 
   const toggleRegisterModal = (): void => {
-    setUserProfileModalVisible();
-    // bottomSheetRef?.current?.expand();
+    // setUserProfileModalVisible();
+    bottomSheetRef?.current?.expand();
   };
 
   const openUserProfileBottomSheet = (): void => {
@@ -38,7 +34,7 @@ export default function OnboardingScreen() {
     <>
       <StatusBar style='inverted' />
 
-      <Modal
+      {/* <Modal
         backdropColor={theme.colors.backDrop}
         animationOutTiming={300}
         isVisible={isUserProfileModalVisible}
@@ -75,7 +71,7 @@ export default function OnboardingScreen() {
             </VStack>
           </View>
         </SafeAreaView>
-      </Modal>
+      </Modal> */}
 
       <ImageBackground
         source={require('../../assets/images/welcome-image.jpeg')}
@@ -102,10 +98,10 @@ export default function OnboardingScreen() {
           <SafeAreaView>
             <View style={styles.buttonsContainer}>
               <VStack gap={theme.spacing.sp8}>
-                <Button variant='primary' onPressed={toggleLoginModal}>
+                <Button variant='primary' onPress={toggleLoginModal}>
                   Login
                 </Button>
-                <Button variant='primary-alt' onPressed={toggleRegisterModal}>
+                <Button variant='primary-alt' onPress={toggleRegisterModal}>
                   Register
                 </Button>
               </VStack>
