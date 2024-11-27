@@ -75,12 +75,7 @@ export const FieldText: FC<IFieldTextProps> = ({
                 setOpenDatePicker(false);
               }}
             />
-            <VStack styles={styles.fiedContainer}>
-              <View style={styles.fieldLabel}>
-                <Text style={styles.fieldTextLabel}>
-                  {label}
-                </Text>
-              </View>
+            <HStack styles={styles.fiedContainer}>
               <View style={styles.iconContainer}>
                 <FontAwesome
                   name={iconName}
@@ -88,23 +83,31 @@ export const FieldText: FC<IFieldTextProps> = ({
                   color={iconColor}
                 />
               </View>
-              <DynamicTextInput
-                testID={testId}
-                onPress={() => isDateTimePicker && setOpenDatePicker(true)}
-                editable={editable}
-                multiline={multiline}
-                numberOfLines={multiline ? 4 : 1}
-                secureTextEntry={nodeEnv === 'development' ? false : secureTextEntry}
-                style={styles.field(isFocused, Boolean(errorMessage))}
-                placeholder={placeholder}
-                keyboardType={keyboardType}
-                autoCapitalize='none'
-                value={value}
-                onChangeText={onChange}
-                onBlur={() => { onBlur(); setIsFocused(false); }}
-                onFocus={() => setIsFocused(true)}
-              />
-            </VStack>
+              <View style={styles.divider} />
+              <VStack styles={{ flex: 1 }}>
+                <View style={styles.fieldLabel}>
+                  <Text style={styles.fieldTextLabel}>
+                    {label}
+                  </Text>
+                </View>
+                <DynamicTextInput
+                  testID={testId}
+                  onPress={() => isDateTimePicker && setOpenDatePicker(true)}
+                  editable={editable}
+                  multiline={multiline}
+                  numberOfLines={multiline ? 4 : 1}
+                  secureTextEntry={nodeEnv === 'development' ? false : secureTextEntry}
+                  style={styles.field}
+                  placeholder={placeholder}
+                  keyboardType={keyboardType}
+                  autoCapitalize='none'
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={() => { setIsFocused(false); }}
+                  onFocus={() => setIsFocused(true)}
+                />
+              </VStack>
+            </HStack>
 
             <HStack
               $y='center'
@@ -131,58 +134,69 @@ export const FieldText: FC<IFieldTextProps> = ({
 
 
 const inputSheet = createStyleSheet((theme) => ({
+  divider: {
+    width: 1.5,
+    height: '70%',
+    alignSelf: 'center',
+    backgroundColor: theme.colors.gray200,
+    opacity: 0.5
+  },
   fieldTextMessage: (isError: boolean, isFocused?: boolean) => ({
     color: isError ? theme.colors.red100 : isFocused ? theme.colors.blue100 : theme.colors.gray300,
     opacity: 0.8,
     fontFamily: theme.text.fontRegular,
     fontSize: theme.text.size.s2,
     paddingVertical: theme.spacing.sp1,
-    // textTransform: 'capitalize'
   }),
+  // fiedContainer: (isFocused: boolean, isError) => ({
+  //   justifyContent: 'center',
+  //   borderWidth: 1.6,
+  //   backgroundColor: theme.colors.white80,
+  //   borderRadius: theme.radius.sm,
+  //   borderColor: isError ? theme.colors.red70 : isFocused ? theme.colors.blue100 : 'transparent',
+  //   shadowColor: isError ? theme.colors.red70 : isFocused ? theme.colors.blue100 : undefined,
+  //   shadowOpacity: isFocused || isError ? 0.1 : 0,
+  //   shadowOffset: isFocused || isError ? { width: 0, height: 2 } : undefined,
+  //   shadowRadius: isFocused || isError ? 1 : 0,
+  //   elevation: isFocused || isError ? 1 : 0,
+  //   animationTimingFunction: 'ease-in-out',
+  // }),
   fiedContainer: {
-    position: 'relative',
-    justifyContent: 'center'
+    backgroundColor: theme.colors.white80,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1.6,
+    // borderColor: isError ? theme.colors.red70 : isFocused ? theme.colors.blue100 : 'transparent',
+    // shadowColor: isError ? theme.colors.red70 : isFocused ? theme.colors.blue100 : undefined,
+    // shadowOpacity: isFocused || isError ? 0.1 : 0,
+    // shadowOffset: isFocused || isError ? { width: 0, height: 2 } : undefined,
+    // shadowRadius: isFocused || isError ? 1 : 0,
+    // elevation: isFocused || isError ? 1 : 0,
+    animationTimingFunction: 'ease-in-out',
   },
   fieldLabel: {
-    position: 'absolute',
-    zIndex: 1,
-    left: 60,
-    top: 6
+    padding: 0,
+    paddingLeft: theme.spacing.sp2,
+    paddingTop: theme.spacing.sp1,
+    margin: 0
   },
   fieldTextLabel: {
     fontSize: theme.text.size.s1,
+    padding: 0,
+    margin: 0,
     color: theme.colors.gray300,
     fontFamily: theme.text.fontMedium
   },
   iconContainer: {
-    position: 'absolute',
-    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1,
-    left: 8,
     width: 44,
-    borderRightColor: theme.colors.gray200,
-    borderRightWidth: 1,
-    paddingVertical: 3,
   },
-  field: (isFocused: boolean, isError?: boolean) => ({
-    backgroundColor: theme.colors.white80,
-    paddingHorizontal: theme.spacing.sp6,
-    paddingLeft: 60,
-    paddingBottom: theme.spacing.sp4,
-    paddingTop: theme.spacing.sp10,
-    borderRadius: theme.radius.sm,
+  field: {
     fontFamily: theme.text.fontMedium,
-    borderWidth: 1.6,
-    borderColor: isError ? theme.colors.red70 : isFocused ? theme.colors.blue100 : 'transparent',
-    shadowColor: isError ? theme.colors.red70 : isFocused ? theme.colors.blue100 : undefined,
-    shadowOpacity: isFocused || isError ? 0.1 : 0,
-    shadowOffset: isFocused || isError ? { width: 0, height: 2 } : undefined,
-    shadowRadius: isFocused || isError ? 1 : 0,
-    elevation: isFocused || isError ? 1 : 0,
-    animationTimingFunction: 'ease-in-out',
-  }),
+    color: theme.colors.gray900,
+    padding: theme.spacing.sp2,
+    flex: 1
+  },
   calendar: {
     backgroundColor: theme.colors.white100,
     paddingVertical: theme.spacing.sp8,
