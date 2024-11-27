@@ -39,7 +39,7 @@ export const FieldText: FC<IFieldTextProps> = ({
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const { styles, theme } = useStyles(inputSheet);
-  const { control, setValue } = useFormContext();
+  const { control, setValue, setError } = useFormContext();
   const [date, setDate] = useState<Date | undefined>();
   const [openDatePicker, setOpenDatePicker] = useState(false);
   return (
@@ -65,6 +65,7 @@ export const FieldText: FC<IFieldTextProps> = ({
               onConfirm={(date) => {
                 setDate(date);
                 setValue(name, new Intl.DateTimeFormat('en-US').format(date));
+                setError(name, { message: undefined });
                 setOpenDatePicker(false);
               }}
               onCancel={() => {

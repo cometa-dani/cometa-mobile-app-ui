@@ -23,60 +23,56 @@ appId: com.cometadaniexpo.cometaapp
     id: ${output.username.id}
 - inputText: ${output.username.text}
 
-- scrollUntilVisible:
-    element:
-      id: ${output.birthday.id} # or any other selector
-    direction: DOWN # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
-    visibilityPercentage: 100 # 0-100 (optional, default: 100) Percentage of element visible in viewport
-    centerElement: true # true|false (optional, default: false)
+# - scrollUntilVisible:
+#     element:
+#       id: ${output.birthday.id} # or any other selector
+#     direction: DOWN # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
+#     visibilityPercentage: 100 # 0-100 (optional, default: 100) Percentage of element visible in viewport
+#     centerElement: true # true|false (optional, default: false)
 - tapOn:
     id: ${output.birthday.id}
 - tapOn:
     text: ${output.birthday.text}
 
-- scrollUntilVisible:
-    element:
-      id: ${output.email.id} # or any other selector
-    direction: DOWN # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
-    visibilityPercentage: 100 # 0-100 (optional, default: 100) Percentage of element visible in viewport
-    centerElement: true # true|false (optional, default: false)
+# - scrollUntilVisible:
+#     element:
+#       id: ${output.email.id} # or any other selector
+#     direction: DOWN # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
+#     visibilityPercentage: 100 # 0-100 (optional, default: 100) Percentage of element visible in viewport
+#     centerElement: true # true|false (optional, default: false)
 - tapOn:
     id: ${output.email.id}
 - inputText: ${output.email.text}
 
-- scrollUntilVisible:
-    element:
-      id: ${output.password.id} # or any other selector
-    direction: DOWN # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
-    visibilityPercentage: 100 # 0-100 (optional, default: 100) Percentage of element visible in viewport
-    centerElement: true # true|false (optional, default: false)
+# - scrollUntilVisible:
+#     element:
+#       id: ${output.password.id} # or any other selector
+#     direction: DOWN # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
+#     visibilityPercentage: 100 # 0-100 (optional, default: 100) Percentage of element visible in viewport
+#     centerElement: true # true|false (optional, default: false)
 - tapOn:
     id: ${output.password.id}
 - inputText: ${output.password.text}
 
-- scrollUntilVisible:
-    element:
-      id: ${output.repeatPassword.id} # or any other selector
-    direction: DOWN # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
-    visibilityPercentage: 100 # 0-100 (optional, default: 100) Percentage of element visible in viewport
-    centerElement: true # true|false (optional, default: false)
+# - scrollUntilVisible:
+#     element:
+#       id: ${output.repeatPassword.id} # or any other selector
+#     direction: DOWN # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
+#     visibilityPercentage: 100 # 0-100 (optional, default: 100) Percentage of element visible in viewport
+#     centerElement: true # true|false (optional, default: false)
 - tapOn:
     id: ${output.repeatPassword.id}
 - inputText: ${output.password.text}
 
-- hideKeyboard
-
-- extendedWaitUntil:
-    visible: "Next" # or any other selector
+# - hideKeyboard
 - tapOn:
     text: "Next"
-    repeat: 2
     waitToSettleTimeoutMs: 1000 # ms
 
 
 # -----------------------------------------------------------------------------
 # STEP 2
 # -----------------------------------------------------------------------------
-- extendedWaitUntil:
-    visible: "Upload your Photos" # or any other selector
-    timeout: 10000      # Timeout in milliseconds
+# - extendedWaitUntil:
+#     visible: "Upload your Photos" # or any other selector
+#     timeout: 10000      # Timeout in milliseconds

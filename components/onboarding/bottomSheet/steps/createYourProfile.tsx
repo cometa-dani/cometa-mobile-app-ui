@@ -91,7 +91,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
       </BottomSheetView>
 
       <KeyboardAwareScrollView
-        bottomOffset={40}
+        bottomOffset={120}
         ScrollViewComponent={BottomSheetScrollView as ComponentType<ScrollViewProps>}
         contentContainerStyle={{
           paddingHorizontal: theme.spacing.sp10,
