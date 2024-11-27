@@ -49,7 +49,7 @@ export const FieldText: FC<IFieldTextProps> = ({
     <Controller
       name={name}
       control={control}
-      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => {
+      render={({ field: { onChange, onBlur, value, }, fieldState: { error } }) => {
         const errorMessage = error?.message;
         const iconColor = (
           errorMessage ?
@@ -57,6 +57,13 @@ export const FieldText: FC<IFieldTextProps> = ({
             isFocused ?
               theme.colors.blue100 :
               theme.colors.gray300  // default color
+        );
+        const inputStyle = (
+          errorMessage ?
+            theme.colors.red80 :
+            isFocused ?
+              theme.colors.blue100 :
+              'transparent'
         );
         return (
           <VStack>
@@ -75,7 +82,7 @@ export const FieldText: FC<IFieldTextProps> = ({
                 setOpenDatePicker(false);
               }}
             />
-            <HStack styles={styles.fiedContainer}>
+            <View style={[styles.fieldContainer, { borderColor: inputStyle }]}>
               <View style={styles.iconContainer}>
                 <FontAwesome
                   name={iconName}
@@ -83,7 +90,9 @@ export const FieldText: FC<IFieldTextProps> = ({
                   color={iconColor}
                 />
               </View>
+
               <View style={styles.divider} />
+
               <VStack styles={{ flex: 1 }}>
                 <View style={styles.fieldLabel}>
                   <Text style={styles.fieldTextLabel}>
@@ -107,7 +116,7 @@ export const FieldText: FC<IFieldTextProps> = ({
                   onFocus={() => setIsFocused(true)}
                 />
               </VStack>
-            </HStack>
+            </View>
 
             <HStack
               $y='center'
@@ -148,29 +157,11 @@ const inputSheet = createStyleSheet((theme) => ({
     fontSize: theme.text.size.s2,
     paddingVertical: theme.spacing.sp1,
   }),
-  // fiedContainer: (isFocused: boolean, isError) => ({
-  //   justifyContent: 'center',
-  //   borderWidth: 1.6,
-  //   backgroundColor: theme.colors.white80,
-  //   borderRadius: theme.radius.sm,
-  //   borderColor: isError ? theme.colors.red70 : isFocused ? theme.colors.blue100 : 'transparent',
-  //   shadowColor: isError ? theme.colors.red70 : isFocused ? theme.colors.blue100 : undefined,
-  //   shadowOpacity: isFocused || isError ? 0.1 : 0,
-  //   shadowOffset: isFocused || isError ? { width: 0, height: 2 } : undefined,
-  //   shadowRadius: isFocused || isError ? 1 : 0,
-  //   elevation: isFocused || isError ? 1 : 0,
-  //   animationTimingFunction: 'ease-in-out',
-  // }),
-  fiedContainer: {
+  fieldContainer: {
+    flexDirection: 'row',
     backgroundColor: theme.colors.white80,
     borderRadius: theme.radius.sm,
     borderWidth: 1.6,
-    // borderColor: isError ? theme.colors.red70 : isFocused ? theme.colors.blue100 : 'transparent',
-    // shadowColor: isError ? theme.colors.red70 : isFocused ? theme.colors.blue100 : undefined,
-    // shadowOpacity: isFocused || isError ? 0.1 : 0,
-    // shadowOffset: isFocused || isError ? { width: 0, height: 2 } : undefined,
-    // shadowRadius: isFocused || isError ? 1 : 0,
-    // elevation: isFocused || isError ? 1 : 0,
     animationTimingFunction: 'ease-in-out',
   },
   fieldLabel: {
