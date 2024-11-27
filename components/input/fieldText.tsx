@@ -93,7 +93,7 @@ export const FieldText: FC<IFieldTextProps> = ({
                 secureTextEntry={nodeEnv === 'development' ? false : secureTextEntry}
                 style={styles.field(isFocused, Boolean(errorMessage))}
                 placeholder={placeholder}
-                keyboardType="ascii-capable"
+                keyboardType={keyboardType}
                 autoCapitalize='none'
                 value={value}
                 onChangeText={onChange}

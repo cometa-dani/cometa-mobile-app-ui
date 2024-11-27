@@ -4,6 +4,8 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { SplashScreen, Stack } from 'expo-router';
 import ToastManager from 'toastify-react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+
 // hooks
 import { useFonts } from 'expo-font';
 import { ReactNode, useEffect } from 'react';
@@ -19,7 +21,6 @@ export const unstable_settings = {
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -57,12 +58,14 @@ function Root(): ReactNode {
         animationInTiming={800}
       />
       <GestureHandlerRootView>
-        <BottomSheetModalProvider>
-          <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
-            <Stack.Screen name='onboarding/index' />
-            <Stack.Screen name='(tabs)' />
-          </Stack>
-        </BottomSheetModalProvider>
+        <KeyboardProvider>
+          <BottomSheetModalProvider>
+            <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
+              <Stack.Screen name='onboarding/index' />
+              <Stack.Screen name='(tabs)' />
+            </Stack>
+          </BottomSheetModalProvider>
+        </KeyboardProvider>
       </GestureHandlerRootView>
     </QueryClientProvider>
   );

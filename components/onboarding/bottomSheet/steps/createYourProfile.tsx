@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { ComponentType, FC } from 'react';
 import { useStyles } from 'react-native-unistyles';
 import { FieldText } from '@/components/input/fieldText';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -10,8 +10,9 @@ import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
 import { Button } from '@/components/button/button';
 import { IUserOnboarding } from '@/models/User';
-import { View } from 'react-native';
+import { ScrollViewProps, View } from 'react-native';
 import { useKeyboard } from '@/hooks/useKeyBoardHeight';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 
 const testIds = {
@@ -69,7 +70,6 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
   const { theme } = useStyles();
   const formProps = useForm({ defaultValues, resolver: yupResolver<IFormValues>(validationSchema) });
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
-  const keyboard = useKeyboard();
 
   const handleUserState = (values: IFormValues): void => {
     setOnboardingState(values);
@@ -89,7 +89,10 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
           <Heading size='s7'>Create Your Profile</Heading>
         </Center>
       </BottomSheetView>
-      <BottomSheetScrollView
+
+      <KeyboardAwareScrollView
+        bottomOffset={40}
+        ScrollViewComponent={BottomSheetScrollView as ComponentType<ScrollViewProps>}
         contentContainerStyle={{
           paddingHorizontal: theme.spacing.sp10,
           paddingVertical: theme.spacing.sp8,
@@ -148,15 +151,13 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
           iconName='lock'
           defaultErrMessage={errorMessages.repeatPassword}
         />
-        <View style={{ marginBottom: keyboard.height / 2 }}>
-          <Button
-            variant='primary'
-            onPressed={formProps.handleSubmit(handleUserState)}
-          >
-            Next
-          </Button>
-        </View>
-      </BottomSheetScrollView>
+        <Button
+          variant='primary'
+          onPressed={formProps.handleSubmit(handleUserState)}
+        >
+          Next
+        </Button>
+      </KeyboardAwareScrollView>
     </FormProvider>
   );
 };
