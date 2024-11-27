@@ -84,15 +84,3 @@ export const BottomSheet = forwardRef<BottomSheetMethods, IProps>((_, ref) => {
 });
 
 BottomSheet.displayName = 'BottomSheetModal';
-
-// useEffect(() => {
-//   const keyboardDidShowListener = Keyboard.addListener(
-//     'keyboardDidShow',
-//     () => {
-//       bottomSheetRef.current?.expand();
-//     }
-//   );
-//   return () => {
-//     keyboardDidShowListener.remove();
-//   };
-// }, []);

@@ -2,7 +2,7 @@ import { GradientHeading } from '@/components/text/gradientText';
 import { Image, ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { Platform, SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Modal from 'react-native-modal';
 import { useReducer, useRef } from 'react';
@@ -119,7 +119,7 @@ export default function OnboardingScreen() {
 }
 
 
-const stylesheet = createStyleSheet((theme) => ({
+const stylesheet = createStyleSheet((theme, runtime) => ({
   imgBackground: {
     flex: 1,
     position: 'relative',
@@ -133,13 +133,13 @@ const stylesheet = createStyleSheet((theme) => ({
   linearGradient: {
     position: 'absolute',
     bottom: 0,
-    height: 314,
+    height: 270,
     width: '100%',
     justifyContent: 'flex-end'
   },
   buttonsContainer: {
     padding: theme.spacing.sp10,
-    paddingBottom: theme.spacing.sp16
+    paddingBottom: Platform.OS === 'ios' ? theme.spacing.sp16 : theme.spacing.sp22
   },
   modal: {
     backgroundColor: theme.colors.white100,
