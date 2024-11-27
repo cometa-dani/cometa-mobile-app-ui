@@ -1,16 +1,16 @@
-import { ComponentType, FC } from 'react';
+import { FC } from 'react';
 import { useStyles } from 'react-native-unistyles';
 import { FieldText } from '@/components/input/fieldText';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useCometaStore } from '@/store/cometaStore';
-import { BottomSheetScrollView, BottomSheetView, TouchableOpacity } from '@gorhom/bottom-sheet';
+import { BottomSheetView, TouchableOpacity } from '@gorhom/bottom-sheet';
 import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
 import { buttonsStyleSheet } from '@/components/button/button';
 import { IUserOnboarding } from '@/models/User';
-import { ScrollViewProps, Text } from 'react-native';
+import { Text } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { testIds } from './testIds';
 
@@ -85,7 +85,6 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
 
       <KeyboardAwareScrollView
         bottomOffset={110}
-        ScrollViewComponent={BottomSheetScrollView as ComponentType<ScrollViewProps>}
         contentContainerStyle={{
           paddingHorizontal: theme.spacing.sp10,
           paddingVertical: theme.spacing.sp8,
