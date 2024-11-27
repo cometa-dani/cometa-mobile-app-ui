@@ -21,8 +21,8 @@ export const Button = forwardRef<View, IButtonProps>(({ children, onPressed, var
       onPress={onPressed}
       style={({ pressed }) => buttonsStyles.buttonContainer(pressed)}
     >
-      {({ pressed }) => (
-        <Text style={buttonsStyles.buttonText(pressed)}>
+      {() => (
+        <Text style={buttonsStyles.buttonText()}>
           {children}
         </Text>
       )}
@@ -34,7 +34,7 @@ Button.displayName = 'Button';
 
 
 export const buttonsStyleSheet = createStyleSheet((theme) => ({
-  buttonText: (pressed: boolean) => ({
+  buttonText: () => ({
     textAlign: 'center',
     fontFamily: theme.text.fontSemibold,
     animationTimingFunction: 'ease-in-out',
@@ -55,7 +55,7 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
       }
     }
   }),
-  buttonContainer: (pressed: boolean) => ({
+  buttonContainer: (pressed = false) => ({
     width: '100%',
     padding: theme.spacing.sp4,
     borderRadius: theme.radius.sm,

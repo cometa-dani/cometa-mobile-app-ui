@@ -5,11 +5,11 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useCometaStore } from '@/store/cometaStore';
-import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetScrollView, BottomSheetView, TouchableOpacity } from '@gorhom/bottom-sheet';
 import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { ScrollViewProps } from 'react-native';
-import { Button } from '@/components/button/button';
+import { ScrollViewProps, Text } from 'react-native';
+import { buttonsStyleSheet } from '@/components/button/button';
 import { ICreateUser, IUpdateUser, IUserOnboarding } from '@/models/User';
 import {
   useMutationCreateUser,
@@ -61,6 +61,9 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
   const createUser = useMutationCreateUser();
   const updateUser = useMutationUpdateUserById();
   const uploadPhotos = useMutationUploadUserPhotos();
+  const { styles: buttonsStyles } = useStyles(buttonsStyleSheet, {
+    color: 'primary'
+  });
 
   const handleUserCreation = async (values: IFormValues): Promise<void> => {
     const createUserPayload: ICreateUser = {
@@ -144,12 +147,13 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           iconName='map-marker'
           defaultErrMessage={errorMessages.homeTown}
         />
-        <Button
-          variant='primary'
-          onPressed={formProps.handleSubmit(handleUserCreation)}
+
+        <TouchableOpacity
+          style={buttonsStyles.buttonContainer()}
+          onPress={formProps.handleSubmit(handleUserCreation)}
         >
-          Register
-        </Button>
+          <Text style={buttonsStyles.buttonText()}>Next</Text>
+        </TouchableOpacity>
       </KeyboardAwareScrollView>
     </FormProvider>
   );

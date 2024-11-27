@@ -5,12 +5,12 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useCometaStore } from '@/store/cometaStore';
-import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetScrollView, BottomSheetView, TouchableOpacity } from '@gorhom/bottom-sheet';
 import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { Button } from '@/components/button/button';
+import { buttonsStyleSheet } from '@/components/button/button';
 import { IUserOnboarding } from '@/models/User';
-import { ScrollViewProps } from 'react-native';
+import { ScrollViewProps, Text } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { testIds } from './testIds';
 
@@ -61,6 +61,9 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
   const { theme } = useStyles();
   const formProps = useForm({ defaultValues, resolver: yupResolver<IFormValues>(validationSchema) });
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
+  const { styles: buttonsStyles } = useStyles(buttonsStyleSheet, {
+    color: 'primary'
+  });
 
   const handleUserState = (values: IFormValues): void => {
     setOnboardingState(values);
@@ -141,12 +144,13 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
           iconName='lock'
           defaultErrMessage={errorMessages.repeatPassword}
         />
-        <Button
-          variant='primary'
-          onPressed={formProps.handleSubmit(handleUserState)}
+
+        <TouchableOpacity
+          style={buttonsStyles.buttonContainer()}
+          onPress={formProps.handleSubmit(handleUserState)}
         >
-          Next
-        </Button>
+          <Text style={buttonsStyles.buttonText()}>Next</Text>
+        </TouchableOpacity>
       </KeyboardAwareScrollView>
     </FormProvider>
   );

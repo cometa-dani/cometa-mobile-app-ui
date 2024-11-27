@@ -1,12 +1,12 @@
 import { FC } from 'react';
-import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
+import { useStyles } from 'react-native-unistyles';
 import { useCometaStore } from '@/store/cometaStore';
-import { BottomSheetView as BsView } from '@gorhom/bottom-sheet';
+import { BottomSheetView as BsView, TouchableOpacity } from '@gorhom/bottom-sheet';
 import { Center, HStack } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { Button } from '@/components/button/button';
+import { buttonsStyleSheet } from '@/components/button/button';
 import { createEmptyPlaceholders, hasAsset, IPhotoPlaceholder, PhotosGrid } from '../photosGrid/photosGrid';
 import { MAX_NUMBER_PHOTOS, MIN_NUMBER_PHOTOS } from '@/constants/vars';
 
@@ -20,6 +20,9 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
   const { theme } = useStyles();
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
   const userPhotos = useCometaStore(state => state.onboarding.user.photos) ?? [];
+  const { styles: buttonsStyles } = useStyles(buttonsStyleSheet, {
+    color: 'primary'
+  });
 
   const handleUserState = (photos: IPhotoPlaceholder[]) => {
     const filteredPhotos = photos.filter(hasAsset);
@@ -73,11 +76,12 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
           </Text>
         </HStack>
 
-        <View style={{ paddingBottom: UnistylesRuntime.insets.bottom }}>
-          <Button variant='primary' onPressed={handleNextStep}>
-            Next
-          </Button>
-        </View>
+        <TouchableOpacity
+          style={buttonsStyles.buttonContainer()}
+          onPress={handleNextStep}
+        >
+          <Text style={buttonsStyles.buttonText()}>Next</Text>
+        </TouchableOpacity>
       </BsView>
     </>
   );

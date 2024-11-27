@@ -24,6 +24,7 @@ export default function OnboardingScreen() {
 
   const toggleRegisterModal = (): void => {
     setUserProfileModalVisible();
+    // bottomSheetRef?.current?.expand();
   };
 
   const openUserProfileBottomSheet = (): void => {
