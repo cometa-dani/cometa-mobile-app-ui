@@ -16,6 +16,10 @@ appId: com.cometadaniexpo.cometaapp
     text: "User Profile"
 
 - tapOn:
+    text: "Next"
+    waitToSettleTimeoutMs: 1000 # ms
+
+- tapOn:
     id: ${output.fullname.id}
 - inputText: ${output.fullname.text}
 
@@ -64,9 +68,12 @@ appId: com.cometadaniexpo.cometaapp
     id: ${output.repeatPassword.id}
 - inputText: ${output.password.text}
 
-- hideKeyboard
+- tapOn:  # hides the keyboard by tapping on the "label"
+    text: "Password is required"
+    waitToSettleTimeoutMs: 3000 # ms
 - waitForAnimationToEnd:
     timeout: 5000
+
 - tapOn:
     text: "Next"
     waitToSettleTimeoutMs: 1000 # ms
@@ -75,6 +82,6 @@ appId: com.cometadaniexpo.cometaapp
 # -----------------------------------------------------------------------------
 # STEP 2
 # -----------------------------------------------------------------------------
-# - extendedWaitUntil:
-#     visible: "Upload your Photos" # or any other selector
-#     timeout: 10000      # Timeout in milliseconds
+- extendedWaitUntil:
+    visible: "Upload your Photos" # or any other selector
+    timeout: 10000      # Timeout in milliseconds

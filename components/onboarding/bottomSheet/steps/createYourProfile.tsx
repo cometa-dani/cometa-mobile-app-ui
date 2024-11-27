@@ -12,16 +12,8 @@ import { Button } from '@/components/button/button';
 import { IUserOnboarding } from '@/models/User';
 import { ScrollViewProps } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { testIds } from './testIds';
 
-
-const testIds = {
-  fullname: '#fullname',
-  email: '#email',
-  password: '#password',
-  repeatPassword: '#repeatPassword',
-  username: '#username',
-  birthday: '#birthday',
-};
 
 const errorMessages = {
   email: 'Email is required',
