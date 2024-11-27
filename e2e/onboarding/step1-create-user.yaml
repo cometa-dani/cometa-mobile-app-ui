@@ -64,7 +64,9 @@ appId: com.cometadaniexpo.cometaapp
     id: ${output.repeatPassword.id}
 - inputText: ${output.password.text}
 
-# - hideKeyboard
+- hideKeyboard
+- waitForAnimationToEnd:
+    timeout: 5000
 - tapOn:
     text: "Next"
     waitToSettleTimeoutMs: 1000 # ms

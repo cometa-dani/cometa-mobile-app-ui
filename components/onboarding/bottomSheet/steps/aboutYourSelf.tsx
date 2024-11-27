@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
+import { ComponentType, FC } from 'react';
+import { useStyles } from 'react-native-unistyles';
 import { FieldText } from '@/components/input/fieldText';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,10 +8,15 @@ import { useCometaStore } from '@/store/cometaStore';
 import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { View } from 'react-native';
+import { ScrollViewProps } from 'react-native';
 import { Button } from '@/components/button/button';
 import { ICreateUser, IUpdateUser, IUserOnboarding } from '@/models/User';
-import { useMutationCreateUser, useMutationUpdateUserById, useMutationUploadUserPhotos } from '@/queries/currentUser/userHooks';
+import {
+  useMutationCreateUser,
+  useMutationUpdateUserById,
+  useMutationUploadUserPhotos
+} from '@/queries/currentUser/userHooks';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 
 const errorMessages = {
@@ -92,11 +97,13 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           <Heading size='s7'>About Yourself</Heading>
         </Center>
       </BottomSheetView>
-      <BottomSheetScrollView
+      <KeyboardAwareScrollView
+        bottomOffset={110}
+        ScrollViewComponent={BottomSheetScrollView as ComponentType<ScrollViewProps>}
         contentContainerStyle={{
-          paddingVertical: theme.spacing.sp8,
           paddingHorizontal: theme.spacing.sp10,
-          gap: theme.spacing.sp7
+          paddingVertical: theme.spacing.sp8,
+          gap: theme.spacing.sp7,
         }}>
         <FieldText
           label='Occupation'
@@ -137,13 +144,13 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           iconName='map-marker'
           defaultErrMessage={errorMessages.homeTown}
         />
-
-        <View style={{ paddingBottom: UnistylesRuntime.insets.bottom }}>
-          <Button variant='primary' onPressed={formProps.handleSubmit(handleUserCreation)}>
-            Register
-          </Button>
-        </View>
-      </BottomSheetScrollView>
+        <Button
+          variant='primary'
+          onPressed={formProps.handleSubmit(handleUserCreation)}
+        >
+          Register
+        </Button>
+      </KeyboardAwareScrollView>
     </FormProvider>
   );
 };

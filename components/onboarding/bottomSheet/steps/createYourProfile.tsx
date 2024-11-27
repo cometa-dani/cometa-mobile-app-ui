@@ -10,8 +10,7 @@ import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
 import { Button } from '@/components/button/button';
 import { IUserOnboarding } from '@/models/User';
-import { ScrollViewProps, View } from 'react-native';
-import { useKeyboard } from '@/hooks/useKeyBoardHeight';
+import { ScrollViewProps } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 
@@ -73,7 +72,6 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
 
   const handleUserState = (values: IFormValues): void => {
     setOnboardingState(values);
-    console.log('handleNext', values);
     onNextStep();
   };
 
@@ -91,7 +89,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
       </BottomSheetView>
 
       <KeyboardAwareScrollView
-        bottomOffset={120}
+        bottomOffset={110}
         ScrollViewComponent={BottomSheetScrollView as ComponentType<ScrollViewProps>}
         contentContainerStyle={{
           paddingHorizontal: theme.spacing.sp10,
