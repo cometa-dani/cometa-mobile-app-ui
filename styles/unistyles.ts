@@ -107,6 +107,7 @@ export const lightTheme = {
       s1: 10,
       s2: 12,
       s4: 15,
+      s5: 16,
       s6: 18,
       s7: 20,
       s8: 24,

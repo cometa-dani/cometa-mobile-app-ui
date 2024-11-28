@@ -184,6 +184,7 @@ const inputSheet = createStyleSheet((theme) => ({
   },
   field: {
     fontFamily: theme.text.fontMedium,
+    // fontSize: Platform.select({ ios: theme.text.size.s4, android: theme.text.size.s5 }),
     color: theme.colors.gray900,
     padding: theme.spacing.sp2,
     flex: 1

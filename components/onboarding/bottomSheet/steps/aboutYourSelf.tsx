@@ -8,7 +8,6 @@ import { useCometaStore } from '@/store/cometaStore';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { Platform } from 'react-native';
 import { Button } from '@/components/button/button';
 import { ICreateUser, IUpdateUser, IUserOnboarding } from '@/models/User';
 import {
@@ -16,7 +15,7 @@ import {
   useMutationUpdateUserById,
   useMutationUploadUserPhotos
 } from '@/queries/currentUser/userHooks';
-import { KeyboardAvoidingView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 
 const errorMessages = {
@@ -149,18 +148,14 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.homeTown}
         />
 
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        <Button
+          isInsideBottomSheet={true}
+          style={{ marginTop: theme.spacing.sp8 }}
+          variant='primary'
+          onPress={formProps.handleSubmit(handleUserCreation)}
         >
-          <Button
-            isInsideBottomSheet={true}
-            style={{ marginTop: theme.spacing.sp8 }}
-            variant='primary'
-            onPress={formProps.handleSubmit(handleUserCreation)}
-          >
-            Register
-          </Button>
-        </KeyboardAvoidingView>
+          Register
+        </Button>
       </KeyboardAwareScrollView>
     </FormProvider>
   );

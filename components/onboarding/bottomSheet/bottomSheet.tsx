@@ -25,25 +25,15 @@ export const BottomSheet = forwardRef<DefaultBottomSheet, IProps>((_, ref) => {
 
   return (
     <DefaultBottomSheet
-      // needed for e2e testing
-      // animationConfigs={{
-      //   reduceMotion: ReduceMotion.System
-      // }}
       accessible={Platform.select({
-        // setting it to false on Android seems
-        // to cause issues with TalkBack instead
-        ios: false
+        ios: false                    // needed for e2e testing, don't change
       })}
       ref={ref}
       index={-1}
-      enableDynamicSizing={false}
-      enablePanDownToClose={true}
-      keyboardBehavior="extend"
+      enableDynamicSizing={false}     // don't change
+      enablePanDownToClose={true}     // don't change
+      keyboardBehavior="fillParent"   // don't change
       snapPoints={snapPoints}
-      // footerComponent={renderFooter}
-      containerStyle={{
-        flex: 1
-      }}
     >
       <SafeAreaView style={{ flex: 1 }}>
         <BottomSheetView style={{

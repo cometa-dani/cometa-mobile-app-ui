@@ -12,6 +12,6 @@ interface TextProps {
 export const TextView: FC<TextProps> = ({ children, bold = false }) => {
   const { styles } = useStyles(textStyleSheet);
   return (
-    <Text style={styles.paragraph(bold)}>{children}</Text>
+    <Text style={styles.font(bold)}>{children}</Text>
   );
 };

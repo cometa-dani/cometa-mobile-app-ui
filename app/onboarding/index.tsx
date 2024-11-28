@@ -1,14 +1,17 @@
 import { GradientHeading } from '@/components/text/gradientText';
-import { ImageBackground } from 'expo-image';
+import { Image, ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { Platform, SafeAreaView, View } from 'react-native';
+import { Modal, Platform, SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { useReducer, useRef } from 'react';
-import { VStack } from '@/components/utils/stacks';
+import { HStack, VStack } from '@/components/utils/stacks';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { BottomSheet } from '@/components/onboarding/bottomSheet/bottomSheet';
 import { Button } from '@/components/button/button';
+import { AntDesign } from '@expo/vector-icons';
+import { Heading } from '@/components/text/heading';
+import { TextView } from '@/components/text/text';
 
 
 export default function OnboardingScreen() {
@@ -34,11 +37,11 @@ export default function OnboardingScreen() {
     <>
       <StatusBar style='inverted' />
 
-      {/* <Modal
-        backdropColor={theme.colors.backDrop}
-        animationOutTiming={300}
-        isVisible={isUserProfileModalVisible}
-        onBackdropPress={setUserProfileModalVisible}
+      <Modal
+        // ={theme.colors.backDrop}
+        // animationOutTiming={300}
+        visible={isUserProfileModalVisible}
+        onRequestClose={setUserProfileModalVisible}
         style={{ justifyContent: 'flex-end' }}
       >
         <SafeAreaView>
@@ -62,16 +65,16 @@ export default function OnboardingScreen() {
               <TextView>
                 Create you profile and start matching with others who share your bucket list goals
               </TextView>
-              <Button variant='primary' onPressed={openUserProfileBottomSheet}>
+              <Button variant='primary' onPress={openUserProfileBottomSheet}>
                 User Profile
               </Button>
-              <Button variant='secondary-alt' onPressed={openCompanyProfileModal}>
+              <Button variant='secondary-alt' onPress={openCompanyProfileModal}>
                 Company Profile
               </Button>
             </VStack>
           </View>
         </SafeAreaView>
-      </Modal> */}
+      </Modal>
 
       <ImageBackground
         source={require('../../assets/images/welcome-image.jpeg')}

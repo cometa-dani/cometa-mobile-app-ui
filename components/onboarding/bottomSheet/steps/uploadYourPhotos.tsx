@@ -4,12 +4,11 @@ import { useCometaStore } from '@/store/cometaStore';
 import { BottomSheetView as BsView } from '@gorhom/bottom-sheet';
 import { Center, HStack } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { Platform, Text } from 'react-native';
+import { Text } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { Button } from '@/components/button/button';
 import { createEmptyPlaceholders, hasAsset, IPhotoPlaceholder, PhotosGrid } from '../photosGrid/photosGrid';
 import { MAX_NUMBER_PHOTOS, MIN_NUMBER_PHOTOS } from '@/constants/vars';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 
 const setInitialPlaceholders = () => createEmptyPlaceholders(MAX_NUMBER_PHOTOS);
@@ -74,18 +73,14 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
           </Text>
         </HStack>
 
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        <Button
+          style={{ marginTop: theme.spacing.sp8 }}
+          isInsideBottomSheet={true}
+          variant='primary'
+          onPress={handleNextStep}
         >
-          <Button
-            style={{ marginTop: theme.spacing.sp8 }}
-            isInsideBottomSheet={true}
-            variant='primary'
-            onPress={handleNextStep}
-          >
-            Next
-          </Button>
-        </KeyboardAvoidingView>
+          Next
+        </Button>
       </BsView>
     </>
   );

@@ -10,8 +10,6 @@ import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
 import { Button } from '@/components/button/button';
 import { IUserOnboarding } from '@/models/User';
-import { Platform } from 'react-native';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { testIds } from './testIds';
 
 
@@ -73,41 +71,15 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
         </Center>
       </BottomSheetView>
 
-      {Platform.select({
-        android: (
-          <BottomSheetScrollView
-
-            // style={{ flex: 1 }}
-            contentContainerStyle={{
-              paddingHorizontal: theme.spacing.sp10,
-              paddingVertical: theme.spacing.sp8,
-              gap: theme.spacing.sp7,
-              // position: 'relative',
-              // flex: 1,
-              // flexGrow: 1
-            }}>
-            <FieldsList onNextStep={onNextStep} />
-          </BottomSheetScrollView>
-        ),
-        ios: (
-          // <KeyboardAwareScrollView
-          // bottomOffset={110}
-          <BottomSheetScrollView
-
-            // style={{ flex: 1 }}
-            contentContainerStyle={{
-              paddingHorizontal: theme.spacing.sp10,
-              paddingVertical: theme.spacing.sp8,
-              gap: theme.spacing.sp7,
-              // position: 'relative',
-              // flex: 1,
-              // flexGrow: 1
-            }}>
-            <FieldsList onNextStep={onNextStep} />
-          </BottomSheetScrollView>
-          // </KeyboardAwareScrollView>
-        )
-      })}
+      <BottomSheetScrollView
+        contentContainerStyle={{
+          paddingHorizontal: theme.spacing.sp10,
+          paddingVertical: theme.spacing.sp8,
+          gap: theme.spacing.sp7,
+          paddingBottom: theme.spacing.sp14
+        }}>
+        <FieldsList onNextStep={onNextStep} />
+      </BottomSheetScrollView>
     </FormProvider>
   );
 };
@@ -138,6 +110,15 @@ const FieldsList: FC<IFormProps> = ({ onNextStep }) => {
       />
       <FieldText
         isInsideBottomSheet={true}
+        testId={testIds.fullname}
+        label='Full Name'
+        name='name'
+        placeholder='Enter your Full Name'
+        iconName='user'
+        defaultErrMessage={errorMessages.name}
+      />
+      <FieldText
+        isInsideBottomSheet={true}
         testId={testIds.username}
         label='User Name'
         name='username'
@@ -145,7 +126,7 @@ const FieldsList: FC<IFormProps> = ({ onNextStep }) => {
         iconName='at'
         defaultErrMessage={errorMessages.username}
       />
-      {/* <FieldText
+      <FieldText
         isInsideBottomSheet={true}
         isDateTimePicker={true}
         testId={testIds.birthday}
@@ -155,7 +136,7 @@ const FieldsList: FC<IFormProps> = ({ onNextStep }) => {
         iconName='calendar-check-o'
         editable={false}
         defaultErrMessage={errorMessages.birthday}
-      /> */}
+      />
       <FieldText
         isInsideBottomSheet={true}
         testId={testIds.email}
@@ -187,18 +168,14 @@ const FieldsList: FC<IFormProps> = ({ onNextStep }) => {
         defaultErrMessage={errorMessages.repeatPassword}
       />
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      <Button
+        style={{ marginTop: theme.spacing.sp8 }}
+        isInsideBottomSheet={true}
+        variant='primary'
+        onPress={formProps.handleSubmit(handleUserState)}
       >
-        <Button
-          style={{ marginTop: theme.spacing.sp8 }}
-          isInsideBottomSheet={true}
-          variant='primary'
-          onPress={formProps.handleSubmit(handleUserState)}
-        >
-          Next
-        </Button>
-      </KeyboardAvoidingView>
+        Next
+      </Button>
     </>
   );
 };
