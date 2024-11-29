@@ -4,31 +4,29 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { Modal, Platform, SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import { useReducer, useRef } from 'react';
+import { useReducer } from 'react';
 import { HStack, VStack } from '@/components/utils/stacks';
-import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
-import { BottomSheet } from '@/components/onboarding/bottomSheet/bottomSheet';
 import { Button } from '@/components/button/button';
 import { AntDesign } from '@expo/vector-icons';
 import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
+import { useRouter } from 'expo-router';
 
 
 export default function OnboardingScreen() {
+  const router = useRouter();
   const { styles, theme } = useStyles(stylesheet);
   const [isUserProfileModalVisible, setUserProfileModalVisible] = useReducer(prev => !prev, false);
-  const bottomSheetRef = useRef<BottomSheetMethods>(null);
 
   const toggleLoginModal = (): void => { };
 
   const toggleRegisterModal = (): void => {
-    // setUserProfileModalVisible();
-    bottomSheetRef?.current?.expand();
+    setUserProfileModalVisible();
   };
 
   const openUserProfileBottomSheet = (): void => {
     setUserProfileModalVisible();
-    setTimeout(() => bottomSheetRef?.current?.expand(), 300);
+    router.push('/onboarding/(modal)/user');
   };
 
   const openCompanyProfileModal = (): void => { };
@@ -36,15 +34,13 @@ export default function OnboardingScreen() {
   return (
     <>
       <StatusBar style='inverted' />
-
       <Modal
-        // ={theme.colors.backDrop}
-        // animationOutTiming={300}
+        transparent={true}
         visible={isUserProfileModalVisible}
+        animationType='fade'
         onRequestClose={setUserProfileModalVisible}
-        style={{ justifyContent: 'flex-end' }}
       >
-        <SafeAreaView>
+        <View style={styles.backdrop}>
           <View style={styles.modal}>
             <HStack $x='space-between' $y='center'>
               <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
@@ -73,7 +69,7 @@ export default function OnboardingScreen() {
               </Button>
             </VStack>
           </View>
-        </SafeAreaView>
+        </View>
       </Modal>
 
       <ImageBackground
@@ -112,8 +108,6 @@ export default function OnboardingScreen() {
           </SafeAreaView>
         </LinearGradient>
       </ImageBackground>
-
-      <BottomSheet ref={bottomSheetRef} />
     </>
   );
 }
@@ -141,11 +135,19 @@ const stylesheet = createStyleSheet((theme, runtime) => ({
     padding: theme.spacing.sp10,
     paddingBottom: Platform.OS === 'ios' ? theme.spacing.sp16 : theme.spacing.sp22
   },
+  backdrop: {
+    flex: 1,
+    backgroundColor: theme.colors.backDrop,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: theme.spacing.sp8,
+    paddingBottom: runtime.insets.bottom,
+  },
   modal: {
     backgroundColor: theme.colors.white100,
     padding: theme.spacing.sp10,
     borderRadius: theme.radius.md,
-    minHeight: 300
+    minHeight: 300,
   },
   logo: {
     width: 48,

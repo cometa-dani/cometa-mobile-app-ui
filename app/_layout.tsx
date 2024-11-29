@@ -60,7 +60,10 @@ function Root(): ReactNode {
       <GestureHandlerRootView>
         <KeyboardProvider>
           <BottomSheetModalProvider>
-            <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
+            <Stack
+              initialRouteName='onboarding/index'
+              screenOptions={{ headerShown: false, animation: 'fade' }}
+            >
               <Stack.Screen name='onboarding/index' />
               <Stack.Screen name='(tabs)' />
             </Stack>
