@@ -1,8 +1,9 @@
 import { createStyleSheet } from 'react-native-unistyles';
 import { forwardRef, ReactNode } from 'react';
-import { GestureResponderEvent, Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
+import { GestureResponderEvent, Pressable, StyleProp, View, ViewStyle } from 'react-native';
 import { useStyles } from 'react-native-unistyles';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
+import { TextView } from '../text/text';
 
 
 interface IButtonProps {
@@ -33,7 +34,7 @@ export const Button = forwardRef<View, IButtonProps>(({
         style={[buttonsStyles.buttonContainer(), style]}
         onPress={onPress}
       >
-        <Text style={buttonsStyles.buttonText()}>{children}</Text>
+        <TextView style={buttonsStyles.buttonText()}>{children}</TextView>
       </TouchableOpacity>
     );
   }
@@ -44,9 +45,9 @@ export const Button = forwardRef<View, IButtonProps>(({
       style={({ pressed }) => [buttonsStyles.buttonContainer(pressed), style]}
     >
       {() => (
-        <Text style={buttonsStyles.buttonText()}>
+        <TextView style={buttonsStyles.buttonText()}>
           {children}
-        </Text>
+        </TextView>
       )}
     </Pressable>
   );

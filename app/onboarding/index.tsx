@@ -140,10 +140,11 @@ const stylesheet = createStyleSheet((theme, runtime) => ({
     backgroundColor: theme.colors.backDrop,
     alignItems: 'center',
     justifyContent: 'flex-end',
-    padding: theme.spacing.sp8,
+    padding: theme.spacing.sp6,
     paddingBottom: runtime.insets.bottom,
   },
   modal: {
+    width: '100%',
     backgroundColor: theme.colors.white100,
     padding: theme.spacing.sp10,
     borderRadius: theme.radius.md,

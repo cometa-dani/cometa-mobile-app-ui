@@ -1,9 +1,11 @@
 import { TextView } from '@/components/text/text';
-import { VStack } from '@/components/utils/stacks';
 import { Stack } from 'expo-router';
+import { Platform, View } from 'react-native';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
 export default function OnboardUser() {
+  const { styles } = useStyles(styleSheet);
   return (
     <>
       <Stack.Screen
@@ -11,14 +13,28 @@ export default function OnboardUser() {
           gestureDirection: 'vertical',
           fullScreenGestureEnabled: true,
           gestureEnabled: true,
-          headerShown: true,
-          animation: 'fade_from_bottom',
-          presentation: 'modal',
+          headerShadowVisible: false,
+          headerShown: Platform.select({
+            ios: false,
+            android: true
+          }),
+          headerTitle: '',
+          animationDuration: 280,
+          animation: 'slide_from_bottom',
         }}
       />
-      <VStack>
+      <View style={styles.container}>
         <TextView>Onboard user</TextView>
-      </VStack>
+      </View>
     </>
   );
 }
+
+const styleSheet = createStyleSheet((theme) => ({
+  container: {
+    backgroundColor: theme.colors.white100,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+}));

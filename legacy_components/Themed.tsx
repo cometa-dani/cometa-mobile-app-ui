@@ -26,8 +26,8 @@ type ThemeProps = {
 };
 
 // Create type aliases for Text and View props with theme options
-export type TextProps = ThemeProps & DefaultText['props'];
-export type ViewProps = ThemeProps & DefaultView['props'];
+type TextProps = ThemeProps & DefaultText['props'];
+type ViewProps = ThemeProps & DefaultView['props'];
 
 
 /**
@@ -68,7 +68,7 @@ function useThemedColor(
  * @param colorScheme
  * @returns {Object} the colors given the theme.
  */
-export const useColors = (colorScheme?: 'light' | 'dark') => {
+const useColors = (colorScheme?: 'light' | 'dark') => {
   const theme = useColorScheme() ?? 'light';
 
   if (colorScheme) {
@@ -85,7 +85,7 @@ export const useColors = (colorScheme?: 'light' | 'dark') => {
  * @param {TextProps} props - The props for the Text component, including theme options.
  * @returns {JSX.Element} - A Text component with the theme-specific color applied.
  */
-export function Text(props: TextProps) {
+function Text(props: TextProps) {
   const { style, lightColor, darkColor, size = 'md', color, ...otherProps } = props;
   const defaultColor = useThemedColor({ light: lightColor, dark: darkColor }, 'text');
 
@@ -110,7 +110,7 @@ export function Text(props: TextProps) {
  * @param {ViewProps} props - The props for the View component, including theme options.
  * @returns {JSX.Element} - A View component with the theme-specific background color applied.
  */
-export function View(props: ViewProps) {
+function View(props: ViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const backgroundColor = useThemedColor({ light: lightColor, dark: darkColor }, 'background');
 
