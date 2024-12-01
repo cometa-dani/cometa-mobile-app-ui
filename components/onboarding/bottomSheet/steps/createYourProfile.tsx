@@ -11,8 +11,6 @@ import { Button } from '@/components/button/button';
 import { IUserOnboarding } from '@/models/User';
 import { testIds } from './testIds';
 import { KeyboardAwareScrollView, } from 'react-native-keyboard-controller';
-import { Pressable } from 'react-native-gesture-handler';
-import { View } from 'react-native';
 
 
 const errorMessages = {
