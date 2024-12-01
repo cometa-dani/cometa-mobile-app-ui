@@ -5,12 +5,14 @@ import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useCometaStore } from '@/store/cometaStore';
-import { BottomSheetView, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
 import { Button } from '@/components/button/button';
 import { IUserOnboarding } from '@/models/User';
 import { testIds } from './testIds';
+import { KeyboardAwareScrollView, } from 'react-native-keyboard-controller';
+import { Pressable } from 'react-native-gesture-handler';
+import { View } from 'react-native';
 
 
 const errorMessages = {
@@ -62,24 +64,27 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
     <FormProvider
       {...formProps}
     >
-      <BottomSheetView>
-        <Center styles={{
-          paddingTop: theme.spacing.sp12,
-          paddingBottom: theme.spacing.sp2
-        }}>
-          <Heading size='s7'>Create Your Profile</Heading>
-        </Center>
-      </BottomSheetView>
+      <Center styles={{
+        paddingTop: theme.spacing.sp12,
+        paddingBottom: theme.spacing.sp2
+      }}>
+        <Heading size='s7'>Create Your Profile</Heading>
+      </Center>
 
-      <BottomSheetScrollView
+      <KeyboardAwareScrollView
+        showsVerticalScrollIndicator={false}
+        bottomOffset={theme.spacing.sp10}
+        bounces={false}
+        style={{ flex: 1 }}
         contentContainerStyle={{
           paddingHorizontal: theme.spacing.sp10,
           paddingVertical: theme.spacing.sp8,
           gap: theme.spacing.sp7,
           paddingBottom: theme.spacing.sp14
-        }}>
+        }}
+      >
         <FieldsList onNextStep={onNextStep} />
-      </BottomSheetScrollView>
+      </KeyboardAwareScrollView>
     </FormProvider>
   );
 };
@@ -100,7 +105,6 @@ const FieldsList: FC<IFormProps> = ({ onNextStep }) => {
   return (
     <>
       <FieldText
-        isInsideBottomSheet={true}
         testId={testIds.fullname}
         label='Full Name'
         name='name'
@@ -109,16 +113,6 @@ const FieldsList: FC<IFormProps> = ({ onNextStep }) => {
         defaultErrMessage={errorMessages.name}
       />
       <FieldText
-        isInsideBottomSheet={true}
-        testId={testIds.fullname}
-        label='Full Name'
-        name='name'
-        placeholder='Enter your Full Name'
-        iconName='user'
-        defaultErrMessage={errorMessages.name}
-      />
-      <FieldText
-        isInsideBottomSheet={true}
         testId={testIds.username}
         label='User Name'
         name='username'
@@ -127,7 +121,6 @@ const FieldsList: FC<IFormProps> = ({ onNextStep }) => {
         defaultErrMessage={errorMessages.username}
       />
       <FieldText
-        isInsideBottomSheet={true}
         isDateTimePicker={true}
         testId={testIds.birthday}
         label='Birthday'
@@ -138,7 +131,6 @@ const FieldsList: FC<IFormProps> = ({ onNextStep }) => {
         defaultErrMessage={errorMessages.birthday}
       />
       <FieldText
-        isInsideBottomSheet={true}
         testId={testIds.email}
         label='Email'
         name='email'
@@ -148,7 +140,6 @@ const FieldsList: FC<IFormProps> = ({ onNextStep }) => {
         defaultErrMessage={errorMessages.email}
       />
       <FieldText
-        isInsideBottomSheet={true}
         testId={testIds.password}
         secureTextEntry={true}
         label='Password'
@@ -158,7 +149,6 @@ const FieldsList: FC<IFormProps> = ({ onNextStep }) => {
         defaultErrMessage={errorMessages.password}
       />
       <FieldText
-        isInsideBottomSheet={true}
         testId={testIds.repeatPassword}
         secureTextEntry={true}
         label='Re-enter Password'
@@ -170,7 +160,6 @@ const FieldsList: FC<IFormProps> = ({ onNextStep }) => {
 
       <Button
         style={{ marginTop: theme.spacing.sp8 }}
-        isInsideBottomSheet={true}
         variant='primary'
         onPress={formProps.handleSubmit(handleUserState)}
       >

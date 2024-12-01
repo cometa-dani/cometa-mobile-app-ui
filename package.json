@@ -68,7 +68,8 @@
     "toastify-react-native": "^5.0.0",
     "universal-gradient-text": "^0.1.2",
     "yup": "^1.4.0",
-    "zustand": "^4.4.3"
+    "zustand": "^4.4.3",
+    "react-native-pager-view": "6.5.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

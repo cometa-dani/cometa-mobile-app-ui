@@ -2,9 +2,8 @@ import { VStack } from '@/components/utils/stacks';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { FC, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { FlatList, Pressable, Text, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { BottomSheetFlatList as BsFlatList } from '@gorhom/bottom-sheet';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { If } from '@/components/utils/ifElse';
 
@@ -143,11 +142,12 @@ export const PhotosGrid: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, a
         </View>
       </Pressable>
 
-      <BsFlatList
+      <FlatList
+        bounces={false}
         data={restPhotos} // replace with your actual data
         numColumns={3}
         columnWrapperStyle={{ gap: theme.spacing.sp2 }}
-        contentContainerStyle={{ gap: theme.spacing.sp2 }}
+        contentContainerStyle={{ gap: theme.spacing.sp2, minHeight: 200 }}
         renderItem={({ item, index }) => {
           return (
             <Pressable

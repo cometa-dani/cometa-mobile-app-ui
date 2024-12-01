@@ -5,7 +5,6 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useCometaStore } from '@/store/cometaStore';
-import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
 import { Button } from '@/components/button/button';
@@ -16,6 +15,7 @@ import {
   useMutationUploadUserPhotos
 } from '@/queries/currentUser/userHooks';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { Pressable } from 'react-native-gesture-handler';
 
 
 const errorMessages = {
@@ -88,23 +88,24 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
 
   return (
     <FormProvider {...formProps}>
-      <BottomSheetView>
-        <Center styles={{
-          paddingTop: theme.spacing.sp12,
-          paddingBottom: theme.spacing.sp2
-        }}>
-          <Heading size='s7'>About Yourself</Heading>
-        </Center>
-      </BottomSheetView>
+
+      <Center styles={{
+        paddingTop: theme.spacing.sp12,
+        paddingBottom: theme.spacing.sp2
+      }}>
+        <Heading size='s7'>About Yourself</Heading>
+      </Center>
+
       <KeyboardAwareScrollView
-        bottomOffset={110}
+        bottomOffset={theme.spacing.sp10}
+        bounces={false}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingHorizontal: theme.spacing.sp10,
           paddingVertical: theme.spacing.sp8,
           gap: theme.spacing.sp7,
         }}>
         <FieldText
-          isInsideBottomSheet={true}
           label='Occupation'
           name='occupation'
           placeholder='Enter your Occupation'
@@ -112,7 +113,6 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.occupation}
         />
         <FieldText
-          isInsideBottomSheet={true}
           label='Bio'
           multiline={true}
           name='biography'
@@ -121,7 +121,6 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.biography}
         />
         <FieldText
-          isInsideBottomSheet={true}
           editable={false}
           label='Languages you know'
           name='languages'
@@ -130,7 +129,6 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.languages}
         />
         <FieldText
-          isInsideBottomSheet={true}
           editable={false}
           label='Location'
           name='currentLocation'
@@ -139,7 +137,6 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           defaultErrMessage={errorMessages.currentLocation}
         />
         <FieldText
-          isInsideBottomSheet={true}
           editable={false}
           label='Home Town'
           name='homeTown'
@@ -149,7 +146,6 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
         />
 
         <Button
-          isInsideBottomSheet={true}
           style={{ marginTop: theme.spacing.sp8 }}
           variant='primary'
           onPress={formProps.handleSubmit(handleUserCreation)}

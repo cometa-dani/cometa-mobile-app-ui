@@ -1,10 +1,9 @@
 import { FC } from 'react';
 import { useStyles } from 'react-native-unistyles';
 import { useCometaStore } from '@/store/cometaStore';
-import { BottomSheetView as BsView } from '@gorhom/bottom-sheet';
 import { Center, HStack } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { Button } from '@/components/button/button';
 import { createEmptyPlaceholders, hasAsset, IPhotoPlaceholder, PhotosGrid } from '../photosGrid/photosGrid';
@@ -23,7 +22,6 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
 
   const handleUserState = (photos: IPhotoPlaceholder[]) => {
     const filteredPhotos = photos.filter(hasAsset);
-    console.log('handlePhotosUpload', filteredPhotos);
     setOnboardingState({ photos: filteredPhotos });
   };
 
@@ -34,15 +32,15 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
 
   return (
     <>
-      <BsView>
+      <View>
         <Center styles={{
           paddingTop: theme.spacing.sp12,
           paddingBottom: theme.spacing.sp2
         }}>
           <Heading size='s7'>Upload your Photos</Heading>
         </Center>
-      </BsView>
-      <BsView
+      </View>
+      <View
         style={{
           paddingVertical: theme.spacing.sp8,
           paddingHorizontal: theme.spacing.sp10,
@@ -75,13 +73,12 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
 
         <Button
           style={{ marginTop: theme.spacing.sp8 }}
-          isInsideBottomSheet={true}
           variant='primary'
           onPress={handleNextStep}
         >
           Next
         </Button>
-      </BsView>
+      </View>
     </>
   );
 };

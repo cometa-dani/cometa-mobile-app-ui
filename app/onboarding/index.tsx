@@ -10,7 +10,7 @@ import { Button } from '@/components/button/button';
 import { AntDesign } from '@expo/vector-icons';
 import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 
 
 export default function OnboardingScreen() {
@@ -34,6 +34,13 @@ export default function OnboardingScreen() {
   return (
     <>
       <StatusBar style='inverted' />
+      <Stack.Screen
+        options={{
+          headerTransparent: true,
+          headerStyle: { backgroundColor: 'transparent' },
+          headerTitle: '',
+        }}
+      />
       <Modal
         transparent={true}
         visible={isUserProfileModalVisible}

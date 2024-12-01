@@ -11,12 +11,13 @@ import { useFonts } from 'expo-font';
 import { ReactNode, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useStyles } from 'react-native-unistyles';
 
 // Catch any errors thrown by the Layout component.
 export { ErrorBoundary } from 'expo-router';
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '/index',
+  initialRouteName: '/onboarding/index',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -50,6 +51,7 @@ export default function RootLayout() {
 
 
 function Root(): ReactNode {
+  const { theme } = useStyles();
   return (
     <QueryClientProvider client={new QueryClient()}>
       <ToastManager
@@ -62,9 +64,13 @@ function Root(): ReactNode {
           <BottomSheetModalProvider>
             <Stack
               initialRouteName='onboarding/index'
-              screenOptions={{ headerShown: false, animation: 'fade' }}
+              screenOptions={{
+                animation: 'fade',
+                headerTitle: '',
+                headerStyle: { backgroundColor: 'transparent' },
+                contentStyle: { backgroundColor: theme.colors.white100 },
+              }}
             >
-              <Stack.Screen name='onboarding/index' />
               <Stack.Screen name='(tabs)' />
             </Stack>
           </BottomSheetModalProvider>
