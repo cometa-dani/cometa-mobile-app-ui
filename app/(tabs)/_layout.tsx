@@ -1,5 +1,5 @@
 import { TabBar } from '@/components/tabBar/tabBar';
-import { Redirect, Stack, Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 
 
 export default function TabLayout() {

@@ -33,10 +33,12 @@ export default function OnboardUser() {
       />
 
       <View style={{
-        paddingTop: 0,
         paddingHorizontal: theme.spacing.sp10,
       }}>
-        <ProgressBar value={(nextStep + 1) * 33.3333} />
+        <ProgressBar
+          height={5.5}
+          value={(nextStep + 1) * 33.3333}
+        />
       </View>
 
       <PagerView style={{ flex: 1 }} initialPage={0}>

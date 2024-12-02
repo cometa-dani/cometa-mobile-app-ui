@@ -7,10 +7,11 @@ import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unis
 const screenWidth = UnistylesRuntime.screen.width;
 
 interface ProgressBarProps {
-  value: number
+  value: number,
+  height?: number
 }
 
-export const ProgressBar: FC<ProgressBarProps> = ({ value }) => {
+export const ProgressBar: FC<ProgressBarProps> = ({ value, height = 6 }) => {
   const { styles } = useStyles(styleSheet);
   const progress = useSharedValue(0);
 
@@ -21,11 +22,12 @@ export const ProgressBar: FC<ProgressBarProps> = ({ value }) => {
   }, [value]);
 
   return (
-    <View style={styles.progressBar}>
+    <View style={[styles.progressBar, { height }]}>
       <Animated.View
         style={[
           styles.progress,
           {
+            height,
             width: progress,
           },
         ]}
@@ -37,16 +39,14 @@ export const ProgressBar: FC<ProgressBarProps> = ({ value }) => {
 
 const styleSheet = createStyleSheet((theme) => ({
   progressBar: {
-    height: 4.2,
     backgroundColor: theme.colors.white80,
-    borderRadius: theme.radius.xs,
+    borderRadius: 99_999,
     overflow: 'hidden',
     width: '100%',
   },
   progress: {
-    height: 6,
     backgroundColor: theme.colors.red80,
     opacity: 0.7,
-    borderRadius: theme.radius.xs,
+    borderRadius: 99_999,
   }
 }));
