@@ -1,15 +1,16 @@
-import { AboutYourSelfForm } from '@/components/onboarding/bottomSheet/steps/aboutYourSelf';
-import { HeaderProgressBar } from '@/components/onboarding/bottomSheet/steps/components/headerProgressBar';
-import { CreateYourProfileForm } from '@/components/onboarding/bottomSheet/steps/createYourProfile';
-import { UploadYouPhotosForm } from '@/components/onboarding/bottomSheet/steps/uploadYourPhotos';
+import { AboutYourSelfForm } from '@/components/onboarding/user/steps/aboutYourSelf';
+import { HeaderProgressBar } from '@/components/onboarding/user/steps/components/headerProgressBar';
+import { CreateYourProfileForm } from '@/components/onboarding/user/steps/createYourProfile';
+import { UploadYouPhotosForm } from '@/components/onboarding/user/steps/uploadYourPhotos';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import PagerView, { usePagerView } from 'react-native-pager-view';
 
 
+const title = ['Create Your Profile', 'About Yourself', 'Upload Your Photos', 'Done'];
+
 export default function OnboardUser() {
   const { ref, setPage, setProgress, progress } = usePagerView();
-  const title = ['Create Your Profile', 'About Yourself', 'Upload Your Photos', 'Done'];
   const nextPage = progress.position + 1;
   return (
     <>
@@ -27,17 +28,22 @@ export default function OnboardUser() {
           animation: 'slide_from_bottom',
         }}
       />
+
       <HeaderProgressBar
-        activePage={progress.position + 1}
+        activePage={nextPage}
         title={title[progress.position]}
       />
+
       <PagerView
         ref={ref}
         style={{ flex: 1 }}
         initialPage={0}
         scrollEnabled={false}
-        onPageScroll={e => {
-          setProgress({ position: e.nativeEvent.position, offset: e.nativeEvent.offset });
+        onPageScroll={(e) => {
+          setProgress({
+            position: e.nativeEvent.position,
+            offset: e.nativeEvent.offset
+          });
         }}
       >
         <CreateYourProfileForm

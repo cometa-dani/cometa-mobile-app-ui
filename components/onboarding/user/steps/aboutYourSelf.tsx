@@ -14,7 +14,6 @@ import {
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FooterButton } from './components/footerButton';
 import { IProps } from './components/interface';
-import { HeaderProgressBar } from './components/headerProgressBar';
 
 
 const errorMessages = {
@@ -53,7 +52,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ activatePage, onNext }) => {
   const { theme } = useStyles();
   const formProps = useForm({
     defaultValues,
-    // resolver: yupResolver<IFormValues>(validationSchema)
+    resolver: yupResolver<IFormValues>(validationSchema)
   });
   const userState = useCometaStore(state => state.onboarding.user);
   const createUser = useMutationCreateUser();
@@ -76,9 +75,9 @@ export const AboutYourSelfForm: FC<IProps> = ({ activatePage, onNext }) => {
       occupation: values.occupation
     };
     try {
-      // const newUser = await createUser.mutateAsync(createUserPayload);
-      // await uploadPhotos.mutateAsync({ userId: newUser.id, pickedImgFiles: userState.photos });
-      // await updateUser.mutateAsync({ userId: newUser.id, payload: updateUserPayload });
+      const newUser = await createUser.mutateAsync(createUserPayload);
+      await uploadPhotos.mutateAsync({ userId: newUser.id, pickedImgFiles: userState.photos });
+      await updateUser.mutateAsync({ userId: newUser.id, payload: updateUserPayload });
       onNext();
     } catch (error) {
       return;
@@ -87,11 +86,6 @@ export const AboutYourSelfForm: FC<IProps> = ({ activatePage, onNext }) => {
 
   return (
     <FormProvider {...formProps}>
-      {/* <HeaderProgressBar
-        activePage={activatePage}
-        title='About Your Yourself'
-      /> */}
-
       <KeyboardAwareScrollView
         bottomOffset={theme.spacing.sp10}
         bounces={false}

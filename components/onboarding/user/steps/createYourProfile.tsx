@@ -9,7 +9,6 @@ import { IUserOnboarding } from '@/models/User';
 import { testIds } from './components/testIds';
 import { KeyboardAwareScrollView, } from 'react-native-keyboard-controller';
 import { FooterButton } from './components/footerButton';
-import { HeaderProgressBar } from './components/headerProgressBar';
 import { IProps } from './components/interface';
 
 
@@ -57,7 +56,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNext, activatePage }) => {
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
   const formProps = useForm({
     defaultValues,
-
+    resolver: yupResolver<IFormValues>(validationSchema)
   });
 
   const handleUserState = (values: IFormValues): void => {
@@ -67,11 +66,6 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNext, activatePage }) => {
 
   return (
     <FormProvider {...formProps}>
-      {/* <HeaderProgressBar
-        activePage={activatePage}
-        title='Create Your Profile'
-      /> */}
-
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         bottomOffset={theme.spacing.sp10}

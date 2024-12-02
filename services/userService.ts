@@ -3,7 +3,7 @@ import { RestApiService } from './restService';
 import { ImagePickerAsset } from 'expo-image-picker';
 import FormData from 'form-data';
 import { AxiosInstance } from 'axios';
-import { IPhotoPlaceholder } from '@/components/onboarding/bottomSheet/photosGrid/photosGrid';
+import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photosGrid';
 
 
 class UsersService {

@@ -8,7 +8,6 @@ import { createEmptyPlaceholders, hasAsset, IPhotoPlaceholder, PhotosGrid } from
 import { MAX_NUMBER_PHOTOS, MIN_NUMBER_PHOTOS } from '@/constants/vars';
 import { FooterButton } from './components/footerButton';
 import { IProps } from './components/interface';
-import { HeaderProgressBar } from './components/headerProgressBar';
 
 
 const setInitialPlaceholders = () => createEmptyPlaceholders(MAX_NUMBER_PHOTOS);
@@ -24,17 +23,12 @@ export const UploadYouPhotosForm: FC<IProps> = ({ activatePage, onNext }) => {
   };
 
   const handleNextStep = () => {
-    // if (userPhotos.filter(hasAsset).length < MIN_NUMBER_PHOTOS) return;
+    if (userPhotos.filter(hasAsset).length < MIN_NUMBER_PHOTOS) return;
     onNext();
   };
 
   return (
     <View style={{ flex: 1, position: 'relative' }}>
-      {/* <HeaderProgressBar
-        activePage={activatePage}
-        title='Upload Your Photos'
-      /> */}
-
       <View
         style={{
           flex: 1,

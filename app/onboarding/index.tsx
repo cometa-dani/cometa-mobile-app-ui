@@ -34,6 +34,7 @@ export default function OnboardingScreen() {
   return (
     <>
       <StatusBar style='inverted' />
+
       <Stack.Screen
         options={{
           headerTransparent: true,
@@ -41,6 +42,7 @@ export default function OnboardingScreen() {
           headerTitle: '',
         }}
       />
+
       <Modal
         transparent={true}
         visible={isUserProfileModalVisible}
