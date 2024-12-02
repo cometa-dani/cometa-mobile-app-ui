@@ -5,12 +5,12 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useCometaStore } from '@/store/cometaStore';
-import { Center } from '@/components/utils/stacks';
-import { Heading } from '@/components/text/heading';
 import { IUserOnboarding } from '@/models/User';
-import { testIds } from './testIds';
+import { testIds } from './components/testIds';
 import { KeyboardAwareScrollView, } from 'react-native-keyboard-controller';
-import { NextButton } from './components/nextButton';
+import { FooterButton } from './components/footerButton';
+import { HeaderProgressBar } from './components/headerProgressBar';
+import { IProps } from './components/interface';
 
 
 const errorMessages = {
@@ -52,29 +52,25 @@ const defaultValues: IFormValues = {
   birthday: '',
 };
 
-interface IProps {
-  onNextStep: () => void;
-}
-export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
-  const setOnboardingState = useCometaStore(state => state.setOnboarding);
-  const formProps = useForm({ defaultValues, resolver: yupResolver<IFormValues>(validationSchema) });
+export const CreateYourProfileForm: FC<IProps> = ({ onNext, activatePage }) => {
   const { theme } = useStyles();
+  const setOnboardingState = useCometaStore(state => state.setOnboarding);
+  const formProps = useForm({
+    defaultValues,
+
+  });
 
   const handleUserState = (values: IFormValues): void => {
     setOnboardingState(values);
-    onNextStep();
+    onNext();
   };
 
   return (
-    <FormProvider
-      {...formProps}
-    >
-      <Center styles={{
-        paddingTop: theme.spacing.sp12,
-        paddingBottom: theme.spacing.sp2
-      }}>
-        <Heading size='s7'>Create Your Profile</Heading>
-      </Center>
+    <FormProvider {...formProps}>
+      {/* <HeaderProgressBar
+        activePage={activatePage}
+        title='Create Your Profile'
+      /> */}
 
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
@@ -83,7 +79,6 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingHorizontal: theme.spacing.sp10,
-          paddingVertical: theme.spacing.sp8,
           gap: theme.spacing.sp7,
           paddingBottom: theme.spacing.sp14
         }}
@@ -143,7 +138,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
         />
       </KeyboardAwareScrollView>
 
-      <NextButton
+      <FooterButton
         text='Next'
         onNext={formProps.handleSubmit(handleUserState)}
       />

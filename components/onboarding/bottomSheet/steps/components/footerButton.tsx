@@ -8,7 +8,7 @@ interface IProps {
   onNext: () => void;
   text: string
 }
-export const NextButton: FC<IProps> = ({ text, onNext }) => {
+export const FooterButton: FC<IProps> = ({ text, onNext }) => {
   const { styles } = useStyles(styleSheet);
   return (
     <View style={styles.container}>
@@ -21,7 +21,6 @@ export const NextButton: FC<IProps> = ({ text, onNext }) => {
     </View>
   );
 };
-
 
 const styleSheet = createStyleSheet((theme, runtime) => ({
   container: {

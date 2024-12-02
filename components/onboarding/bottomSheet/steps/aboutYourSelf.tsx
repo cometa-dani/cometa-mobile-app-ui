@@ -5,8 +5,6 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useCometaStore } from '@/store/cometaStore';
-import { Center } from '@/components/utils/stacks';
-import { Heading } from '@/components/text/heading';
 import { ICreateUser, IUpdateUser, IUserOnboarding } from '@/models/User';
 import {
   useMutationCreateUser,
@@ -14,7 +12,9 @@ import {
   useMutationUploadUserPhotos
 } from '@/queries/currentUser/userHooks';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { NextButton } from './components/nextButton';
+import { FooterButton } from './components/footerButton';
+import { IProps } from './components/interface';
+import { HeaderProgressBar } from './components/headerProgressBar';
 
 
 const errorMessages = {
@@ -49,12 +49,12 @@ const defaultValues: IFormValues = {
   languages: [],
 };
 
-interface IProps {
-  onNextStep: () => void;
-}
-export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
+export const AboutYourSelfForm: FC<IProps> = ({ activatePage, onNext }) => {
   const { theme } = useStyles();
-  const formProps = useForm({ defaultValues, resolver: yupResolver<IFormValues>(validationSchema) });
+  const formProps = useForm({
+    defaultValues,
+    // resolver: yupResolver<IFormValues>(validationSchema)
+  });
   const userState = useCometaStore(state => state.onboarding.user);
   const createUser = useMutationCreateUser();
   const updateUser = useMutationUpdateUserById();
@@ -76,10 +76,10 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
       occupation: values.occupation
     };
     try {
-      const newUser = await createUser.mutateAsync(createUserPayload);
-      await uploadPhotos.mutateAsync({ userId: newUser.id, pickedImgFiles: userState.photos });
-      await updateUser.mutateAsync({ userId: newUser.id, payload: updateUserPayload });
-      onNextStep();
+      // const newUser = await createUser.mutateAsync(createUserPayload);
+      // await uploadPhotos.mutateAsync({ userId: newUser.id, pickedImgFiles: userState.photos });
+      // await updateUser.mutateAsync({ userId: newUser.id, payload: updateUserPayload });
+      onNext();
     } catch (error) {
       return;
     }
@@ -87,13 +87,10 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
 
   return (
     <FormProvider {...formProps}>
-
-      <Center styles={{
-        paddingTop: theme.spacing.sp12,
-        paddingBottom: theme.spacing.sp2
-      }}>
-        <Heading size='s7'>About Yourself</Heading>
-      </Center>
+      {/* <HeaderProgressBar
+        activePage={activatePage}
+        title='About Your Yourself'
+      /> */}
 
       <KeyboardAwareScrollView
         bottomOffset={theme.spacing.sp10}
@@ -145,7 +142,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
         />
       </KeyboardAwareScrollView>
 
-      <NextButton
+      <FooterButton
         text='Register'
         onNext={formProps.handleSubmit(handleUserCreation)}
       />

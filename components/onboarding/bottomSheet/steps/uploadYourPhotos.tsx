@@ -1,22 +1,19 @@
 import { FC } from 'react';
 import { useStyles } from 'react-native-unistyles';
 import { useCometaStore } from '@/store/cometaStore';
-import { Center, HStack } from '@/components/utils/stacks';
-import { Heading } from '@/components/text/heading';
+import { HStack } from '@/components/utils/stacks';
 import { Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { Button } from '@/components/button/button';
 import { createEmptyPlaceholders, hasAsset, IPhotoPlaceholder, PhotosGrid } from '../photosGrid/photosGrid';
 import { MAX_NUMBER_PHOTOS, MIN_NUMBER_PHOTOS } from '@/constants/vars';
-import { NextButton } from './components/nextButton';
+import { FooterButton } from './components/footerButton';
+import { IProps } from './components/interface';
+import { HeaderProgressBar } from './components/headerProgressBar';
 
 
 const setInitialPlaceholders = () => createEmptyPlaceholders(MAX_NUMBER_PHOTOS);
 
-interface IProps {
-  onNextStep: () => void;
-}
-export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
+export const UploadYouPhotosForm: FC<IProps> = ({ activatePage, onNext }) => {
   const { theme } = useStyles();
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
   const userPhotos = useCometaStore(state => state.onboarding.user.photos) ?? [];
@@ -27,20 +24,17 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
   };
 
   const handleNextStep = () => {
-    if (userPhotos.filter(hasAsset).length < MIN_NUMBER_PHOTOS) return;
-    onNextStep();
+    // if (userPhotos.filter(hasAsset).length < MIN_NUMBER_PHOTOS) return;
+    onNext();
   };
 
   return (
     <View style={{ flex: 1, position: 'relative' }}>
-      <View>
-        <Center styles={{
-          paddingTop: theme.spacing.sp12,
-          paddingBottom: theme.spacing.sp2
-        }}>
-          <Heading size='s7'>Upload your Photos</Heading>
-        </Center>
-      </View>
+      {/* <HeaderProgressBar
+        activePage={activatePage}
+        title='Upload Your Photos'
+      /> */}
+
       <View
         style={{
           flex: 1,
@@ -74,7 +68,7 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
         </HStack>
       </View>
 
-      <NextButton
+      <FooterButton
         text='Next'
         onNext={handleNextStep}
       />

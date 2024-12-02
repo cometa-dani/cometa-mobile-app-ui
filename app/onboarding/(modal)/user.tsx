@@ -1,20 +1,16 @@
 import { AboutYourSelfForm } from '@/components/onboarding/bottomSheet/steps/aboutYourSelf';
+import { HeaderProgressBar } from '@/components/onboarding/bottomSheet/steps/components/headerProgressBar';
 import { CreateYourProfileForm } from '@/components/onboarding/bottomSheet/steps/createYourProfile';
 import { UploadYouPhotosForm } from '@/components/onboarding/bottomSheet/steps/uploadYourPhotos';
-import { ProgressBar } from '@/components/progressBar/progressBar';
-import { Stack, useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useReducer } from 'react';
-import { View } from 'react-native';
-import PagerView from 'react-native-pager-view';
-import { useStyles } from 'react-native-unistyles';
+import PagerView, { usePagerView } from 'react-native-pager-view';
 
 
 export default function OnboardUser() {
-  const router = useRouter();
-  const { theme } = useStyles();
-  const [nextStep, setNextStep] = useReducer(prev => (++prev % 3), 0);
-  const handleLastStep = () => router.push('/(tabs)/index');
+  const { ref, setPage, setProgress, progress } = usePagerView();
+  const title = ['Create Your Profile', 'About Yourself', 'Upload Your Photos', 'Done'];
+  const nextPage = progress.position + 1;
   return (
     <>
       <StatusBar style='auto' />
@@ -31,28 +27,33 @@ export default function OnboardUser() {
           animation: 'slide_from_bottom',
         }}
       />
-
-      <View style={{
-        paddingHorizontal: theme.spacing.sp10,
-      }}>
-        <ProgressBar
-          height={6}
-          value={(nextStep) * 33.3333}
-        />
-      </View>
-
-      <PagerView style={{ flex: 1 }} initialPage={0}>
+      <HeaderProgressBar
+        activePage={progress.position + 1}
+        title={title[progress.position]}
+      />
+      <PagerView
+        ref={ref}
+        style={{ flex: 1 }}
+        initialPage={0}
+        scrollEnabled={false}
+        onPageScroll={e => {
+          setProgress({ position: e.nativeEvent.position, offset: e.nativeEvent.offset });
+        }}
+      >
         <CreateYourProfileForm
           key={0}
-          onNextStep={setNextStep}
+          onNext={() => setPage(1)}
+          activatePage={nextPage}
         />
         <UploadYouPhotosForm
           key={1}
-          onNextStep={setNextStep}
+          onNext={() => setPage(2)}
+          activatePage={nextPage}
         />
         <AboutYourSelfForm
           key={2}
-          onNextStep={handleLastStep}
+          onNext={() => setPage(3)}
+          activatePage={nextPage}
         />
       </PagerView>
     </>
