@@ -1,6 +1,5 @@
 import { Text, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import '@/styles/unistyles';
 
 
 export default function UserProfileScreen() {

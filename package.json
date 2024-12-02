@@ -1,6 +1,6 @@
 {
   "name": "cometa-ui-app",
-  "main": "expo-router/entry",
+  "main": "index.js",
   "version": "1.0.0",
   "scripts": {
     "build-debug:android": "expo build:android --profile preview --local",
