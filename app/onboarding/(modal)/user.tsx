@@ -36,8 +36,8 @@ export default function OnboardUser() {
         paddingHorizontal: theme.spacing.sp10,
       }}>
         <ProgressBar
-          height={5.5}
-          value={(nextStep + 1) * 33.3333}
+          height={6}
+          value={(nextStep) * 33.3333}
         />
       </View>
 

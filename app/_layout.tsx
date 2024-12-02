@@ -67,6 +67,7 @@ function Root(): ReactNode {
               screenOptions={{
                 animation: 'fade',
                 headerTitle: '',
+                animationDuration: 300,
                 contentStyle: { backgroundColor: theme.colors.white100 },
               }}
             >

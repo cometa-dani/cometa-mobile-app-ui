@@ -8,6 +8,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { Button } from '@/components/button/button';
 import { createEmptyPlaceholders, hasAsset, IPhotoPlaceholder, PhotosGrid } from '../photosGrid/photosGrid';
 import { MAX_NUMBER_PHOTOS, MIN_NUMBER_PHOTOS } from '@/constants/vars';
+import { NextButton } from './components/nextButton';
 
 
 const setInitialPlaceholders = () => createEmptyPlaceholders(MAX_NUMBER_PHOTOS);
@@ -31,7 +32,7 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
   };
 
   return (
-    <>
+    <View style={{ flex: 1, position: 'relative' }}>
       <View>
         <Center styles={{
           paddingTop: theme.spacing.sp12,
@@ -42,6 +43,7 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
       </View>
       <View
         style={{
+          flex: 1,
           paddingVertical: theme.spacing.sp8,
           paddingHorizontal: theme.spacing.sp10,
           gap: theme.spacing.sp12
@@ -70,15 +72,12 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNextStep }) => {
             Add at least {MIN_NUMBER_PHOTOS} photos
           </Text>
         </HStack>
-
-        <Button
-          style={{ marginTop: theme.spacing.sp8 }}
-          variant='primary'
-          onPress={handleNextStep}
-        >
-          Next
-        </Button>
       </View>
-    </>
+
+      <NextButton
+        text='Next'
+        onNext={handleNextStep}
+      />
+    </View>
   );
 };

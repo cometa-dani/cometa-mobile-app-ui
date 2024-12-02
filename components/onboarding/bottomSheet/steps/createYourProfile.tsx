@@ -1,16 +1,16 @@
 import { FC } from 'react';
 import { useStyles } from 'react-native-unistyles';
 import { FieldText } from '@/components/input/fieldText';
-import { FormProvider, useForm, useFormContext } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useCometaStore } from '@/store/cometaStore';
 import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { Button } from '@/components/button/button';
 import { IUserOnboarding } from '@/models/User';
 import { testIds } from './testIds';
 import { KeyboardAwareScrollView, } from 'react-native-keyboard-controller';
+import { NextButton } from './components/nextButton';
 
 
 const errorMessages = {
@@ -56,8 +56,15 @@ interface IProps {
   onNextStep: () => void;
 }
 export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
+  const setOnboardingState = useCometaStore(state => state.setOnboarding);
   const formProps = useForm({ defaultValues, resolver: yupResolver<IFormValues>(validationSchema) });
   const { theme } = useStyles();
+
+  const handleUserState = (values: IFormValues): void => {
+    setOnboardingState(values);
+    onNextStep();
+  };
+
   return (
     <FormProvider
       {...formProps}
@@ -81,88 +88,65 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNextStep }) => {
           paddingBottom: theme.spacing.sp14
         }}
       >
-        <FieldsList onNextStep={onNextStep} />
+        <FieldText
+          testId={testIds.fullname}
+          label='Full Name'
+          name='name'
+          placeholder='Enter your Full Name'
+          iconName='user'
+          defaultErrMessage={errorMessages.name}
+        />
+        <FieldText
+          testId={testIds.username}
+          label='User Name'
+          name='username'
+          placeholder='Enter your User Name'
+          iconName='at'
+          defaultErrMessage={errorMessages.username}
+        />
+        <FieldText
+          isDateTimePicker={true}
+          testId={testIds.birthday}
+          label='Birthday'
+          name='birthday'
+          placeholder='Enter your birthday'
+          iconName='calendar-check-o'
+          editable={false}
+          defaultErrMessage={errorMessages.birthday}
+        />
+        <FieldText
+          testId={testIds.email}
+          label='Email'
+          name='email'
+          placeholder='Enter your Email'
+          iconName='envelope'
+          keyboardType='email-address'
+          defaultErrMessage={errorMessages.email}
+        />
+        <FieldText
+          testId={testIds.password}
+          secureTextEntry={true}
+          label='Password'
+          name='password'
+          placeholder='Enter your password'
+          iconName='lock'
+          defaultErrMessage={errorMessages.password}
+        />
+        <FieldText
+          testId={testIds.repeatPassword}
+          secureTextEntry={true}
+          label='Re-enter Password'
+          name='repassword'
+          placeholder='Enter your password again'
+          iconName='lock'
+          defaultErrMessage={errorMessages.repeatPassword}
+        />
       </KeyboardAwareScrollView>
+
+      <NextButton
+        text='Next'
+        onNext={formProps.handleSubmit(handleUserState)}
+      />
     </FormProvider>
-  );
-};
-
-
-interface IFormProps {
-  onNextStep: () => void;
-}
-const FieldsList: FC<IFormProps> = ({ onNextStep }) => {
-  const setOnboardingState = useCometaStore(state => state.setOnboarding);
-  const handleUserState = (values: IFormValues): void => {
-    setOnboardingState(values);
-    onNextStep();
-  };
-  const formProps = useFormContext<IFormValues>();
-  const { theme } = useStyles();
-
-  return (
-    <>
-      <FieldText
-        testId={testIds.fullname}
-        label='Full Name'
-        name='name'
-        placeholder='Enter your Full Name'
-        iconName='user'
-        defaultErrMessage={errorMessages.name}
-      />
-      <FieldText
-        testId={testIds.username}
-        label='User Name'
-        name='username'
-        placeholder='Enter your User Name'
-        iconName='at'
-        defaultErrMessage={errorMessages.username}
-      />
-      <FieldText
-        isDateTimePicker={true}
-        testId={testIds.birthday}
-        label='Birthday'
-        name='birthday'
-        placeholder='Enter your birthday'
-        iconName='calendar-check-o'
-        editable={false}
-        defaultErrMessage={errorMessages.birthday}
-      />
-      <FieldText
-        testId={testIds.email}
-        label='Email'
-        name='email'
-        placeholder='Enter your Email'
-        iconName='envelope'
-        keyboardType='email-address'
-        defaultErrMessage={errorMessages.email}
-      />
-      <FieldText
-        testId={testIds.password}
-        secureTextEntry={true}
-        label='Password'
-        name='password'
-        placeholder='Enter your password'
-        iconName='lock'
-        defaultErrMessage={errorMessages.password}
-      />
-      <FieldText
-        testId={testIds.repeatPassword}
-        secureTextEntry={true}
-        label='Re-enter Password'
-        name='repassword'
-        placeholder='Enter your password again'
-        iconName='lock'
-        defaultErrMessage={errorMessages.repeatPassword}
-      />
-
-      <Button
-        style={{ marginTop: theme.spacing.sp8 }}
-        variant='primary'
-        onPress={formProps.handleSubmit(handleUserState)}
-      >
-        Next
-      </Button>
-    </>
   );
 };

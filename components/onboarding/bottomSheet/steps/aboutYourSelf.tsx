@@ -7,7 +7,6 @@ import * as Yup from 'yup';
 import { useCometaStore } from '@/store/cometaStore';
 import { Center } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
-import { Button } from '@/components/button/button';
 import { ICreateUser, IUpdateUser, IUserOnboarding } from '@/models/User';
 import {
   useMutationCreateUser,
@@ -15,7 +14,7 @@ import {
   useMutationUploadUserPhotos
 } from '@/queries/currentUser/userHooks';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { Pressable } from 'react-native-gesture-handler';
+import { NextButton } from './components/nextButton';
 
 
 const errorMessages = {
@@ -144,15 +143,12 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNextStep }) => {
           iconName='map-marker'
           defaultErrMessage={errorMessages.homeTown}
         />
-
-        <Button
-          style={{ marginTop: theme.spacing.sp8 }}
-          variant='primary'
-          onPress={formProps.handleSubmit(handleUserCreation)}
-        >
-          Register
-        </Button>
       </KeyboardAwareScrollView>
+
+      <NextButton
+        text='Register'
+        onNext={formProps.handleSubmit(handleUserCreation)}
+      />
     </FormProvider>
   );
 };
