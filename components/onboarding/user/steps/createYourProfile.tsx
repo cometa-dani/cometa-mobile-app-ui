@@ -66,6 +66,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNext, activatePage }) => {
 
   return (
     <FormProvider {...formProps}>
+
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         bottomOffset={theme.spacing.sp10}

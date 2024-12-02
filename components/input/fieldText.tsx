@@ -2,7 +2,7 @@ import { IUserOnboarding } from '@/models/User';
 import { FC, useState } from 'react';
 import { HStack, VStack } from '../utils/stacks';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import { KeyboardTypeOptions, Text, View, TextInput } from 'react-native';
+import { KeyboardTypeOptions, Text, View, TextInput, Pressable } from 'react-native';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -46,42 +46,43 @@ export const FieldText: FC<IFieldTextProps> = ({
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const DynamicTextInput = isInsideBottomSheet ? BottomSheetTextInput : TextInput;
   return (
-    <Controller
-      name={name}
-      control={control}
-      render={({ field: { onChange, onBlur, value, }, fieldState: { error } }) => {
-        const errorMessage = error?.message;
-        const iconColor = (
-          errorMessage ?
-            theme.colors.red80 :
-            isFocused ?
-              theme.colors.blue100 :
-              theme.colors.gray300  // default color
-        );
-        const inputStyle = (
-          errorMessage ?
-            theme.colors.red80 :
-            isFocused ?
-              theme.colors.blue100 :
-              'transparent'
-        );
-        return (
-          <VStack>
-            <DatePicker
-              modal={true}
-              mode='date'
-              open={openDatePicker}
-              date={date ? date : new Date()}
-              onConfirm={(date) => {
-                setDate(date);
-                setValue(name, new Intl.DateTimeFormat('en-US').format(date));
-                setError(name, { message: undefined });
-                setOpenDatePicker(false);
-              }}
-              onCancel={() => {
-                setOpenDatePicker(false);
-              }}
-            />
+    <>
+      <DatePicker
+        modal={true}
+        mode='date'
+        open={openDatePicker}
+        date={date ? date : new Date()}
+        onConfirm={(date) => {
+          setDate(date);
+          setValue(name, new Intl.DateTimeFormat('en-US').format(date));
+          setError(name, { message: undefined });
+          setOpenDatePicker(false);
+        }}
+        onCancel={() => {
+          setOpenDatePicker(false);
+        }}
+      />
+
+      <Controller
+        name={name}
+        control={control}
+        render={({ field: { onChange, onBlur, value, }, fieldState: { error } }) => {
+          const errorMessage = error?.message;
+          const iconColor = (
+            errorMessage ?
+              theme.colors.red80 :
+              isFocused ?
+                theme.colors.blue100 :
+                theme.colors.gray300  // default color
+          );
+          const inputStyle = (
+            errorMessage ?
+              theme.colors.red80 :
+              isFocused ?
+                theme.colors.blue100 :
+                'transparent'
+          );
+          const Input = (
             <View style={[styles.fieldContainer, { borderColor: inputStyle }]}>
               <View style={styles.iconContainer}>
                 <FontAwesome
@@ -101,43 +102,55 @@ export const FieldText: FC<IFieldTextProps> = ({
                 </View>
                 <DynamicTextInput
                   testID={testId}
-                  onPress={() => isDateTimePicker && setOpenDatePicker(true)}
                   editable={editable}
                   multiline={multiline}
                   numberOfLines={multiline ? 4 : 1}
                   secureTextEntry={nodeEnv === 'development' ? false : secureTextEntry}
-                  style={styles.field}
+                  style={[styles.field, { pointerEvents: isDateTimePicker ? 'none' : 'auto' }]}
                   placeholder={placeholder}
                   keyboardType={keyboardType}
                   autoCapitalize='none'
                   value={value}
                   onChangeText={onChange}
-                  onBlur={() => { setIsFocused(false); }}
+                  onBlur={() => setIsFocused(false)}
                   onFocus={() => setIsFocused(true)}
                 />
               </VStack>
             </View>
+          );
+          return (
+            <VStack>
+              {isDateTimePicker ? (
+                <Pressable onPress={() => setOpenDatePicker(true)}>
+                  <>
+                    {Input}
+                  </>
+                </Pressable>
+              ) : (
+                Input
+              )}
 
-            <HStack
-              $y='center'
-              gap={theme.spacing.sp1}
-              styles={{
-                paddingLeft: theme.spacing.sp8
-              }}
-            >
-              <AntDesign
-                name={errorMessage ? 'exclamationcircleo' : 'checkcircleo'}
-                size={theme.icons.xs}
-                color={iconColor}
-              />
-              <Text style={styles.fieldTextMessage(Boolean(errorMessage), isFocused)}>
-                {errorMessage || defaultErrMessage}
-              </Text>
-            </HStack>
-          </VStack>
-        );
-      }}
-    />
+              <HStack
+                $y='center'
+                gap={theme.spacing.sp1}
+                styles={{
+                  paddingLeft: theme.spacing.sp8
+                }}
+              >
+                <AntDesign
+                  name={errorMessage ? 'exclamationcircleo' : 'checkcircleo'}
+                  size={theme.icons.xs}
+                  color={iconColor}
+                />
+                <Text style={styles.fieldTextMessage(Boolean(errorMessage), isFocused)}>
+                  {errorMessage || defaultErrMessage}
+                </Text>
+              </HStack>
+            </VStack>
+          );
+        }}
+      />
+    </>
   );
 };
 
