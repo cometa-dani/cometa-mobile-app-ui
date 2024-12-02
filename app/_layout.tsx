@@ -67,11 +67,13 @@ function Root(): ReactNode {
               screenOptions={{
                 animation: 'fade',
                 headerTitle: '',
-                headerStyle: { backgroundColor: 'transparent' },
                 contentStyle: { backgroundColor: theme.colors.white100 },
               }}
             >
-              <Stack.Screen name='(tabs)' />
+              <Stack.Screen
+                name='(tabs)'
+                options={{ headerShown: false }}
+              />
             </Stack>
           </BottomSheetModalProvider>
         </KeyboardProvider>

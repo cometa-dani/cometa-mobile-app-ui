@@ -1,5 +1,5 @@
 import { TabBar } from '@/components/tabBar/tabBar';
-import { Redirect, Tabs } from 'expo-router';
+import { Redirect, Stack, Tabs } from 'expo-router';
 
 
 export default function TabLayout() {
@@ -8,16 +8,18 @@ export default function TabLayout() {
     return <Redirect href="/onboarding" />;
   }
   return (
-    <Tabs
-      screenOptions={{
-        headerTransparent: true,
-      }}
-      tabBar={(props) => <TabBar {...props} />}
-    >
-      <Tabs.Screen key="home" name="index" />
-      <Tabs.Screen name="chat" />
-      <Tabs.Screen name="bucketList" />
-      <Tabs.Screen name="userProfile" />
-    </Tabs>
+    <>
+      <Tabs
+        screenOptions={{
+          headerShown: false
+        }}
+        tabBar={(props) => <TabBar {...props} />}
+      >
+        <Tabs.Screen key="home" name="index" />
+        <Tabs.Screen name="chat" />
+        <Tabs.Screen name="bucketList" />
+        <Tabs.Screen name="userProfile" />
+      </Tabs>
+    </>
   );
 }
