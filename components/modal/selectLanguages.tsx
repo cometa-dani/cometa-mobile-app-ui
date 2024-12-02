@@ -1,20 +1,19 @@
-import { StyleSheet, View as TransparentView } from 'react-native';
-import { Text, View } from '../../../../legacy_components/Themed';
-import { animationDuration } from '../../../../constants/vars';
+import { StyleSheet, View as TransparentView, View } from 'react-native';
+import { animationDuration } from '../../constants/vars';
 import { Stack } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { useQueryGetAllLanguages } from '../../../../queries/currentUser/editProfileHooks';
-import { gray_50, gray_900 } from '../../../../constants/colors';
+import { useQueryGetAllLanguages } from '../../queries/currentUser/editProfileHooks';
+import { gray_50, gray_900 } from '../../constants/colors';
 import Checkbox from 'expo-checkbox';
-import { AppButton } from '../../../../legacy_components/buttons/buttons';
-import { AppTextInput } from '../../../../legacy_components/textInput/AppTextInput';
+import { AppButton } from '../../legacy_components/buttons/buttons';
+import { AppTextInput } from '../../legacy_components/textInput/AppTextInput';
 import { RectButton } from 'react-native-gesture-handler';
-import { If } from '../../../../legacy_components/utils/ifElse';
-import { useCometaStore } from '../../../../store/cometaStore';
-import { useQueryGetUserByUid } from '../../../../queries/currentUser/userHooks';
-import { FadingLoader } from '../../../../legacy_components/lodingSkeletons/FadingList';
+import { If } from '../../legacy_components/utils/ifElse';
+import { FadingLoader } from '../../legacy_components/lodingSkeletons/FadingList';
+import { Heading } from '@/components/text/heading';
+import { TextView } from '@/components/text/text';
 
 
 const MAXIMUN_LANGUAGES = 5;
@@ -43,11 +42,10 @@ const removeOrAddLanguage = (language: string) => {
 };
 
 
-interface Props {
+interface IProps {
   onSelectLanguages: (languages: string[]) => void;
 }
-
-export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
+export function SelectLanguages({ onSelectLanguages }: IProps): JSX.Element {
   const [inputValue, setInputValue] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const { data = [], isLoading } = useQueryGetAllLanguages();
@@ -79,12 +77,12 @@ export function SelectLanguages({ onSelectLanguages }: Props): JSX.Element {
               data={[''].concat(filteredLanguagesData)}
               ListHeaderComponent={() => (
                 <View style={{ gap: 12, paddingTop: 20, paddingHorizontal: 20 }}>
-                  <Text size='xl'>What Languages do you know?</Text>
-                  <Text>
+                  <Heading size='s4'>What Languages do you know?</Heading>
+                  <TextView>
                     We&apos;ll show these on your profile
                     and use them to connect you with great
                     matches who know your language.
-                  </Text>
+                  </TextView>
                 </View>
               )}
               renderItem={({ item, index }) => (
@@ -181,9 +179,9 @@ const LanguageItem: FC<LanguageItemProps> = ({ language, onCheck, isChecked }) =
       >
         <TransparentView style={styles.titleContainer}>
           <FontAwesome name='language' size={20} />
-          <Text>
+          <TextView>
             {language}
-          </Text>
+          </TextView>
         </TransparentView>
       </RectButton>
 

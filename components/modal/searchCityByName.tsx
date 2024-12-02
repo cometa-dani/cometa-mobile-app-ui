@@ -1,24 +1,25 @@
-import { StyleSheet, TextInput, Pressable } from 'react-native';
+import { TextInput, Pressable, View } from 'react-native';
 import { BaseButton } from 'react-native-gesture-handler';
-import { Text, View } from '../../../../legacy_components/Themed';
 import { Stack } from 'expo-router';
-import { animationDuration } from '../../../../constants/vars';
+import { animationDuration } from '../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { useInfiniteQueryGetCities } from '../../../../queries/currentUser/editProfileHooks';
-import { gray_50 } from '../../../../constants/colors';
-import { If } from '../../../../legacy_components/utils/ifElse';
-import { FadingLoader } from '../../../../legacy_components/lodingSkeletons/FadingList';
+import { useInfiniteQueryGetCities } from '../../queries/currentUser/editProfileHooks';
+import { gray_50 } from '../../constants/colors';
+import { If } from '../../legacy_components/utils/ifElse';
+import { FadingLoader } from '../../legacy_components/lodingSkeletons/FadingList';
+import { TextView } from '@/components/text/text';
+import { Heading } from '@/components/text/heading';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
-interface Props {
-  userProfileField: 'homeTown' | 'currentLocation' | 'languages';
+interface IProps {
+  placeholder: 'homeTown' | 'currentLocation';
   onSaveCity: (city: string) => void;
 }
-
-export function SearchCityByName({ userProfileField, onSaveCity }: Props): ReactNode {
-  const placeholder = userProfileField === 'currentLocation' ? 'Find your current city' : 'Find your home city';
+export function SearchCityByName({ placeholder, onSaveCity }: IProps): ReactNode {
+  const { styles: cityStyles } = useStyles(styleSheet);
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<TextInput>(null);
   const [triggerFetch, setTriggerFetch] = useState('');
@@ -90,13 +91,12 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): React
                   <>
                     <View style={{ opacity: pressed ? 0.6 : 1 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                        <Text>{item.city}</Text>
+                        <TextView>{item.city}</TextView>
                         <FontAwesome name='flag-o' size={20} />
                       </View>
-                      <Text size='lg'>{item.country}</Text>
+                      <Heading size='s4'>{item.country}</Heading>
                     </View>
-
-                    <Text style={{ opacity: pressed ? 0.6 : 1 }}>{item.country}</Text>
+                    <TextView style={{ opacity: pressed ? 0.6 : 1 }}>{item.country}</TextView>
                   </>
                 )}
               </Pressable>
@@ -108,7 +108,8 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): React
   );
 }
 
-const cityStyles = StyleSheet.create({
+
+const styleSheet = createStyleSheet((theme) => ({
   city: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -116,4 +117,4 @@ const cityStyles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 24
   }
-});
+}));
