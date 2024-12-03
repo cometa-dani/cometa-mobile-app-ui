@@ -12,9 +12,10 @@ export const measurementId = process.env?.EXPO_PUBLIC_MEASURING_ID || 'G-G4W08CQ
 export const databaseURL = process.env?.EXPO_PUBLIC_DATABASE_URL || 'https://cometa-e5dd5-default-rtdb.europe-west1.firebasedatabase.app';
 
 export const animationDuration = 290;
-export const screenOptions = { headerShown: false, animation: 'slide_from_right', animationDuration };
+// export const screenOptions = { headerShown: false, animation: 'slide_from_right', animationDuration };
 
 export const defaultImgPlaceholder = 'https://placehold.co/400';
 export const maximunNumberOfPhotos = 5;
 export const MAX_NUMBER_PHOTOS = 7;
 export const MIN_NUMBER_PHOTOS = 4;
+

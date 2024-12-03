@@ -7,8 +7,7 @@ import languagesServices from '../../services/languagesServices';
 export const useInfiniteQueryGetCities = (prefixName: string, limit = 10) => {
   return useInfiniteQuery({
     enabled: true,
-    initialPageParam: -1,
-
+    initialPageParam: 0,
     queryKey: [QueryKeys.GET_CURRENT_LOCATION_CITIES, prefixName],
     queryFn: async ({ pageParam }) => {
       const response = await citiesService.searchCitiesByPrefix(prefixName, pageParam, limit);
@@ -25,7 +24,7 @@ export const useInfiniteQueryGetCities = (prefixName: string, limit = 10) => {
       }
       return null;
     },
-    retry: 2,
+    retry: 1,
     retryDelay: 1_000 * 6
   });
 };
@@ -43,7 +42,7 @@ export const useQueryGetAllLanguages = () => {
         throw new Error('failed to request data');
       }
     },
-    retry: 2,
+    retry: 1,
     retryDelay: 1_000 * 6
   });
 };

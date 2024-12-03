@@ -51,7 +51,7 @@ const defaultValues: IFormValues = {
   birthday: '',
 };
 
-export const CreateYourProfileForm: FC<IProps> = ({ onNext, activatePage }) => {
+export const CreateYourProfileForm: FC<IProps> = ({ onNext }) => {
   const { theme } = useStyles();
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
   const formProps = useForm({

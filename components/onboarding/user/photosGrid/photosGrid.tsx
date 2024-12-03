@@ -5,7 +5,7 @@ import { FC, useState } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import { If } from '@/components/utils/ifElse';
+import { Condition } from '@/components/utils/ifElse';
 
 
 type ImagePickerAsset = ImagePicker.ImagePickerAsset
@@ -124,16 +124,16 @@ export const PhotosGrid: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, a
         onPress={() => handlePickMultipleImages(0, !!firstPhoto.asset?.uri)}
         style={({ pressed }) => styles.mainImageViewer(pressed, !firstPhoto?.asset)}
       >
-        <If
-          condition={firstPhoto?.asset}
-          render={
+        <Condition
+          if={firstPhoto?.asset}
+          then={
             <Image
               style={styles.mainImage}
               source={{ uri: firstPhoto?.asset?.uri }}
               contentFit='cover'
             />
           }
-          elseRender={
+          else={
             <FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />
           }
         />
@@ -154,16 +154,16 @@ export const PhotosGrid: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, a
               onPress={() => handlePickMultipleImages(item.position, !!item?.asset?.uri)}
               style={({ pressed }) => styles.imageViewer(pressed, !item?.asset)}
             >
-              <If
-                condition={item?.asset}
-                render={
+              <Condition
+                if={item?.asset}
+                then={
                   <Image
                     style={styles.image}
                     source={{ uri: item?.asset?.uri }}
                     contentFit='cover'
                   />
                 }
-                elseRender={
+                else={
                   <FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />
                 }
               />

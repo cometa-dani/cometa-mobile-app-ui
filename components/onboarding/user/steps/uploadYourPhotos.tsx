@@ -12,7 +12,7 @@ import { IProps } from './components/interface';
 
 const setInitialPlaceholders = () => createEmptyPlaceholders(MAX_NUMBER_PHOTOS);
 
-export const UploadYouPhotosForm: FC<IProps> = ({ activatePage, onNext }) => {
+export const UploadYouPhotosForm: FC<IProps> = ({ onNext }) => {
   const { theme } = useStyles();
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
   const userPhotos = useCometaStore(state => state.onboarding.user.photos) ?? [];

@@ -8,6 +8,7 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Controller, useFormContext } from 'react-hook-form';
 import DatePicker from 'react-native-date-picker';
 import { nodeEnv } from '@/constants/vars';
+import { Condition } from '../utils/ifElse';
 
 
 interface IFieldTextProps {
@@ -22,7 +23,8 @@ interface IFieldTextProps {
   multiline?: boolean,
   editable?: boolean,
   isDateTimePicker?: boolean,
-  isInsideBottomSheet?: boolean
+  isInsideBottomSheet?: boolean,
+  onShowSelector?: () => void
 }
 
 export const FieldText: FC<IFieldTextProps> = ({
@@ -37,120 +39,136 @@ export const FieldText: FC<IFieldTextProps> = ({
   editable = true,
   isDateTimePicker = false,
   testId,
-  isInsideBottomSheet = false
+  isInsideBottomSheet = false,
+  onShowSelector
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const { styles, theme } = useStyles(inputSheet);
   const { control, setValue, setError } = useFormContext();
   const [date, setDate] = useState<Date | undefined>();
   const [openDatePicker, setOpenDatePicker] = useState(false);
+  const pointerEvents = (isDateTimePicker || onShowSelector) ? 'none' : 'auto';
   const DynamicTextInput = isInsideBottomSheet ? BottomSheetTextInput : TextInput;
   return (
-    <>
-      <DatePicker
-        modal={true}
-        mode='date'
-        open={openDatePicker}
-        date={date ? date : new Date()}
-        onConfirm={(date) => {
-          setDate(date);
-          setValue(name, new Intl.DateTimeFormat('en-US').format(date));
-          setError(name, { message: undefined });
-          setOpenDatePicker(false);
-        }}
-        onCancel={() => {
-          setOpenDatePicker(false);
-        }}
-      />
-
-      <Controller
-        name={name}
-        control={control}
-        render={({ field: { onChange, onBlur, value, }, fieldState: { error } }) => {
-          const errorMessage = error?.message;
-          const iconColor = (
-            errorMessage ?
-              theme.colors.red80 :
-              isFocused ?
-                theme.colors.blue100 :
-                theme.colors.gray300  // default color
-          );
-          const inputStyle = (
-            errorMessage ?
-              theme.colors.red80 :
-              isFocused ?
-                theme.colors.blue100 :
-                'transparent'
-          );
-          const Input = (
-            <View style={[styles.fieldContainer, { borderColor: inputStyle }]}>
-              <View style={styles.iconContainer}>
-                <FontAwesome
-                  name={iconName}
-                  size={theme.icons.lg}
-                  color={iconColor}
-                />
-              </View>
-
-              <View style={styles.divider} />
-
-              <VStack styles={{ flex: 1 }}>
-                <View style={styles.fieldLabel}>
-                  <Text style={styles.fieldTextLabel}>
-                    {label}
-                  </Text>
-                </View>
-                <DynamicTextInput
-                  testID={testId}
-                  editable={editable}
-                  multiline={multiline}
-                  numberOfLines={multiline ? 4 : 1}
-                  secureTextEntry={nodeEnv === 'development' ? false : secureTextEntry}
-                  style={[styles.field, { pointerEvents: isDateTimePicker ? 'none' : 'auto' }]}
-                  placeholder={placeholder}
-                  keyboardType={keyboardType}
-                  autoCapitalize='none'
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={() => setIsFocused(false)}
-                  onFocus={() => setIsFocused(true)}
-                />
-              </VStack>
+    <Controller
+      name={name}
+      control={control}
+      render={({ field: { onChange, onBlur, value, }, fieldState: { error } }) => {
+        const errorMessage = error?.message;
+        const iconColor = (
+          errorMessage ?
+            theme.colors.red80 :
+            isFocused ?
+              theme.colors.blue100 :
+              theme.colors.gray300  // default color
+        );
+        const inputStyle = (
+          errorMessage ?
+            theme.colors.red80 :
+            isFocused ?
+              theme.colors.blue100 :
+              'transparent'
+        );
+        const Input = (
+          <View style={[styles.fieldContainer, { borderColor: inputStyle }]}>
+            <View style={styles.iconContainer}>
+              <FontAwesome
+                name={iconName}
+                size={theme.icons.lg}
+                color={iconColor}
+              />
             </View>
-          );
-          return (
-            <VStack>
-              {isDateTimePicker ? (
+
+            <View style={styles.divider} />
+
+            <VStack styles={{ flex: 1 }}>
+              <View style={styles.fieldLabel}>
+                <Text style={styles.fieldTextLabel}>
+                  {label}
+                </Text>
+              </View>
+              <DynamicTextInput
+                testID={testId}
+                editable={editable}
+                multiline={multiline}
+                numberOfLines={multiline ? 4 : 1}
+                secureTextEntry={nodeEnv === 'development' ? false : secureTextEntry}
+                style={[styles.field, { pointerEvents }]}
+                placeholder={placeholder}
+                keyboardType={keyboardType}
+                autoCapitalize='none'
+                value={value}
+                onChangeText={onChange}
+                onBlur={() => setIsFocused(false)}
+                onFocus={() => setIsFocused(true)}
+              />
+            </VStack>
+          </View>
+        );
+        return (
+          <VStack>
+            <DatePicker
+              modal={true}
+              mode='date'
+              open={openDatePicker}
+              date={date ? date : new Date()}
+              onConfirm={(date) => {
+                setDate(date);
+                setValue(name, new Intl.DateTimeFormat('en-US').format(date));
+                setError(name, { message: undefined });
+                setOpenDatePicker(false);
+              }}
+              onCancel={() => {
+                setOpenDatePicker(false);
+              }}
+            />
+            <Condition
+              if={isDateTimePicker}
+              then={(
                 <Pressable onPress={() => setOpenDatePicker(true)}>
                   <>
                     {Input}
                   </>
                 </Pressable>
-              ) : (
-                Input
               )}
-
-              <HStack
-                $y='center'
-                gap={theme.spacing.sp1}
-                styles={{
-                  paddingLeft: theme.spacing.sp8
-                }}
-              >
-                <AntDesign
-                  name={errorMessage ? 'exclamationcircleo' : 'checkcircleo'}
-                  size={theme.icons.xs}
-                  color={iconColor}
+              else={(
+                <Condition
+                  if={onShowSelector}
+                  then={(
+                    <Pressable onPress={onShowSelector}>
+                      <>
+                        {Input}
+                      </>
+                    </Pressable>
+                  )}
+                  else={(
+                    <>
+                      {Input}
+                    </>
+                  )}
                 />
-                <Text style={styles.fieldTextMessage(Boolean(errorMessage), isFocused)}>
-                  {errorMessage || defaultErrMessage}
-                </Text>
-              </HStack>
-            </VStack>
-          );
-        }}
-      />
-    </>
+              )}
+            />
+            <HStack
+              $y='center'
+              gap={theme.spacing.sp1}
+              styles={{
+                paddingLeft: theme.spacing.sp8
+              }}
+            >
+              <AntDesign
+                name={errorMessage ? 'exclamationcircleo' : 'checkcircleo'}
+                size={theme.icons.xs}
+                color={iconColor}
+              />
+              <Text style={styles.fieldTextMessage(Boolean(errorMessage), isFocused)}>
+                {errorMessage || defaultErrMessage}
+              </Text>
+            </HStack>
+          </VStack>
+        );
+      }}
+    />
   );
 };
 

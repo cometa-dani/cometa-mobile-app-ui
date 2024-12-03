@@ -3,12 +3,12 @@ import { ReactNode } from 'react';
 
 interface IfElseProps<T> {
   children?: ReactNode,
-  condition: boolean | T,
-  render?: ReactNode,
-  elseRender?: ReactNode
+  if: boolean | T,
+  then?: ReactNode,
+  else?: ReactNode
 }
 
-export function If<T>({ children, condition: condition, render: render, elseRender: elseRender }: IfElseProps<T>) {
+export function Condition<T>({ children, if: condition, then: render, else: elseRender }: IfElseProps<T>) {
   if (condition && children) {
     return children;
   }
@@ -18,6 +18,5 @@ export function If<T>({ children, condition: condition, render: render, elseRend
   if (!condition && elseRender) {
     return elseRender;
   }
-
   return null;
 }

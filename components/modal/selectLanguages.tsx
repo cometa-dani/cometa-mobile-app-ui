@@ -11,7 +11,7 @@ import { AppButton } from '../../legacy_components/buttons/buttons';
 import { AppTextInput } from '../../legacy_components/textInput/AppTextInput';
 import { RectButton } from 'react-native-gesture-handler';
 import { If } from '../../legacy_components/utils/ifElse';
-import { FadingLoader } from '../../legacy_components/lodingSkeletons/FadingList';
+// import { FadingLoader } from '../../legacy_components/lodingSkeletons/FadingList';
 import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
 
@@ -68,7 +68,7 @@ export function SelectLanguages({ onSelectLanguages }: IProps): JSX.Element {
       <View style={{ flex: 1 }}>
         <If
           condition={isLoading}
-          render={<FadingLoader />}
+          render={null}
           elseRender={(
             <FlashList
               stickyHeaderHiddenOnScroll={true}

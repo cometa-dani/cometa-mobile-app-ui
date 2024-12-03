@@ -16,7 +16,8 @@ class CitiesService {
    * @returns
    */
   searchCitiesByPrefix(prefix: string, cursor: number, limit = 10) {
-    return this.http.get<IGetPaginatedCities>(`/world-cities?limit=${limit}&cursor=${cursor}&cityName=${prefix}`);
+    const params = { cursor, limit, cityName: prefix ?? '' };
+    return this.http.get<IGetPaginatedCities>('/world-cities', { params });
   }
 }
 

@@ -46,20 +46,17 @@ export default function OnboardUser() {
           });
         }}
       >
-        <CreateYourProfileForm
+        {/* <CreateYourProfileForm
           key={0}
           onNext={() => setPage(1)}
-          activatePage={nextPage}
         />
         <UploadYouPhotosForm
           key={1}
           onNext={() => setPage(2)}
-          activatePage={nextPage}
-        />
+        /> */}
         <AboutYourSelfForm
-          key={2}
+          key={0}
           onNext={() => setPage(3)}
-          activatePage={nextPage}
         />
       </PagerView>
     </>
