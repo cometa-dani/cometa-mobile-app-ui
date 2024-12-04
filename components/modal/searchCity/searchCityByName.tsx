@@ -90,7 +90,6 @@ export function SearchCityByName(): ReactNode {
                   onEndReachedThreshold={0.1}
                   contentContainerStyle={{ padding: theme.spacing.sp8 }}
                   ListFooterComponentStyle={{ height: theme.spacing.sp11 * 10 }} // 280px height
-                  getItemType={() => 'city'}
                   keyExtractor={item => item.id.toString()}
                   renderItem={renderItem}
                 />
