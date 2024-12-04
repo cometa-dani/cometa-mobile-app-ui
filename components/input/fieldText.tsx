@@ -53,7 +53,7 @@ export const FieldText: FC<IFieldTextProps> = ({
     <Controller
       name={name}
       control={control}
-      render={({ field: { onChange, onBlur, value, }, fieldState: { error } }) => {
+      render={({ field: { onChange, value, }, fieldState: { error } }) => {
         const errorMessage = error?.message;
         const iconColor = (
           errorMessage ?

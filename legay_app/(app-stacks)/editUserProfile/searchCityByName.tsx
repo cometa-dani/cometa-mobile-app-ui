@@ -6,7 +6,7 @@ import { animationDuration } from '../../../constants/vars';
 import { FlashList } from '@shopify/flash-list';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { useInfiniteQueryGetCities } from '../../../queries/currentUser/editProfileHooks';
+import { useInfiniteQueryGetPaginatedCities } from '../../../queries/currentUser/editProfileHooks';
 import { gray_50 } from '../../../constants/colors';
 import { If } from '../../../legacy_components/utils/ifElse';
 import { FadingLoader } from '../../../legacy_components/lodingSkeletons/FadingList';
@@ -23,7 +23,7 @@ export function SearchCityByName({ userProfileField, onSaveCity }: Props): JSX.E
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<TextInput>(null);
   const [triggerFetch, setTriggerFetch] = useState('');
-  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetCities(triggerFetch);
+  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetPaginatedCities(triggerFetch);
 
   const citiesData = useMemo(() => data?.pages.flatMap(page => page.items) || [], [data?.pages]);
 

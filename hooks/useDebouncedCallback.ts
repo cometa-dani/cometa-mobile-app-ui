@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
  * @param deps - The dependency array that will trigger the debounce effect when changed.
  * @param time - The delay in milliseconds for the debounce (default is 1400ms).
  */
-export function useDebouncedCallback(callback: () => void, deps: React.DependencyList, time = 1_200) {
+export function useDebouncedCallback(callback: () => void, deps: React.DependencyList, time = 1_600) {
   const [firstRender, setFirstRender] = useState(false);
   useEffect(
     () => {

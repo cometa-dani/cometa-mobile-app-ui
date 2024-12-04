@@ -1,4 +1,4 @@
-import { FC, useReducer, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useStyles } from 'react-native-unistyles';
 import { FieldText } from '@/components/input/fieldText';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -14,8 +14,9 @@ import {
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FooterButton } from './components/footerButton';
 import { IProps } from './components/interface';
-import { Modal } from 'react-native';
-import { SearchCityByName } from '@/components/modal/searchCityByName';
+import { useRouter } from 'expo-router';
+import { useSelectCityByName } from '@/components/modal/searchCity/hook';
+import { useSelectLanguages } from '@/components/modal/selectLanguages/hook';
 
 
 const errorMessages = {
@@ -35,11 +36,11 @@ type IFormValues = Partial<Pick<IUserOnboarding, (
 )>>
 
 const validationSchema = Yup.object<IFormValues>().shape({
-  occupation: Yup.string().min(5).max(120).optional(),
-  biography: Yup.string().min(5).max(200).optional(),
-  currentLocation: Yup.string().min(5).max(120).optional(),
-  homeTown: Yup.string().min(5).max(120).optional(),
-  languages: Yup.array().min(1).optional(),
+  occupation: Yup.string().max(120).optional(),
+  biography: Yup.string().max(200).optional(),
+  currentLocation: Yup.string().max(120).optional(),
+  homeTown: Yup.string().max(120).optional(),
+  languages: Yup.array().optional(),
 });
 
 const defaultValues: IFormValues = {
@@ -53,16 +54,18 @@ const defaultValues: IFormValues = {
 type CityKind = 'homeTown' | 'currentLocation';
 
 export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
+  const router = useRouter();
   const { theme } = useStyles();
   const formProps = useForm<IFormValues>({
     defaultValues,
-    resolver: yupResolver(validationSchema)
+    resolver: yupResolver(validationSchema),
   });
   const userState = useCometaStore(state => state.onboarding.user);
+  const { selectedCity, setPlaceholder } = useSelectCityByName();
+  const { selectedLanguages } = useSelectLanguages();
   const createUser = useMutationCreateUser();
   const updateUser = useMutationUpdateUserById();
   const uploadPhotos = useMutationUploadUserPhotos();
-  const [modalSelectCity, setModalSelectCity] = useReducer(prev => !prev, false);
   const [cityKind, setCityKind] = useState<CityKind>('homeTown');
 
   const handleUserCreation = async (values: IFormValues): Promise<void> => {
@@ -90,30 +93,30 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
     }
   };
 
-  const handleOpenSelectCity = (kind: CityKind) => {
+  const navigateToSelectCity = (kind: CityKind) => {
     setCityKind(kind);
-    setModalSelectCity();
-    // console.log(kind);
+    setPlaceholder(kind);
+    router.push('/stacks/selectCity');
   };
 
-  const handleCloseSelectCity = (cityName: string) => {
-    setModalSelectCity();
-    formProps.setValue(cityKind, cityName);
+  const navigateToSelectLanguages = () => {
+    router.push('/stacks/selectLanguages');
   };
+
+  // update form values homeTown and currentLocation
+  useEffect(() => {
+    if (!selectedCity) return;
+    formProps.setValue(cityKind, selectedCity);
+  }, [selectedCity, cityKind]);
+
+  // update form values languages
+  useEffect(() => {
+    if (!selectedLanguages.length) return;
+    formProps.setValue('languages', selectedLanguages);
+  }, [selectedLanguages]);
 
   return (
     <>
-      <Modal
-        visible={modalSelectCity}
-        onRequestClose={setModalSelectCity}
-      // style={{ flex: 1 }}
-      >
-        <SearchCityByName
-          placeholder={cityKind}
-          onSaveCity={handleCloseSelectCity}
-        />
-      </Modal>
-
       <FormProvider {...formProps}>
         <KeyboardAwareScrollView
           bottomOffset={theme.spacing.sp10}
@@ -143,6 +146,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
             editable={false}
             label='Languages you know'
             name='languages'
+            onShowSelector={() => navigateToSelectLanguages()}
             placeholder='Enter your Languages'
             iconName='language'
             defaultErrMessage={errorMessages.languages}
@@ -151,7 +155,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
             editable={false}
             label='Location'
             name='currentLocation'
-            onShowSelector={() => handleOpenSelectCity('currentLocation')}
+            onShowSelector={() => navigateToSelectCity('currentLocation')}
             placeholder='Enter your current Location'
             iconName='map-o'
             defaultErrMessage={errorMessages.currentLocation}
@@ -160,7 +164,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
             editable={false}
             label='Home Town'
             name='homeTown'
-            onShowSelector={() => handleOpenSelectCity('homeTown')}
+            onShowSelector={() => navigateToSelectCity('homeTown')}
             placeholder='Enter your home Town'
             iconName='map-marker'
             defaultErrMessage={errorMessages.homeTown}

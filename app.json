@@ -64,7 +64,8 @@
         {
           "microphonePermission": "Allow Cometa to access your microphone."
         }
-      ]
+      ],
+      "react-native-edge-to-edge"
     ],
     "experiments": {
       "typedRoutes": true

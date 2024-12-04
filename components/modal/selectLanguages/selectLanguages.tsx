@@ -1,17 +1,16 @@
 import { StyleSheet, View as TransparentView, View } from 'react-native';
-import { animationDuration } from '../../constants/vars';
+import { animationDuration } from '../../../constants/vars';
 import { Stack } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { FC, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { useQueryGetAllLanguages } from '../../queries/currentUser/editProfileHooks';
-import { gray_50, gray_900 } from '../../constants/colors';
+import { useQueryGetAllLanguages } from '../../../queries/currentUser/editProfileHooks';
+import { gray_50, gray_900 } from '../../../constants/colors';
 import Checkbox from 'expo-checkbox';
-import { AppButton } from '../../legacy_components/buttons/buttons';
-import { AppTextInput } from '../../legacy_components/textInput/AppTextInput';
+import { AppButton } from '../../../legacy_components/buttons/buttons';
+import { AppTextInput } from '../../../legacy_components/textInput/AppTextInput';
 import { RectButton } from 'react-native-gesture-handler';
-import { If } from '../../legacy_components/utils/ifElse';
-// import { FadingLoader } from '../../legacy_components/lodingSkeletons/FadingList';
+import { If } from '../../../legacy_components/utils/ifElse';
 import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
 

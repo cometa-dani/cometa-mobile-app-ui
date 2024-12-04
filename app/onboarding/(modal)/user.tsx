@@ -1,9 +1,9 @@
+import { SystemBars } from 'react-native-edge-to-edge';
 import { AboutYourSelfForm } from '@/components/onboarding/user/steps/aboutYourSelf';
 import { HeaderProgressBar } from '@/components/onboarding/user/steps/components/headerProgressBar';
 import { CreateYourProfileForm } from '@/components/onboarding/user/steps/createYourProfile';
 import { UploadYouPhotosForm } from '@/components/onboarding/user/steps/uploadYourPhotos';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import PagerView, { usePagerView } from 'react-native-pager-view';
 
 
@@ -14,7 +14,7 @@ export default function OnboardUser() {
   const nextPage = progress.position + 1;
   return (
     <>
-      <StatusBar style='auto' />
+      <SystemBars style='auto' />
 
       <Stack.Screen
         options={{
@@ -46,17 +46,17 @@ export default function OnboardUser() {
           });
         }}
       >
-        {/* <CreateYourProfileForm
+        <AboutYourSelfForm
           key={0}
+          onNext={() => setPage(3)}
+        />
+        <CreateYourProfileForm
+          key={2}
           onNext={() => setPage(1)}
         />
         <UploadYouPhotosForm
           key={1}
           onNext={() => setPage(2)}
-        /> */}
-        <AboutYourSelfForm
-          key={0}
-          onNext={() => setPage(3)}
         />
       </PagerView>
     </>

@@ -1,9 +1,9 @@
+import { SystemBars } from 'react-native-edge-to-edge';
 import { GradientHeading } from '@/components/text/gradientText';
 import { Image, ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar } from 'expo-status-bar';
 import { Modal, Platform, SafeAreaView, TouchableOpacity, View } from 'react-native';
-import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { useReducer } from 'react';
 import { HStack, VStack } from '@/components/utils/stacks';
 import { Button } from '@/components/button/button';
@@ -33,7 +33,7 @@ export default function OnboardingScreen() {
 
   return (
     <>
-      <StatusBar style='inverted' />
+      <SystemBars style='light' />
 
       <Stack.Screen
         options={{
@@ -91,7 +91,12 @@ export default function OnboardingScreen() {
           style={styles.linearGradientTop}
         >
           <SafeAreaView>
-            <View style={{ top: 60 }}>
+            <View style={{
+              top: Platform.select({
+                ios: UnistylesRuntime.statusBar.height,
+                android: UnistylesRuntime.statusBar.height * 2.5
+              })
+            }}>
               <GradientHeading styles={{ fontSize: theme.text.size.s14 }}>
                 cometa
               </GradientHeading>
@@ -103,18 +108,18 @@ export default function OnboardingScreen() {
           colors={['transparent', 'rgba(255,255,255,0.9)', '#ffffff']}
           style={styles.linearGradient}
         >
-          <SafeAreaView>
-            <View style={styles.buttonsContainer}>
-              <VStack gap={theme.spacing.sp8}>
-                <Button variant='primary' onPress={toggleLoginModal}>
-                  Login
-                </Button>
-                <Button variant='primary-alt' onPress={toggleRegisterModal}>
-                  Register
-                </Button>
-              </VStack>
-            </View>
-          </SafeAreaView>
+          {/* <SafeAreaView>
+          </SafeAreaView> */}
+          <View style={styles.buttonsContainer}>
+            <VStack gap={theme.spacing.sp8}>
+              <Button variant='primary' onPress={toggleLoginModal}>
+                Login
+              </Button>
+              <Button variant='primary-alt' onPress={toggleRegisterModal}>
+                Register
+              </Button>
+            </VStack>
+          </View>
         </LinearGradient>
       </ImageBackground>
     </>
@@ -142,7 +147,7 @@ const stylesheet = createStyleSheet((theme, runtime) => ({
   },
   buttonsContainer: {
     padding: theme.spacing.sp10,
-    paddingBottom: Platform.OS === 'ios' ? theme.spacing.sp16 : theme.spacing.sp22
+    paddingBottom: theme.spacing.sp18 + runtime.insets.bottom
   },
   backdrop: {
     flex: 1,

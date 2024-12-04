@@ -4,10 +4,9 @@ import citiesService from '../../services/citiesService';
 import languagesServices from '../../services/languagesServices';
 
 
-export const useInfiniteQueryGetCities = (prefixName: string, limit = 10) => {
+export const useInfiniteQueryGetPaginatedCities = (prefixName: string, limit = 10) => {
   return useInfiniteQuery({
-    enabled: true,
-    initialPageParam: 0,
+    initialPageParam: -1,
     queryKey: [QueryKeys.GET_CURRENT_LOCATION_CITIES, prefixName],
     queryFn: async ({ pageParam }) => {
       const response = await citiesService.searchCitiesByPrefix(prefixName, pageParam, limit);
