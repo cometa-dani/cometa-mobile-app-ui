@@ -1,21 +1,24 @@
+import { IUserOnboarding } from '@/models/User';
 import { create } from 'zustand';
 
 
+export type ICityKind = Pick<IUserOnboarding, 'homeTown' | 'currentLocation'>
+
+
 interface ISearchCityByName {
-  placeholder: string;
-  setPlaceholder: (kind: 'homeTown' | 'currentLocation') => void;
-  selectedCity: string;
-  setCityName: (name: string) => void;
-  clearCityName: () => void;
+  cityKind: keyof ICityKind;
+  setCityKind: (kind: keyof ICityKind) => void;
+  selectedCity: ICityKind
+  setSelectedCity: (city: ICityKind) => void;
+  clearCities: () => void;
 }
 
 export const useSelectCityByName = create<ISearchCityByName>((set) => ({
-  placeholder: '',
-  setPlaceholder: (kind: 'homeTown' | 'currentLocation') => {
-    const placeholder = kind === 'homeTown' ? 'Select your Home Town...' : 'Select your Current Location...';
-    set({ placeholder });
+  cityKind: 'homeTown',
+  setCityKind: (kind: keyof ICityKind) => {
+    set({ cityKind: kind });
   },
-  selectedCity: '',
-  setCityName: (name: string) => set({ selectedCity: name }),
-  clearCityName: () => set({ selectedCity: '' })
+  selectedCity: {},
+  setSelectedCity: (selectedCity: ICityKind) => set(prev => ({ ...prev, selectedCity })),
+  clearCities: () => set({ selectedCity: {} })
 }));

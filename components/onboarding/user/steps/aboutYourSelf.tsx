@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import { useStyles } from 'react-native-unistyles';
 import { FieldText } from '@/components/input/fieldText';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -15,7 +15,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FooterButton } from './components/footerButton';
 import { IProps } from './components/interface';
 import { useRouter } from 'expo-router';
-import { useSelectCityByName } from '@/components/modal/searchCity/hook';
+import { ICityKind, useSelectCityByName } from '@/components/modal/searchCity/hook';
 import { useSelectLanguages } from '@/components/modal/selectLanguages/hook';
 
 
@@ -51,7 +51,6 @@ const defaultValues: IFormValues = {
   languages: [],
 };
 
-type CityKind = 'homeTown' | 'currentLocation';
 
 export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
   const router = useRouter();
@@ -61,12 +60,11 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
     resolver: yupResolver(validationSchema),
   });
   const userState = useCometaStore(state => state.onboarding.user);
-  const { selectedCity, setPlaceholder } = useSelectCityByName();
+  const { selectedCity, cityKind, setCityKind } = useSelectCityByName();
   const { selectedLanguages } = useSelectLanguages();
   const createUser = useMutationCreateUser();
   const updateUser = useMutationUpdateUserById();
   const uploadPhotos = useMutationUploadUserPhotos();
-  const [cityKind, setCityKind] = useState<CityKind>('homeTown');
 
   const handleUserCreation = async (values: IFormValues): Promise<void> => {
     const createUserPayload: ICreateUser = {
@@ -93,9 +91,8 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
     }
   };
 
-  const navigateToSelectCity = (kind: CityKind) => {
+  const navigateToSelectCity = (kind: keyof ICityKind) => {
     setCityKind(kind);
-    setPlaceholder(kind);
     router.push('/stacks/selectCity');
   };
 
@@ -106,8 +103,8 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
   // update form values homeTown and currentLocation
   useEffect(() => {
     if (!selectedCity) return;
-    formProps.setValue(cityKind, selectedCity);
-  }, [selectedCity, cityKind]);
+    formProps.setValue(cityKind, selectedCity[cityKind]);
+  }, [selectedCity]);
 
   // update form values languages
   useEffect(() => {

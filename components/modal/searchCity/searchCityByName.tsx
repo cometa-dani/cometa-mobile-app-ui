@@ -9,14 +9,19 @@ import { Heading } from '@/components/text/heading';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { Condition } from '../../utils/ifElse';
 import { Center, HStack, VStack } from '../../utils/stacks';
-import { useSelectCityByName } from './hook';
+import { ICityKind, useSelectCityByName } from './hook';
 import { ICityDatum } from '@/models/Cities';
 import { SearchField } from '@/components/input/searchField';
 
 
+const placeholders: ICityKind = {
+  homeTown: 'Select your Home Town...',
+  currentLocation: 'Select your Current Location...'
+};
+
 export function SearchCityByName(): ReactNode {
   const router = useRouter();
-  const { setCityName, placeholder } = useSelectCityByName();
+  const { setSelectedCity, cityKind } = useSelectCityByName();
   const { styles: cityStyles, theme } = useStyles(styleSheet);
   const [searchValue, setSearchValue] = useState('');
   const {
@@ -33,7 +38,7 @@ export function SearchCityByName(): ReactNode {
     <TouchableOpacity
       style={cityStyles.city}
       onPress={() => {
-        setCityName(item.city);
+        setSelectedCity({ [cityKind]: item.city });
         router.back();
       }}
     >
@@ -46,7 +51,7 @@ export function SearchCityByName(): ReactNode {
       </VStack>
       <TextView ellipsis={true} style={{ maxWidth: 100 }}>{item.country}</TextView>
     </TouchableOpacity>
-  ), [setCityName]);
+  ), [setSelectedCity]);
 
   return (
     <>
@@ -57,7 +62,7 @@ export function SearchCityByName(): ReactNode {
           headerBackTitle: '',
           headerTitle: () => (
             <SearchField
-              placeholder={placeholder}
+              placeholder={placeholders[cityKind]}
               onSearch={setSearchValue}
             />
           )
