@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 import { useStyles } from 'react-native-unistyles';
-import { FieldText } from '@/components/input/fieldText';
+import { FieldText } from '@/components/input/textField';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
