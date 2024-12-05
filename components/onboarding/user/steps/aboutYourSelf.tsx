@@ -121,8 +121,8 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: theme.spacing.sp10,
-            paddingVertical: theme.spacing.sp8,
-            gap: theme.spacing.sp7
+            paddingBottom: theme.spacing.sp14,
+            gap: theme.spacing.sp7,
           }}>
           <FieldText
             label='Occupation'

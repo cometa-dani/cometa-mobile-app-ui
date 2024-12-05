@@ -32,9 +32,9 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNext }) => {
       <View
         style={{
           flex: 1,
-          paddingVertical: theme.spacing.sp8,
           paddingHorizontal: theme.spacing.sp10,
-          gap: theme.spacing.sp12
+          paddingBottom: theme.spacing.sp14,
+          gap: theme.spacing.sp7,
         }}>
 
         <PhotosGrid

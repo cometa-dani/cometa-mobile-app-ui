@@ -16,7 +16,7 @@ import { KeyboardEvents } from 'react-native-keyboard-controller';
 
 
 export function SelectLanguages(): ReactNode {
-  const { theme } = useStyles(styleSheet);
+  const { theme } = useStyles();
   const [inputValue, setInputValue] = useState('');
   const { selectedLanguages, setSelectedLanguages } = useSelectLanguages();
   const { data = [], isFetched } = useQueryGetAllLanguages();
@@ -46,19 +46,27 @@ export function SelectLanguages(): ReactNode {
     <Condition
       if={index === 0}
       then={(
-        <HStack gap={theme.spacing.sp4} $y='center' styles={{
-          paddingHorizontal: theme.spacing.sp8,
-          paddingVertical: theme.spacing.sp4,
-          backgroundColor: theme.colors.white100,
-          zIndex: 10,
-        }}>
+        <HStack
+          gap={theme.spacing.sp4}
+          $y='center'
+          styles={{
+            paddingHorizontal: theme.spacing.sp8,
+            paddingVertical: theme.spacing.sp4,
+            backgroundColor: theme.colors.white100,
+            zIndex: 10,
+          }}>
           <SearchField
             ref={inputRef}
             onSearch={setInputValue}
             placeholder='Search for a language'
           />
-          <HStack $x='flex-end' styles={{ width: theme.spacing.sp14 }}>
-            <TextView bold={true}>{selectedLanguages.length} / {MAXIMUN_LANGUAGES}</TextView>
+          <HStack
+            $x='flex-end'
+            styles={{ width: theme.spacing.sp14 }}
+          >
+            <TextView bold={true}>
+              {selectedLanguages.length} / {MAXIMUN_LANGUAGES}
+            </TextView>
           </HStack>
         </HStack>
       )}
@@ -88,9 +96,11 @@ export function SelectLanguages(): ReactNode {
             <Condition
               if={data.length === 0}
               then={(
-                <TextView style={{ padding: theme.spacing.sp8, textAlign: 'center' }}>
-                  No cities found
-                </TextView>
+                <Center styles={{ flex: 1 }}>
+                  <TextView style={{ padding: theme.spacing.sp8, textAlign: 'center' }}>
+                    No languages found
+                  </TextView>
+                </Center>
               )}
               else={
                 <FlashList
@@ -102,12 +112,8 @@ export function SelectLanguages(): ReactNode {
                   contentContainerStyle={{ padding: theme.spacing.sp8 }}
                   onViewableItemsChanged={({ viewableItems, changed }) => {
                     const firstItem = viewableItems[0];
-                    if (firstItem?.index !== 0) {
-                      setIsFirstItemVisible(false);
-                    }
-                    else {
-                      setIsFirstItemVisible(true);
-                    }
+                    const isVisible = firstItem?.index === 0;
+                    setIsFirstItemVisible(isVisible);
                   }}
                   ListHeaderComponent={() => (
                     <View style={{
@@ -146,24 +152,6 @@ export function SelectLanguages(): ReactNode {
 }
 
 
-const styleSheet = createStyleSheet((theme, runtime) => ({
-  checkbox: {
-    borderRadius: 6,
-  },
-  language: {
-    height: theme.spacing.sp22,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  titleContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8
-  }
-}));
-
-
 interface LanguageItemProps {
   language: string;
   isChecked: boolean;
@@ -192,3 +180,21 @@ const LanguageItem: FC<LanguageItemProps> = ({ language, onCheck, isChecked }) =
     </TouchableOpacity>
   );
 };
+
+
+const styleSheet = createStyleSheet((theme, runtime) => ({
+  checkbox: {
+    borderRadius: 6,
+  },
+  language: {
+    height: theme.spacing.sp22,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  titleContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8
+  }
+}));

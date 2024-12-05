@@ -13,7 +13,7 @@ export const HeaderProgressBar: FC<IProps> = ({ activePage, title }) => {
   const { theme } = useStyles();
   return (
     <VStack
-      gap={theme.spacing.sp8}
+      gap={theme.spacing.sp11}
       $x='center'
       styles={{
         paddingHorizontal: theme.spacing.sp10,

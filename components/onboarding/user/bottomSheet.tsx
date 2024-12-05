@@ -50,7 +50,7 @@ export const BottomSheet = forwardRef<DefaultBottomSheet, IProps>((_, ref) => {
             style={{ flex: 1 }}
           >
             <CreateYourProfileForm
-              onNextStep={setNextStep}
+              onNext={setNextStep}
             />
           </Animated.View>
         )}
@@ -61,7 +61,7 @@ export const BottomSheet = forwardRef<DefaultBottomSheet, IProps>((_, ref) => {
             style={{ flex: 1 }}
           >
             <UploadYouPhotosForm
-              onNextStep={setNextStep}
+              onNext={setNextStep}
             />
           </Animated.View>
         )}
@@ -72,7 +72,7 @@ export const BottomSheet = forwardRef<DefaultBottomSheet, IProps>((_, ref) => {
             style={{ flex: 1 }}
           >
             <AboutYourSelfForm
-              onNextStep={handleLastStep}
+              onNext={handleLastStep}
             />
           </Animated.View>
         )}

@@ -76,9 +76,11 @@ export function SearchCityByName(): ReactNode {
             <Condition
               if={citiesData.length === 0}
               then={(
-                <TextView style={{ padding: theme.spacing.sp8, textAlign: 'center' }}>
-                  No cities found
-                </TextView>
+                <Center styles={{ flex: 1 }}>
+                  <TextView style={{ padding: theme.spacing.sp8, textAlign: 'center' }}>
+                    No cities found
+                  </TextView>
+                </Center>
               )}
               else={
                 <FlashList

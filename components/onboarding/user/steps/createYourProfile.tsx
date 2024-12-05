@@ -74,8 +74,8 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNext }) => {
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingHorizontal: theme.spacing.sp10,
+          paddingBottom: theme.spacing.sp14,
           gap: theme.spacing.sp7,
-          paddingBottom: theme.spacing.sp14
         }}
       >
         <FieldText
