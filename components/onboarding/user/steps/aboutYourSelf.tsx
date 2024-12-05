@@ -33,7 +33,7 @@ interface IFormValues extends Partial<Pick<IUserOnboarding, (
   'currentLocation' |
   'homeTown'
 )>> {
-  languages: string
+  languages?: string
 }
 
 const validationSchema = Yup.object<IFormValues>().shape({
@@ -52,13 +52,12 @@ const defaultValues: IFormValues = {
   languages: '',
 };
 
-
 export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
   const router = useRouter();
   const { theme } = useStyles();
   const formProps = useForm<IFormValues>({
     defaultValues,
-    // resolver: yupResolver(validationSchema),
+    resolver: yupResolver(validationSchema),
   });
   const userState = useCometaStore(state => state.onboarding.user);
   const { selectedCity, cityKind, setCityKind } = useSelectCityByName();
