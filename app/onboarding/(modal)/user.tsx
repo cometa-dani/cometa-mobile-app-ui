@@ -3,8 +3,8 @@ import { AboutYourSelfForm } from '@/components/onboarding/user/steps/aboutYourS
 import { HeaderProgressBar } from '@/components/onboarding/user/steps/components/headerProgressBar';
 import { CreateYourProfileForm } from '@/components/onboarding/user/steps/createYourProfile';
 import { UploadYouPhotosForm } from '@/components/onboarding/user/steps/uploadYourPhotos';
-import { Stack } from 'expo-router';
 import PagerView, { usePagerView } from 'react-native-pager-view';
+import { Stack } from 'expo-router';
 
 
 const title = ['Create Your Profile', 'About Yourself', 'Upload Your Photos', 'Done'];
@@ -24,7 +24,6 @@ export default function OnboardUser() {
           headerShadowVisible: false,
           headerTitle: '',
           headerShown: true,
-          headerBackTitle: 'Back',
           animation: 'slide_from_bottom',
         }}
       />

@@ -58,7 +58,6 @@ export function SearchCityByName(): ReactNode {
       <Stack.Screen
         options={{
           animation: 'default',
-          headerBackButtonDisplayMode: 'minimal',
           headerBackTitle: '',
           headerTitle: () => (
             <SearchField
@@ -73,14 +72,12 @@ export function SearchCityByName(): ReactNode {
           if={isFetched}
           then={(
             <Condition
-              // no cities
               if={citiesData.length === 0}
               then={(
                 <TextView style={{ padding: theme.spacing.sp8, textAlign: 'center' }}>
                   No cities found
                 </TextView>
               )}
-              // found cities
               else={
                 <FlashList
                   estimatedItemSize={theme.spacing.sp20}

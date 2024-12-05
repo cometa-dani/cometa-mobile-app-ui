@@ -1,6 +1,1 @@
-import { SearchCityByName } from '@/components/modal/searchCity/searchCityByName';
-
-
-export default function SelectCityScreen() {
-  return <SearchCityByName />;
-}
+export { SearchCityByName as default } from '@/components/modal/searchCity/searchCityByName';

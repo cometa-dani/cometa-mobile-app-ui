@@ -68,7 +68,11 @@ function Root(): ReactNode {
                 animation: 'fade',
                 headerTitle: '',
                 animationDuration: 300,
+                headerStyle: { backgroundColor: theme.colors.white100 },
                 contentStyle: { backgroundColor: theme.colors.white100 },
+                headerTitleStyle: { fontFamily: theme.text.fontMedium },
+                headerBackTitleStyle: { fontFamily: theme.text.fontMedium },
+                headerBackTitle: 'Back',
               }}
             >
               <Stack.Screen
