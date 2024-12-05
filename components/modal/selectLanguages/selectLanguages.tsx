@@ -9,8 +9,8 @@ import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
 import { Condition } from '@/components/utils/ifElse';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import { Center } from '@/components/utils/stacks';
-import { useSelectLanguages } from './hook';
+import { Center, HStack } from '@/components/utils/stacks';
+import { MAXIMUN_LANGUAGES, useSelectLanguages } from './hook';
 import { SearchField } from '@/components/input/searchField';
 import { KeyboardEvents } from 'react-native-keyboard-controller';
 
@@ -46,7 +46,7 @@ export function SelectLanguages(): ReactNode {
     <Condition
       if={index === 0}
       then={(
-        <View style={{
+        <HStack gap={theme.spacing.sp4} $y='center' styles={{
           paddingHorizontal: theme.spacing.sp8,
           paddingVertical: theme.spacing.sp4,
           backgroundColor: theme.colors.white100,
@@ -57,7 +57,10 @@ export function SelectLanguages(): ReactNode {
             onSearch={setInputValue}
             placeholder='Search for a language'
           />
-        </View>
+          <HStack $x='flex-end' styles={{ width: theme.spacing.sp14 }}>
+            <TextView bold={true}>{selectedLanguages.length} / {MAXIMUN_LANGUAGES}</TextView>
+          </HStack>
+        </HStack>
       )}
       else={(
         <LanguageItem
@@ -99,7 +102,7 @@ export function SelectLanguages(): ReactNode {
                   contentContainerStyle={{ padding: theme.spacing.sp8 }}
                   onViewableItemsChanged={({ viewableItems, changed }) => {
                     const firstItem = viewableItems[0];
-                    if (firstItem.index !== 0) {
+                    if (firstItem?.index !== 0) {
                       setIsFirstItemVisible(false);
                     }
                     else {
@@ -113,7 +116,7 @@ export function SelectLanguages(): ReactNode {
                       paddingHorizontal: theme.spacing.sp8,
                       backgroundColor: theme.colors.white100
                     }}>
-                      <Heading size='s4'>What Languages do you know?</Heading>
+                      <Heading size='s6'>What Languages do you know?</Heading>
                       <TextView>
                         We&apos;ll show these on your profile
                         and use them to connect you with great

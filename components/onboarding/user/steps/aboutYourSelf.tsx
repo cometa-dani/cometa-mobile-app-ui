@@ -27,20 +27,21 @@ const errorMessages = {
   languages: 'How many languages do you speak',
 };
 
-type IFormValues = Partial<Pick<IUserOnboarding, (
+interface IFormValues extends Partial<Pick<IUserOnboarding, (
   'occupation' |
   'biography' |
   'currentLocation' |
-  'homeTown' |
-  'languages'
-)>>
+  'homeTown'
+)>> {
+  languages: string
+}
 
 const validationSchema = Yup.object<IFormValues>().shape({
   occupation: Yup.string().max(120).optional(),
   biography: Yup.string().max(200).optional(),
   currentLocation: Yup.string().max(120).optional(),
   homeTown: Yup.string().max(120).optional(),
-  languages: Yup.array().optional(),
+  languages: Yup.string().optional(),
 });
 
 const defaultValues: IFormValues = {
@@ -48,7 +49,7 @@ const defaultValues: IFormValues = {
   biography: '',
   currentLocation: '',
   homeTown: '',
-  languages: [],
+  languages: '',
 };
 
 
@@ -57,7 +58,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
   const { theme } = useStyles();
   const formProps = useForm<IFormValues>({
     defaultValues,
-    resolver: yupResolver(validationSchema),
+    // resolver: yupResolver(validationSchema),
   });
   const userState = useCometaStore(state => state.onboarding.user);
   const { selectedCity, cityKind, setCityKind } = useSelectCityByName();
@@ -78,7 +79,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       biography: values.biography,
       currentLocation: values.currentLocation,
       homeTown: values.homeTown,
-      languages: values.languages,
+      languages: values.languages ? values.languages.split(',') : [],
       occupation: values.occupation
     };
     try {
@@ -109,7 +110,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
   // update form values languages
   useEffect(() => {
     if (!selectedLanguages.length) return;
-    formProps.setValue('languages', selectedLanguages);
+    formProps.setValue('languages', selectedLanguages.join(', '));
   }, [selectedLanguages]);
 
   return (

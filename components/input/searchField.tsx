@@ -36,10 +36,7 @@ export const SearchField = forwardRef<TextInput, IProps>(({ onSearch, placeholde
         onChangeText={setInputValue}
       />
       <TouchableOpacity
-        onPress={() => {
-          inputRef.current.blur();
-          onSearch(inputValue);
-        }}>
+        onPress={() => onSearch(inputValue)}>
         <FontAwesome color={theme.colors.gray900} name='search' size={theme.icons.md} />
       </TouchableOpacity>
     </HStack>
