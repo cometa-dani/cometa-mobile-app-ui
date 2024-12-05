@@ -1,7 +1,7 @@
-import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, TextInput, TouchableOpacity, View } from 'react-native';
 import { Stack } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
-import { FC, ReactNode, useState } from 'react';
+import { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { useQueryGetAllLanguages } from '../../../queries/currentUser/editProfileHooks';
 import Checkbox from 'expo-checkbox';
@@ -12,6 +12,7 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { Center } from '@/components/utils/stacks';
 import { useSelectLanguages } from './hook';
 import { SearchField } from '@/components/input/searchField';
+import { KeyboardEvents } from 'react-native-keyboard-controller';
 
 
 export function SelectLanguages(): ReactNode {
@@ -20,6 +21,26 @@ export function SelectLanguages(): ReactNode {
   const { selectedLanguages, setSelectedLanguages } = useSelectLanguages();
   const { data = [], isFetched } = useQueryGetAllLanguages();
   const filteredLanguagesData = data.filter(lang => lang?.toLowerCase().includes(inputValue?.toLowerCase()));
+  const listRef = useRef<FlashList<string>>(null);
+  const [isFirstItemVisible, setIsFirstItemVisible] = useState(true);
+  const inputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    if (!isFirstItemVisible) return;
+    const show = KeyboardEvents.addListener('keyboardWillShow', (e) => {
+      listRef.current?.scrollToIndex({ index: 0, animated: true });
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 500);
+    });
+    const hide = KeyboardEvents.addListener('keyboardWillHide', () => {
+      listRef.current?.scrollToOffset({ offset: -20, animated: true });
+    });
+    return () => {
+      hide.remove();
+      show.remove();
+    };
+  }, [isFirstItemVisible]);
 
   const renderItem = ({ item, index }: { item: string, index: number }) => (
     <Condition
@@ -27,11 +48,12 @@ export function SelectLanguages(): ReactNode {
       then={(
         <View style={{
           paddingHorizontal: theme.spacing.sp8,
-          backgroundColor: theme.colors.white100,
           paddingVertical: theme.spacing.sp4,
+          backgroundColor: theme.colors.white100,
           zIndex: 10,
         }}>
           <SearchField
+            ref={inputRef}
             onSearch={setInputValue}
             placeholder='Search for a language'
           />
@@ -69,14 +91,28 @@ export function SelectLanguages(): ReactNode {
               )}
               else={
                 <FlashList
+                  ref={listRef}
                   data={[''].concat(filteredLanguagesData)}
                   bounces={false}
                   estimatedItemSize={theme.spacing.sp20}
-                  stickyHeaderHiddenOnScroll={true}
                   stickyHeaderIndices={[0]}
                   contentContainerStyle={{ padding: theme.spacing.sp8 }}
+                  onViewableItemsChanged={({ viewableItems, changed }) => {
+                    const firstItem = viewableItems[0];
+                    if (firstItem.index !== 0) {
+                      setIsFirstItemVisible(false);
+                    }
+                    else {
+                      setIsFirstItemVisible(true);
+                    }
+                  }}
                   ListHeaderComponent={() => (
-                    <View style={{ gap: 12, paddingTop: theme.spacing.sp8, paddingHorizontal: theme.spacing.sp8, backgroundColor: theme.colors.white100 }}>
+                    <View style={{
+                      gap: 12,
+                      paddingTop: theme.spacing.sp8,
+                      paddingHorizontal: theme.spacing.sp8,
+                      backgroundColor: theme.colors.white100
+                    }}>
                       <Heading size='s4'>What Languages do you know?</Heading>
                       <TextView>
                         We&apos;ll show these on your profile

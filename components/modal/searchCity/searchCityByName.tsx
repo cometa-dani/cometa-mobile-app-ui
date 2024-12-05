@@ -1,7 +1,7 @@
-import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, TextInput, TouchableOpacity, View } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
-import { ReactNode, useCallback, useState } from 'react';
+import { ReactNode, useCallback, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { useInfiniteQueryGetPaginatedCities } from '../../../queries/currentUser/editProfileHooks';
 import { TextView } from '@/components/text/text';
@@ -24,6 +24,7 @@ export function SearchCityByName(): ReactNode {
   const { setSelectedCity, cityKind } = useSelectCityByName();
   const { styles: cityStyles, theme } = useStyles(styleSheet);
   const [searchValue, setSearchValue] = useState('');
+  const inputRef = useRef<TextInput>(null);
   const {
     data,
     isFetching,
@@ -61,6 +62,7 @@ export function SearchCityByName(): ReactNode {
           headerBackTitle: '',
           headerTitle: () => (
             <SearchField
+              ref={inputRef}
               placeholder={placeholders[cityKind]}
               onSearch={setSearchValue}
             />

@@ -1,5 +1,5 @@
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
-import { FC, useRef, useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { Platform, TextInput, TouchableOpacity } from 'react-native';
 import { HStack } from '../utils/stacks';
 import { FontAwesome } from '@expo/vector-icons';
@@ -15,10 +15,10 @@ interface IProps {
   onSearch: (value: string) => void,
   placeholder?: string
 }
-export const SearchField: FC<IProps> = ({ onSearch, placeholder }) => {
+export const SearchField = forwardRef<TextInput, IProps>(({ onSearch, placeholder }, ref) => {
   const { styles: cityStyles, theme } = useStyles(styleSheet);
   const [inputValue, setInputValue] = useState('');
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = ref as React.MutableRefObject<TextInput>;
 
   useDebouncedCallback(() => {
     if (!inputValue) return;
@@ -37,14 +37,17 @@ export const SearchField: FC<IProps> = ({ onSearch, placeholder }) => {
       />
       <TouchableOpacity
         onPress={() => {
-          inputRef.current?.blur();
+          inputRef.current.blur();
           onSearch(inputValue);
         }}>
         <FontAwesome color={theme.colors.gray900} name='search' size={theme.icons.md} />
       </TouchableOpacity>
     </HStack>
   );
-};
+});
+
+SearchField.displayName = 'SearchField';
+
 
 const styleSheet = createStyleSheet((theme) => ({
   textInputContainer: {
