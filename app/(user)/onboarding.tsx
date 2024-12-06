@@ -9,7 +9,7 @@ import { Stack } from 'expo-router';
 
 const title = ['Create Your Profile', 'About Yourself', 'Upload Your Photos', 'Done'];
 
-export default function OnboardUser() {
+export default function OnboardUserScreen() {
   const { ref, setPage, setProgress, progress } = usePagerView();
   const nextPage = progress.position + 1;
   return (

@@ -10,10 +10,10 @@ import { Button } from '@/components/button/button';
 import { AntDesign } from '@expo/vector-icons';
 import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
-import { Stack, useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 
 
-export default function OnboardingScreen() {
+export default function WelcomeScreen() {
   const router = useRouter();
   const { styles, theme } = useStyles(stylesheet);
   const [isUserProfileModalVisible, setUserProfileModalVisible] = useReducer(prev => !prev, false);
@@ -26,22 +26,24 @@ export default function OnboardingScreen() {
 
   const openUserProfileBottomSheet = (): void => {
     setUserProfileModalVisible();
-    router.push('/onboarding/(modal)/user');
+    router.push('/(user)/onboarding');
   };
 
-  const openCompanyProfileModal = (): void => { };
+  const openCompanyProfileModal = (): void => {
+    router.push('/(company)/onboarding');
+  };
 
+  const isUserLoggedIn = false;
+  const isCompanyLoggedIn = false;
+  if (isUserLoggedIn) {
+    return <Redirect href="/(user)/(tabs)" />;
+  }
+  if (isCompanyLoggedIn) {
+    return <Redirect href="/(company)/(tabs)" />;
+  }
   return (
     <>
       <SystemBars style='light' />
-
-      <Stack.Screen
-        options={{
-          headerTransparent: true,
-          headerStyle: { backgroundColor: 'transparent' },
-          headerTitle: '',
-        }}
-      />
 
       <Modal
         transparent={true}
@@ -52,7 +54,7 @@ export default function OnboardingScreen() {
         <View style={styles.backdrop}>
           <View style={styles.modal}>
             <HStack $x='space-between' $y='center'>
-              <Image style={styles.logo} source={require('../../assets/images/cometa-logo.png')} />
+              <Image style={styles.logo} source={require('../assets/images/cometa-logo.png')} />
               <TouchableOpacity
                 onPress={setUserProfileModalVisible}
               >
@@ -82,7 +84,7 @@ export default function OnboardingScreen() {
       </Modal>
 
       <ImageBackground
-        source={require('../../assets/images/welcome-image.jpeg')}
+        source={require('../assets/images/welcome-image.jpeg')}
         contentFit='cover'
         style={styles.imgBackground}
       >
@@ -108,8 +110,6 @@ export default function OnboardingScreen() {
           colors={['transparent', 'rgba(255,255,255,0.9)', '#ffffff']}
           style={styles.linearGradient}
         >
-          {/* <SafeAreaView>
-          </SafeAreaView> */}
           <View style={styles.buttonsContainer}>
             <VStack gap={theme.spacing.sp8}>
               <Button variant='primary' onPress={toggleLoginModal}>

@@ -17,7 +17,7 @@ import { useStyles } from 'react-native-unistyles';
 export { ErrorBoundary } from 'expo-router';
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '/onboarding/index',
+  initialRouteName: '/index',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -63,7 +63,7 @@ function Root(): ReactNode {
         <KeyboardProvider>
           <BottomSheetModalProvider>
             <Stack
-              initialRouteName='onboarding/index'
+              initialRouteName='index'
               screenOptions={{
                 animation: 'fade',
                 headerTitle: '',
@@ -76,7 +76,27 @@ function Root(): ReactNode {
               }}
             >
               <Stack.Screen
-                name='(tabs)'
+                name='index'
+                options={{
+                  headerTransparent: true,
+                  headerStyle: { backgroundColor: 'transparent' },
+                  headerTitle: '',
+                }}
+              />
+              <Stack.Screen
+                name='(user)/onboarding'
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name='(user)/(tabs)'
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name='(company)/onboarding'
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name='(company)/(tabs)'
                 options={{ headerShown: false }}
               />
             </Stack>
