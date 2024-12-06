@@ -102,7 +102,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
 
   // update form values homeTown and currentLocation
   useEffect(() => {
-    if (!selectedCity) return;
+    if (!Object.values(selectedCity).length) return;
     formProps.setValue(cityKind, selectedCity[cityKind]);
   }, [selectedCity]);
 
