@@ -98,7 +98,7 @@ export const useMutationUploadUserPhotos = (uuId?: string) => {
       mutationFn:
         async ({ userId, pickedImgFiles }: PhotosParams): Promise<IGetBasicUserProfile> => {
           const res = await userService.uploadUserPhotos(userId, pickedImgFiles);
-          if (res.status === 200) {
+          if (res.status === 201) {
             return res.data;
           }
           else {
@@ -123,7 +123,7 @@ export const useMutationUploadUserPhotos = (uuId?: string) => {
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuId] });
       },
-      retry: 2,
+      retry: 1,
       retryDelay: 1_000 * 6
     })
   );
@@ -171,48 +171,3 @@ export const useMutationDeleteUserById = (dynamicParam: string) => {
     })
   );
 };
-
-
-// type AvatarParams = { pickedImgFile: ImagePickerAsset, userID: number };
-
-// export const useMutationUpdateLoggedInUserAvatar = (dynamicParam: string) => {
-//   const queryClient = useQueryClient();
-
-//   return (
-//     useMutation({
-//       mutationFn:
-//         async ({ userID, pickedImgFile }: AvatarParams): Promise<GetBasicUserProfile> => {
-//           const res = await userService.uploadOrUpdateAvatarImgByLoggedInUserID(userID, pickedImgFile);
-//           if (res.status === 200) {
-//             return res.data;
-//           }
-//           else {
-//             throw new Error('failed fech');
-//           }
-//         },
-
-//       onMutate: async ({ pickedImgFile }) => {
-//         await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam] });
-
-//         queryClient
-//           .setQueryData<GetDetailedUserProfile>
-//           ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam], (oldState): GetDetailedUserProfile => {
-
-//             const optimisticState = {
-//               ...oldState,
-//               avatar: pickedImgFile.uri
-
-//             } as GetDetailedUserProfile;
-
-//             return optimisticState;
-//           });
-//       },
-
-//       onSuccess: async () => {
-//         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam] });
-//       },
-//       retry: 2,
-//       retryDelay: 1_000 * 6
-//     })
-//   );
-// };

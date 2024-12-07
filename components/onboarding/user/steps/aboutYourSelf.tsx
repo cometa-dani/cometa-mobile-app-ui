@@ -17,6 +17,7 @@ import { IProps } from './components/interface';
 import { useRouter } from 'expo-router';
 import { ICityKind, useSelectCityByName } from '@/components/modal/searchCity/hook';
 import { useSelectLanguages } from '@/components/modal/selectLanguages/hook';
+import { supabase } from '@/supabase/config';
 
 
 const errorMessages = {
@@ -67,13 +68,6 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
   const uploadPhotos = useMutationUploadUserPhotos();
 
   const handleUserCreation = async (values: IFormValues): Promise<void> => {
-    const createUserPayload: ICreateUser = {
-      email: userState.email,
-      name: userState.name,
-      username: userState.username,
-      uid: userState.uid, // from firebase
-      birthday: userState.birthday,
-    };
     const updateUserPayload: IUpdateUser = {
       biography: values.biography,
       currentLocation: values.currentLocation,
@@ -82,6 +76,14 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       occupation: values.occupation
     };
     try {
+      const data = await signUpWithEmail(userState.email, userState.password);
+      const createUserPayload: ICreateUser = {
+        email: userState.email,
+        name: userState.name,
+        username: userState.username,
+        uid: data?.user?.id ?? '', // from supabase
+        birthday: userState.birthday,
+      };
       const newUser = await createUser.mutateAsync(createUserPayload);
       await uploadPhotos.mutateAsync({ userId: newUser.id, pickedImgFiles: userState.photos });
       await updateUser.mutateAsync({ userId: newUser.id, payload: updateUserPayload });
@@ -90,6 +92,21 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       return;
     }
   };
+
+  async function signUpWithEmail(email: string, password: string) {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+      });
+      if (error) {
+        throw error;
+      }
+      return data;
+    } catch (error) {
+      return;
+    }
+  }
 
   const navigateToSelectCity = (kind: keyof ICityKind) => {
     setCityKind(kind);

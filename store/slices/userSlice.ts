@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { StateCreator } from 'zustand';
 import { RestApiService } from '../../services/restService';
+import { Session } from '@supabase/supabase-js';
 
 
 export type UserSlice = {
@@ -8,6 +9,8 @@ export type UserSlice = {
   accessToken: string,
   uid: string,
   // TODO: add userProfile info
+  session?: Session
+  setSession: (session: Session) => void
 
   setIsAuthenticated: (isAuth: boolean) => void,
   setAccessToken: (authToken: string) => void,
@@ -20,6 +23,10 @@ export const createUserSlice: StateCreator<UserSlice> = (set) => ({
   isAuthenticated: false,
   accessToken: '',
   uid: '',
+  session: undefined,
+  setSession: (session: Session) => {
+    set({ session });
+  },
 
   setUid: (uid: string) => {
     set({ uid });

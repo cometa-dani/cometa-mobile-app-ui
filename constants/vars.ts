@@ -11,6 +11,10 @@ export const appId = process.env?.EXPO_PUBLIC_APP_ID || '1:1018637932302:web:4e1
 export const measurementId = process.env?.EXPO_PUBLIC_MEASURING_ID || 'G-G4W08CQPBL';
 export const databaseURL = process.env?.EXPO_PUBLIC_DATABASE_URL || 'https://cometa-e5dd5-default-rtdb.europe-west1.firebasedatabase.app';
 
+// supabse
+export const supabaseUrl = process.env?.EXPO_PUBLIC_SUPABASE_URL as string;
+export const supabaseAnonKey = process.env?.EXPO_PUBLIC_SUPABASE_ANON_KEY as string;
+
 export const animationDuration = 290;
 // export const screenOptions = { headerShown: false, animation: 'slide_from_right', animationDuration };
 

@@ -12,6 +12,8 @@ import { ReactNode, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useStyles } from 'react-native-unistyles';
+import { supabase } from '@/supabase/config';
+import { useCometaStore } from '@/store/cometaStore';
 
 // Catch any errors thrown by the Layout component.
 export { ErrorBoundary } from 'expo-router';
@@ -52,6 +54,20 @@ export default function RootLayout() {
 
 function Root(): ReactNode {
   const { theme } = useStyles();
+  const setSession = useCometaStore(state => state.setSession);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) return;
+      setSession(session);
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) return;
+      setSession(session);
+    });
+  }, []);
+
   return (
     <QueryClientProvider client={new QueryClient()}>
       <ToastManager
