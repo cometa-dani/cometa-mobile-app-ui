@@ -57,10 +57,13 @@ function Root(): ReactNode {
   const setSession = useCometaStore(state => state.setSession);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) return;
-      setSession(session);
-    });
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        console.log('session', session);
+        if (!session) return;
+        setSession(session);
+      })
+      .catch();
 
     supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) return;

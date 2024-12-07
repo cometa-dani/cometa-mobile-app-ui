@@ -25,6 +25,7 @@ export const createUserSlice: StateCreator<UserSlice> = (set) => ({
   uid: '',
   session: undefined,
   setSession: (session: Session) => {
+    RestApiService.getInstance().setBearerToken(session.access_token);
     set({ session });
   },
 

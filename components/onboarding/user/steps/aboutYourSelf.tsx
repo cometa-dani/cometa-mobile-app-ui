@@ -76,7 +76,8 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       occupation: values.occupation
     };
     try {
-      const data = await signUpWithEmail(userState.email, userState.password);
+      const { data, error } = await supabase.auth.signUp({ email: userState.email, password: userState.password });
+      if (error) throw error;
       const createUserPayload: ICreateUser = {
         email: userState.email,
         name: userState.name,
@@ -87,26 +88,12 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       const newUser = await createUser.mutateAsync(createUserPayload);
       await uploadPhotos.mutateAsync({ userId: newUser.id, pickedImgFiles: userState.photos });
       await updateUser.mutateAsync({ userId: newUser.id, payload: updateUserPayload });
+      await supabase.auth.signInWithPassword({ email: userState.email, password: userState.password });
       onNext();
     } catch (error) {
       return;
     }
   };
-
-  async function signUpWithEmail(email: string, password: string) {
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-      });
-      if (error) {
-        throw error;
-      }
-      return data;
-    } catch (error) {
-      return;
-    }
-  }
 
   const navigateToSelectCity = (kind: keyof ICityKind) => {
     setCityKind(kind);

@@ -10,6 +10,8 @@ import { testIds } from './components/testIds';
 import { KeyboardAwareScrollView, } from 'react-native-keyboard-controller';
 import { FooterButton } from './components/footerButton';
 import { IProps } from './components/interface';
+import { supabase } from '@/supabase/config';
+import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
 
 
 const errorMessages = {
@@ -56,7 +58,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNext }) => {
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
   const formProps = useForm({
     defaultValues,
-    resolver: yupResolver<IFormValues>(validationSchema)
+    resolver: yupResolver<IFormValues>(validationSchema),
   });
 
   const handleUserState = (values: IFormValues): void => {
@@ -64,9 +66,51 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNext }) => {
     onNext();
   };
 
-  return (
-    <FormProvider {...formProps}>
+  // watch email and username
+  const [email, username]: [string, string] = formProps.watch(['email', 'username']);
 
+  // check if email is available
+  useDebouncedCallback(() => {
+    supabase
+      .from('User')
+      .select('email')
+      .eq('email', email.trim())
+      .single()
+      .then((res) => {
+        if (res.status === 200) {
+          formProps.setError('email', {
+            type: 'required',
+            message: 'Email already exists',
+          });
+        }
+        else {
+          formProps.clearErrors('email');
+        }
+      });
+  }, [email]);
+
+  // check if username is available
+  useDebouncedCallback(() => {
+    supabase
+      .from('User')
+      .select('username')
+      .eq('username', (username.startsWith('@') ? username : '@' + username).trim())
+      .single()
+      .then((res) => {
+        if (res.status === 200) {
+          formProps.setError('username', {
+            type: 'required',
+            message: 'Username already exists',
+          });
+        }
+        else {
+          formProps.clearErrors('username');
+        }
+      });
+  }, [username]);
+
+  return (
+    <FormProvider  {...formProps}>
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         bottomOffset={theme.spacing.sp10}
