@@ -83,7 +83,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNext }) => {
             message: 'Email already exists',
           });
         }
-        else {
+        if (res.status === 404) {
           formProps.clearErrors('email');
         }
       });
@@ -103,7 +103,7 @@ export const CreateYourProfileForm: FC<IProps> = ({ onNext }) => {
             message: 'Username already exists',
           });
         }
-        else {
+        if (res.status === 404) {
           formProps.clearErrors('username');
         }
       });
