@@ -14,7 +14,7 @@ import { supabase } from '@/supabase/config';
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
 
 
-const errorMessages = {
+export const errorMessages = {
   email: 'Email is required',
   password: 'Password is required',
   repeatPassword: 'Verify Password again',

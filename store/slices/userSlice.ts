@@ -10,8 +10,9 @@ export type UserSlice = {
   uid: string,
   // TODO: add userProfile info
   session?: Session
-  setSession: (session: Session) => void
-
+  setSession: (session: Session) => void,
+  isLoading: boolean,
+  setIsLoading: (isLoading: boolean) => void,
   setIsAuthenticated: (isAuth: boolean) => void,
   setAccessToken: (authToken: string) => void,
   setUid: (uid: string) => void
@@ -19,7 +20,10 @@ export type UserSlice = {
 
 
 export const createUserSlice: StateCreator<UserSlice> = (set) => ({
-
+  isLoading: true,
+  setIsLoading: (isLoading: boolean) => {
+    set({ isLoading });
+  },
   isAuthenticated: false,
   accessToken: '',
   uid: '',

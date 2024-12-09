@@ -55,17 +55,19 @@ export default function RootLayout() {
 function Root(): ReactNode {
   const { theme } = useStyles();
   const setSession = useCometaStore(state => state.setSession);
+  const setIsLoading = useCometaStore(state => state.setIsLoading);
 
   useEffect(() => {
     supabase.auth.getSession()
       .then(({ data: { session } }) => {
-        console.log('session', session);
         if (!session) return;
         setSession(session);
       })
-      .catch();
+      .catch()
+      .finally(() => setIsLoading(false));
 
     supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoading(false);
       if (!session) return;
       setSession(session);
     });
@@ -104,6 +106,10 @@ function Root(): ReactNode {
               />
               <Stack.Screen
                 name='(user)/onboarding'
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name='(user)/login'
                 options={{ headerShown: false }}
               />
               <Stack.Screen

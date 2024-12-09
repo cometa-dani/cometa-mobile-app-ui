@@ -11,15 +11,18 @@ import { AntDesign } from '@expo/vector-icons';
 import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
 import { Redirect, useRouter } from 'expo-router';
+import { useCometaStore } from '@/store/cometaStore';
 
 
 export default function WelcomeScreen() {
+  const session = useCometaStore(state => state.session);
+  const isLoading = useCometaStore(state => state.isLoading);
   const router = useRouter();
   const { styles, theme } = useStyles(stylesheet);
   const [isUserProfileModalVisible, setUserProfileModalVisible] = useReducer(prev => !prev, false);
 
   const toggleLoginModal = (): void => {
-    router.push('/(onboarding)/login');
+    router.push('/(user)/login');
   };
 
   const toggleRegisterModal = (): void => {
@@ -35,13 +38,11 @@ export default function WelcomeScreen() {
     router.push('/(company)/onboarding');
   };
 
-  const isUserLoggedIn = false;
-  const isCompanyLoggedIn = false;
-  if (isUserLoggedIn) {
-    return <Redirect href="/(user)/(tabs)" />;
+  if (isLoading) {
+    return null;
   }
-  if (isCompanyLoggedIn) {
-    return <Redirect href="/(company)/(tabs)" />;
+  if (session?.user) {
+    return <Redirect href="/(user)/(tabs)" />;
   }
   return (
     <>

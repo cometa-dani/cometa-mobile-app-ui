@@ -88,10 +88,10 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       const newUser = await createUser.mutateAsync(createUserPayload);
       await uploadPhotos.mutateAsync({ userId: newUser.id, pickedImgFiles: userState.photos });
       await updateUser.mutateAsync({ userId: newUser.id, payload: updateUserPayload });
-      await supabase.auth.setSession({
-        access_token: data?.session?.access_token ?? '',
-        refresh_token: data?.session?.refresh_token ?? ''
-      });
+      // await supabase.auth.setSession({
+      //   access_token: data?.session?.access_token ?? '',
+      //   refresh_token: data?.session?.refresh_token ?? ''
+      // });
       onNext();
     } catch (error) {
       return;
