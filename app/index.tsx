@@ -18,7 +18,9 @@ export default function WelcomeScreen() {
   const { styles, theme } = useStyles(stylesheet);
   const [isUserProfileModalVisible, setUserProfileModalVisible] = useReducer(prev => !prev, false);
 
-  const toggleLoginModal = (): void => { };
+  const toggleLoginModal = (): void => {
+    router.push('/(onboarding)/login');
+  };
 
   const toggleRegisterModal = (): void => {
     setUserProfileModalVisible();
