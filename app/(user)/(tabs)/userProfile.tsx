@@ -1,4 +1,5 @@
 import { Text, View } from 'react-native';
+import { SystemBars } from 'react-native-edge-to-edge';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
@@ -6,6 +7,7 @@ export default function UserProfileScreen() {
   const { styles } = useStyles(stylesheet);
   return (
     <>
+      <SystemBars style='dark' />
       <View style={styles.container}>
         <Text>User profile</Text>
       </View>

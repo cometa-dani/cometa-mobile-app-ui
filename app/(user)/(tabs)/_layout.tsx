@@ -19,8 +19,6 @@ export default function TabLayout() {
 
   return (
     <>
-      <SystemBars style='auto' />
-
       <Tabs
         screenOptions={{
           headerTitleAlign: 'center',

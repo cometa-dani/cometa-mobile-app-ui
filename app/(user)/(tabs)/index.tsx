@@ -2,6 +2,7 @@ import { EventsList } from '@/components/eventsList/eventsList';
 import { useInfiniteQuerySearchEventsByQueryParams } from '@/queries/currentUser/eventHooks';
 import { useMutationLikeOrDislikeEvent } from '@/queries/currentUser/likeEventHooks';
 import { useCometaStore } from '@/store/cometaStore';
+import { SystemBars } from 'react-native-edge-to-edge';
 
 
 export default function HomeScreen() {
@@ -18,11 +19,14 @@ export default function HomeScreen() {
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
 
   return (
-    <EventsList
-      items={evenstData}
-      isFetched={isFetched}
-      onInfiniteScroll={handleInfiniteFetch}
-      onPressLikeButton={(eventID) => mutateEventLike.mutate({ eventID })}
-    />
+    <>
+      <SystemBars style='light' />
+      <EventsList
+        items={evenstData}
+        isFetched={isFetched}
+        onInfiniteScroll={handleInfiniteFetch}
+        onPressLikeButton={(eventID) => mutateEventLike.mutate({ eventID })}
+      />
+    </>
   );
 }

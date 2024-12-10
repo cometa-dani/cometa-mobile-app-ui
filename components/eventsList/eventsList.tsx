@@ -13,6 +13,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { Condition } from '../utils/ifElse';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { Center } from '../utils/stacks';
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 interface EventsListProps {
@@ -148,12 +149,34 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
   //   .onEnd(() => onHandleLikeButtonPress(item.id));
 
   return (
+
     <ImageBackground
       source={item.photos[0].url}
       style={stylesEventItem.imgBackground}
       placeholder={{ thumbhash: item.photos[0].placeholder }}
       contentFit='cover'
-    />
+    >
+      <LinearGradient
+        colors={['rgba(0,0,0,0.9)', 'rgba(0,0,0,0.74)', 'transparent']}
+        style={{
+          position: 'absolute',
+          top: 0,
+          zIndex: 1,
+          height: 290,
+          width: '100%'
+        }}
+      />
+      <LinearGradient
+        colors={['transparent', 'rgba(0,0,0,0.7)', 'rgba(0,0,0,0.8)']}
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          zIndex: 1,
+          height: 280,
+          width: '100%'
+        }}
+      />
+    </ImageBackground>
   );
 };
 
