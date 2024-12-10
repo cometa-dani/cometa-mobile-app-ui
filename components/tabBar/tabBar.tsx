@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { useLinkBuilder } from '@react-navigation/native';
 import { Text, PlatformPressable } from '@react-navigation/elements';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
@@ -76,8 +76,8 @@ const tabBarStylesheet = createStyleSheet((theme, runtime) => ({
     justifyContent: 'space-between',
     backgroundColor: theme.colors.white100,
     flex: 1,
-    borderTopEndRadius: theme.spacing.sp10,
-    borderTopStartRadius: theme.spacing.sp10,
+    borderTopEndRadius: theme.spacing.sp10 * runtime.fontScale,
+    borderTopStartRadius: theme.spacing.sp10 * runtime.fontScale,
     overflow: 'hidden',
     paddingBottom: runtime.insets.bottom,
     bottom: 0,
@@ -91,11 +91,11 @@ const tabBarStylesheet = createStyleSheet((theme, runtime) => ({
     zIndex: 1
   },
   tabBarPressable: {
-    height: 66,
+    height: Platform.select({ ios: 60, android: 66 }),
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.white100,
-    paddingHorizontal: theme.spacing.sp10,
   },
   tabBarText: {
     color: theme.colors.gray900,

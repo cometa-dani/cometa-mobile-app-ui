@@ -1,4 +1,5 @@
 import { TabBar } from '@/components/tabBar/tabBar';
+import { GradientHeading } from '@/components/text/gradientText';
 import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { SystemBars } from 'react-native-edge-to-edge';
@@ -13,6 +14,7 @@ export default function TabLayout() {
 
       <Tabs
         screenOptions={{
+          headerTitleAlign: 'center',
           headerShown: true,
           headerTransparent: true,
           tabBarInactiveTintColor: theme.colors.gray300,
@@ -38,6 +40,11 @@ export default function TabLayout() {
         <Tabs.Screen
           options={{
             tabBarLabel: 'Home',
+            headerTitle: () => (
+              <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
+                cometa
+              </GradientHeading>
+            ),
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="home" size={26} color={color} />
             )
@@ -48,6 +55,11 @@ export default function TabLayout() {
         <Tabs.Screen
           options={{
             tabBarLabel: 'Chat',
+            headerTitle: () => (
+              <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
+                chat
+              </GradientHeading>
+            ),
             tabBarIcon: ({ color }) => (
               <Ionicons name="chatbubbles" size={26} color={color} />
             )
@@ -57,6 +69,11 @@ export default function TabLayout() {
         <Tabs.Screen
           options={{
             tabBarLabel: 'Bucketlist',
+            headerTitle: () => (
+              <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
+                bucketlist
+              </GradientHeading>
+            ),
             tabBarIcon: ({ color }) => (
               <FontAwesome6 name="heart-circle-check" size={24} color={color} />
             )
@@ -66,6 +83,11 @@ export default function TabLayout() {
         <Tabs.Screen
           options={{
             tabBarLabel: 'Profile',
+            headerTitle: () => (
+              <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
+                profile
+              </GradientHeading>
+            ),
             tabBarIcon: ({ color }) => (
               <FontAwesome name="user-circle-o" size={24} color={color} />
             )
