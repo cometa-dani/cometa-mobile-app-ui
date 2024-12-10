@@ -52,6 +52,9 @@ export const lightTheme = {
     blue80: '#75d9ff',
     blue70: '#85dbff',
 
+    indigo600: '#2563eb',
+    lime600: '#65a30d',
+
     gray50: '#f0f0f0',
     gray100: '#e5e5e5',
     gray200: '#afafaa',
@@ -61,9 +64,9 @@ export const lightTheme = {
     gray900: '#030303',
 
     white100: '#fff',
-
+    white60: '#EDEDED', // (a very light grayish-white color)
     white70: '#F2F2F2', // (a light grayish-white color)
-    white80: '#F7F7F7', // (a very light grayish-white color)
+    white80: '#F5F5F5', // (a very light grayish-white color)
     white90: '#FAFAFA', // (a very light grayish-white color)
 
     backDrop: 'rgba(0, 0, 0, 0.6)',

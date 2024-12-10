@@ -1,16 +1,16 @@
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import React, { FC, ReactNode, useMemo } from 'react';
-import { Pressable, StyleSheet, SafeAreaView } from 'react-native';
+import React, { FC } from 'react';
+import { SafeAreaView } from 'react-native';
 import { Image } from 'expo-image';
 import { RectButton } from 'react-native-gesture-handler';
 import { useMutationDeleteLikedEventFromBucketList } from '../../../queries/currentUser/likeEventHooks';
 import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../../queries/currentUser/eventHooks';
 import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
-import { FontAwesome } from '@expo/vector-icons';
-import { gray_50, red_100 } from '../../../constants/colors';
+import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import { red_100 } from '../../../constants/colors';
 import { ILikeableEvent } from '../../../models/Event';
 import { defaultImgPlaceholder } from '../../../constants/vars';
 import { EmptyMessage } from '../../../legacy_components/empty/Empty';
@@ -18,13 +18,11 @@ import { ForEach } from '@/components/utils/ForEach';
 import { Condition } from '@/components/utils/ifElse';
 import { Center, HStack, VStack } from '@/components/utils/stacks';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
-import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 
 export default function BucketListScreen() {
-  const { styles } = useStyles(stylesheet);
   return (
     <>
       <SystemBars style='dark' />
@@ -33,17 +31,8 @@ export default function BucketListScreen() {
   );
 }
 
-const stylesheet = createStyleSheet((theme, rt) => ({
-  container: {
-    // backgroundColor: theme.colors.white100,
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-}));
 
-
-export function BuckectList(): ReactNode {
+const BuckectList: FC = () => {
   const { theme } = useStyles();
   const { data, isFetching, hasNextPage, fetchNextPage, isFetched } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
@@ -72,7 +61,7 @@ export function BuckectList(): ReactNode {
                 estimatedItemSize={112}
                 contentContainerStyle={{ paddingVertical: theme.spacing.sp8 }}
                 ListFooterComponentStyle={{ height: tabBarHeight * 2 }}
-                ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp4 }} />}
+                ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp8 }} />}
                 onEndReachedThreshold={0.5}
                 onEndReached={handleInfiniteFetch}
                 renderItem={renderBucketItem}
@@ -92,7 +81,7 @@ export function BuckectList(): ReactNode {
       />
     </SafeAreaView>
   );
-}
+};
 
 const styleSheet = createStyleSheet((theme) => ({
   bubble: {
@@ -106,10 +95,6 @@ const styleSheet = createStyleSheet((theme) => ({
     gap: -11,
     justifyContent: 'flex-start',
   },
-  // date: {
-  //   fontSize: 14,
-  //   textAlign: 'center'
-  // },
   deleteButton: {
     backgroundColor: theme.colors.red50,
     borderRadius: 8,
@@ -119,24 +104,11 @@ const styleSheet = createStyleSheet((theme) => ({
     marginRight: theme.spacing.sp7,
     padding: 10,
   },
-  // eventContainer: {
-  //   flex: 1,
-  //   flexDirection: 'row',
-  // },
   img: {
     borderRadius: theme.spacing.sp8,
     height: 112,
     width: '40%',
-  },
-  // textContainer: {
-  //   flexDirection: 'column',
-  //   justifyContent: 'space-around',
-  //   width: '34%',
-  // },
-  // title: {
-  //   fontWeight: '500',
-  //   textAlign: 'center',
-  // }
+  }
 }));
 
 
@@ -149,8 +121,6 @@ const renderBucketItem = ({ item, index }: { item: ILikeableEvent, index: number
   );
 };
 
-
-// const AnimatedImage  = Animated.createAnimatedComponent(Image);
 
 interface BucketItemProps {
   item: ILikeableEvent,
@@ -190,12 +160,15 @@ const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
         )
       }
     >
-      <TouchableOpacity onPress={() => router.push(`/matches/${item.id}?eventIndex=${index}`)}>
-        <HStack styles={{
-          gap: theme.spacing.sp4,
-          backgroundColor: theme.colors.white70,
-          paddingHorizontal: theme.spacing.sp6
-        }}>
+      <TouchableOpacity
+        style={{
+          backgroundColor: theme.colors.white80,
+          paddingHorizontal: theme.spacing.sp6,
+          gap: theme.spacing.sp2
+        }}
+        onPress={() => router.push(`/matches/${item.id}?eventIndex=${index}`)}
+      >
+        <HStack gap={theme.spacing.sp4}>
           <Image
             source={{ uri: item?.photos[0]?.url ?? '' }}
             placeholder={{ thumbhash: item?.photos[0]?.placeholder }}
@@ -222,15 +195,73 @@ const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
             >
               {item?.description}
             </TextView>
-            {/* <TextView ellipsis={true} style={{ fontSize: 14 }}>
-              {new Date(item?.date).toDateString()}
-            </TextView> */}
           </VStack>
         </HStack>
 
-        <View style={styles.bubblesContainer}>
-          <UsersBubbles />
-        </View>
+        <HStack gap={theme.spacing.sp2}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: theme.colors.white60,
+              paddingVertical: theme.spacing.sp1,
+              paddingHorizontal: 6,
+              borderRadius: theme.spacing.sp2,
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexDirection: 'row',
+              gap: theme.spacing.sp1
+            }}
+          >
+            <MaterialCommunityIcons
+              name="map-marker-outline"
+              size={theme.spacing.sp6}
+              style={{ color: theme.colors.indigo600 }}
+            />
+            <TextView
+              ellipsis={true}
+              style={{
+                width: 100,
+                fontSize: 13,
+                fontFamily: theme.text.fontMedium,
+                color: theme.colors.indigo600
+              }}
+            >
+              {item.location?.name}
+            </TextView>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              backgroundColor: theme.colors.white60,
+              paddingVertical: theme.spacing.sp1,
+              paddingHorizontal: 6,
+              borderRadius: theme.spacing.sp2,
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexDirection: 'row',
+              gap: theme.spacing.sp1
+            }}
+          >
+            <MaterialCommunityIcons
+              name="calendar-outline"
+              size={theme.spacing.sp6}
+              style={{ color: theme.colors.lime600 }}
+            />
+            <TextView
+              ellipsis={true}
+              style={{
+                width: 80,
+                fontSize: 13,
+                fontFamily: theme.text.fontMedium,
+                color: theme.colors.lime600
+              }}
+            >
+              {new Date(item?.date).toDateString().split(' ').slice(1).join(' ')}
+            </TextView>
+          </TouchableOpacity>
+
+          <View style={styles.bubblesContainer}>
+            <UsersBubbles />
+          </View>
+        </HStack>
       </TouchableOpacity>
     </Swipeable>
   );

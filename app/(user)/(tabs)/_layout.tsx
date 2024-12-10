@@ -22,6 +22,9 @@ export default function TabLayout(): ReactNode {
     <>
       <Tabs
         screenOptions={{
+          sceneStyle: {
+            backgroundColor: theme.colors.white80
+          },
           headerTitleAlign: 'center',
           headerShown: true,
           headerShadowVisible: false,
