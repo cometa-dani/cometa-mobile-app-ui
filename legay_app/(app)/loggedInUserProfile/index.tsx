@@ -3,7 +3,7 @@ import { Text, View, useColors } from '../../../legacy_components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../../config/firebase/firebase';
 import { useCometaStore } from '../../../store/cometaStore';
-import { useMutationDeleteUserById, useMutationUploadUserPhotos, useMutationUpdateUserById, useQueryGetUserByUid } from '../../../queries/currentUser/userHooks';
+import { useMutationDeleteUserById, useMutationUploadUserPhotos, useMutationUpdateUserById, useQueryGetUserProfile } from '../../../queries/currentUser/userHooks';
 import { AppButton } from '../../../legacy_components/buttons/buttons';
 import { FC, useEffect, useRef, useState } from 'react';
 import { Stack, router } from 'expo-router';
@@ -57,7 +57,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
 
   // queries
   const { data: loggedInUserBucketList } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
-  const { data: loggedInuserProfile, isLoading } = useQueryGetUserByUid(loggedInUserUuid);
+  const { data: loggedInuserProfile, isLoading } = useQueryGetUserProfile(loggedInUserUuid);
   const userPhotos: IPhoto[] = loggedInuserProfile?.photos ?? [];
   const remainingPhotosToUpload: number = maximunNumberOfPhotos - (userPhotos?.length || 0);
 

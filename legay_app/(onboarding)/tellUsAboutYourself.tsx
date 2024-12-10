@@ -9,7 +9,7 @@ import { AppLabelFeedbackMsg, AppTextInput } from '../../legacy_components/textI
 import { If } from '../../legacy_components/utils';
 import { profileStyles } from '../../legacy_components/profile/profileStyles';
 import { gray_300 } from '../../constants/colors';
-import { useMutationUpdateUserById, useQueryGetUserByUid } from '../../queries/currentUser/userHooks';
+import { useMutationUpdateUserById, useQueryGetUserProfile } from '../../queries/currentUser/userHooks';
 import { useCometaStore } from '../../store/cometaStore';
 
 
@@ -27,7 +27,7 @@ const validationSchemma = Yup.object<ProfileValues>({
 
 export default function TellUsAboutYourselfScreen(): JSX.Element {
   const uid = useCometaStore(state => state.uid);
-  const userProfile = useQueryGetUserByUid(uid); // TODO store loggedIn user in globalState
+  const userProfile = useQueryGetUserProfile(uid); // TODO store loggedIn user in globalState
   const mutateUser = useMutationUpdateUserById();
 
   const navigate = () => router.push('/(onboarding)/showYourCurrentLocation');

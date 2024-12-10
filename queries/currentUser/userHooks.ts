@@ -60,13 +60,14 @@ export const useMutationUpdateUserById = () => {
 };
 
 
-export const useQueryGetUserByUid = (dynamicParam: string) => {
+export const useQueryGetUserProfile = () => {
+  const session = useCometaStore(state => state.session);
   return (
     useQuery({
-      enabled: !!dynamicParam,
-      queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam],
+      enabled: !!session?.user.id,
+      queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE],
       queryFn: async (): Promise<IGetDetailedUserProfile> => {
-        const res = await userService.getUserInfoByUidWithLikedEvents(dynamicParam);
+        const res = await userService.getUserInfoByUidWithLikedEvents(session?.user.id as string);
         if (res.status === 200) {
           return res.data;
         }

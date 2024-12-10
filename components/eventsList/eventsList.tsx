@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { ILikeableEvent, } from '../../models/Event';
 import { Pressable, View, Text, ActivityIndicator } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
@@ -22,16 +22,11 @@ interface EventsListProps {
   hideLikeAndShareButtons?: boolean,
   targetUserId?: number,
   initialScrollIndex?: number,
+  onPressLikeButton: (eventID: number) => void
 }
-export const EventsList: FC<EventsListProps> = ({ onInfiniteScroll, isFetched, items, hideLikeAndShareButtons, targetUserId, initialScrollIndex = 0 }) => {
-  // const mutateEventLike = useMutationLikeOrDislikeEvent();
+export const EventsList: FC<EventsListProps> = ({ onInfiniteScroll, isFetched, items, hideLikeAndShareButtons, onPressLikeButton, targetUserId, initialScrollIndex = 0 }) => {
   const { theme } = useStyles();
-
-  const onHandleLikeButtonPress = (eventID: number) => {
-    // mutateEventLike.mutate({ eventID, targetUserId });
-  };
   // const listRef = useRef<FlashList<ILikeableEvent>>(null);
-
   // useEffect(() => {
   //   if (!isLoading) {
   //     listRef.current?.scrollToIndex({
@@ -53,13 +48,7 @@ export const EventsList: FC<EventsListProps> = ({ onInfiniteScroll, isFetched, i
           data={items}
           onEndReached={onInfiniteScroll}
           onEndReachedThreshold={1}
-          renderItem={({ item }) => (
-            <EventItem
-              hideLikeAndShareButtons={hideLikeAndShareButtons}
-              item={item}
-              onHandleLikeButtonPress={onHandleLikeButtonPress}
-            />
-          )}
+          renderItem={renderItem({ hideLikeAndShareButtons, onPressLikeButton })}
         />
       )}
       else={(
@@ -73,6 +62,20 @@ export const EventsList: FC<EventsListProps> = ({ onInfiniteScroll, isFetched, i
       )}
     />
   );
+};
+
+
+type RenderItem = Pick<EventsListProps, 'hideLikeAndShareButtons' | 'onPressLikeButton'>
+
+const renderItem = ({ hideLikeAndShareButtons, onPressLikeButton }: RenderItem) => {
+  const item = ({ item }: { item: ILikeableEvent }) => (
+    <EventItem
+      hideLikeAndShareButtons={hideLikeAndShareButtons}
+      item={item}
+      onPressLikeButton={onPressLikeButton}
+    />
+  );
+  return item;
 };
 
 
@@ -131,10 +134,10 @@ export const EventsList: FC<EventsListProps> = ({ onInfiniteScroll, isFetched, i
 interface ListItemProps {
   item: ILikeableEvent,
   hideLikeAndShareButtons?: boolean,
-  onHandleLikeButtonPress: (id: number) => void,
+  onPressLikeButton: (id: number) => void,
 }
 
-const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, onHandleLikeButtonPress }) => {
+const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, onPressLikeButton }) => {
   const { styles: stylesEventItem, theme } = useStyles(styleSheet);
   const [isTextExpanded, setIsTextExpanded] = useState(false);
 

@@ -1,5 +1,5 @@
 import { FC, Fragment } from 'react';
-import ContentLoader, { Rect } from 'react-content-loader/native';
+// import ContentLoader, { Rect } from 'react-content-loader/native';
 import { Dimensions } from 'react-native';
 
 
