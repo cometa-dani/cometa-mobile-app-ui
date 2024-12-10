@@ -1,5 +1,5 @@
-import { ILikeableEvent } from './Event';
+import { ILikedEvent } from './Event';
 import { IPaginated } from './utils/Paginated';
 
 export interface IGetPaginatedLikedEventsBucketList
-  extends IPaginated<ILikeableEvent> { }
+  extends IPaginated<ILikedEvent> { }

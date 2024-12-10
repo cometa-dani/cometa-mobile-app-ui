@@ -25,7 +25,7 @@ import { IPhoto } from '../../../models/Photo';
 import { IGetBasicUserProfile } from '../../../models/User';
 import { ForEach, If, ON, OFF } from '../../../legacy_components/utils';
 import ContentLoader, { Rect } from 'react-content-loader/native';
-import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../../queries/currentUser/eventHooks';
+import { useInfiniteQueryGetCurrUserLikedEvents } from '../../../queries/currentUser/eventHooks';
 import { maximunNumberOfPhotos } from '../../../constants/vars';
 import uuid from 'react-native-uuid';
 
@@ -56,7 +56,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
   const mutateLoggedInUserProfileById = useMutationUpdateUserById();
 
   // queries
-  const { data: loggedInUserBucketList } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
+  const { data: loggedInUserBucketList } = useInfiniteQueryGetCurrUserLikedEvents();
   const { data: loggedInuserProfile, isLoading } = useQueryGetUserProfile(loggedInUserUuid);
   const userPhotos: IPhoto[] = loggedInuserProfile?.photos ?? [];
   const remainingPhotosToUpload: number = maximunNumberOfPhotos - (userPhotos?.length || 0);

@@ -5,7 +5,7 @@ import { Image } from 'expo-image';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { RectButton } from 'react-native-gesture-handler';
 import { useMutationDeleteLikedEventFromBucketList } from '../../../queries/currentUser/likeEventHooks';
-import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../../queries/currentUser/eventHooks';
+import { useInfiniteQueryGetCurrUserLikedEvents } from '../../../queries/currentUser/eventHooks';
 import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { View, Text } from '../../../legacy_components/Themed';
@@ -20,7 +20,7 @@ import { EmptyMessage } from '../../../legacy_components/empty/Empty';
 
 
 export default function BuckectListScreen(): ReactNode {
-  const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
+  const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteQueryGetCurrUserLikedEvents();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const memoizedLoggedInUserBucketList = useMemo(() => data?.pages.flatMap(page => page.items) || [], [data?.pages]);
 

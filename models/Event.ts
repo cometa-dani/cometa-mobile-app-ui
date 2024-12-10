@@ -64,3 +64,11 @@ export interface ICount {
   likes: number;
   shares: number
 }
+
+export interface IEvent extends Omit<ILikeableEvent, '_count' | 'isLiked'> { }
+
+export interface ILikedEvent {
+  id: number;
+  event: IEvent;
+  isLiked: boolean;
+}

@@ -6,12 +6,12 @@ import { SafeAreaView } from 'react-native';
 import { Image } from 'expo-image';
 import { RectButton } from 'react-native-gesture-handler';
 import { useMutationDeleteLikedEventFromBucketList } from '../../../queries/currentUser/likeEventHooks';
-import { useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser } from '../../../queries/currentUser/eventHooks';
+import { useInfiniteQueryGetCurrUserLikedEvents } from '../../../queries/currentUser/eventHooks';
 import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { red_100 } from '../../../constants/colors';
-import { ILikeableEvent } from '../../../models/Event';
+import { ILikedEvent } from '../../../models/Event';
 import { defaultImgPlaceholder } from '../../../constants/vars';
 import { EmptyMessage } from '../../../legacy_components/empty/Empty';
 import { ForEach } from '@/components/utils/ForEach';
@@ -20,6 +20,7 @@ import { Center, HStack, VStack } from '@/components/utils/stacks';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { TextView } from '@/components/text/text';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 
 
 export default function BucketListScreen() {
@@ -34,7 +35,16 @@ export default function BucketListScreen() {
 
 const BuckectList: FC = () => {
   const { theme } = useStyles();
-  const { data, isFetching, hasNextPage, fetchNextPage, isFetched } = useInfiniteQueryGetLikedEventsForBucketListByLoggedInUser();
+  const {
+    data,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+    isFetched,
+    refetch,
+    isStale
+  } = useInfiniteQueryGetCurrUserLikedEvents();
+  useRefreshOnFocus(refetch, isStale);
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const bucketList = data?.pages.flatMap(page => page.items) || [];
 
@@ -56,7 +66,6 @@ const BuckectList: FC = () => {
             else={(
               <FlashList
                 data={bucketList}
-                pagingEnabled={false}
                 showsVerticalScrollIndicator={true}
                 estimatedItemSize={112}
                 contentContainerStyle={{ paddingVertical: theme.spacing.sp8 }}
@@ -82,6 +91,7 @@ const BuckectList: FC = () => {
     </SafeAreaView>
   );
 };
+
 
 const styleSheet = createStyleSheet((theme) => ({
   bubble: {
@@ -112,7 +122,7 @@ const styleSheet = createStyleSheet((theme) => ({
 }));
 
 
-const renderBucketItem = ({ item, index }: { item: ILikeableEvent, index: number }) => {
+const renderBucketItem = ({ item, index }: { item: ILikedEvent, index: number }) => {
   return (
     <BucketItem
       item={item}
@@ -123,7 +133,7 @@ const renderBucketItem = ({ item, index }: { item: ILikeableEvent, index: number
 
 
 interface BucketItemProps {
-  item: ILikeableEvent,
+  item: ILikedEvent,
   index: number
 }
 const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
@@ -131,7 +141,7 @@ const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
   const deleteLikedEventMutation = useMutationDeleteLikedEventFromBucketList();
 
   const UsersBubbles: FC = () => (
-    <ForEach items={item?.likes ?? []}>
+    <ForEach items={item?.event.likes ?? []}>
       {({ user }, index) => (
         <Image
           key={index}
@@ -170,8 +180,8 @@ const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
       >
         <HStack gap={theme.spacing.sp4}>
           <Image
-            source={{ uri: item?.photos[0]?.url ?? '' }}
-            placeholder={{ thumbhash: item?.photos[0]?.placeholder }}
+            source={{ uri: item?.event.photos[0]?.url ?? '' }}
+            placeholder={{ thumbhash: item?.event.photos[0]?.placeholder }}
             style={styles.img}
           />
           <VStack $y='center' gap={theme.spacing.sp2} styles={{ flex: 1 }}>
@@ -183,7 +193,7 @@ const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
                 fontFamily: theme.text.fontMedium
               }}
             >
-              {item?.name}
+              {item?.event.name}
             </TextView>
             <TextView
               numberOfLines={2}
@@ -193,7 +203,7 @@ const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
                 color: theme.colors.gray400
               }}
             >
-              {item?.description}
+              {item?.event.description}
             </TextView>
           </VStack>
         </HStack>
@@ -225,7 +235,7 @@ const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
                 color: theme.colors.indigo600
               }}
             >
-              {item.location?.name}
+              {item.event.location?.name}
             </TextView>
           </TouchableOpacity>
           <TouchableOpacity
@@ -254,7 +264,7 @@ const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
                 color: theme.colors.lime600
               }}
             >
-              {new Date(item?.date).toDateString().split(' ').slice(1).join(' ')}
+              {new Date(item?.event.date).toDateString().split(' ').slice(1).join(' ')}
             </TextView>
           </TouchableOpacity>
 
