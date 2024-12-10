@@ -38,19 +38,16 @@ class EventService {
 
   public searchEventsWithPagination({ categories, cursor, limit, name }: ISearchParams) {
     const categoriesPayload = this._parseCategories(categories);
-    const params: { cursor: number, limit: number, name?: string, categories?: string } =
-      { cursor, limit, name, categories: categoriesPayload };
-
+    const params: { cursor: number, limit: number, name?: string, categories?: string } = (
+      { cursor, limit, name, categories: categoriesPayload }
+    );
     if (!params.categories) {
       delete params.categories;
     }
     if (!params.name) {
       delete params.name;
     }
-    const config = {
-      params
-    };
-    return this.http.get<IGetLatestPaginatedEvents>('/events', config);
+    return this.http.get<IGetLatestPaginatedEvents>('/events', { params });
   }
 
 

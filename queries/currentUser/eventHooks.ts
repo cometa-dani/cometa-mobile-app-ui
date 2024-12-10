@@ -21,7 +21,6 @@ export const useInfiniteQuerySearchEventsByQueryParams = (eventName = '') => {
             name: eventName,
             categories: categoriesSearchFilters
           });
-
         if (res.status === 200) {
           return res.data;
         }

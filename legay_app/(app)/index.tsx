@@ -1,6 +1,6 @@
 import React, { FC, forwardRef, useCallback, useRef, useState, RefObject, useEffect, useMemo, } from 'react';
 import { StyleSheet, SafeAreaView, Pressable, View, TouchableOpacity } from 'react-native';
-import { Text, useColors } from '../../legacy_components/Themed';
+// import { Text, useColors } from '../../legacy_components/Themed';
 import { useInfiniteQuerySearchEventsByQueryParams } from '../../queries/currentUser/eventHooks';
 import { EventsFlashList } from '../../legacy_components/eventsFlashList/eventsFlashList';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
@@ -22,10 +22,10 @@ import { EmptyMessage } from '../../legacy_components/empty/Empty';
 
 export default function HomeScreen(): JSX.Element {
   const { background } = useColors();
-  const searchQuery = useCometaStore(state => state.searchQuery);
 
   const handleNavigateToSearchScreen = () => router.push('/search');
 
+  const searchQuery = useCometaStore(state => state.searchQuery);
   // eventsData
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading, isRefetching } = useInfiniteQuerySearchEventsByQueryParams(searchQuery);
   const evenstData = data?.pages.flatMap(page => page.items) || [];

@@ -1,23 +1,25 @@
-import { Text, View } from 'react-native';
-import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import { EventsList } from '@/components/eventsList/eventsList';
+import { useInfiniteQuerySearchEventsByQueryParams } from '@/queries/currentUser/eventHooks';
+import { useCometaStore } from '@/store/cometaStore';
 
 
 export default function HomeScreen() {
-  const { styles } = useStyles(stylesheet);
+  const searchQuery = useCometaStore(state => state.searchQuery);
+  const {
+    data,
+    isFetched,
+    fetchNextPage,
+    hasNextPage,
+    isFetching
+  } = useInfiniteQuerySearchEventsByQueryParams(searchQuery);
+  const evenstData = data?.pages.flatMap(page => page.items) || [];
+  const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
+
   return (
-    <>
-      <View style={styles.container}>
-        <Text>Lets go!</Text>
-      </View>
-    </>
+    <EventsList
+      items={evenstData}
+      isFetched={isFetched}
+      onInfiniteScroll={handleInfiniteFetch}
+    />
   );
 }
-
-const stylesheet = createStyleSheet((theme, rt) => ({
-  container: {
-    backgroundColor: theme.colors.white100,
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-}));

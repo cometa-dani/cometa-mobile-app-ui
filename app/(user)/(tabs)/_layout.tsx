@@ -1,13 +1,17 @@
 import { TabBar } from '@/components/tabBar/tabBar';
 import { Tabs } from 'expo-router';
+import { SystemBars } from 'react-native-edge-to-edge';
 
 
 export default function TabLayout() {
   return (
     <>
+      <SystemBars style='light' />
+
       <Tabs
         screenOptions={{
-          headerShown: false
+          headerShown: true,
+          headerTransparent: true
         }}
         tabBar={(props) => <TabBar {...props} />}
       >
