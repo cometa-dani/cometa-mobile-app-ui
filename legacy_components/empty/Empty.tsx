@@ -1,7 +1,8 @@
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Text, View } from '../Themed';
 import { FC } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Heading } from '@/components/text/heading';
+import { TextView } from '@/components/text/text';
 
 
 interface Props {
@@ -12,17 +13,17 @@ interface Props {
 
 export const EmptyMessage: FC<Props> = ({ onPress, title, subtitle }) => (
   <View style={styles.notFoundContainer}>
-    <Text style={{ fontWeight: '600', fontSize: 18, textAlign: 'center' }}>
+    <Heading size='s6'>
       {title}
-    </Text>
+    </Heading>
 
     <TouchableOpacity
       style={{ alignItems: 'center' }}
       onPress={onPress}
     >
-      <Text style={{ fontSize: 14, marginTop: 6, textAlign: 'center' }}>
+      <TextView>
         {subtitle}
-      </Text>
+      </TextView>
     </TouchableOpacity>
   </View>
 );
@@ -30,9 +31,9 @@ export const EmptyMessage: FC<Props> = ({ onPress, title, subtitle }) => (
 
 const styles = StyleSheet.create({
   notFoundContainer: {
-    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12
+    flex: 1,
+    gap: 12,
+    justifyContent: 'center'
   },
 });

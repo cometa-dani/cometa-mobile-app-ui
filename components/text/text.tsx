@@ -8,16 +8,17 @@ interface TextProps {
   children: React.ReactNode;
   bold?: boolean;
   style?: StyleProp<TextStyle>,
-  ellipsis?: boolean
+  ellipsis?: boolean,
+  numberOfLines?: number
 }
 
-export const TextView: FC<TextProps> = ({ children, bold = false, style, ellipsis }) => {
+export const TextView: FC<TextProps> = ({ children, bold = false, style, ellipsis, numberOfLines = 1 }) => {
   const { styles } = useStyles(textStyleSheet);
   return (
     <Text
       allowFontScaling={true}
       ellipsizeMode='tail'
-      numberOfLines={ellipsis ? 1 : undefined}
+      numberOfLines={ellipsis ? numberOfLines : undefined}
       style={[styles.font(bold), style]}
     >
       {children}

@@ -3,7 +3,6 @@ import { ILikeableEvent, } from '../../models/Event';
 import { Pressable, View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { ImageBackground } from 'expo-image';
-import { Reds } from '../../constants/colors';
 import { ForEach } from '../utils/ForEach';
 //icons
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -38,7 +37,6 @@ export const EventsList: FC<EventsListProps> = ({ onInfiniteScroll, isFetched, i
   //     });
   //   }
   // }, [initialScrollIndex, isLoading]);
-
   return (
     <Condition
       if={isFetched}
@@ -69,12 +67,12 @@ export const EventsList: FC<EventsListProps> = ({ onInfiniteScroll, isFetched, i
 };
 
 
-interface RenderItem extends Pick<EventsListProps, (
+interface IRenderItem extends Pick<EventsListProps, (
   'hideLikeAndShareButtons' |
   'onPressLikeButton'
 )> { }
 
-const renderItem = ({ hideLikeAndShareButtons, onPressLikeButton }: RenderItem) => {
+const renderItem = ({ hideLikeAndShareButtons, onPressLikeButton }: IRenderItem) => {
   const item = ({ item }: { item: ILikeableEvent }) => (
     <EventItem
       hideLikeAndShareButtons={hideLikeAndShareButtons}
@@ -289,7 +287,7 @@ const styleSheet = createStyleSheet((theme, runtime) => ({
   },
   tagContainer: {
     alignSelf: 'flex-start',
-    backgroundColor: Reds.RED_500,
+    backgroundColor: theme.colors.red50,
     borderRadius: 10,
     elevation: 3,
     paddingHorizontal: 8,
@@ -300,7 +298,7 @@ const styleSheet = createStyleSheet((theme, runtime) => ({
     shadowRadius: 3,
   },
   tagText: {
-    color: theme.colors.white100,
+    color: theme.colors.red100,
     fontWeight: '500',
     textTransform: 'uppercase',
     fontFamily: theme.text.fontMedium,

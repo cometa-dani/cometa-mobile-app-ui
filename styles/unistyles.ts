@@ -45,6 +45,7 @@ export const lightTheme = {
     red90: '#EA4C6C',
     red80: '#EA5F7C',
     red70: '#EA708C',
+    red50: '#F2B8C8',
 
     blue100: '#5ac8fa',
     blue90: '#51C3E3',
@@ -55,6 +56,7 @@ export const lightTheme = {
     gray100: '#e5e5e5',
     gray200: '#afafaa',
     gray300: '#7C8591',
+    gray400: '#5e5e5e',
     gray500: '#4f4f4f',
     gray900: '#030303',
 
