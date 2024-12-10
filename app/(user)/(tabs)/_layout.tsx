@@ -1,3 +1,4 @@
+import { CircleButton } from '@/components/button/circleButton';
 import { TabBar } from '@/components/tabBar/tabBar';
 import { GradientHeading } from '@/components/text/gradientText';
 import { Condition } from '@/components/utils/ifElse';
@@ -6,12 +7,13 @@ import { useQueryGetUserProfile } from '@/queries/currentUser/userHooks';
 import { useCometaStore } from '@/store/cometaStore';
 import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
-import { TouchableOpacity, View } from 'react-native';
+import { ReactNode } from 'react';
+import { View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
-export default function TabLayout() {
-  const { theme, styles } = useStyles(stylesheet);
+export default function TabLayout(): ReactNode {
+  const { theme } = useStyles(stylesheet);
   const router = useRouter();
   const notificationIsSeen = useCometaStore(state => state.notificationsList).at(0)?.user?.isSeen;
   const { data: userProfile } = useQueryGetUserProfile();
@@ -47,8 +49,7 @@ export default function TabLayout() {
           options={{
             tabBarLabel: 'Home',
             headerLeft: () => (
-              <TouchableOpacity
-                style={styles.cirleButton}
+              <CircleButton
                 onPress={() => router.push('/(stacks)/search')}
               >
                 <Ionicons
@@ -56,7 +57,7 @@ export default function TabLayout() {
                   size={theme.spacing.sp8}
                   color={theme.colors.white100}
                 />
-              </TouchableOpacity>
+              </CircleButton>
             ),
             headerTitle: () => (
               <GradientHeading styles={[{ fontSize: theme.text.size.s9 }]}>
@@ -67,8 +68,7 @@ export default function TabLayout() {
               <HStack
                 styles={{ marginRight: theme.spacing.sp4 }}
               >
-                <TouchableOpacity
-                  style={styles.cirleButton}
+                <CircleButton
                   onPress={() => router.push(`/(stacks)/notifications/${userProfile?.id}`)}
                 >
                   <>
@@ -84,9 +84,8 @@ export default function TabLayout() {
                       color={theme.colors.white100}
                     />
                   </>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.cirleButton}
+                </CircleButton>
+                <CircleButton
                   onPress={() => router.push('/(stacks)/filter')}
                 >
                   <Ionicons
@@ -94,7 +93,7 @@ export default function TabLayout() {
                     size={theme.spacing.sp8}
                     color={theme.colors.white100}
                   />
-                </TouchableOpacity>
+                </CircleButton>
               </HStack>
             ),
             tabBarIcon: ({ color }) => (
@@ -167,15 +166,6 @@ const stylesheet = createStyleSheet((theme) => ({
     backgroundColor: theme.colors.red100,
     position: 'absolute',
     top: -2
-  },
-  cirleButton: {
-    marginLeft: theme.spacing.sp4,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    width: 34,
-    height: 34,
-    borderRadius: 99_999,
-    zIndex: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
   }
 }));
+
