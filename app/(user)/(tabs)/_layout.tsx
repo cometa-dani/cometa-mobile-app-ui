@@ -24,7 +24,7 @@ export default function TabLayout(): ReactNode {
         screenOptions={{
           headerTitleAlign: 'center',
           headerShown: true,
-          headerTransparent: true,
+          headerShadowVisible: false,
           tabBarInactiveTintColor: theme.colors.gray300,
           tabBarActiveTintColor: theme.colors.red100,
           tabBarHideOnKeyboard: true,
@@ -48,6 +48,7 @@ export default function TabLayout(): ReactNode {
         <Tabs.Screen
           options={{
             tabBarLabel: 'Home',
+            headerTransparent: true,
             headerLeft: () => (
               <CircleButton
                 onPress={() => router.push('/(stacks)/search')}

@@ -1,19 +1,19 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { ILikeableEvent, } from '../../models/Event';
-import { Pressable, View, Text, ActivityIndicator } from 'react-native';
+import { Pressable, View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import { useMutationLikeOrDislikeEvent } from '../../queries/currentUser/likeEventHooks';
 import { ImageBackground } from 'expo-image';
-import { Reds, white_50 } from '../../constants/colors';
+import { Reds } from '../../constants/colors';
 import { ForEach } from '../utils/ForEach';
 //icons
-import { FontAwesome6 } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { Condition } from '../utils/ifElse';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
-import { Center } from '../utils/stacks';
+import { Center, VStack } from '../utils/stacks';
 import { LinearGradient } from 'expo-linear-gradient';
+import { CircleButton } from '../button/circleButton';
+import { tabBarHeight } from '../tabBar/tabBar';
 
 
 interface EventsListProps {
@@ -80,66 +80,13 @@ const renderItem = ({ hideLikeAndShareButtons, onPressLikeButton }: RenderItem) 
 };
 
 
-// const SkeletonLoader: FC = () => {
-//   const width = Dimensions.get('window').width;
-//   const height = Dimensions.get('window').height;
-
-//   return (
-//     <>
-//       <ContentLoader
-//         speed={1}
-//         width={width - 20}
-//         height={height - 120}
-//         viewBox={`0 0 ${width - 20} ${height - 140}`}
-//         backgroundColor="#f3f3f3"
-//         foregroundColor="#ecebeb"
-//       >
-//         <Rect x="0" y="0" rx="16" ry="16" width="100%" height="100%" />
-//       </ContentLoader>
-
-//       <ContentLoader
-//         speed={1}
-//         style={{ position: 'absolute', top: 0, left: 0 }}
-//         width={width - 20}
-//         height={height - 140}
-//         viewBox={`0 0 ${width - 20} ${height - 140}`}
-//         backgroundColor="#e3e3e3"
-//         foregroundColor="#ddd"
-//       >
-//         <Circle cx={width - 74} cy="84%" r="28" />
-//         <Circle cx={width - 74} cy="74%" r="28" />
-//         <Circle cx={width - 74} cy="64%" r="28" />
-//       </ContentLoader>
-
-//       <ContentLoader
-//         speed={1}
-//         style={{ position: 'absolute', top: 0, left: 0 }}
-//         width={width - 20}
-//         height={height - 140}
-//         viewBox={`0 0 ${width - 20} ${height - 140}`}
-//         backgroundColor="#e3e3e3"
-//         foregroundColor="#ddd"
-//       >
-//         <Circle x="20" cx="20" cy="68%" r="24" />
-//         <Rect x="20" y="74%" width="120" height="16" rx="6" ry="6" />
-//         <Rect x="20" y="78%" width="140" height="16" rx="6" ry="6" />
-//         <Rect x="20" y="82%" width="160" height="16" rx="6" ry="6" />
-//         <Rect x="20" y="86%" width="180" height="16" rx="6" ry="6" />
-//       </ContentLoader>
-//     </>
-//   );
-// };
-
-
-// Define the props for the memoized list item
 interface ListItemProps {
   item: ILikeableEvent,
   hideLikeAndShareButtons?: boolean,
   onPressLikeButton: (id: number) => void,
 }
-
 const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, onPressLikeButton }) => {
-  const { styles: stylesEventItem, theme } = useStyles(styleSheet);
+  const { styles, theme } = useStyles(styleSheet);
   const [isTextExpanded, setIsTextExpanded] = useState(false);
 
   // const doubleTapOnLikeButton = Gesture.Tap();
@@ -149,134 +96,170 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
   //   .onEnd(() => onHandleLikeButtonPress(item.id));
 
   return (
+    <View style={{ position: 'relative' }}>
+      <ImageBackground
+        source={item.photos[0].url}
+        style={styles.imgBackground}
+        placeholder={{ thumbhash: item.photos[0].placeholder }}
+        contentFit='cover'
+      >
+        <LinearGradient
+          colors={['rgba(0,0,0,0.9)', 'rgba(0,0,0,0.74)', 'transparent']}
+          style={{
+            position: 'absolute',
+            top: 0,
+            zIndex: 1,
+            height: 290,
+            width: '100%'
+          }}
+        />
+        <LinearGradient
+          colors={['transparent', 'rgba(0,0,0,0.7)', 'rgba(0,0,0,0.8)']}
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            zIndex: 1,
+            height: 280,
+            width: '100%'
+          }}
+        />
 
-    <ImageBackground
-      source={item.photos[0].url}
-      style={stylesEventItem.imgBackground}
-      placeholder={{ thumbhash: item.photos[0].placeholder }}
-      contentFit='cover'
-    >
-      <LinearGradient
-        colors={['rgba(0,0,0,0.9)', 'rgba(0,0,0,0.74)', 'transparent']}
-        style={{
-          position: 'absolute',
-          top: 0,
-          zIndex: 1,
-          height: 290,
-          width: '100%'
-        }}
-      />
-      <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.7)', 'rgba(0,0,0,0.8)']}
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          zIndex: 1,
-          height: 280,
-          width: '100%'
-        }}
-      />
-    </ImageBackground>
+        <Condition
+          if={isTextExpanded}
+          then={
+            <LinearGradient
+              colors={['rgba(0,0,0,0.64)', 'rgba(0,0,0,0.64)']}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                zIndex: 100_000,
+                height: UnistylesRuntime.screen.height,
+                width: '100%'
+              }}
+            />
+          }
+        />
+      </ImageBackground>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={styles.eventInfoContainer}
+        contentContainerStyle={{ gap: theme.spacing.sp4 }}
+      >
+        <Pressable onPress={() => setIsTextExpanded(prev => !prev)}>
+          <Text
+            numberOfLines={isTextExpanded ? undefined : 3}
+            ellipsizeMode='tail'
+            style={{
+              ...styles.textShadow,
+              fontSize: theme.text.size.s8,
+              fontFamily: theme.text.fontBold
+            }}
+          >
+            {item.name}
+          </Text>
+        </Pressable>
+
+        <View style={{ flexDirection: 'row', gap: theme.spacing.sp4 }}>
+          <ForEach items={item.categories}>
+            {(category, index) => (
+              <View key={index} style={styles.tagContainer}>
+                <Text style={styles.tagText}>{category}</Text>
+              </View>
+            )}
+          </ForEach>
+        </View>
+
+        <Pressable
+          style={{ width: '100%' }}
+          onPress={() => setIsTextExpanded(prev => !prev)}
+        >
+          {({ pressed }) => (
+            <Text
+              numberOfLines={isTextExpanded ? undefined : 3}
+              ellipsizeMode='tail'
+              style={[
+                styles.textShadow,
+                {
+                  fontSize: 14,
+                  opacity: pressed ? 0.84 : 1
+                }
+              ]}
+            >
+              {item.description}
+            </Text>
+          )}
+        </Pressable>
+      </ScrollView>
+
+      <VStack
+        gap={theme.spacing.sp6}
+        styles={styles.positionedButtons}
+      >
+        <CircleButton
+          opacity={0.22}
+          size={theme.spacing.sp14}
+          light={false}
+          onPress={() => onPressLikeButton(item.id)}
+        >
+          <FontAwesome
+            name='heart'
+            size={theme.spacing.sp10}
+            style={{ color: theme.colors.red100 }}
+          />
+        </CircleButton>
+        <CircleButton
+          opacity={0.22}
+          size={theme.spacing.sp14}
+          light={false}
+        // onPress={() => onPressLikeButton(item.id)}
+        >
+          <Feather
+            name="share-2"
+            size={theme.spacing.sp10}
+            style={{ color: theme.colors.white90 }}
+          />
+        </CircleButton>
+        <CircleButton
+          opacity={0.22}
+          size={theme.spacing.sp14}
+          light={false}
+        // onPress={() => onPressLikeButton(item.id)}
+        >
+          <MaterialCommunityIcons
+            name="map-marker-outline"
+            size={theme.spacing.sp11}
+            style={{ color: theme.colors.white90 }}
+          />
+        </CircleButton>
+        <CircleButton
+          opacity={0.22}
+          size={theme.spacing.sp14}
+          light={false}
+        // onPress={() => onPressLikeButton(item.id)}
+        >
+          <MaterialCommunityIcons
+            name="qrcode"
+            size={theme.spacing.sp11}
+            style={{ color: theme.colors.white90 }}
+          />
+        </CircleButton>
+      </VStack>
+    </View>
   );
 };
-
-// <View style={stylesEventItem.wrapper}>
-//   {/* <GestureDetector gesture={doubleTapOnLikeButton}> */}
-//   {/* </GestureDetector> */}
-
-//   {/* <View style={stylesEventItem.positionedButtons}>
-//     <Condition
-//       if={!hideLikeAndShareButtons}
-//       then={(
-//         <>
-//           <View style={{ alignItems: 'center', gap: 2 }}>
-//             <Pressable onPress={() => onHandleLikeButtonPress(item.id)}>
-//               {({ pressed }) => (
-//                 (item.isLiked) ? (
-//                   <FontAwesome name='heart' size={28} style={{ color: theme.colors.red100 }} />
-//                 ) : (
-//                   <FontAwesome name='heart-o' size={28} style={{ color: (pressed) ? theme.colors.red100 : theme.colors.red90 }} />
-//                 )
-//               )}
-//             </Pressable>
-//             <Text>{item._count.likes || 0}</Text>
-//           </View>
-
-//           <View style={{ alignItems: 'center', gap: 2 }}>
-//             <Pressable>
-//               {() => (
-//                 <FontAwesome name="share" size={28} color="white" />
-//                 // <Image style={{ width: 28, height: 28 }} source={icons.share} />
-//               )}
-//             </Pressable>
-//             <Text>{3612}</Text>
-//           </View>
-//         </>
-//       )}
-//     />
-
-//     <Pressable>
-//       {() => (
-//         <FontAwesome6 name="location-dot" size={28} color="white" />
-//       )}
-//     </Pressable>
-//   </View>
-
-//   <View style={stylesEventItem.eventInfoContainer}>
-//     <Pressable onPress={() => setIsTextExpanded(prev => !prev)}>
-//       <Text
-//         // lightColor='#fff'
-//         // darkColor='#eee'
-//         numberOfLines={isTextExpanded ? 24 : 2}
-//         ellipsizeMode='tail'
-//         // size='xl'
-//         style={{ ...stylesEventItem.textShadow }}
-//       >
-//         {item.name}
-//       </Text>
-//     </Pressable>
-
-//     <View style={{ flexDirection: 'row', gap: 10 }}>
-//       <ForEach items={item.categories}>
-//         {(cat, index) => (
-//           <View key={index} style={stylesEventItem.tagContainer}>
-//             <Text style={stylesEventItem.tagText}>{cat}</Text>
-//           </View>
-//         )}
-//       </ForEach>
-//     </View>
-
-//     <Pressable onPress={() => setIsTextExpanded(prev => !prev)}>
-//       {({ pressed }) => (
-//         <Text
-//           // lightColor='#fff'
-//           // darkColor='#eee'
-//           numberOfLines={isTextExpanded ? 24 : 2}
-//           ellipsizeMode='tail'
-//           style={[
-//             stylesEventItem.textShadow,
-//             {
-//               fontSize: 14,
-//               opacity: pressed ? 0.84 : 1,
-//               backgroundColor: pressed ? 'rgba(255,255,255,0.05)' : 'transparent',
-//             }
-//           ]}
-//         >
-//           {item.description}
-//         </Text>
-//       )}
-//     </Pressable>
-//   </View> */}
-// </View>
 
 
 const styleSheet = createStyleSheet((theme, runtime) => ({
   eventInfoContainer: {
-    bottom: 34,
-    gap: 12,
-    left: 14,
+    bottom: tabBarHeight + runtime.insets.bottom + 24,
+    gap: theme.spacing.sp4,
+    left: theme.spacing.sp7,
     position: 'absolute',
-    width: '70%',
+    width: '72%',
+    maxHeight: runtime.screen.height - (2.1 * (tabBarHeight + runtime.insets.bottom + 24)),
+    zIndex: 100_000_000
   },
   imgBackground: {
     height: runtime.screen.height,
@@ -284,12 +267,10 @@ const styleSheet = createStyleSheet((theme, runtime) => ({
     width: '100%'
   },
   positionedButtons: {
-    alignItems: 'center',
-    bottom: 34,
-    gap: 24,
-    justifyContent: 'center',
     position: 'absolute',
-    right: 14,
+    bottom: tabBarHeight + runtime.insets.bottom + 60,
+    zIndex: 100,
+    right: theme.spacing.sp7
   },
   tagContainer: {
     alignSelf: 'flex-start',
@@ -304,13 +285,16 @@ const styleSheet = createStyleSheet((theme, runtime) => ({
     shadowRadius: 3,
   },
   tagText: {
-    color: white_50,
+    color: theme.colors.white100,
     fontWeight: '500',
-    textTransform: 'uppercase'
+    textTransform: 'uppercase',
+    fontFamily: theme.text.fontMedium,
   },
   textShadow: {
+    color: theme.colors.white90,
+    fontFamily: theme.text.fontRegular,
     borderRadius: 10,
-    textShadowColor: 'rgba(0, 0, 0, 0.6)',
+    textShadowColor: 'rgba(0, 0, 0, 0.4)',
     textShadowOffset: { width: -1, height: 1 },
     textShadowRadius: 10
   },

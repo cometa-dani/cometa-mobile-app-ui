@@ -6,6 +6,9 @@ import { ReactNode } from 'react';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
+export const tabBarHeight = Platform.select({ ios: 60, android: 66 }) ?? 66;
+
+
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps): ReactNode {
   const { styles, theme } = useStyles(tabBarStylesheet);
   const { buildHref } = useLinkBuilder();
@@ -83,14 +86,9 @@ const tabBarStylesheet = createStyleSheet((theme, runtime) => ({
     bottom: 0,
     right: 0,
     left: 0,
-    // shadowColor: theme.colors.gray900,
-    // shadowOpacity: 0.5,
-    // shadowOffset: { width: 0, height: -4 },
-    // shadowRadius: 8,
-    // elevation: 2,
   },
   tabBarPressable: {
-    height: Platform.select({ ios: 60, android: 66 }),
+    height: tabBarHeight,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
