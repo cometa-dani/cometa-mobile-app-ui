@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useRef, useState } from 'react';
 import { ILikeableEvent, } from '../../models/Event';
 import { Pressable, View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
@@ -14,6 +14,8 @@ import { Center, VStack } from '../utils/stacks';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CircleButton } from '../button/circleButton';
 import { tabBarHeight } from '../tabBar/tabBar';
+import * as WebBrowser from 'expo-web-browser';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 
 interface EventsListProps {
@@ -27,7 +29,7 @@ interface EventsListProps {
 }
 export const EventsList: FC<EventsListProps> = ({ onInfiniteScroll, isFetched, items, hideLikeAndShareButtons, onPressLikeButton, targetUserId, initialScrollIndex = 0 }) => {
   const { theme } = useStyles();
-  // const listRef = useRef<FlashList<ILikeableEvent>>(null);
+  const listRef = useRef<FlashList<ILikeableEvent>>(null);
   // useEffect(() => {
   //   if (!isLoading) {
   //     listRef.current?.scrollToIndex({
@@ -42,6 +44,7 @@ export const EventsList: FC<EventsListProps> = ({ onInfiniteScroll, isFetched, i
       if={isFetched}
       then={(
         <FlashList
+          ref={listRef}
           showsVerticalScrollIndicator={false}
           estimatedItemSize={UnistylesRuntime.screen.height}
           // refreshControl={}  // pull to refresh feaature
@@ -66,7 +69,10 @@ export const EventsList: FC<EventsListProps> = ({ onInfiniteScroll, isFetched, i
 };
 
 
-type RenderItem = Pick<EventsListProps, 'hideLikeAndShareButtons' | 'onPressLikeButton'>
+interface RenderItem extends Pick<EventsListProps, (
+  'hideLikeAndShareButtons' |
+  'onPressLikeButton'
+)> { }
 
 const renderItem = ({ hideLikeAndShareButtons, onPressLikeButton }: RenderItem) => {
   const item = ({ item }: { item: ILikeableEvent }) => (
@@ -88,68 +94,75 @@ interface ListItemProps {
 const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, onPressLikeButton }) => {
   const { styles, theme } = useStyles(styleSheet);
   const [isTextExpanded, setIsTextExpanded] = useState(false);
+  const doubleTapOnLikeButton = Gesture.Tap();
+  doubleTapOnLikeButton
+    .runOnJS(true)
+    .numberOfTaps(2)
+    .onEnd(() => onPressLikeButton(item.id));
 
-  // const doubleTapOnLikeButton = Gesture.Tap();
-  // doubleTapOnLikeButton
-  //   .runOnJS(true)
-  //   .numberOfTaps(2)
-  //   .onEnd(() => onHandleLikeButtonPress(item.id));
+  const openBrowser = async () => {
+    await WebBrowser.openBrowserAsync(item.location?.mapUrl ?? '');
+  };
 
   return (
     <View style={{ position: 'relative' }}>
-      <ImageBackground
-        source={item.photos[0].url}
-        style={styles.imgBackground}
-        placeholder={{ thumbhash: item.photos[0].placeholder }}
-        contentFit='cover'
-      >
-        <LinearGradient
-          colors={['rgba(0,0,0,0.9)', 'rgba(0,0,0,0.74)', 'transparent']}
-          style={{
-            position: 'absolute',
-            top: 0,
-            zIndex: 1,
-            height: 290,
-            width: '100%'
-          }}
-        />
-        <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.7)', 'rgba(0,0,0,0.8)']}
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            zIndex: 1,
-            height: 280,
-            width: '100%'
-          }}
-        />
-
-        <Condition
-          if={isTextExpanded}
-          then={
+      <GestureDetector gesture={doubleTapOnLikeButton}>
+        <View collapsable={false}>
+          <ImageBackground
+            source={item.photos.at(0)?.url}
+            style={styles.imgBackground}
+            placeholder={{ thumbhash: item.photos.at(0)?.placeholder }}
+            contentFit='cover'
+          >
             <LinearGradient
-              colors={['rgba(0,0,0,0.64)', 'rgba(0,0,0,0.64)']}
+              colors={['rgba(0,0,0,0.9)', 'rgba(0,0,0,0.74)', 'transparent']}
               style={{
                 position: 'absolute',
                 top: 0,
-                bottom: 0,
-                zIndex: 100_000,
-                height: UnistylesRuntime.screen.height,
+                zIndex: 1,
+                height: 290,
                 width: '100%'
               }}
             />
-          }
-        />
-      </ImageBackground>
+            <LinearGradient
+              colors={['transparent', 'rgba(0,0,0,0.7)', 'rgba(0,0,0,0.8)']}
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                zIndex: 1,
+                height: 280,
+                width: '100%'
+              }}
+            />
+            <Condition
+              if={isTextExpanded}
+              then={
+                <LinearGradient
+                  colors={['rgba(0,0,0,0.64)', 'rgba(0,0,0,0.64)']}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    zIndex: 100_000,
+                    height: UnistylesRuntime.screen.height,
+                    width: '100%'
+                  }}
+                />
+              }
+            />
+          </ImageBackground>
+        </View>
+      </GestureDetector>
 
       <ScrollView
+        nestedScrollEnabled={true}
         showsVerticalScrollIndicator={false}
         style={styles.eventInfoContainer}
         contentContainerStyle={{ gap: theme.spacing.sp4 }}
       >
         <Pressable onPress={() => setIsTextExpanded(prev => !prev)}>
           <Text
-            numberOfLines={isTextExpanded ? undefined : 3}
+            numberOfLines={isTextExpanded ? undefined : 2}
             ellipsizeMode='tail'
             style={{
               ...styles.textShadow,
@@ -198,7 +211,7 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
         styles={styles.positionedButtons}
       >
         <CircleButton
-          opacity={0.22}
+          opacity={0.26}
           size={theme.spacing.sp14}
           light={false}
           onPress={() => onPressLikeButton(item.id)}
@@ -206,11 +219,13 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
           <FontAwesome
             name='heart'
             size={theme.spacing.sp10}
-            style={{ color: theme.colors.red100 }}
+            style={{
+              color: item.isLiked ? theme.colors.red90 : theme.colors.white90
+            }}
           />
         </CircleButton>
         <CircleButton
-          opacity={0.22}
+          opacity={0.26}
           size={theme.spacing.sp14}
           light={false}
         // onPress={() => onPressLikeButton(item.id)}
@@ -222,10 +237,10 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
           />
         </CircleButton>
         <CircleButton
-          opacity={0.22}
+          opacity={0.26}
           size={theme.spacing.sp14}
           light={false}
-        // onPress={() => onPressLikeButton(item.id)}
+          onPress={() => openBrowser()}
         >
           <MaterialCommunityIcons
             name="map-marker-outline"
@@ -234,7 +249,7 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
           />
         </CircleButton>
         <CircleButton
-          opacity={0.22}
+          opacity={0.26}
           size={theme.spacing.sp14}
           light={false}
         // onPress={() => onPressLikeButton(item.id)}
@@ -294,8 +309,8 @@ const styleSheet = createStyleSheet((theme, runtime) => ({
     color: theme.colors.white90,
     fontFamily: theme.text.fontRegular,
     borderRadius: 10,
-    textShadowColor: 'rgba(0, 0, 0, 0.4)',
-    textShadowOffset: { width: -1, height: 1 },
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: -1, height: 2 },
     textShadowRadius: 10
   },
   wrapper: { flex: 1, position: 'relative' }
