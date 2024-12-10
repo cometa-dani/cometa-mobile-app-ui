@@ -15,7 +15,7 @@ export default function BucketListScreen() {
 
 const stylesheet = createStyleSheet((theme, rt) => ({
   container: {
-    backgroundColor: theme.colors.white100,
+    // backgroundColor: theme.colors.white100,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'

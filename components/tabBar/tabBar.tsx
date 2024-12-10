@@ -7,12 +7,15 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps): ReactNode {
-  const { styles } = useStyles(tabBarStylesheet);
+  const { styles, theme } = useStyles(tabBarStylesheet);
   const { buildHref } = useLinkBuilder();
   return (
     <View style={styles.tabBarContainer}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
+        const Icon = options.tabBarIcon;
+        const activeTintColor = options.tabBarActiveTintColor ?? theme.colors.red100;
+        const inactiveTintColor = options.tabBarInactiveTintColor ?? theme.colors.gray300;
         const label =
           options.tabBarLabel !== undefined
             ? options.tabBarLabel
@@ -48,7 +51,14 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps): R
             onLongPress={onLongPress}
             style={styles.tabBarPressable}
           >
-            <Text style={styles.tabBarText}>
+            {Icon &&
+              Icon({
+                color: isFocused ? activeTintColor : inactiveTintColor,
+                focused: isFocused,
+                size: 24
+              })
+            }
+            <Text style={[styles.tabBarText, { color: isFocused ? activeTintColor : inactiveTintColor }]}>
               {label as ReactNode}
             </Text>
           </PlatformPressable>
@@ -64,7 +74,7 @@ const tabBarStylesheet = createStyleSheet((theme, runtime) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: theme.colors.gray900,
+    backgroundColor: theme.colors.white100,
     flex: 1,
     borderTopEndRadius: theme.spacing.sp10,
     borderTopStartRadius: theme.spacing.sp10,
@@ -72,17 +82,23 @@ const tabBarStylesheet = createStyleSheet((theme, runtime) => ({
     paddingBottom: runtime.insets.bottom,
     bottom: 0,
     right: 0,
-    left: 0
+    left: 0,
+    shadowColor: theme.colors.gray900,
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: -5 },
+    shadowRadius: 5,
+    elevation: 5,
+    zIndex: 1
   },
   tabBarPressable: {
     height: 66,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.colors.gray900,
+    backgroundColor: theme.colors.white100,
     paddingHorizontal: theme.spacing.sp10,
   },
   tabBarText: {
-    color: theme.colors.white100,
+    color: theme.colors.gray900,
     fontSize: theme.text.size.s2,
     fontFamily: theme.text.fontMedium
   }
