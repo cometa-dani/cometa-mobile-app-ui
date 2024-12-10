@@ -1,18 +1,17 @@
 import { TabBar } from '@/components/tabBar/tabBar';
 import { GradientHeading } from '@/components/text/gradientText';
 import { Condition } from '@/components/utils/ifElse';
-import { icons } from '@/constants/assets';
+import { HStack } from '@/components/utils/stacks';
 import { useQueryGetUserProfile } from '@/queries/currentUser/userHooks';
 import { useCometaStore } from '@/store/cometaStore';
 import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
-import { Image, Pressable, View } from 'react-native';
-import { SystemBars } from 'react-native-edge-to-edge';
-import { useStyles } from 'react-native-unistyles';
+import { TouchableOpacity, View } from 'react-native';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
 export default function TabLayout() {
-  const { theme } = useStyles();
+  const { theme, styles } = useStyles(stylesheet);
   const router = useRouter();
   const notificationIsSeen = useCometaStore(state => state.notificationsList).at(0)?.user?.isSeen;
   const { data: userProfile } = useQueryGetUserProfile();
@@ -48,57 +47,55 @@ export default function TabLayout() {
           options={{
             tabBarLabel: 'Home',
             headerLeft: () => (
-              <Pressable onPress={() => router.push('/(stacks)/search')}>
-                {({ pressed }) => (
-                  <Ionicons
-                    name="search"
-                    size={32}
-                    color={theme.colors.gray300}
-                    style={{
-                      marginLeft: 18,
-                      opacity: pressed ? 0.5 : 1
-                    }}
-                  />
-                )}
-              </Pressable>
+              <TouchableOpacity
+                style={styles.cirleButton}
+                onPress={() => router.push('/(stacks)/search')}
+              >
+                <Ionicons
+                  name="search"
+                  size={theme.spacing.sp8}
+                  color={theme.colors.white100}
+                />
+              </TouchableOpacity>
             ),
             headerTitle: () => (
-              <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
+              <GradientHeading styles={[{ fontSize: theme.text.size.s9 }]}>
                 cometa
               </GradientHeading>
             ),
             headerRight: () => (
-              <View >
-                <Pressable
-                  style={{ position: 'relative' }}
+              <HStack
+                styles={{ marginRight: theme.spacing.sp4 }}
+              >
+                <TouchableOpacity
+                  style={styles.cirleButton}
                   onPress={() => router.push(`/(stacks)/notifications/${userProfile?.id}`)}
                 >
-                  {({ pressed }) => (
-                    <>
-                      <Condition
-                        if={notificationIsSeen === false}
-                        then={(
-                          <View />
-                        )}
-                      />
-                      <Ionicons
-                        style={{ opacity: pressed ? 0.5 : 1 }}
-                        name="notifications"
-                        size={30}
-                        color={theme.colors.gray300}
-                      />
-                    </>
-                  )}
-                </Pressable>
-                <Pressable onPress={() => router.push('/(stacks)/filter')}>
-                  {({ pressed }) => (
-                    <Image
-                      style={{ height: 34, width: 34, opacity: pressed ? 0.5 : 1 }}
-                      source={icons.filter}
+                  <>
+                    <Condition
+                      if={notificationIsSeen === false}
+                      then={(
+                        <Indicator />
+                      )}
                     />
-                  )}
-                </Pressable>
-              </View>
+                    <Ionicons
+                      name="notifications"
+                      size={theme.spacing.sp8}
+                      color={theme.colors.white100}
+                    />
+                  </>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.cirleButton}
+                  onPress={() => router.push('/(stacks)/filter')}
+                >
+                  <Ionicons
+                    name="options"
+                    size={theme.spacing.sp8}
+                    color={theme.colors.white100}
+                  />
+                </TouchableOpacity>
+              </HStack>
             ),
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="home" size={26} color={color} />
@@ -153,3 +150,32 @@ export default function TabLayout() {
     </>
   );
 }
+
+
+const Indicator = () => {
+  const { styles } = useStyles(stylesheet);
+  return (
+    <View style={styles.notificationIndicator} />
+  );
+};
+
+const stylesheet = createStyleSheet((theme) => ({
+  notificationIndicator: {
+    borderRadius: 50,
+    width: 8,
+    height: 8,
+    backgroundColor: theme.colors.red100,
+    position: 'absolute',
+    top: -2
+  },
+  cirleButton: {
+    marginLeft: theme.spacing.sp4,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    width: 34,
+    height: 34,
+    borderRadius: 99_999,
+    zIndex: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
+}));
