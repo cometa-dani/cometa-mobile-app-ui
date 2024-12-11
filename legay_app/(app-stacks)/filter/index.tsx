@@ -86,7 +86,7 @@ export default function SettingsScreen(): JSX.Element {
           btnColor='black'
           onPress={() => {
             queryClient.invalidateQueries({
-              queryKey: [QueryKeys.SEARCH_EVENTS_WITH_PAGINATION]
+              queryKey: [QueryKeys.SEARCH_PAGINATED_EVENTS]
             });
             router.back();
           }}
@@ -125,17 +125,17 @@ const Item: FC<ItemProps> = ({ title, isChecked, onSelectOption }) => {
 
 
 const styles = StyleSheet.create({
-  option: {
-    paddingHorizontal: 24,
-    width: '100%',
-    height: 50,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 20,
-  },
-
   checkbox: {
     borderRadius: 5,
+  },
+
+  option: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 20,
+    height: 50,
+    paddingHorizontal: 24,
+    width: '100%',
   },
 
   titleContainer: {

@@ -4,7 +4,6 @@ import { Pressable, View, Text, ActivityIndicator, ScrollView } from 'react-nati
 import { FlashList } from '@shopify/flash-list';
 import { ImageBackground } from 'expo-image';
 import { ForEach } from '../utils/ForEach';
-//icons
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { Condition } from '../utils/ifElse';
@@ -24,9 +23,17 @@ interface EventsListProps {
   hideLikeAndShareButtons?: boolean,
   targetUserId?: number,
   initialScrollIndex?: number,
-  onPressLikeButton: (eventID: number) => void
+  onPressLikeButton: (event: ILikeableEvent) => void
 }
-export const EventsList: FC<EventsListProps> = ({ onInfiniteScroll, isFetched, items, hideLikeAndShareButtons, onPressLikeButton, targetUserId, initialScrollIndex = 0 }) => {
+export const EventsList: FC<EventsListProps> = ({
+  onInfiniteScroll,
+  isFetched,
+  items,
+  hideLikeAndShareButtons,
+  onPressLikeButton,
+  targetUserId,
+  initialScrollIndex = 0
+}) => {
   const { theme } = useStyles();
   const listRef = useRef<FlashList<ILikeableEvent>>(null);
   // useEffect(() => {
@@ -71,7 +78,6 @@ interface IRenderItem extends Pick<EventsListProps, (
   'hideLikeAndShareButtons' |
   'onPressLikeButton'
 )> { }
-
 const renderItem = ({ hideLikeAndShareButtons, onPressLikeButton }: IRenderItem) => {
   const item = ({ item }: { item: ILikeableEvent }) => (
     <EventItem
@@ -87,7 +93,7 @@ const renderItem = ({ hideLikeAndShareButtons, onPressLikeButton }: IRenderItem)
 interface ListItemProps {
   item: ILikeableEvent,
   hideLikeAndShareButtons?: boolean,
-  onPressLikeButton: (id: number) => void,
+  onPressLikeButton: (event: ILikeableEvent) => void,
 }
 const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, onPressLikeButton }) => {
   const { styles, theme } = useStyles(styleSheet);
@@ -96,7 +102,7 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
   doubleTapOnLikeButton
     .runOnJS(true)
     .numberOfTaps(2)
-    .onEnd(() => onPressLikeButton(item.id));
+    .onEnd(() => onPressLikeButton(item));
 
   const openBrowser = async () => {
     await WebBrowser.openBrowserAsync(item.location?.mapUrl ?? '');
@@ -212,7 +218,7 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
           opacity={0.26}
           size={theme.spacing.sp14}
           light={false}
-          onPress={() => onPressLikeButton(item.id)}
+          onPress={() => onPressLikeButton(item)}
         >
           <FontAwesome
             name='heart'
@@ -226,7 +232,6 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
           opacity={0.26}
           size={theme.spacing.sp14}
           light={false}
-        // onPress={() => onPressLikeButton(item.id)}
         >
           <Feather
             name="share-2"
@@ -250,7 +255,6 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
           opacity={0.26}
           size={theme.spacing.sp14}
           light={false}
-        // onPress={() => onPressLikeButton(item.id)}
         >
           <MaterialCommunityIcons
             name="qrcode"

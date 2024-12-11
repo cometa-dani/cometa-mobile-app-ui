@@ -8,7 +8,7 @@ import { TypedAxiosError } from '../errors/typedError';
 export const useInfiniteQueryGetLoggedInUserNewestFriends = () => {
   return (
     useInfiniteQuery({
-      queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION],
+      queryKey: [QueryKeys.GET_PAGINATED_NEWEST_FRIENDS],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<GetLatestFriendships> => {
         const res = await friendshipService.getAllLatest(pageParam, 5);
@@ -37,7 +37,7 @@ export const useInfiniteQueryGetLoggedInUserNewestFriends = () => {
 export const useInfiniteQuerySearchFriendsByUserName = (friendUserName: string) => {
   return (
     useInfiniteQuery({
-      queryKey: [QueryKeys.SEARCH_FRIENDS_BY_USERNAME, friendUserName],
+      queryKey: [QueryKeys.SEARCH_PAGINATED_FRIENDS_BY_USERNAME, friendUserName],
       enabled: !!friendUserName,
       initialPageParam: -1,
       queryFn: async ({ pageParam }) => {
@@ -158,8 +158,8 @@ export const useMutationResetFrienshipInvitation = () => {
       },
       onSuccess: async () => {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] }),
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION] })
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_PAGINATED_NEWEST_FRIENDS] }),
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT] })
         ]);
       }
     })

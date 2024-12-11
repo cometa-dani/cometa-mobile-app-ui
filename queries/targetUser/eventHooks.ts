@@ -9,7 +9,7 @@ export const useInfiniteQueryGetLikedEventsForBucketListByTargerUser = (targetUs
   return (
     useInfiniteQuery({
       enabled: !!targetUserId,
-      queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_TARGET_USER_ID_WITH_PAGINATION, targetUserId],
+      queryKey: [QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST_BY_TARGET_USER_ID, targetUserId],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<IGetPaginatedLikedEventsBucketList> => {
         const res = await eventService.getLikedEventsByUserIdWithPagination(pageParam, 4, targetUserId);
@@ -39,7 +39,7 @@ export const useInfiniteQueryGetLikedEventsForBucketListByTargerUser = (targetUs
 export const useInfiteQueryGetUsersWhoLikedSameEventByID = (eventID: number) => {
   return (
     useInfiniteQuery({
-      queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +eventID],
+      queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +eventID],
       initialPageParam: -1,
       enabled: !!eventID,
       queryFn: async ({ pageParam }): Promise<IGetPaginatedUsersWhoLikedSameEvent> => {
@@ -71,7 +71,7 @@ export const useInfiniteQueryGetSameMatchedEventsByTwoUsers = (targetUserID: str
   return (
     useInfiniteQuery({
       initialPageParam: -1,
-      queryKey: [QueryKeys.GET_SAME_MATCHED_EVENTS_BY_TWO_USERS_WITH_PAGINATION, targetUserID],
+      queryKey: [QueryKeys.GET_PAGINATED_MATCHED_EVENTS_BY_TWO_USERS, targetUserID],
       queryFn: async ({ pageParam }): Promise<IGetPaginatedLikedEventsBucketList> => {
         const res = await eventService.getSameMatchedEventsByTwoUsersWithPagination(targetUserID, pageParam, take, allPhotos);
         if (res.status === 200) {

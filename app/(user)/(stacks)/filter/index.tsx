@@ -89,7 +89,7 @@ export default function SettingsScreen(): JSX.Element {
             variant='primary'
             onPress={() => {
               queryClient.invalidateQueries({
-                queryKey: [QueryKeys.SEARCH_EVENTS_WITH_PAGINATION]
+                queryKey: [QueryKeys.SEARCH_PAGINATED_EVENTS]
               });
               router.back();
             }}

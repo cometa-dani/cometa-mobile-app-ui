@@ -137,7 +137,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
             setToggleModal(true);
             if (urlParams.eventId) {
               queryClient.invalidateQueries({
-                queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId]
+                queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
               });
             }
             await Promise.all([
@@ -145,7 +145,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
                 queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserAsSender.uid]
               }),
               queryClient.invalidateQueries({
-                queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION]
+                queryKey: [QueryKeys.GET_PAGINATED_NEWEST_FRIENDS]
               })
             ]);
           },
@@ -198,7 +198,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
         onSuccess() {
           if (urlParams.eventId) {
             queryClient.invalidateQueries({
-              queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId]
+              queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
             });
           }
           queryClient.invalidateQueries({
@@ -248,7 +248,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
           .catch();
         if (urlParams.eventId) {
           queryClient.invalidateQueries({
-            queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId]
+            queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
           });
         }
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserAsReceiver.uid] });
@@ -271,12 +271,12 @@ export default function TargerUserProfileScreen(): JSX.Element {
         onSuccess: async () => {
           if (urlParams.eventId) {
             queryClient.invalidateQueries({
-              queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT_WITH_PAGINATION, +urlParams.eventId]
+              queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
             });
           }
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserProfile.uid] }),
-            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS_WITH_PAGINATION] })
+            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_PAGINATED_NEWEST_FRIENDS] })
           ]);
         },
       });

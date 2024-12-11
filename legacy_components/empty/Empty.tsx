@@ -13,7 +13,7 @@ interface Props {
 
 export const EmptyMessage: FC<Props> = ({ onPress, title, subtitle }) => (
   <View style={styles.notFoundContainer}>
-    <Heading size='s6'>
+    <Heading style={{ textAlign: 'center', paddingHorizontal: 20 }} size='s6'>
       {title}
     </Heading>
 

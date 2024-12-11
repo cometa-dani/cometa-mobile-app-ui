@@ -20,7 +20,6 @@ import { Center, HStack, VStack } from '@/components/utils/stacks';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { TextView } from '@/components/text/text';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 
 
 export default function BucketListScreen() {
@@ -41,27 +40,25 @@ const BuckectList: FC = () => {
     hasNextPage,
     fetchNextPage,
     isFetched,
-    refetch,
-    isStale
+    isPending,
   } = useInfiniteQueryGetCurrUserLikedEvents();
-  useRefreshOnFocus(refetch, isStale);
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const bucketList = data?.pages.flatMap(page => page.items) || [];
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Condition
-        if={isFetched}
+        if={isFetched && !isPending}
         then={
           <Condition
             if={!bucketList?.length}
             then={(
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, gap: 12 }}>
+              <Center styles={{ flex: 1, padding: 34, paddingTop: 0 }}>
                 <EmptyMessage
                   title='Oops! Looks like your bucket list is empty'
                   subtitle='Head back to the homepage and add some exciting events!'
                 />
-              </View>
+              </Center>
             )}
             else={(
               <FlashList
@@ -91,35 +88,6 @@ const BuckectList: FC = () => {
     </SafeAreaView>
   );
 };
-
-
-const styleSheet = createStyleSheet((theme) => ({
-  bubble: {
-    aspectRatio: 1,
-    borderRadius: 100,
-    height: 30,
-  },
-  bubblesContainer: {
-    flexDirection: 'row',
-    flex: 0,
-    gap: -11,
-    justifyContent: 'flex-start',
-  },
-  deleteButton: {
-    backgroundColor: theme.colors.red50,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    marginRight: theme.spacing.sp7,
-    padding: 10,
-  },
-  img: {
-    borderRadius: theme.spacing.sp8,
-    height: 112,
-    width: '40%',
-  }
-}));
 
 
 const renderBucketItem = ({ item, index }: { item: ILikedEvent, index: number }) => {
@@ -276,3 +244,32 @@ const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
     </Swipeable>
   );
 };
+
+
+const styleSheet = createStyleSheet((theme) => ({
+  bubble: {
+    aspectRatio: 1,
+    borderRadius: 100,
+    height: 30,
+  },
+  bubblesContainer: {
+    flexDirection: 'row',
+    flex: 0,
+    gap: -11,
+    justifyContent: 'flex-start',
+  },
+  deleteButton: {
+    backgroundColor: theme.colors.red50,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    marginRight: theme.spacing.sp7,
+    padding: 10,
+  },
+  img: {
+    borderRadius: theme.spacing.sp8,
+    height: 112,
+    width: '40%',
+  }
+}));

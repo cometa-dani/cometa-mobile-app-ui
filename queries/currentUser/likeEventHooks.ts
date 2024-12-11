@@ -10,7 +10,6 @@ type MutateEventLikeArgs = { eventID: number, targetUserId?: number };
 
 // Mutation to like or dislike an event
 export const useMutationLikeOrDislikeEvent = () => {
-  // const queryClient = useQueryClient();
   return (
     useMutation({
       mutationFn: async ({ eventID }: MutateEventLikeArgs): Promise<CreateEventLike | null> => {
@@ -25,57 +24,6 @@ export const useMutationLikeOrDislikeEvent = () => {
           throw new Error('failed to request data');
         }
       },
-      // onMutate: ({ eventID, targetUserId }) => {
-      //   const queryKeys = (
-      //     !targetUserId ?
-      //       [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION] :
-      //       [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_BY_TARGET_USER_ID_WITH_PAGINATION, targetUserId]
-      //   );
-      //   // Update the cache with the new liked state
-      //   // queryClient.setQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>(queryKeys, (oldData) => {
-      //   //   return {
-      //   //     pages: oldData?.pages.map(
-      //   //       (page) => (
-      //   //         {
-      //   //           ...page,
-      //   //           items: page.items.map(event =>
-      //   //             eventID === event.id ? (
-      //   //               {
-      //   //                 ...event,
-      //   //                 isLiked: !event.isLiked
-      //   //               }
-      //   //             ) :
-      //   //               event
-      //   //           )
-      //   //         }
-      //   //       )) || [],
-      //   //     pageParams: oldData?.pageParams || []
-      //   //   }
-      //   // });
-      //   // queryClient
-      //   //   .setQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>
-      //   //   (queryKeys,
-      //   //     (oldData) => ({
-      //   //       pages: oldData?.pages.map(
-      //   //         (page) => (
-      //   //           {
-      //   //             ...page,
-      //   //             items: page.items.map(event =>
-      //   //               eventID === event.id ? (
-      //   //                 {
-      //   //                   ...event,
-      //   //                   isLiked: !event.isLiked
-      //   //                 }
-      //   //               ) :
-      //   //                 event
-      //   //             )
-      //   //           }
-      //   //         )) || [],
-      //   //       pageParams: oldData?.pageParams || []
-      //   //     }));
-
-      //   // return { eventID };
-      // },
       retry: 2,
       retryDelay: 1_000 * 6
     })
@@ -103,7 +51,7 @@ export const useMutationDeleteLikedEventFromBucketList = () => {
         // Update the cache with the new liked state
         queryClient
           .setQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>
-          ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST_WITH_PAGINATION], (oldData) => ({
+          ([QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST], (oldData) => ({
             pages: oldData?.pages.map(
               (page) => (
                 {
@@ -120,7 +68,7 @@ export const useMutationDeleteLikedEventFromBucketList = () => {
       onSuccess: async (_, eventID) => {
         queryClient
           .setQueryData<InfiniteData<IGetLatestPaginatedEvents, number>>
-          ([QueryKeys.SEARCH_EVENTS_WITH_PAGINATION], (oldData) => ({
+          ([QueryKeys.SEARCH_PAGINATED_EVENTS], (oldData) => ({
             pages: oldData?.pages.map(
               (page) => (
                 {
