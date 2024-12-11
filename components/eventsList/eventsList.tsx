@@ -193,19 +193,37 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
           onPress={() => setIsTextExpanded(prev => !prev)}
         >
           {({ pressed }) => (
-            <Text
-              numberOfLines={isTextExpanded ? undefined : 3}
-              ellipsizeMode='tail'
-              style={[
-                styles.textShadow,
-                {
-                  fontSize: 14,
-                  opacity: pressed ? 0.84 : 1
+            <>
+              <Text
+                numberOfLines={isTextExpanded ? undefined : 2}
+                ellipsizeMode='tail'
+                style={[
+                  styles.textShadow,
+                  {
+                    fontSize: 14,
+                    opacity: pressed ? 0.84 : 1
+                  }
+                ]}
+              >
+                {item.description}
+              </Text>
+              <Condition
+                if={isTextExpanded}
+                else={
+                  <Text
+                    style={[
+                      styles.textShadow,
+                      {
+                        fontFamily: theme.text.fontBold,
+                        fontSize: 14,
+                        opacity: pressed ? 0.84 : 1
+                      }
+                    ]}>
+                    more
+                  </Text>
                 }
-              ]}
-            >
-              {item.description}
-            </Text>
+              />
+            </>
           )}
         </Pressable>
       </ScrollView>

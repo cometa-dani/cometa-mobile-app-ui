@@ -55,7 +55,13 @@ export default function TabLayout(): ReactNode {
             headerTransparent: true,
             headerLeft: () => (
               <CircleButton
-                onPress={() => router.push('/(stacks)/search')}
+                onPress={() => {
+
+                  // navigation.setOptions({ headerShown: true });
+                  router.push('/(stacks)/search');
+                  // navigation.push('/(stacks)/search')
+                }
+                }
               >
                 <Ionicons
                   name="search"

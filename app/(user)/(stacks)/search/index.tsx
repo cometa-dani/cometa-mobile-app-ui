@@ -43,18 +43,18 @@ export default function SearchScreen(): JSX.Element {
 
   return (
     <>
-      <Stack.Screen options={{ animation: 'default' }} />
+      <Stack.Screen
+        options={{
+          animation: 'default',
+          gestureDirection: 'horizontal',
+          contentStyle: { backgroundColor: theme.colors.white80 },
+          fullScreenGestureEnabled: true,
+          headerShadowVisible: false,
+          headerTitle: 'Search',
+          headerTitleAlign: 'center'
+        }}
+      />
       <SafeAreaView style={{ flex: 1 }}>
-        <Stack.Screen
-          options={{
-            gestureDirection: 'vertical',
-            fullScreenGestureEnabled: true,
-            headerShadowVisible: false,
-            headerTitle: 'Search',
-            headerTitleAlign: 'center'
-          }}
-        />
-
         <View style={{ padding: 20, paddingTop: 0, paddingBottom: 0 }}>
           <AppSearchInput
             setValue={setSearchUsers}

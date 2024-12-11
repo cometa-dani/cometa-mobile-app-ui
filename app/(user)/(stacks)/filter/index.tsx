@@ -1,6 +1,6 @@
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 // import { useColors, Text, } from '../../../legacy_components/Themed';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
 // import { RectButton } from 'react-native-gesture-handler';
 import Checkbox from 'expo-checkbox';
 import { gray_900 } from '../../../../constants/colors';
@@ -13,10 +13,13 @@ import { QueryKeys } from '../../../../queries/queryKeys';
 // import { AppButton } from '../../../legacy_components/buttons/buttons';
 import { Heading } from '@/components/text/heading';
 import { Button } from '@/components/button/button';
+import { useStyles } from 'react-native-unistyles';
+import { tabBarHeight } from '@/components/tabBar/tabBar';
 
 
 export default function SettingsScreen(): JSX.Element {
   // const { background } = useColors();
+  const { theme } = useStyles();
   const queryClient = useQueryClient();
   const storedSearchFilters = useCometaStore(state => state.searchFilters);
   const setStoredSearchFilters = useCometaStore(state => state.AddOrDeleteSearchFilter);
@@ -56,23 +59,30 @@ export default function SettingsScreen(): JSX.Element {
 
   return (
     <>
-      <Stack.Screen options={{ animation: 'default' }} />
-      <SafeAreaView style={{ flex: 1 }}>
-        <Stack.Screen
-          options={{
-            gestureDirection: 'horizontal',
-            fullScreenGestureEnabled: true,
-            headerShadowVisible: false,
-            headerTitle: 'Find liked minded people',
-            headerTitleAlign: 'center'
-          }}
-        />
-        <Heading size='s6' style={{ paddingHorizontal: 24, paddingVertical: 10 }}>Category</Heading>
+      <Stack.Screen
+        options={{
+          animation: 'default',
+          gestureDirection: 'horizontal',
+          fullScreenGestureEnabled: true,
+          headerShadowVisible: false,
+          headerTitle: 'Find liked minded people',
+          headerTitleAlign: 'center',
+          contentStyle: {
+            backgroundColor: theme.colors.white80
+          }
+        }}
+      />
+      <Heading size='s6' style={{ paddingHorizontal: 24, paddingVertical: 10 }}>Category</Heading>
+      <View style={{ flex: 1 }}>
         <FlashList
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingVertical: 20 }}
           // stickyHeaderHiddenOnScroll={true}
           estimatedItemSize={50}
           data={filterOptions}
+          // disableVirtualization={true}
+          disableAutoLayout={true}
+          // CellRendererComponent={Item}
+          ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
           renderItem={({ item: option }) => {
             return (
               <Item
@@ -83,8 +93,9 @@ export default function SettingsScreen(): JSX.Element {
             );
           }}
         />
+      </View>
 
-        <View style={{ paddingHorizontal: 24, paddingVertical: 20 }}>
+      {/* <View style={{ paddingHorizontal: 24, paddingVertical: 20 }}>
           <Button
             variant='primary'
             onPress={() => {
@@ -96,8 +107,7 @@ export default function SettingsScreen(): JSX.Element {
           >
             Apply
           </Button>
-        </View>
-      </SafeAreaView >
+        </View> */}
     </>
   );
 }

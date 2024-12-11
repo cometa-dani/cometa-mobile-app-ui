@@ -1,13 +1,12 @@
 import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import React, { FC, useCallback, useMemo, useRef } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { SafeAreaView } from 'react-native';
 import { Image } from 'expo-image';
 import { RectButton } from 'react-native-gesture-handler';
 import { useMutationLikeOrDislikeEvent } from '../../../queries/currentUser/likeEventHooks';
 import { useInfiniteQueryGetCurrUserLikedEvents } from '../../../queries/currentUser/eventHooks';
-import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { red_100 } from '../../../constants/colors';
@@ -19,11 +18,12 @@ import { Condition } from '@/components/utils/ifElse';
 import { Center, HStack, VStack } from '@/components/utils/stacks';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { TextView } from '@/components/text/text';
-import Swipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { InfiniteData, QueryClient, UseMutationResult, useQueryClient } from '@tanstack/react-query';
 import { IGetPaginatedLikedEventsBucketList } from '@/models/LikedEvent';
 import { QueryKeys } from '@/queries/queryKeys';
 import { useCometaStore } from '@/store/cometaStore';
+import { useRouter } from 'expo-router';
 
 
 export default function BucketListScreen() {
@@ -160,7 +160,7 @@ interface BucketItemProps {
 const BucketItem: FC<BucketItemProps> = ({ item, index, onDeleteEventLike }) => {
   const { styles, theme } = useStyles(styleSheet);
   const eventDate = useMemo(() => new Date(item?.event.date).toDateString().split(' ').slice(1).join(' '), []);
-  const swipeableRef = useRef<SwipeableMethods>(null);
+  const router = useRouter();
 
   const UsersBubbles: FC = useCallback(() => (
     <ForEach items={item?.event.likes ?? []}>
@@ -177,12 +177,11 @@ const BucketItem: FC<BucketItemProps> = ({ item, index, onDeleteEventLike }) => 
 
   return (
     <Swipeable
-      ref={swipeableRef}
       renderRightActions={
-        (state) => (
+        (_a, _b, swipeable) => (
           <RectButton
             onPress={() => {
-              swipeableRef.current?.close();
+              swipeable?.close();
               onDeleteEventLike(item.event.id);
             }}
             style={styles.deleteButton}

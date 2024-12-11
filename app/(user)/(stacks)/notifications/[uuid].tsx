@@ -2,19 +2,21 @@ import { StyleSheet, SafeAreaView, View } from 'react-native';
 import { Stack, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
-import { BaseButton, RectButton, Swipeable } from 'react-native-gesture-handler';
+import { BaseButton, RectButton } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
 import { gray_50, red_100 } from '../../../../constants/colors';
 import { useCometaStore } from '../../../../store/cometaStore';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import notificationService from '../../../../services/notificationService';
 import { INotificationData } from '../../../../store/slices/notificationSlice';
-// import { If } from '../../../legacy_components/utils';
 import { useCallback } from 'react';
 import { TextView } from '@/components/text/text';
 import { Condition } from '@/components/utils/ifElse';
+import { useStyles } from 'react-native-unistyles';
 
 
 export default function NotificationsScreen(): JSX.Element {
+  const { theme } = useStyles();
   const loggedInUserUUID = useLocalSearchParams<{ uuid: string }>()['uuid'];
   const notificationsList = useCometaStore(state => state.notificationsList) ?? [];
 
@@ -35,18 +37,18 @@ export default function NotificationsScreen(): JSX.Element {
 
   return (
     <>
-      <Stack.Screen options={{ animation: 'default' }} />
+      <Stack.Screen
+        options={{
+          animation: 'default',
+          gestureDirection: 'horizontal',
+          fullScreenGestureEnabled: true,
+          headerShadowVisible: false,
+          contentStyle: { backgroundColor: theme.colors.white80 },
+          headerTitle: 'Notifications',
+          headerTitleAlign: 'center'
+        }}
+      />
       <SafeAreaView style={{ flex: 1 }}>
-        <Stack.Screen
-          options={{
-            gestureDirection: 'horizontal',
-            fullScreenGestureEnabled: true,
-            headerShadowVisible: false,
-            headerTitle: 'Notifications',
-            headerTitleAlign: 'center'
-          }}
-        />
-
         <Condition
           if={notificationsList.length === 0}
           then={(
