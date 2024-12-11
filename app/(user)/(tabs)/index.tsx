@@ -55,12 +55,12 @@ const handleLikeButton = (
 
     // create or delete like
     mutateEventLike.mutate({ eventID: event.id }, {
-      onSuccess: async () => {
-        if (!bucketListCache?.pages?.length) return;
-        await queryClient.invalidateQueries({
-          queryKey: [QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST]
-        });
-      }
+      // onSuccess: async () => {
+      //   if (!bucketListCache?.pages?.length) return;
+      //   await queryClient.invalidateQueries({
+      //     queryKey: [QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST]
+      //   });
+      // }
     });
 
     if (!bucketListCache?.pages?.length) return;

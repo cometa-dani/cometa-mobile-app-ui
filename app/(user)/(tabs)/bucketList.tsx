@@ -1,17 +1,17 @@
 import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import React, { FC } from 'react';
+import React, { FC, useCallback, useMemo, useRef } from 'react';
 import { SafeAreaView } from 'react-native';
 import { Image } from 'expo-image';
 import { RectButton } from 'react-native-gesture-handler';
-import { useMutationDeleteLikedEventFromBucketList } from '../../../queries/currentUser/likeEventHooks';
+import { useMutationLikeOrDislikeEvent } from '../../../queries/currentUser/likeEventHooks';
 import { useInfiniteQueryGetCurrUserLikedEvents } from '../../../queries/currentUser/eventHooks';
 import { router } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { red_100 } from '../../../constants/colors';
-import { ILikedEvent } from '../../../models/Event';
+import { CreateEventLike, IGetLatestPaginatedEvents, ILikedEvent } from '../../../models/Event';
 import { defaultImgPlaceholder } from '../../../constants/vars';
 import { EmptyMessage } from '../../../legacy_components/empty/Empty';
 import { ForEach } from '@/components/utils/ForEach';
@@ -19,7 +19,11 @@ import { Condition } from '@/components/utils/ifElse';
 import { Center, HStack, VStack } from '@/components/utils/stacks';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { TextView } from '@/components/text/text';
-import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Swipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { InfiniteData, QueryClient, UseMutationResult, useQueryClient } from '@tanstack/react-query';
+import { IGetPaginatedLikedEventsBucketList } from '@/models/LikedEvent';
+import { QueryKeys } from '@/queries/queryKeys';
+import { useCometaStore } from '@/store/cometaStore';
 
 
 export default function BucketListScreen() {
@@ -32,8 +36,53 @@ export default function BucketListScreen() {
 }
 
 
+const handleDeleteEventLike = (queryClient: QueryClient, mutation: UseMutationResult<CreateEventLike>, searchQuery: string) => {
+  return async function (eventID: number) {
+    queryClient
+      .setQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>
+      ([QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST], (oldData) => ({
+        pages: oldData?.pages.map(
+          (page) => (
+            {
+              ...page,
+              items: page.items.filter(item => eventID !== item.event.id)
+            }
+          )) || [],
+        pageParams: oldData?.pageParams || []
+      }));
+    queryClient
+      .setQueryData<InfiniteData<IGetLatestPaginatedEvents, number>>
+      ([QueryKeys.SEARCH_PAGINATED_EVENTS, searchQuery], (oldData) => ({
+        pages: oldData?.pages.map(
+          (page) => (
+            {
+              ...page,
+              items: page.items.map(item =>
+                eventID === item.id ? (
+                  {
+                    ...item,
+                    isLiked: false,
+                    _count: {
+                      ...item._count,
+                      likes: item._count.likes - 1
+                    }
+                  }
+                ) :
+                  item
+              )
+            }
+          )) || [],
+        pageParams: oldData?.pageParams || []
+      }));
+    mutation.mutate({ eventID });
+  };
+};
+
+
 const BuckectList: FC = () => {
   const { theme } = useStyles();
+  const searchQuery = useCometaStore(state => state.searchQuery);
+  const queryClient = useQueryClient();
   const {
     data,
     isFetching,
@@ -44,7 +93,7 @@ const BuckectList: FC = () => {
   } = useInfiniteQueryGetCurrUserLikedEvents();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const bucketList = data?.pages.flatMap(page => page.items) || [];
-
+  const mutation = useMutationLikeOrDislikeEvent() as UseMutationResult<CreateEventLike>;
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Condition
@@ -70,7 +119,7 @@ const BuckectList: FC = () => {
                 ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp8 }} />}
                 onEndReachedThreshold={0.5}
                 onEndReached={handleInfiniteFetch}
-                renderItem={renderBucketItem}
+                renderItem={renderBucketItem(handleDeleteEventLike(queryClient, mutation, searchQuery))}
               />
             )}
           />
@@ -90,25 +139,30 @@ const BuckectList: FC = () => {
 };
 
 
-const renderBucketItem = ({ item, index }: { item: ILikedEvent, index: number }) => {
-  return (
-    <BucketItem
-      item={item}
-      index={index}
-    />
-  );
+const renderBucketItem = (onDeleteEventLike: (eventID: number) => void) => {
+  return function item({ item, index }: { item: ILikedEvent, index: number }) {
+    return (
+      <BucketItem
+        item={item}
+        index={index}
+        onDeleteEventLike={onDeleteEventLike}
+      />
+    );
+  };
 };
 
 
 interface BucketItemProps {
   item: ILikedEvent,
-  index: number
+  index: number,
+  onDeleteEventLike: (eventID: number) => void
 }
-const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
+const BucketItem: FC<BucketItemProps> = ({ item, index, onDeleteEventLike }) => {
   const { styles, theme } = useStyles(styleSheet);
-  const deleteLikedEventMutation = useMutationDeleteLikedEventFromBucketList();
+  const eventDate = useMemo(() => new Date(item?.event.date).toDateString().split(' ').slice(1).join(' '), []);
+  const swipeableRef = useRef<SwipeableMethods>(null);
 
-  const UsersBubbles: FC = () => (
+  const UsersBubbles: FC = useCallback(() => (
     <ForEach items={item?.event.likes ?? []}>
       {({ user }, index) => (
         <Image
@@ -119,14 +173,18 @@ const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
         />
       )}
     </ForEach>
-  );
+  ), []);
 
   return (
     <Swipeable
+      ref={swipeableRef}
       renderRightActions={
-        () => (
+        (state) => (
           <RectButton
-            onPress={() => deleteLikedEventMutation.mutate(item.id)}
+            onPress={() => {
+              swipeableRef.current?.close();
+              onDeleteEventLike(item.event.id);
+            }}
             style={styles.deleteButton}
           >
             <FontAwesome
@@ -144,7 +202,7 @@ const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
           paddingHorizontal: theme.spacing.sp6,
           gap: theme.spacing.sp2
         }}
-        onPress={() => router.push(`/matches/${item.id}?eventIndex=${index}`)}
+        onPress={() => router.push(`/matches/${item.event.id}?eventIndex=${index}`)}
       >
         <HStack gap={theme.spacing.sp4}>
           <Image
@@ -232,7 +290,7 @@ const BucketItem: FC<BucketItemProps> = ({ item, index }) => {
                 color: theme.colors.lime600
               }}
             >
-              {new Date(item?.event.date).toDateString().split(' ').slice(1).join(' ')}
+              {eventDate}
             </TextView>
           </TouchableOpacity>
 
