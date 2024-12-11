@@ -43,29 +43,32 @@ const handleLikeButton = (
   searchQuery: string
 ) => {
   return (event: ILikeableEvent) => {
-    // Update the likes cache with the new liked state
-    queryClient
-      .setQueryData<InfiniteData<IGetLatestPaginatedEvents, number>>
-      ([QueryKeys.SEARCH_PAGINATED_EVENTS, searchQuery], homeScreenOpimisticUpdate(event));
-    const bucketList = (
+    const bucketListCache = (
       queryClient
         .getQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList>>
         ([QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST])
     );
-
-    if (!bucketList?.pages?.length) return;
-    // Update the bucketlist cache with the new liked state
+    // Update the likes cache with the new liked state
     queryClient
-      .setQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>
-      ([QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST], bucketListScreenOpimisticUpdate(event));
-    //  Invalidate queries after the mutation succeeds
+      .setQueryData<InfiniteData<IGetLatestPaginatedEvents, number>>
+      ([QueryKeys.SEARCH_PAGINATED_EVENTS, searchQuery], homeScreenOpimisticUpdate(event));
+
+    // create or delete like
     mutateEventLike.mutate({ eventID: event.id }, {
       onSuccess: async () => {
+        if (!bucketListCache?.pages?.length) return;
         await queryClient.invalidateQueries({
           queryKey: [QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST]
         });
       }
     });
+
+    if (!bucketListCache?.pages?.length) return;
+    // Update the bucketlist cache with the new liked state
+    queryClient
+      .setQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>
+      ([QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST], bucketListScreenOpimisticUpdate(event));
+    //  Invalidate queries after the mutation succeeds
   };
 };
 
