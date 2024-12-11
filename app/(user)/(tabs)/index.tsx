@@ -54,21 +54,13 @@ const handleLikeButton = (
       ([QueryKeys.SEARCH_PAGINATED_EVENTS, searchQuery], homeScreenOpimisticUpdate(event));
 
     // create or delete like
-    mutateEventLike.mutate({ eventID: event.id }, {
-      // onSuccess: async () => {
-      //   if (!bucketListCache?.pages?.length) return;
-      //   await queryClient.invalidateQueries({
-      //     queryKey: [QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST]
-      //   });
-      // }
-    });
+    mutateEventLike.mutate({ eventID: event.id });
 
     if (!bucketListCache?.pages?.length) return;
     // Update the bucketlist cache with the new liked state
     queryClient
       .setQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>
       ([QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST], bucketListScreenOpimisticUpdate(event));
-    //  Invalidate queries after the mutation succeeds
   };
 };
 

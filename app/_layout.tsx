@@ -16,6 +16,7 @@ import { supabase } from '@/supabase/config';
 import { useCometaStore } from '@/store/cometaStore';
 import NetInfo from '@react-native-community/netinfo';
 import { onlineManager } from '@tanstack/react-query';
+import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 
 // Catch any errors thrown by the Layout component.
 export { ErrorBoundary } from 'expo-router';
@@ -32,6 +33,12 @@ onlineManager.setEventListener((setOnline) => {
   return NetInfo.addEventListener((state) => {
     setOnline(!!state.isConnected);
   });
+});
+
+
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false, // Reanimated runs in strict mode by default
 });
 
 
