@@ -162,8 +162,8 @@ export default function MatchedEventsScreen(): ReactNode {
           <Animated.View
             // layout={LinearTransition}
             // entering={ZoomIn.duration(380)}
-            entering={ZoomIn.withInitialValues({ transform: [{ scale: 0.3 }] })}
-            exiting={FadeOut}
+            entering={ZoomIn.withInitialValues({ transform: [{ scale: 0.3 }] }).duration(500)}
+            exiting={FadeOut.duration(400)}
           >
             <View style={{ padding: theme.spacing.sp6, paddingBottom: 0 }}>
               <Image
@@ -175,7 +175,7 @@ export default function MatchedEventsScreen(): ReactNode {
           </Animated.View>
         }
         <Animated.View
-          layout={LinearTransition}
+          layout={LinearTransition.duration(400)}
         >
           <View
             style={{

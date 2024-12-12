@@ -15,6 +15,7 @@ import { SearchField } from '@/components/input/searchField';
 import { EventCategory } from '@/models/Event';
 import { useCometaStore } from '@/store/cometaStore';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
+import Checkbox from 'expo-checkbox';
 
 
 // const placeholders: ICityKind = {
@@ -110,37 +111,12 @@ export default function FilterScreen(): ReactNode {
           bounces={false}
           // onEndReached={handleInfiniteFetch}
           // onEndReachedThreshold={0.5}
+          disableAutoLayout={true}
           contentContainerStyle={{ padding: theme.spacing.sp8 }}
           ListFooterComponentStyle={{ height: tabBarHeight * 3 }} // 280px height
           keyExtractor={item => item.toString()}
           renderItem={renderItem}
         />
-        {/* <Condition
-          if={isFetched}
-          then={(
-            <Condition
-              if={citiesData.length === 0}
-              then={(
-                <Center styles={{ flex: 1 }}>
-                  <TextView style={{ padding: theme.spacing.sp8, textAlign: 'center' }}>
-                    No cities found
-                  </TextView>
-                </Center>
-              )}
-              else={
-              }
-            />
-          )}
-          else={(
-            <Center styles={{ flex: 1 }}>
-              <ActivityIndicator
-                size="large"
-                style={{ marginTop: -theme.spacing.sp8 }}
-                color={theme.colors.red100}
-              />
-            </Center>
-          )}
-        /> */}
       </View>
     </>
   );
@@ -180,17 +156,17 @@ interface ItemProps {
 }
 
 const Item: FC<ItemProps> = ({ title, isChecked, onSelectOption }) => {
-  const { styles } = useStyles(styleSheet);
+  const { styles, theme } = useStyles(styleSheet);
   return (
     <TouchableOpacity
       onPress={() => onSelectOption(title)}
       style={styles.option}
     >
-      {/* <Checkbox
+      <Checkbox
         style={styles.checkbox}
         value={isChecked}
-        color={isChecked ? gray_900 : undefined}
-      /> */}
+        color={isChecked ? theme.colors.red100 : undefined}
+      />
       <View style={styles.titleContainer}>
         <Text>
           {title}
