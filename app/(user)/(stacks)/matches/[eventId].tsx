@@ -155,15 +155,10 @@ export default function MatchedEventsScreen(): ReactNode {
       />
 
       <SafeAreaView style={{ flex: 1, gap: showImage ? theme.spacing.sp4 : 0 }}>
-        {/* <Animated.View
-          layout={LinearTransition.duration(500)}
-        > */}
         {showImage &&
           <Animated.View
-            // layout={LinearTransition}
-            // entering={ZoomIn.duration(380)}
-            entering={ZoomIn.withInitialValues({ transform: [{ scale: 0.3 }] }).duration(500)}
-            exiting={FadeOut.duration(400)}
+            entering={ZoomIn.withInitialValues({ transform: [{ scale: 0.3 }] }).duration(400)}
+            exiting={FadeOut.duration(350)}
           >
             <View style={{ padding: theme.spacing.sp6, paddingBottom: 0 }}>
               <Image
@@ -175,7 +170,7 @@ export default function MatchedEventsScreen(): ReactNode {
           </Animated.View>
         }
         <Animated.View
-          layout={LinearTransition.duration(400)}
+          layout={LinearTransition.duration(350)}
         >
           <View
             style={{
