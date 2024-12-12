@@ -14,7 +14,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps): R
   const { buildHref } = useLinkBuilder();
   return (
     <View style={styles.tabBarContainer}>
-      {state.routes.map((route, index) => {
+      {state.routes.map((route, index, arr) => {
         const { options } = descriptors[route.key];
         const Icon = options.tabBarIcon;
         const activeTintColor = options.tabBarActiveTintColor ?? theme.colors.red100;
@@ -52,7 +52,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps): R
             testID={options.tabBarButtonTestID}
             onPress={onPress}
             onLongPress={onLongPress}
-            style={styles.tabBarPressable}
+            style={styles.tabBarPressable(index, arr.length)}
           >
             {Icon &&
               Icon({
@@ -81,19 +81,26 @@ const tabBarStylesheet = createStyleSheet((theme, runtime) => ({
     flex: 1,
     borderTopEndRadius: theme.spacing.sp10 * runtime.fontScale,
     borderTopStartRadius: theme.spacing.sp10 * runtime.fontScale,
+    borderColor: theme.colors.white60,
+    borderWidth: 1.4,
+    paddingHorizontal: 0,
+    margin: 0,
     paddingBottom: runtime.insets.bottom,
-    overflow: 'hidden',
+    width: '100%',
     bottom: 0,
     right: 0,
     left: 0,
+    overflow: 'hidden'
   },
-  tabBarPressable: {
+  tabBarPressable: (index: number, length: number) => ({
     height: tabBarHeight,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    borderTopStartRadius: (index === 0) ? theme.spacing.sp10 * runtime.fontScale : 0,
+    borderTopEndRadius: (index === length - 1) ? theme.spacing.sp10 * runtime.fontScale : 0,
     backgroundColor: theme.colors.white100,
-  },
+  }),
   tabBarText: {
     color: theme.colors.gray900,
     fontSize: theme.text.size.s2,
