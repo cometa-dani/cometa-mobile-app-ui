@@ -4,6 +4,7 @@
     "allowJs": true,
     "strict": true,
     "sourceMap": true,
+    "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true,
     "paths": {
       "@firebase/auth": [
