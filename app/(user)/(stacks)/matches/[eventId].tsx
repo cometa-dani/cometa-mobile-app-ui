@@ -1,5 +1,5 @@
-import React, { ReactNode, useReducer, useState } from 'react';
-import { Image, SafeAreaView, View, } from 'react-native';
+import React, { ReactNode, useState } from 'react';
+import { SafeAreaView, View, } from 'react-native';
 import { Stack, useGlobalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
@@ -8,12 +8,14 @@ import { IGetPaginatedLikedEventsBucketList } from '@/models/LikedEvent';
 import { QueryKeys } from '@/queries/queryKeys';
 import { useInfiniteQueryGetLoggedInUserNewestFriends } from '@/queries/currentUser/friendshipHooks';
 import { GradientHeading } from '@/components/text/gradientText';
-import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { TextView } from '@/components/text/text';
 import PagerView, { usePagerView } from 'react-native-pager-view';
 import { HStack, VStack } from '@/components/utils/stacks';
 import { useCometaStore } from '@/store/cometaStore';
 import { Button } from '@/components/button/button';
+import Animated, { ZoomIn, FadeOut, LinearTransition, } from 'react-native-reanimated';
+import { Image } from 'expo-image';
 
 
 const users = [
@@ -120,6 +122,7 @@ export default function MatchedEventsScreen(): ReactNode {
     //   hasNextPage && !isFetching && fetchNextPage();
     // }
   };
+  const [showImage, setShowImage] = useState(true);
 
   return (
     <>
@@ -130,9 +133,15 @@ export default function MatchedEventsScreen(): ReactNode {
             placeholder: 'search',
             tintColor: theme.colors.red100,
             inputType: 'text',
-            barTintColor: theme.colors.white80
+            barTintColor: theme.colors.white80,
+            onFocus: () => {
+              setShowImage(false);
+            },
+            onBlur: () => {
+              setShowImage(true);
+            },
           },
-          animation: 'default',
+          animation: 'fade',
           gestureDirection: 'horizontal',
           fullScreenGestureEnabled: true,
           headerTitleAlign: 'center',
@@ -145,127 +154,150 @@ export default function MatchedEventsScreen(): ReactNode {
         }}
       />
 
-      <SafeAreaView style={{ flex: 1, gap: theme.spacing.sp4 }}>
-        <View style={{ padding: theme.spacing.sp6, paddingBottom: 0 }}>
-          <Image
-            resizeMode='cover'
-            style={styles.imgHeader}
-            source={{ uri: likedEvent.photos.at(0)?.url, }}
-          />
-        </View>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            gap: theme.spacing.sp4,
-            padding: theme.spacing.sp2,
-            marginHorizontal: theme.spacing.sp6,
-            borderRadius: 20,
-            backgroundColor: theme.colors.white60
-          }}
-        >
-          <Button
-            style={{ flex: 1 }}
-            onPress={() => { setPage(0); setStep(0); }}
-            variant={step === 1 ? 'disabled' : 'primary'}
+      <SafeAreaView style={{ flex: 1, gap: showImage ? theme.spacing.sp4 : 0 }}>
+        {/* <Animated.View
+          layout={LinearTransition.duration(500)}
+        > */}
+        {showImage &&
+          <Animated.View
+            // layout={LinearTransition}
+            // entering={ZoomIn.duration(380)}
+            entering={ZoomIn.withInitialValues({ transform: [{ scale: 0.3 }] })}
+            exiting={FadeOut}
           >
-            New Friends
-          </Button>
-          <Button
-            style={{ flex: 1 }}
-            onPress={() => { setPage(1); setStep(1); }}
-            variant={step === 1 ? 'primary' : 'disabled'}
-          >
-            New People
-          </Button>
-        </View>
-
-        <PagerView
-          ref={ref}
-          style={{ height: '100%', width: '100%' }}
-          initialPage={0}
+            <View style={{ padding: theme.spacing.sp6, paddingBottom: 0 }}>
+              <Image
+                contentFit='cover'
+                style={styles.imgHeader}
+                source={{ uri: likedEvent.photos.at(0)?.url, }}
+              />
+            </View>
+          </Animated.View>
+        }
+        <Animated.View
+          layout={LinearTransition}
         >
-          <View key={0} style={{ flex: 1, height: '100%' }}>
-            <FlashList
-              nestedScrollEnabled={true}
-              data={users}
-              estimatedItemSize={60}
-              ListFooterComponentStyle={{ height: 500 }}
-              ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
-              renderItem={({ item }) => (
-                <HStack
-                  $y='center'
-                  gap={theme.spacing.sp4}
-                  styles={{ paddingHorizontal: theme.spacing.sp6 }}
-                >
-                  <Image
-                    source={{ uri: item.avatar }}
-                    style={styles.imgAvatar}
-                  />
-
-                  <VStack
-                    $y='center'
-                    styles={{ flex: 1 }}
-                  >
-                    <TextView ellipsis={true}>
-                      {item.name}
-                    </TextView>
-                    <TextView bold={true} ellipsis={true}>
-                      {item.email}
-                    </TextView>
-                  </VStack>
-
-                  <Button
-                    style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-                    onPress={() => { console.log('follow'); }}
-                    variant='primary'>
-                    FOLLOW
-                  </Button>
-                </HStack>
-              )}
-            />
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: theme.spacing.sp4,
+              padding: theme.spacing.sp2,
+              paddingHorizontal: showImage ? theme.spacing.sp2 : theme.spacing.sp6,
+              marginHorizontal: showImage ? theme.spacing.sp6 : 0,
+              borderRadius: showImage ? 20 : 0,
+              backgroundColor: theme.colors.white60
+            }}
+          >
+            <Button
+              style={{ flex: 1 }}
+              onPress={() => setPage(0)}
+              variant={step === 1 ? 'disabled' : 'primary'}
+            >
+              New Friends
+            </Button>
+            <Button
+              style={{ flex: 1 }}
+              onPress={() => setPage(1)}
+              variant={step === 1 ? 'primary' : 'disabled'}
+            >
+              New People
+            </Button>
           </View>
-          <View key={1} style={{ flex: 1, height: '100%' }}>
-            <FlashList
-              nestedScrollEnabled={true}
-              ListFooterComponentStyle={{ height: 500 }}
-              ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
-              data={users}
-              estimatedItemSize={60}
-              renderItem={({ item }) => (
-                <HStack
-                  $y='center'
-                  gap={theme.spacing.sp4}
-                  styles={{ paddingHorizontal: theme.spacing.sp6 }}
-                >
-                  <Image
-                    source={{ uri: item.avatar }}
-                    style={styles.imgAvatar}
-                  />
-
-                  <VStack
+          <PagerView
+            ref={ref}
+            style={{ height: '100%', width: '100%' }}
+            initialPage={0}
+            onPageScroll={(e) => {
+              setStep(e.nativeEvent.position);
+            }}
+          >
+            <View key={0} style={{ flex: 1, height: '100%' }}>
+              <FlashList
+                nestedScrollEnabled={true}
+                data={users}
+                estimatedItemSize={60}
+                ListFooterComponentStyle={{ height: 400 }}
+                contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
+                ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
+                renderItem={({ item }) => (
+                  <HStack
                     $y='center'
-                    styles={{ flex: 1 }}
+                    gap={theme.spacing.sp4}
+                    styles={{ paddingHorizontal: theme.spacing.sp6 }}
                   >
-                    <TextView ellipsis={true}>
-                      {item.name}
-                    </TextView>
-                    <TextView bold={true} ellipsis={true}>
-                      {item.email}
-                    </TextView>
-                  </VStack>
+                    <Image
+                      source={{ uri: item.avatar }}
+                      style={styles.imgAvatar}
+                    />
 
-                  <Button
-                    style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-                    onPress={() => { console.log('follow'); }}
-                    variant='primary'>
-                    FOLLOW
-                  </Button>
-                </HStack>
-              )}
-            />
-          </View>
-        </PagerView>
+                    <VStack
+                      $y='center'
+                      styles={{ flex: 1 }}
+                    >
+                      <TextView ellipsis={true}>
+                        {item.name}
+                      </TextView>
+                      <TextView bold={true} ellipsis={true}>
+                        {item.email}
+                      </TextView>
+                    </VStack>
+
+                    <Button
+                      style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
+                      onPress={() => { console.log('follow'); }}
+                      variant='primary'>
+                      FOLLOW
+                    </Button>
+                  </HStack>
+                )}
+              />
+            </View>
+            <View key={1} style={{ flex: 1, height: '100%' }}>
+              <FlashList
+                nestedScrollEnabled={true}
+                ListFooterComponentStyle={{ height: 400 }}
+                contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
+                ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
+                data={users}
+                estimatedItemSize={60}
+                renderItem={({ item }) => (
+                  <HStack
+                    $y='center'
+                    gap={theme.spacing.sp4}
+                    styles={{ paddingHorizontal: theme.spacing.sp6 }}
+                  >
+                    <Image
+                      source={{ uri: item.avatar }}
+                      style={styles.imgAvatar}
+                    />
+
+                    <VStack
+                      $y='center'
+                      styles={{ flex: 1 }}
+                    >
+                      <TextView ellipsis={true}>
+                        {item.name}
+                      </TextView>
+                      <TextView bold={true} ellipsis={true}>
+                        {item.email}
+                      </TextView>
+                    </VStack>
+
+                    <Button
+                      style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
+                      onPress={() => { console.log('follow'); }}
+                      variant='primary'>
+                      FOLLOW
+                    </Button>
+                  </HStack>
+                )}
+              />
+            </View>
+          </PagerView>
+        </Animated.View>
+
+        {/* </Animated.View> */}
+
       </SafeAreaView>
     </>
   );
