@@ -5,7 +5,7 @@ import { Stack } from 'expo-router';
 import Checkbox from 'expo-checkbox';
 import { gray_900 } from '../../../../constants/colors';
 import { FlashList } from '@shopify/flash-list';
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import { EventCategory } from '../../../../models/Event';
 import { useCometaStore } from '../../../../store/cometaStore';
 import { useQueryClient } from '@tanstack/react-query';
@@ -17,7 +17,7 @@ import { useStyles } from 'react-native-unistyles';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 
 
-export default function SettingsScreen(): JSX.Element {
+export default function SettingsScreen(): ReactNode {
   // const { background } = useColors();
   const { theme } = useStyles();
   const queryClient = useQueryClient();

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, SafeAreaView, View, ActivityIndicator } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { AppSearchInput } from '../../../../legacy_components/textInput/AppSearchInput';
@@ -14,7 +14,7 @@ import { Center } from '@/components/utils/stacks';
 import { useStyles } from 'react-native-unistyles';
 
 
-export default function SearchScreen(): JSX.Element {
+export default function SearchScreen(): ReactNode {
   const { theme } = useStyles();
   const [searchUsers, setSearchUsers] = useState('');
   // debounce search inputs

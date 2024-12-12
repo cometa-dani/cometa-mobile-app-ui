@@ -28,7 +28,9 @@ export default function TabLayout(): ReactNode {
           animation: 'shift',
           headerTitleAlign: 'center',
           headerShown: true,
-          headerShadowVisible: false,
+          headerStyle: {
+            elevation: 1,
+          },
           tabBarInactiveTintColor: theme.colors.gray300,
           tabBarActiveTintColor: theme.colors.red100,
           tabBarHideOnKeyboard: true,
@@ -54,15 +56,7 @@ export default function TabLayout(): ReactNode {
             tabBarLabel: 'Home',
             headerTransparent: true,
             headerLeft: () => (
-              <CircleButton
-                onPress={() => {
-
-                  // navigation.setOptions({ headerShown: true });
-                  router.push('/(stacks)/search');
-                  // navigation.push('/(stacks)/search')
-                }
-                }
-              >
+              <CircleButton onPress={() => router.push('/(stacks)/search')}>
                 <Ionicons
                   name="search"
                   size={theme.spacing.sp8}

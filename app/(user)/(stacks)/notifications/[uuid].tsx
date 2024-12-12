@@ -9,13 +9,13 @@ import { useCometaStore } from '../../../../store/cometaStore';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import notificationService from '../../../../services/notificationService';
 import { INotificationData } from '../../../../store/slices/notificationSlice';
-import { useCallback } from 'react';
+import { ReactNode, useCallback } from 'react';
 import { TextView } from '@/components/text/text';
 import { Condition } from '@/components/utils/ifElse';
 import { useStyles } from 'react-native-unistyles';
 
 
-export default function NotificationsScreen(): JSX.Element {
+export default function NotificationsScreen(): ReactNode {
   const { theme } = useStyles();
   const loggedInUserUUID = useLocalSearchParams<{ uuid: string }>()['uuid'];
   const notificationsList = useCometaStore(state => state.notificationsList) ?? [];
@@ -42,7 +42,7 @@ export default function NotificationsScreen(): JSX.Element {
           animation: 'default',
           gestureDirection: 'horizontal',
           fullScreenGestureEnabled: true,
-          headerShadowVisible: false,
+          // headerShadowVisible: false,
           contentStyle: { backgroundColor: theme.colors.white80 },
           headerTitle: 'Notifications',
           headerTitleAlign: 'center'

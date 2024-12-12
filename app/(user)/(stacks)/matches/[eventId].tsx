@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { ReactNode, useMemo, useState } from 'react';
 import { SafeAreaView, } from 'react-native';
 import { Stack, Tabs, useGlobalSearchParams } from 'expo-router';
 import { Image } from 'expo-image';
@@ -13,7 +13,7 @@ import { useStyles } from 'react-native-unistyles';
 import { TextView } from '@/components/text/text';
 
 
-export default function MatchedEventsScreen(): JSX.Element {
+export default function MatchedEventsScreen(): ReactNode {
   const { styles, theme } = useStyles();
   const { eventId, eventIndex } = useGlobalSearchParams<{ eventId: string, eventIndex: string }>();
   // cached data
@@ -62,15 +62,13 @@ export default function MatchedEventsScreen(): JSX.Element {
           contentStyle: { backgroundColor: theme.colors.white80 },
           headerTitle: () => (
             <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
-              macthes
+              matches
             </GradientHeading>
           ),
         }}
       />
 
-      <SafeAreaView style={{ flex: 1 }}>
-        <TextView>Hello World eventId: {eventId}</TextView>
-      </SafeAreaView>
+      <TextView>Hello World eventId: {eventId}</TextView>
     </>
   );
 }
