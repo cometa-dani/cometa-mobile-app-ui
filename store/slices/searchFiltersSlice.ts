@@ -31,7 +31,8 @@ const initialValues: Record<EventCategory, EventCategory | undefined> = {
   'Brunch': undefined,
 };
 
-const storedSearchedKeys = mmvkStorage.getString('searchFilters');
+// const storedSearchedKeys = mmvkStorage.getString('searchFilters');
+const storedSearchedKeys = '';
 const localValues = storedSearchedKeys?.length ? JSON.parse(storedSearchedKeys) : initialValues;
 
 export const createSearchFiltersSlice: StateCreator<SearchFiltersSlice> = (set) => {

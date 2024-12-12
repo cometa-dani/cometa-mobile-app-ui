@@ -12,6 +12,7 @@ import { Center, HStack, VStack } from '../../utils/stacks';
 import { ICityKind, useSelectCityByName } from './hook';
 import { ICityDatum } from '@/models/Cities';
 import { SearchField } from '@/components/input/searchField';
+import { tabBarHeight } from '@/components/tabBar/tabBar';
 
 
 const placeholders: ICityKind = {
@@ -88,9 +89,9 @@ export function SearchCityByName(): ReactNode {
                   data={citiesData}
                   bounces={false}
                   onEndReached={handleInfiniteFetch}
-                  onEndReachedThreshold={0.1}
+                  onEndReachedThreshold={0.5}
                   contentContainerStyle={{ padding: theme.spacing.sp8 }}
-                  ListFooterComponentStyle={{ height: theme.spacing.sp11 * 10 }} // 280px height
+                  ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
                   keyExtractor={item => item.id.toString()}
                   renderItem={renderItem}
                 />

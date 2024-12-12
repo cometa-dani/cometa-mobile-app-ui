@@ -57,7 +57,7 @@ export default function MatchedEventsScreen(): ReactNode {
           animation: 'default',
           gestureDirection: 'horizontal',
           fullScreenGestureEnabled: true,
-          headerShadowVisible: false,
+          // headerShadowVisible: false,
           headerTitleAlign: 'center',
           contentStyle: { backgroundColor: theme.colors.white80 },
           headerTitle: () => (

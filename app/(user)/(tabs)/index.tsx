@@ -25,7 +25,7 @@ export default function HomeScreen(): ReactNode {
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   return (
     <>
-      <SystemBars style='light' />
+      <SystemBars style='auto' />
       <EventsList
         items={evenstData}
         isFetched={isFetched}

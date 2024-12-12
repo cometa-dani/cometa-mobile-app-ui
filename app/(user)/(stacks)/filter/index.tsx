@@ -1,26 +1,61 @@
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-// import { useColors, Text, } from '../../../legacy_components/Themed';
-import { Stack } from 'expo-router';
-// import { RectButton } from 'react-native-gesture-handler';
-import Checkbox from 'expo-checkbox';
-import { gray_900 } from '../../../../constants/colors';
+import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Stack, useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
-import { FC, ReactNode } from 'react';
-import { EventCategory } from '../../../../models/Event';
-import { useCometaStore } from '../../../../store/cometaStore';
-import { useQueryClient } from '@tanstack/react-query';
-import { QueryKeys } from '../../../../queries/queryKeys';
-// import { AppButton } from '../../../legacy_components/buttons/buttons';
+import { FC, ReactNode, useCallback, useRef, useState } from 'react';
+import { FontAwesome } from '@expo/vector-icons';
+// import { useInfiniteQueryGetPaginatedCities } from '../../../queries/currentUser/editProfileHooks';
+import { TextView } from '@/components/text/text';
 import { Heading } from '@/components/text/heading';
-import { Button } from '@/components/button/button';
-import { useStyles } from 'react-native-unistyles';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
+// import { Condition } from '../../utils/ifElse';
+// import { Center, HStack, VStack } from '../../utils/stacks';
+// import { ICityKind, useSelectCityByName } from './hook';
+import { ICityDatum } from '@/models/Cities';
+import { SearchField } from '@/components/input/searchField';
+import { EventCategory } from '@/models/Event';
+import { useCometaStore } from '@/store/cometaStore';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 
 
-export default function SettingsScreen(): ReactNode {
-  // const { background } = useColors();
-  const { theme } = useStyles();
-  const queryClient = useQueryClient();
+// const placeholders: ICityKind = {
+//   homeTown: 'Select your Home Town...',
+//   currentLocation: 'Select your Current Location...'
+// };
+
+export default function FilterScreen(): ReactNode {
+  const router = useRouter();
+  // const { setSelectedCity, cityKind } = useSelectCityByName();
+  const { styles: cityStyles, theme } = useStyles(styleSheet);
+  const [searchValue, setSearchValue] = useState('');
+  const inputRef = useRef<TextInput>(null);
+  // const {
+  //   data,
+  //   isFetching,
+  //   fetchNextPage,
+  //   hasNextPage,
+  //   isFetched
+  // } = useInfiniteQueryGetPaginatedCities(searchValue);
+  // const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
+  // const citiesData = data?.pages.flatMap(page => page.items) ?? [];
+
+  // const renderItem = useCallback(({ item }: { item: ICityDatum }) => (
+  //   <TouchableOpacity
+  //     style={cityStyles.city}
+  //     onPress={() => {
+  //       setSelectedCity({ [cityKind]: item.city });
+  //       router.back();
+  //     }}
+  //   >
+  //     <VStack>
+  //       <HStack $y='center' gap={theme.spacing.sp2}>
+  //         <TextView ellipsis={true} style={{ maxWidth: 160 }}>{item.city}</TextView>
+  //         <FontAwesome name='flag-o' size={20} />
+  //       </HStack>
+  //       <Heading ellipsis={true} style={{ maxWidth: 180 }} size='s4'>{item.country}</Heading>
+  //     </VStack>
+  //     <TextView ellipsis={true} style={{ maxWidth: 100 }}>{item.country}</TextView>
+  //   </TouchableOpacity>
+  // ), [setSelectedCity]);
   const storedSearchFilters = useCometaStore(state => state.searchFilters);
   const setStoredSearchFilters = useCometaStore(state => state.AddOrDeleteSearchFilter);
 
@@ -44,73 +79,98 @@ export default function SettingsScreen(): ReactNode {
     EventCategory.BRUNCH,
   ];
 
-  // ****************************************************
-  // TODO:
-  // only should execute when the component is unmounted and has changed the search filters
-  // ****************************************************
-  // useEffect(() => {
-  //   return () => {
-  //     queryClient.invalidateQueries({
-  //       queryKey: [QueryKeys.GET_LATEST_EVENTS_WITH_PAGINATION]
-  //     });
-  //   };
-  // }, []);
-
-
+  const renderItem = useCallback(({ item }: { item: EventCategory }) => {
+    return (
+      <Item
+        title={item}
+        isChecked={storedSearchFilters[item] !== undefined}
+        onSelectOption={setStoredSearchFilters}
+      />
+    );
+  }, []);
   return (
     <>
       <Stack.Screen
         options={{
           animation: 'default',
-          gestureDirection: 'horizontal',
-          fullScreenGestureEnabled: true,
-          headerShadowVisible: false,
-          headerTitle: 'Find liked minded people',
-          headerTitleAlign: 'center',
-          contentStyle: {
-            backgroundColor: theme.colors.white80
-          }
+          headerBackTitle: '',
+          headerTitle: () => (
+            <SearchField
+              ref={inputRef}
+              placeholder={''}
+              onSearch={setSearchValue}
+            />
+          )
         }}
       />
-      <Heading size='s6' style={{ paddingHorizontal: 24, paddingVertical: 10 }}>Category</Heading>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, flexGrow: 1 }}>
         <FlashList
-          contentContainerStyle={{ paddingVertical: 20 }}
-          // stickyHeaderHiddenOnScroll={true}
-          estimatedItemSize={50}
+          estimatedItemSize={theme.spacing.sp20}
           data={filterOptions}
-          // disableVirtualization={true}
-          disableAutoLayout={true}
-          // CellRendererComponent={Item}
-          ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
-          renderItem={({ item: option }) => {
-            return (
-              <Item
-                title={option}
-                isChecked={storedSearchFilters[option] !== undefined}
-                onSelectOption={setStoredSearchFilters}
-              />
-            );
-          }}
+          bounces={false}
+          // onEndReached={handleInfiniteFetch}
+          // onEndReachedThreshold={0.5}
+          contentContainerStyle={{ padding: theme.spacing.sp8 }}
+          ListFooterComponentStyle={{ height: tabBarHeight * 3 }} // 280px height
+          keyExtractor={item => item.toString()}
+          renderItem={renderItem}
         />
+        {/* <Condition
+          if={isFetched}
+          then={(
+            <Condition
+              if={citiesData.length === 0}
+              then={(
+                <Center styles={{ flex: 1 }}>
+                  <TextView style={{ padding: theme.spacing.sp8, textAlign: 'center' }}>
+                    No cities found
+                  </TextView>
+                </Center>
+              )}
+              else={
+              }
+            />
+          )}
+          else={(
+            <Center styles={{ flex: 1 }}>
+              <ActivityIndicator
+                size="large"
+                style={{ marginTop: -theme.spacing.sp8 }}
+                color={theme.colors.red100}
+              />
+            </Center>
+          )}
+        /> */}
       </View>
-
-      {/* <View style={{ paddingHorizontal: 24, paddingVertical: 20 }}>
-          <Button
-            variant='primary'
-            onPress={() => {
-              queryClient.invalidateQueries({
-                queryKey: [QueryKeys.SEARCH_PAGINATED_EVENTS]
-              });
-              router.back();
-            }}
-          >
-            Apply
-          </Button>
-        </View> */}
     </>
   );
 }
+
+
+const styleSheet = createStyleSheet((theme) => ({
+  city: {
+    flex: 1,
+    flexDirection: 'row',
+    height: theme.spacing.sp22,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  checkbox: {
+    borderRadius: 5,
+  },
+  option: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 20,
+    height: 50,
+    paddingHorizontal: 24,
+    width: '100%',
+  },
+  titleContainer: {
+    alignItems: 'center',
+    gap: 8
+  },
+}));
 
 
 interface ItemProps {
@@ -120,16 +180,17 @@ interface ItemProps {
 }
 
 const Item: FC<ItemProps> = ({ title, isChecked, onSelectOption }) => {
+  const { styles } = useStyles(styleSheet);
   return (
     <TouchableOpacity
       onPress={() => onSelectOption(title)}
       style={styles.option}
     >
-      <Checkbox
+      {/* <Checkbox
         style={styles.checkbox}
         value={isChecked}
         color={isChecked ? gray_900 : undefined}
-      />
+      /> */}
       <View style={styles.titleContainer}>
         <Text>
           {title}
@@ -138,24 +199,3 @@ const Item: FC<ItemProps> = ({ title, isChecked, onSelectOption }) => {
     </TouchableOpacity>
   );
 };
-
-
-const styles = StyleSheet.create({
-  checkbox: {
-    borderRadius: 5,
-  },
-
-  option: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 20,
-    height: 50,
-    paddingHorizontal: 24,
-    width: '100%',
-  },
-
-  titleContainer: {
-    alignItems: 'center',
-    gap: 8
-  }
-});
