@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { InfiniteData, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useCometaStore } from '../../store/cometaStore';
 import { QueryKeys } from '../queryKeys';
 import { IGetLatestPaginatedEvents } from '../../models/Event';
@@ -7,7 +7,7 @@ import { IGetPaginatedLikedEventsBucketList } from '../../models/LikedEvent';
 
 
 // Query to fetch a list of events with infinite scrolling
-export const useInfiniteQuerySearchEventsByQueryParams = (eventName?: string) => {
+export const useInfiniteQueryGetEventsHomeScreen = (eventName?: string) => {
   const categoriesSearchFilters = useCometaStore(state => state.searchFilters);
   return (
     useInfiniteQuery({
@@ -43,7 +43,7 @@ export const useInfiniteQuerySearchEventsByQueryParams = (eventName?: string) =>
 };
 
 
-export const useInfiniteQueryGetCurrUserLikedEvents = () => {
+export const useInfiniteQueryGetBucketListScreen = () => {
   return (
     useInfiniteQuery({
       staleTime: 1_000 * 60 * 5,
@@ -70,4 +70,16 @@ export const useInfiniteQueryGetCurrUserLikedEvents = () => {
       retryDelay: 1_000 * 6,
     })
   );
+};
+
+
+export const useQueryCachedBucketListItem = (eventIndex: number) => {
+  const queryClient = useQueryClient();
+  const bucketListCahedData = (
+    queryClient
+      .getQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>
+      ([QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST])
+  );
+  const eventByIdCachedData = (bucketListCahedData?.pages.flatMap(page => page?.items) ?? []).at(eventIndex);
+  return eventByIdCachedData;
 };

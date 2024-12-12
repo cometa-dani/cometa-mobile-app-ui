@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { EventsList } from '@/components/eventsList/eventsList';
 import { CreateEventLike, IGetLatestPaginatedEvents, ILikeableEvent } from '@/models/Event';
 import { IGetPaginatedLikedEventsBucketList } from '@/models/LikedEvent';
-import { useInfiniteQuerySearchEventsByQueryParams } from '@/queries/currentUser/eventHooks';
+import { useInfiniteQueryGetEventsHomeScreen } from '@/queries/currentUser/eventHooks';
 import { useMutationLikeOrDislikeEvent } from '@/queries/currentUser/likeEventHooks';
 import { QueryKeys } from '@/queries/queryKeys';
 import { useCometaStore } from '@/store/cometaStore';
@@ -19,7 +19,7 @@ export default function HomeScreen(): ReactNode {
     fetchNextPage,
     hasNextPage,
     isFetching
-  } = useInfiniteQuerySearchEventsByQueryParams(searchQuery);
+  } = useInfiniteQueryGetEventsHomeScreen(searchQuery);
   const mutateEventLike = useMutationLikeOrDislikeEvent() as UseMutationResult<CreateEventLike>;
   const evenstData = data?.pages.flatMap(page => page.items) || [];
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();

@@ -1,7 +1,7 @@
 import React, { FC, forwardRef, useCallback, useRef, useState, RefObject, useEffect, useMemo, } from 'react';
 import { StyleSheet, SafeAreaView, Pressable, View, TouchableOpacity } from 'react-native';
 // import { Text, useColors } from '../../legacy_components/Themed';
-import { useInfiniteQuerySearchEventsByQueryParams } from '../../queries/currentUser/eventHooks';
+import { useInfiniteQueryGetEventsHomeScreen } from '../../queries/currentUser/eventHooks';
 import { EventsFlashList } from '../../legacy_components/eventsFlashList/eventsFlashList';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { If } from '../../legacy_components/utils';
@@ -27,7 +27,7 @@ export default function HomeScreen(): JSX.Element {
 
   const searchQuery = useCometaStore(state => state.searchQuery);
   // eventsData
-  const { data, isFetching, fetchNextPage, hasNextPage, isLoading, isRefetching } = useInfiniteQuerySearchEventsByQueryParams(searchQuery);
+  const { data, isFetching, fetchNextPage, hasNextPage, isLoading, isRefetching } = useInfiniteQueryGetEventsHomeScreen(searchQuery);
   const evenstData = data?.pages.flatMap(page => page.items) || [];
 
   // handling fetch when reaching the end

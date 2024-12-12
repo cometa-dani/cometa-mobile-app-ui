@@ -8,7 +8,7 @@ import { TextView } from '../text/text';
 
 interface IButtonProps {
   children: ReactNode,
-  variant: 'primary' | 'primary-alt' | 'secondary' | 'secondary-alt',
+  variant: 'primary' | 'primary-alt' | 'secondary' | 'secondary-alt' | 'disabled',
   size?: 'sm' | 'md' | 'lg',
   onPress: (event: GestureResponderEvent) => void,
   isInsideBottomSheet?: boolean,
@@ -74,6 +74,9 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
         },
         'secondary-alt': {
           color: theme.colors.blue100,
+        },
+        'disabled': {
+          color: theme.colors.gray900,
         }
       }
     }
@@ -118,6 +121,11 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
           borderColor: pressed ? theme.colors.blue90 : theme.colors.blue100,
           shadowColor: theme.colors.blue100,
         },
+        'disabled': {
+          backgroundColor: pressed ? theme.colors.gray50 : theme.colors.gray100,
+          borderColor: pressed ? theme.colors.gray100 : theme.colors.gray200,
+          shadowColor: theme.colors.gray100,
+        }
       },
     }
   })

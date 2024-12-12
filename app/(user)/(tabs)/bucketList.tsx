@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native';
 import { Image } from 'expo-image';
 import { RectButton } from 'react-native-gesture-handler';
 import { useMutationLikeOrDislikeEvent } from '../../../queries/currentUser/likeEventHooks';
-import { useInfiniteQueryGetCurrUserLikedEvents } from '../../../queries/currentUser/eventHooks';
+import { useInfiniteQueryGetBucketListScreen } from '../../../queries/currentUser/eventHooks';
 import { FlashList } from '@shopify/flash-list';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { red_100 } from '../../../constants/colors';
@@ -90,7 +90,7 @@ const BuckectList: FC = () => {
     fetchNextPage,
     isFetched,
     isPending,
-  } = useInfiniteQueryGetCurrUserLikedEvents();
+  } = useInfiniteQueryGetBucketListScreen();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const bucketList = data?.pages.flatMap(page => page.items) || [];
   const mutation = useMutationLikeOrDislikeEvent() as UseMutationResult<CreateEventLike>;
@@ -158,6 +158,7 @@ interface BucketItemProps {
   onDeleteEventLike: (eventID: number) => void
 }
 const BucketItem: FC<BucketItemProps> = ({ item, index, onDeleteEventLike }) => {
+  const setLikedEvent = useCometaStore(state => state.setLikedEvent);
   const { styles, theme } = useStyles(styleSheet);
   const eventDate = useMemo(() => new Date(item?.event.date).toDateString().split(' ').slice(1).join(' '), []);
   const router = useRouter();
@@ -201,7 +202,10 @@ const BucketItem: FC<BucketItemProps> = ({ item, index, onDeleteEventLike }) => 
           paddingHorizontal: theme.spacing.sp6,
           gap: theme.spacing.sp2
         }}
-        onPress={() => router.push(`/matches/${item.event.id}?eventIndex=${index}`)}
+        onPress={() => {
+          router.push(`/matches/${item.event.id}`);
+          setLikedEvent(item.event);
+        }}
       >
         <HStack gap={theme.spacing.sp4}>
           <Image
@@ -325,7 +329,7 @@ const styleSheet = createStyleSheet((theme) => ({
     padding: 10,
   },
   img: {
-    borderRadius: theme.spacing.sp8,
+    borderRadius: theme.spacing.sp7,
     height: 112,
     width: '40%',
   }
