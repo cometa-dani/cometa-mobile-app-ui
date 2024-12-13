@@ -5,7 +5,7 @@ import { Condition } from '@/components/utils/ifElse';
 import { HStack } from '@/components/utils/stacks';
 import { useQueryGetUserProfile } from '@/queries/currentUser/userHooks';
 import { useCometaStore } from '@/store/cometaStore';
-import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
@@ -31,7 +31,7 @@ export default function TabLayout(): ReactNode {
           headerStyle: {
             elevation: 1,
           },
-          tabBarInactiveTintColor: theme.colors.gray300,
+          tabBarInactiveTintColor: theme.colors.gray400,
           tabBarActiveTintColor: theme.colors.red100,
           tabBarHideOnKeyboard: true,
           tabBarVisibilityAnimationConfig: {
@@ -102,7 +102,7 @@ export default function TabLayout(): ReactNode {
               </HStack>
             ),
             tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="home" size={26} color={color} />
+              <Ionicons name="home-outline" size={24} color={color} />
             )
           }}
           key="home"
@@ -117,7 +117,7 @@ export default function TabLayout(): ReactNode {
               </GradientHeading>
             ),
             tabBarIcon: ({ color }) => (
-              <Ionicons name="chatbubbles" size={26} color={color} />
+              <Ionicons name="chatbubbles-outline" size={26} color={color} />
             )
           }}
           name="chat"
@@ -131,7 +131,7 @@ export default function TabLayout(): ReactNode {
               </GradientHeading>
             ),
             tabBarIcon: ({ color }) => (
-              <FontAwesome6 name="heart-circle-check" size={24} color={color} />
+              <MaterialCommunityIcons name="heart-plus-outline" size={24} color={color} />
             )
           }}
           name="bucketList"
@@ -140,7 +140,7 @@ export default function TabLayout(): ReactNode {
           options={{
             tabBarLabel: 'Profile',
             tabBarIcon: ({ color }) => (
-              <FontAwesome name="user-circle-o" size={24} color={color} />
+              <FontAwesome name="user-o" size={24} color={color} />
             )
           }}
           name="userProfile"

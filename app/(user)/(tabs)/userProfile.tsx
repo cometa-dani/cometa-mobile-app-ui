@@ -10,7 +10,7 @@ import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-na
 import { SystemBars } from 'react-native-edge-to-edge';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import * as ImagePicker from 'expo-image-picker';
-import { FontAwesome } from '@expo/vector-icons';
+import { Feather, FontAwesome, Octicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { FlashList } from '@shopify/flash-list';
 import { TextView } from '@/components/text/text';
@@ -110,7 +110,7 @@ export default function UserProfileScreen() {
                 onPress={() => router.push('/(stacks)/settings')}
                 style={{ marginLeft: theme.spacing.sp6 }}
               >
-                <FontAwesome size={theme.spacing.sp10} name='gear' color={theme.colors.gray400} />
+                <Octicons size={theme.spacing.sp10} name='gear' color={theme.colors.gray400} />
               </TouchableOpacity>
             );
           },
@@ -120,7 +120,8 @@ export default function UserProfileScreen() {
                 onPress={() => router.push('/(stacks)/editUserProfile')}
                 style={{ marginRight: theme.spacing.sp6 }}
               >
-                <FontAwesome size={theme.spacing.sp10} name='edit' color={theme.colors.gray400} />
+                {/* <FontAwesome size={theme.spacing.sp10} name='edit' color={theme.colors.gray400} /> */}
+                <Feather size={theme.spacing.sp10} name='edit' color={theme.colors.gray400} />
               </TouchableOpacity >
             );
           },
