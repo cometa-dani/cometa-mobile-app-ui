@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import { ILikeableEvent, } from '../../models/Event';
 import { Pressable, View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { FlashList } from '@shopify/flash-list';

@@ -179,9 +179,7 @@ export default function MatchedEventsScreen(): ReactNode {
             </View>
           </Animated.View>
         }
-        <Animated.View
-          layout={LinearTransition.duration(450)}
-        >
+        <Animated.View layout={LinearTransition.duration(450)}>
           <View
             style={{
               flexDirection: 'row',
