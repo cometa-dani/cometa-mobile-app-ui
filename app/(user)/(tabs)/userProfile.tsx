@@ -190,7 +190,7 @@ export default function UserProfileScreen() {
                 </TextView>
               </View>
 
-              <Heading size='s6' style={{ paddingHorizontal: theme.spacing.sp6, paddingBottom: theme.spacing.sp2 }}>Bucketlist</Heading>
+              <Heading size='s6' style={{ paddingHorizontal: theme.spacing.sp6, paddingBottom: theme.spacing.sp1 }}>Bucketlist</Heading>
             </VStack>
           )}
           renderItem={({ item }) => (

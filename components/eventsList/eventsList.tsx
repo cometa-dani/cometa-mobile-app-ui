@@ -290,7 +290,7 @@ const styleSheet = createStyleSheet((theme, runtime) => ({
   eventInfoContainer: {
     bottom: tabBarHeight + runtime.insets.bottom + 24,
     gap: theme.spacing.sp4,
-    left: theme.spacing.sp7,
+    left: theme.spacing.sp6,
     position: 'absolute',
     width: '72%',
     maxHeight: runtime.screen.height - (2.1 * (tabBarHeight + runtime.insets.bottom + 24)),
@@ -305,7 +305,7 @@ const styleSheet = createStyleSheet((theme, runtime) => ({
     position: 'absolute',
     bottom: tabBarHeight + runtime.insets.bottom + 60,
     zIndex: 100,
-    right: theme.spacing.sp7
+    right: theme.spacing.sp6
   },
   tagContainer: {
     alignSelf: 'flex-start',

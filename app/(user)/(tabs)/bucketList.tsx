@@ -114,7 +114,7 @@ const BuckectList: FC = () => {
                 data={bucketList}
                 showsVerticalScrollIndicator={true}
                 estimatedItemSize={112}
-                contentContainerStyle={{ paddingVertical: theme.spacing.sp8 }}
+                contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
                 ListFooterComponentStyle={{ height: tabBarHeight * 2 }}
                 ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp8 }} />}
                 onEndReachedThreshold={0.5}
