@@ -167,7 +167,7 @@ export default function MatchedEventsScreen(): ReactNode {
       <SafeAreaView style={{ flex: 1, gap: showImage ? theme.spacing.sp4 : 0 }}>
         {showImage &&
           <Animated.View
-            entering={ZoomIn.withInitialValues({ transform: [{ scale: 0.3 }] }).duration(460)}
+            entering={ZoomIn.withInitialValues({ transform: [{ scale: 0 }] }).duration(460)}
             exiting={FadeOut.duration(390)}
           >
             <View style={{ padding: theme.spacing.sp6, paddingBottom: 0 }}>

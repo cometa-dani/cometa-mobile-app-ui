@@ -1,7 +1,7 @@
 import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import React, { FC, useCallback, useMemo } from 'react';
+import { FC, useCallback, useMemo } from 'react';
 import { SafeAreaView } from 'react-native';
 import { Image } from 'expo-image';
 import { RectButton } from 'react-native-gesture-handler';
@@ -144,7 +144,6 @@ const renderBucketItem = (onDeleteEventLike: (eventID: number) => void) => {
     return (
       <BucketItem
         item={item}
-        index={index}
         onDeleteEventLike={onDeleteEventLike}
       />
     );
@@ -154,10 +153,9 @@ const renderBucketItem = (onDeleteEventLike: (eventID: number) => void) => {
 
 interface BucketItemProps {
   item: ILikedEvent,
-  index: number,
   onDeleteEventLike: (eventID: number) => void
 }
-const BucketItem: FC<BucketItemProps> = ({ item, index, onDeleteEventLike }) => {
+const BucketItem: FC<BucketItemProps> = ({ item, onDeleteEventLike }) => {
   const setLikedEvent = useCometaStore(state => state.setLikedEvent);
   const { styles, theme } = useStyles(styleSheet);
   const eventDate = useMemo(() => new Date(item?.event.date).toDateString().split(' ').slice(1).join(' '), []);
