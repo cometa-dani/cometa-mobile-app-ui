@@ -1,45 +1,82 @@
-import React, { FC, ReactNode, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, SafeAreaView, View, ActivityIndicator } from 'react-native';
+import React, { ReactNode, } from 'react';
+import { SafeAreaView, View, ActivityIndicator } from 'react-native';
 import { Stack, router } from 'expo-router';
-import { AppSearchInput } from '../../../../legacy_components/textInput/AppSearchInput';
-import { RectButton, } from 'react-native-gesture-handler';
-import { useInfiniteQuerySearchUsers } from '../../../../queries/search/useInfiniteQuerySearchUsers';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
-import { defaultImgPlaceholder } from '../../../../constants/vars';
-import { IGetBasicUserProfile } from '../../../../models/User';
+import { defaultImgPlaceholder, MAX_NUMBER_PHOTOS } from '../../../../constants/vars';
 import { TextView } from '@/components/text/text';
 import { Condition } from '@/components/utils/ifElse';
 import { Center } from '@/components/utils/stacks';
-import { useStyles } from 'react-native-unistyles';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import { useQueryClient } from '@tanstack/react-query';
+import { useMutationDeleteUserById, useMutationUpdateUserById, useQueryGetUserProfile } from '@/queries/currentUser/userHooks';
+import { useInfiniteQueryGetBucketListScreen } from '@/queries/currentUser/eventHooks';
+import { IPhoto } from '@/models/Photo';
+import * as ImagePicker from 'expo-image-picker';
 
 
 export default function EditUserProfileScreen(): ReactNode {
-  const { theme } = useStyles();
-  // const [searchUsers, setSearchUsers] = useState('');
-  // // debounce search inputs
-  // const [debouncedSearchUsers, setDebouncedSearchUsers] = useState('');
-  // const usersSearch = useInfiniteQuerySearchUsers(debouncedSearchUsers ?? '@');
-
-  // useEffect(() => {
-  //   const timeOutId = setTimeout(() => {
-  //     if (searchUsers.length) {
-  //       setDebouncedSearchUsers(searchUsers);
-  //     }
-  //     else {
-  //       setDebouncedSearchUsers('@');
-  //     }
-  //   }, 1_400);
-  //   return () => clearTimeout(timeOutId);
-  // }, [searchUsers]);
+  const { styles, theme } = useStyles(styleSheet);
+  const queryClient = useQueryClient();
+  const deleteUser = useMutationDeleteUserById();
+  const updateUser = useMutationUpdateUserById();
+  // const mutateLoggedInUserProfileById = useMutationUpdateUserById();
 
 
-  // // search
-  // const usersData = useMemo(() => (
-  //   usersSearch.data?.pages.flatMap(page => page.items) || []
-  // ), [usersSearch.data?.pages]);
+  // queries
+  const { data: loggedInUserBucketList } = useInfiniteQueryGetBucketListScreen();
+  const { data: userProfile } = useQueryGetUserProfile();
+  const userPhotos: IPhoto[] = userProfile?.photos ?? [];
+  const remainingPhotosToUpload: number = MAX_NUMBER_PHOTOS - (userPhotos?.length || 0);
 
-  // const handleUserInfiniteScroll = () => !usersSearch.isLoading && usersSearch.hasNextPage && usersSearch.fetchNextPage();
+
+  const handleSumitLoggedInUserInfo =
+    async (): Promise<void> => {
+      // mutateLoggedInUserProfileById.mutate({ userId: loggedInuserProfile?.id as number, payload: values });
+      // actions.setSubmitting(false);
+    };
+
+  const handlePickMultipleImages = async () => {
+    if (remainingPhotosToUpload === 0) {
+      return;
+    }
+    else {
+      try {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ['images'],
+          allowsMultipleSelection: true,
+          selectionLimit: remainingPhotosToUpload, // only allows to select a number below the limit
+          aspect: [4, 3],
+          quality: 1,
+        });
+        if (!result.canceled && userProfile?.id) {
+          const pickedImages = (result.assets).map((asset) => ({ url: asset.uri, }));
+
+          // mutateLoggedInUserPhotosUpload.mutate({
+          //   userId: loggedInuserProfile?.id,
+          //   // pickedImgFiles: pickedImages
+          // });
+        }
+      }
+      catch (error) {
+        // console.log(error);
+      }
+    }
+  };
+
+
+  const handleDeleteImage = async (photoUuid: string) => {
+    deleteUser.mutate({ userID: userProfile?.id as number, photoUuid });
+  };
+
+  const navigateToUserProfile = (): void => {
+    router.push(`/(stacks)/editUserProfile?userId=${userProfile?.id}`);
+  };
+
+  const handleLogout = (): void => {
+    queryClient.clear();
+    // signOut(auth);
+  };
 
   return (
     <>
@@ -50,7 +87,7 @@ export default function EditUserProfileScreen(): ReactNode {
           contentStyle: { backgroundColor: theme.colors.white80 },
           fullScreenGestureEnabled: true,
           headerShadowVisible: false,
-          headerTitle: 'Edit user profile',
+          headerTitle: 'Edit Profile',
           headerTitleAlign: 'center'
         }}
       />
@@ -68,7 +105,7 @@ export default function EditUserProfileScreen(): ReactNode {
           )}
           else={(
             <Center styles={{ flex: 1 }}>
-              <TextView>Edit user profile</TextView>
+              <TextView>Edit Profile</TextView>
             </Center>
           )}
         />
@@ -78,38 +115,7 @@ export default function EditUserProfileScreen(): ReactNode {
 }
 
 
-interface UserItem {
-  user: IGetBasicUserProfile,
-  onPress: () => void;
-}
-const UserItem: FC<UserItem> = ({ user, onPress }) => {
-  return (
-    <RectButton
-      style={styles.eventItem}
-      onPress={() => onPress()}
-    >
-      <Image
-        style={{ width: 42, height: 42, borderRadius: 100 }}
-        source={{
-          thumbhash: user.photos[0]?.placeholder,
-          uri: user.photos[0]?.url ?? defaultImgPlaceholder
-        }}
-      />
-
-      <TextView
-        ellipsis={true}
-        style={{
-          flex: 1,
-        }}
-      >
-        {user.username}
-      </TextView>
-
-    </RectButton>
-  );
-};
-
-const styles = StyleSheet.create({
+const styleSheet = createStyleSheet((theme) => ({
   eventItem: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -119,4 +125,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     width: '100%'
   }
-});
+}));
