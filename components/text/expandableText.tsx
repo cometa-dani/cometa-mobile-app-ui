@@ -22,7 +22,10 @@ export const ExpandableText: FC<IExpandableTextProps> = ({ children, initialLine
       <Condition
         if={numberOfLines === initialLines}
         then={
-          <TextView bold={true}>see more</TextView>
+          <TextView bold={true}>show more</TextView>
+        }
+        else={
+          <TextView bold={true}>show less</TextView>
         }
       />
     </Pressable>

@@ -20,7 +20,7 @@ import { useSelectLanguages } from '@/components/modal/selectLanguages/hook';
 import { supabase } from '@/supabase/config';
 
 
-const errorMessages = {
+export const errorMessages = {
   occupation: 'Write your usual or principal job or profession',
   biography: 'Something fun about yourself',
   currentLocation: 'Where you are currently',

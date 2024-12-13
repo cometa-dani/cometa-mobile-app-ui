@@ -1,11 +1,12 @@
 import { VStack } from '@/components/utils/stacks';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { FC, ReactNode, useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FC, ReactNode, useCallback, useState } from 'react';
+import { Pressable, Text, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { Condition } from '@/components/utils/ifElse';
+import { ForEach } from '@/components/utils/ForEach';
 
 
 type ImagePickerAsset = ImagePicker.ImagePickerAsset
@@ -26,6 +27,25 @@ export const createEmptyPlaceholders = (x: number): IPhotoPlaceholder[] => (
       })
     )
 );
+
+
+/**
+ *
+ * @description Generates a 2D array from a 1D array
+ */
+function generate2DArray<T>(arr: T[], nestedLength: number = 3): T[][] {
+  const _2DArr: T[][] = [];
+  arr.forEach((photo, index) => {
+    if (index % nestedLength === 0) {
+      _2DArr.push([photo]);
+    }
+    else {
+      _2DArr.at(-1)?.push(photo);
+    }
+  });
+  return _2DArr;
+}
+
 
 export const hasAsset = (photo: IPhotoPlaceholder) => photo?.asset;
 
@@ -78,7 +98,7 @@ interface IPhotosGridProps {
   action?: 'create' | 'update',
   footer?: () => ReactNode
 }
-export const PhotosGrid: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, action = 'create', footer }) => {
+export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, action = 'create', footer }) => {
   const { styles, theme } = useStyles(uploadYourPhotosSheet);
   const [userPhotos = [], setUserPhotos] = useState<IPhotoPlaceholder[]>(setInitialPhotos);
   const [firstPhoto, ...restPhotos] = userPhotos;
@@ -119,6 +139,41 @@ export const PhotosGrid: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, a
     }
   };
 
+  const Grid: FC = useCallback(() => (
+    <ForEach items={generate2DArray(restPhotos)}>
+      {(row, i = 0) => (
+        <View key={i} style={{ flexDirection: 'row', flex: 1, flexWrap: 'wrap', gap: theme.spacing.sp2 }}>
+          <ForEach items={row}>
+            {(cell, j = 0) => (
+              <Pressable
+                key={j}
+                style={({ pressed }) => styles.imageViewer(pressed, !cell?.asset)}
+                onPress={() => handlePickMultipleImages(cell.position, !!cell?.asset?.uri)}
+              >
+                <Condition
+                  if={cell?.asset}
+                  then={
+                    <Image
+                      style={styles.image}
+                      source={{ uri: cell?.asset?.uri }}
+                      contentFit='cover'
+                    />
+                  }
+                  else={
+                    <FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />
+                  }
+                />
+                <View style={styles.imageNum}>
+                  <Text style={styles.imageNumText}>{j + (i * 3) + 2}</Text>
+                </View>
+              </Pressable>
+            )}
+          </ForEach>
+        </View>
+      )}
+    </ForEach>
+  ), [restPhotos]);
+
   return (
     <VStack gap={theme.spacing.sp2}>
       <Pressable
@@ -143,41 +198,7 @@ export const PhotosGrid: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, a
         </View>
       </Pressable>
 
-      <FlatList
-        bounces={false}
-        data={restPhotos} // replace with your actual data
-        numColumns={3}
-        showsVerticalScrollIndicator={false}
-        columnWrapperStyle={{ gap: theme.spacing.sp2 }}
-        contentContainerStyle={{ gap: theme.spacing.sp2, minHeight: 200 }}
-        ListFooterComponent={footer && footer}
-        renderItem={({ item, index }) => {
-          return (
-            <Pressable
-              onPress={() => handlePickMultipleImages(item.position, !!item?.asset?.uri)}
-              style={({ pressed }) => styles.imageViewer(pressed, !item?.asset)}
-            >
-              <Condition
-                if={item?.asset}
-                then={
-                  <Image
-                    style={styles.image}
-                    source={{ uri: item?.asset?.uri }}
-                    contentFit='cover'
-                  />
-                }
-                else={
-                  <FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />
-                }
-              />
-              <View style={styles.imageNum}>
-                <Text style={styles.imageNumText}>{index + 2}</Text>
-              </View>
-            </Pressable>
-          );
-        }}
-        keyExtractor={(_, index) => index.toString()}
-      />
+      <Grid />
     </VStack>
   );
 };
@@ -190,6 +211,7 @@ const uploadYourPhotosSheet = createStyleSheet((theme) => ({
     borderRadius: theme.radius.sm,
   },
   image: {
+    height: '100%',
     flex: 1,
     aspectRatio: 1,
     borderRadius: theme.radius.sm,
@@ -207,6 +229,7 @@ const uploadYourPhotosSheet = createStyleSheet((theme) => ({
   }),
   imageViewer: (isPressed: boolean, showBorder = true) => ({
     position: 'relative',
+    height: '100%',
     flex: 1,
     aspectRatio: 1.05,
     borderWidth: showBorder ? 2 : undefined,

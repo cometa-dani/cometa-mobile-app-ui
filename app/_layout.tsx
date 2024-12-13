@@ -107,7 +107,7 @@ function Root(): ReactNode {
                 headerTitle: '',
                 headerStyle: { backgroundColor: theme.colors.white100 },
                 contentStyle: { backgroundColor: theme.colors.white100 },
-                headerTitleStyle: { fontFamily: theme.text.fontMedium },
+                headerTitleStyle: { fontFamily: theme.text.fontSemibold },
                 headerBackTitleStyle: { fontFamily: theme.text.fontMedium },
                 headerBackTitle: 'Back',
               }}

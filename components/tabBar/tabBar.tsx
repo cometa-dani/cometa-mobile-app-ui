@@ -104,6 +104,6 @@ const tabBarStylesheet = createStyleSheet((theme, runtime) => ({
   tabBarText: {
     color: theme.colors.gray900,
     fontSize: theme.text.size.s2,
-    fontFamily: theme.text.fontMedium
+    fontFamily: theme.text.fontSemibold
   }
 }));
