@@ -55,12 +55,12 @@ export const lightTheme = {
     indigo600: '#2563eb',
     lime600: '#65a30d',
 
-    gray50: '#f0f0f0',
-    gray100: '#e5e5e5',
-    gray200: '#afafaa',
-    gray300: '#7C8591',
-    gray400: '#5e5e5e',
-    gray500: '#4f4f4f',
+    gray50: '#f3f4f6',
+    gray100: '#e5e7eb',
+    gray200: '#d1d5db',
+    gray300: '#9ca3af',
+    gray400: '#6b7280',
+    gray500: '#4b5563',
     gray900: '#030303',
 
     white100: '#fff',

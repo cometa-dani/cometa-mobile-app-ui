@@ -133,7 +133,7 @@ export const useMutationUploadUserPhotos = (uuId?: string) => {
 
 type DeletePhotoArgs = { userID: number, photoUuid: string }
 
-export const useMutationDeleteUserById = (dynamicParam: string) => {
+export const useMutationDeleteUserById = (dynamicParam?: string) => {
   const queryClient = useQueryClient();
   return (
     useMutation({

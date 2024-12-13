@@ -5,7 +5,7 @@ import { GradientText } from 'universal-gradient-text';
 
 
 interface Props {
-  children: string;
+  children?: string;
   styles?: StyleProp<TextStyle>
 }
 

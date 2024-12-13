@@ -139,11 +139,6 @@ export default function TabLayout(): ReactNode {
         <Tabs.Screen
           options={{
             tabBarLabel: 'Profile',
-            headerTitle: () => (
-              <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
-                profile
-              </GradientHeading>
-            ),
             tabBarIcon: ({ color }) => (
               <FontAwesome name="user-circle-o" size={24} color={color} />
             )
