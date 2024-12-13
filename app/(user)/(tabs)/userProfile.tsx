@@ -10,13 +10,13 @@ import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-na
 import { SystemBars } from 'react-native-edge-to-edge';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import * as ImagePicker from 'expo-image-picker';
-import { Feather, FontAwesome, Octicons } from '@expo/vector-icons';
+import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { FlashList } from '@shopify/flash-list';
 import { TextView } from '@/components/text/text';
 import { Heading } from '@/components/text/heading';
 import { calAge } from '@/helpers/calcAge';
-import { VStack } from '@/components/utils/stacks';
+import { HStack, VStack } from '@/components/utils/stacks';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 
 
@@ -162,8 +162,26 @@ export default function UserProfileScreen() {
 
               <VStack styles={styles.container} gap={theme.spacing.sp1} >
                 <Heading size='s7'>{userProfile?.name}, {userProfile?.birthday && calAge(new Date(userProfile?.birthday))}</Heading>
-                <TextView ellipsis={true}>{userProfile?.occupation ?? 'occupation'}</TextView>
-                <TextView>{userProfile?.homeTown ?? 'homeTown'}, {userProfile?.currentLocation ?? 'currentLocation'}</TextView>
+
+                <HStack gap={theme.spacing.sp1}>
+                  <Ionicons name="bag-remove-outline" size={theme.spacing.sp8} color={theme.colors.gray900} />
+                  <TextView ellipsis={true}>{userProfile?.occupation ?? 'occupation'}</TextView>
+                </HStack>
+
+                <HStack gap={theme.spacing.sp2}>
+                  <HStack gap={theme.spacing.sp1}>
+                    <FontAwesome name="map-o" size={theme.spacing.sp7} color={theme.colors.gray900} />
+                    <TextView>{userProfile?.homeTown ?? 'homeTown'},</TextView>
+                  </HStack>
+                  <HStack>
+                    <MaterialCommunityIcons
+                      name="map-marker-outline"
+                      size={22}
+                      style={{ color: theme.colors.gray900 }}
+                    />
+                    <TextView style={{ marginLeft: -2 }}>{userProfile?.currentLocation ?? 'currentLocation'}</TextView>
+                  </HStack>
+                </HStack>
               </VStack>
 
               <View style={styles.container}>
