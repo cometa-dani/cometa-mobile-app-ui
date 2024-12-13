@@ -98,12 +98,12 @@ const users = [
 
 export default function MatchedEventsScreen(): ReactNode {
   const { styles, theme } = useStyles(styleSheet);
+  const { eventId } = useGlobalSearchParams<{ eventId: string }>();
+  const likedEvent = useCometaStore(state => state.likedEvent);
+  const [isFirstItemVisible, setIsFirstItemVisible] = useState(true);
   const { ref, setPage } = usePagerView();
   const [step, setStep] = useState(0);
-  const { eventId } = useGlobalSearchParams<{ eventId: string }>();
-  const [isFirstItemVisible, setIsFirstItemVisible] = useState(true);
   // const eventLike = useQueryCachedBucketListItem(+eventIndex);
-  const likedEvent = useCometaStore(state => state.likedEvent);
   // people state
   // const newPeopleData = useInfiteQueryGetUsersWhoLikedSameEventByID(+eventId);
   // const newFriendsData = useInfiniteQueryGetLoggedInUserNewestFriends();
@@ -147,7 +147,7 @@ export default function MatchedEventsScreen(): ReactNode {
               setShowImage(false);
             },
             onBlur: () => {
-              if (!isFirstItemVisible) return;
+              // if (!isFirstItemVisible) return;
               setShowImage(true);
             },
           },
@@ -167,8 +167,8 @@ export default function MatchedEventsScreen(): ReactNode {
       <SafeAreaView style={{ flex: 1, gap: showImage ? theme.spacing.sp4 : 0 }}>
         {showImage &&
           <Animated.View
-            entering={ZoomIn.withInitialValues({ transform: [{ scale: 0.3 }] }).duration(400)}
-            exiting={FadeOut.duration(350)}
+            entering={ZoomIn.withInitialValues({ transform: [{ scale: 0.3 }] }).duration(460)}
+            exiting={FadeOut.duration(390)}
           >
             <View style={{ padding: theme.spacing.sp6, paddingBottom: 0 }}>
               <Image
@@ -180,7 +180,7 @@ export default function MatchedEventsScreen(): ReactNode {
           </Animated.View>
         }
         <Animated.View
-          layout={LinearTransition.duration(350)}
+          layout={LinearTransition.duration(450)}
         >
           <View
             style={{
@@ -268,6 +268,11 @@ export default function MatchedEventsScreen(): ReactNode {
                 ListFooterComponentStyle={{ height: 400 }}
                 contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
                 ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
+                onViewableItemsChanged={({ viewableItems }) => {
+                  const firstItem = viewableItems[0];
+                  const isVisible = firstItem?.index === 0;
+                  setIsFirstItemVisible(isVisible);
+                }}
                 data={users}
                 estimatedItemSize={60}
                 renderItem={({ item }) => (
