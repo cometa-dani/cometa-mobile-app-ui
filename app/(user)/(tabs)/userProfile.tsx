@@ -5,8 +5,8 @@ import { useInfiniteQueryGetBucketListScreen } from '@/queries/currentUser/event
 import { useMutationDeleteUserById, useMutationUpdateUserById, useMutationUploadUserPhotos, useQueryGetUserProfile } from '@/queries/currentUser/userHooks';
 import { useQueryClient } from '@tanstack/react-query';
 import { Tabs, useRouter } from 'expo-router';
-import { useState } from 'react';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { FC, PropsWithChildren, useCallback, useReducer, useState } from 'react';
+import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, Image as DefaultImage, Pressable } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import * as ImagePicker from 'expo-image-picker';
@@ -18,6 +18,8 @@ import { Heading } from '@/components/text/heading';
 import { calAge } from '@/helpers/calcAge';
 import { HStack, VStack } from '@/components/utils/stacks';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
+import { Condition } from '@/components/utils/ifElse';
+import { ExpandableText } from '@/components/text/expandableText';
 
 
 export default function UserProfileScreen() {
@@ -29,9 +31,10 @@ export default function UserProfileScreen() {
   const mutateLoggedInUserPhotosDelete = useMutationDeleteUserById();
   const mutateLoggedInUserProfileById = useMutationUpdateUserById();
 
+
   // queries
   const { data: loggedInUserBucketList } = useInfiniteQueryGetBucketListScreen();
-  const { data: userProfile, isLoading } = useQueryGetUserProfile();
+  const { data: userProfile } = useQueryGetUserProfile();
   const userPhotos: IPhoto[] = userProfile?.photos ?? [];
   const remainingPhotosToUpload: number = MAX_NUMBER_PHOTOS - (userPhotos?.length || 0);
 
@@ -99,12 +102,23 @@ export default function UserProfileScreen() {
     // signOut(auth);
   };
 
+  const renderItem = useCallback(({ item }: { item: IPhoto }) => {
+    return (
+      <Image
+        placeholder={{ thumbhash: item.placeholder }}
+        source={{ uri: item.url }}
+        style={styles.avatarImage}
+        contentFit='cover'
+      />
+    );
+  }, []);
+
   return (
     <>
       <SystemBars style='dark' />
       <Tabs.Screen
         options={{
-          headerLeft(props) {
+          headerLeft() {
             return (
               <TouchableOpacity
                 onPress={() => router.push('/(stacks)/settings')}
@@ -114,7 +128,7 @@ export default function UserProfileScreen() {
               </TouchableOpacity>
             );
           },
-          headerRight(props) {
+          headerRight() {
             return (
               <TouchableOpacity
                 onPress={() => router.push('/(stacks)/editUserProfile')}
@@ -147,16 +161,10 @@ export default function UserProfileScreen() {
                   data={userProfile?.photos}
                   horizontal={true}
                   pagingEnabled={true}
+                  decelerationRate={'normal'}
                   showsHorizontalScrollIndicator={false}
                   estimatedItemSize={UnistylesRuntime.screen.height * 0.33}
-                  renderItem={({ item }) => (
-                    <Image
-                      placeholder={{ thumbhash: item.placeholder }}
-                      source={{ uri: item.url }}
-                      style={styles.avatarImage}
-                      contentFit='cover'
-                    />
-                  )}
+                  renderItem={renderItem}
                 />
               </View>
 
@@ -185,12 +193,15 @@ export default function UserProfileScreen() {
               </VStack>
 
               <View style={styles.container}>
-                <TextView numberOfLines={3} ellipsis={true}>
-                  {userProfile?.biography ?? 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis temporibus sed odit exercitationem, suscipit debitis quaerat laboriosam reprehenderit reiciendis dolore velit deserunt voluptates laudantium, accusamus dolorem cupiditate laborum natus facilis.'}
-                </TextView>
+                <Heading size='s6'>
+                  Bio
+                </Heading>
+                <ExpandableText>{userProfile?.biography}</ExpandableText>
               </View>
 
-              <Heading size='s6' style={{ paddingHorizontal: theme.spacing.sp6, paddingBottom: theme.spacing.sp1 }}>Bucketlist</Heading>
+              <Heading size='s6' style={{ paddingHorizontal: theme.spacing.sp6, paddingBottom: theme.spacing.sp1 }}>
+                Bucketlist
+              </Heading>
             </VStack>
           )}
           renderItem={({ item }) => (

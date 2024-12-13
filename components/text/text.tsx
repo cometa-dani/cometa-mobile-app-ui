@@ -9,13 +9,15 @@ interface TextProps {
   bold?: boolean;
   style?: StyleProp<TextStyle>,
   ellipsis?: boolean,
-  numberOfLines?: number
+  numberOfLines?: number,
+  onPress?: () => void
 }
 
-export const TextView: FC<TextProps> = ({ children, bold = false, style, ellipsis, numberOfLines = 1 }) => {
+export const TextView: FC<TextProps> = ({ children, bold = false, style, ellipsis, numberOfLines = 1, onPress }) => {
   const { styles } = useStyles(textStyleSheet);
   return (
     <Text
+      onPress={onPress && onPress}
       allowFontScaling={true}
       ellipsizeMode='tail'
       numberOfLines={ellipsis ? numberOfLines : undefined}

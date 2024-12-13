@@ -81,7 +81,7 @@ const tabBarStylesheet = createStyleSheet((theme, runtime) => ({
     flex: 1,
     borderTopEndRadius: theme.spacing.sp10 * runtime.fontScale,
     borderTopStartRadius: theme.spacing.sp10 * runtime.fontScale,
-    borderColor: theme.colors.white60,
+    borderColor: theme.colors.gray100,
     borderWidth: 1.4,
     paddingHorizontal: 0,
     margin: 0,
