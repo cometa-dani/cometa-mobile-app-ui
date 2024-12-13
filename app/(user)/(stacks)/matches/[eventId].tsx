@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { SafeAreaView, View, } from 'react-native';
 import { Stack, useGlobalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
@@ -101,6 +101,7 @@ export default function MatchedEventsScreen(): ReactNode {
   const { ref, setPage } = usePagerView();
   const [step, setStep] = useState(0);
   const { eventId } = useGlobalSearchParams<{ eventId: string }>();
+  const [isFirstItemVisible, setIsFirstItemVisible] = useState(true);
   // const eventLike = useQueryCachedBucketListItem(+eventIndex);
   const likedEvent = useCometaStore(state => state.likedEvent);
   // people state
@@ -124,6 +125,14 @@ export default function MatchedEventsScreen(): ReactNode {
   };
   const [showImage, setShowImage] = useState(true);
 
+  useEffect(() => {
+    if (!isFirstItemVisible) {
+      setShowImage(false);
+    } else {
+      setShowImage(true);
+    }
+  }, [isFirstItemVisible]);
+
   return (
     <>
       <Stack.Screen
@@ -138,6 +147,7 @@ export default function MatchedEventsScreen(): ReactNode {
               setShowImage(false);
             },
             onBlur: () => {
+              if (!isFirstItemVisible) return;
               setShowImage(true);
             },
           },
@@ -214,6 +224,11 @@ export default function MatchedEventsScreen(): ReactNode {
                 ListFooterComponentStyle={{ height: 400 }}
                 contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
                 ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
+                onViewableItemsChanged={({ viewableItems }) => {
+                  const firstItem = viewableItems[0];
+                  const isVisible = firstItem?.index === 0;
+                  setIsFirstItemVisible(isVisible);
+                }}
                 renderItem={({ item }) => (
                   <HStack
                     $y='center'

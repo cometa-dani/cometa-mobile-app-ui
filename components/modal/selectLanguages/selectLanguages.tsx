@@ -110,7 +110,7 @@ export function SelectLanguages(): ReactNode {
                   estimatedItemSize={theme.spacing.sp20}
                   stickyHeaderIndices={[0]}
                   contentContainerStyle={{ padding: theme.spacing.sp8 }}
-                  onViewableItemsChanged={({ viewableItems, changed }) => {
+                  onViewableItemsChanged={({ viewableItems }) => {
                     const firstItem = viewableItems[0];
                     const isVisible = firstItem?.index === 0;
                     setIsFirstItemVisible(isVisible);
