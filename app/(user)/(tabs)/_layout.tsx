@@ -74,7 +74,7 @@ export default function TabLayout(): ReactNode {
                 styles={{ marginRight: theme.spacing.sp4 }}
               >
                 <CircleButton
-                  onPress={() => router.push(`/(stacks)/notifications/${userProfile?.id}`)}
+                  onPress={() => router.push(`/(stacks)/notifications?userId=${userProfile?.id}`)}
                 >
                   <>
                     <Condition

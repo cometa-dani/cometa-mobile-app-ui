@@ -1,4 +1,5 @@
 import 'expo-dev-client';
+import '../styles/unistyles';
 // components
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { SplashScreen, Stack } from 'expo-router';
@@ -22,7 +23,7 @@ import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-rean
 export { ErrorBoundary } from 'expo-router';
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '/index',
+  initialRouteName: '/(user)/(tabs)/index',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.

@@ -2,7 +2,7 @@ import { ReactNode, } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
-import { MAX_NUMBER_PHOTOS } from '../../../constants/vars';
+import { MAX_NUMBER_PHOTOS } from '../../constants/vars';
 import { Condition } from '@/components/utils/ifElse';
 import { Center } from '@/components/utils/stacks';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';

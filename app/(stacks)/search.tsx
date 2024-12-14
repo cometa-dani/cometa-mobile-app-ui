@@ -3,11 +3,11 @@ import { StyleSheet, SafeAreaView, View, ActivityIndicator } from 'react-native'
 import { Stack, router } from 'expo-router';
 // import { AppSearchInput } from '../../../legacy_components/textInput/AppSearchInput';
 import { RectButton, } from 'react-native-gesture-handler';
-import { useInfiniteQuerySearchUsers } from '../../../queries/search/useInfiniteQuerySearchUsers';
+import { useInfiniteQuerySearchUsers } from '../../queries/search/useInfiniteQuerySearchUsers';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
-import { defaultImgPlaceholder } from '../../../constants/vars';
-import { IGetBasicUserProfile } from '../../../models/User';
+import { defaultImgPlaceholder } from '../../constants/vars';
+import { IGetBasicUserProfile } from '../../models/User';
 import { TextView } from '@/components/text/text';
 import { Condition } from '@/components/utils/ifElse';
 import { Center } from '@/components/utils/stacks';
