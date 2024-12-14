@@ -14,6 +14,7 @@ import { CircleButton } from '../button/circleButton';
 import { tabBarHeight } from '../tabBar/tabBar';
 import * as WebBrowser from 'expo-web-browser';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { imageTransition } from '@/constants/vars';
 
 
 interface EventsListProps {
@@ -113,6 +114,8 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
       <GestureDetector gesture={doubleTapOnLikeButton}>
         <View collapsable={false}>
           <ImageBackground
+            recyclingKey={item.photos.at(0)?.url}
+            transition={imageTransition}
             source={item.photos.at(0)?.url}
             style={styles.imgBackground}
             placeholder={{ thumbhash: item.photos.at(0)?.placeholder }}

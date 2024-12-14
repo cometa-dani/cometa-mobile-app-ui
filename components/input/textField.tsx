@@ -2,7 +2,7 @@ import { IUserOnboarding } from '@/models/User';
 import { FC, useState } from 'react';
 import { HStack, VStack } from '../utils/stacks';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import { KeyboardTypeOptions, Text, View, TextInput, Pressable } from 'react-native';
+import { KeyboardTypeOptions, Text, View, TextInput, Pressable, Platform } from 'react-native';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -190,7 +190,7 @@ const inputSheet = createStyleSheet((theme) => ({
   }),
   fieldContainer: {
     flexDirection: 'row',
-    backgroundColor: theme.colors.slate100,
+    backgroundColor: theme.colors.slate50,
     borderRadius: theme.radius.sm,
     borderWidth: 1.6,
     animationTimingFunction: 'ease-in-out',
@@ -215,7 +215,6 @@ const inputSheet = createStyleSheet((theme) => ({
   },
   field: {
     fontFamily: theme.text.fontMedium,
-    // fontSize: Platform.select({ ios: theme.text.size.s4, android: theme.text.size.s5 }),
     color: theme.colors.gray900,
     padding: theme.spacing.sp2,
     flex: 1

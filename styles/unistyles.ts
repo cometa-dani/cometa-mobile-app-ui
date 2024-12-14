@@ -66,6 +66,7 @@ export const lightTheme = {
     slate300: '#cbd5e1',
     slate200: '#e2e8f0',
     slate100: '#f1f5f9',
+    slate50: '#f8fafc',
 
     white100: '#fff',
     white60: '#EDEDED', // (a very light grayish-white color)

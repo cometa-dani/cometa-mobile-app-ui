@@ -11,7 +11,7 @@ import { FlashList } from '@shopify/flash-list';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { red_100 } from '../../constants/colors';
 import { CreateEventLike, IGetLatestPaginatedEvents, ILikedEvent } from '../../models/Event';
-import { defaultImgPlaceholder } from '../../constants/vars';
+import { defaultImgPlaceholder, imageTransition } from '../../constants/vars';
 import { EmptyMessage } from '../../legacy_components/empty/Empty';
 import { ForEach } from '@/components/utils/ForEach';
 import { Condition } from '@/components/utils/ifElse';
@@ -170,8 +170,10 @@ const BucketItem: FC<BucketItemProps> = ({ item, onDeleteEventLike }) => {
       {({ user }, index) => (
         <Image
           key={index}
-          source={{ uri: user?.photos[0]?.url ?? defaultImgPlaceholder }}
-          placeholder={{ thumbhash: user?.photos[0]?.placeholder }}
+          transition={imageTransition}
+          recyclingKey={user?.photos.at(0)?.placeholder}
+          source={{ uri: user?.photos.at(0)?.url ?? defaultImgPlaceholder }}
+          placeholder={{ thumbhash: user?.photos.at(0)?.placeholder }}
           style={styles.bubble}
         />
       )}

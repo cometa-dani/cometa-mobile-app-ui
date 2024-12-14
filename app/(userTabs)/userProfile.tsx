@@ -16,6 +16,7 @@ import { calAge } from '@/helpers/calcAge';
 import { HStack, VStack } from '@/components/utils/stacks';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { ExpandableText } from '@/components/text/expandableText';
+import { imageTransition } from '@/constants/vars';
 
 
 export default function UserProfileScreen() {
@@ -38,6 +39,8 @@ export default function UserProfileScreen() {
   const renderItem = useCallback(({ item }: { item: IPhoto }) => {
     return (
       <Image
+        recyclingKey={item.url}
+        transition={imageTransition}
         placeholder={{ thumbhash: item.placeholder }}
         source={{ uri: item.url }}
         style={styles.avatarImage}
@@ -141,9 +144,11 @@ export default function UserProfileScreen() {
           renderItem={({ item }) => (
             <Image
               placeholder={{ thumbhash: item.placeholder }}
+              recyclingKey={item.img}
               source={{ uri: item.img }}
               style={styles.eventImage}
               contentFit='cover'
+              transition={imageTransition}
             />
           )}
         />

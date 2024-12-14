@@ -11,3 +11,4 @@ export const maximunNumberOfPhotos = 5;
 export const MAX_NUMBER_PHOTOS = 7;
 export const MIN_NUMBER_PHOTOS = 4;
 // const url = `https://www.google.com/maps?cid=8997741589594615700&ll=${item.location?.latitude},${item.location?.longitude}&z=18`;
+export const imageTransition = 400;

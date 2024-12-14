@@ -7,6 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { Condition } from '@/components/utils/ifElse';
 import { ForEach } from '@/components/utils/ForEach';
+import { imageTransition } from '@/constants/vars';
 
 
 type ImagePickerAsset = ImagePicker.ImagePickerAsset
@@ -154,9 +155,11 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
                   if={cell?.asset}
                   then={
                     <Image
+                      recyclingKey={cell?.asset?.uri}
                       style={styles.image}
                       source={{ uri: cell?.asset?.uri }}
                       contentFit='cover'
+                      transition={imageTransition}
                     />
                   }
                   else={
@@ -187,6 +190,7 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
               style={styles.mainImage}
               source={{ uri: firstPhoto?.asset?.uri }}
               contentFit='cover'
+              transition={imageTransition}
             />
           }
           else={

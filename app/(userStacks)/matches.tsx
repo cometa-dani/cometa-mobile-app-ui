@@ -16,6 +16,7 @@ import { useCometaStore } from '@/store/cometaStore';
 import { Button } from '@/components/button/button';
 import Animated, { ZoomIn, FadeOut, LinearTransition, } from 'react-native-reanimated';
 import { Image } from 'expo-image';
+import { imageTransition } from '@/constants/vars';
 
 
 const users = [
@@ -173,6 +174,7 @@ export default function MatchedEventsScreen(): ReactNode {
           >
             <View style={{ padding: theme.spacing.sp6, paddingBottom: 0 }}>
               <Image
+                transition={imageTransition}
                 contentFit='cover'
                 style={styles.imgHeader}
                 source={{ uri: likedEvent.photos.at(0)?.url, }}
@@ -235,6 +237,8 @@ export default function MatchedEventsScreen(): ReactNode {
                     styles={{ paddingHorizontal: theme.spacing.sp6 }}
                   >
                     <Image
+                      recyclingKey={item.avatar}
+                      transition={imageTransition}
                       source={{ uri: item.avatar }}
                       style={styles.imgAvatar}
                     />
@@ -281,6 +285,8 @@ export default function MatchedEventsScreen(): ReactNode {
                     styles={{ paddingHorizontal: theme.spacing.sp6 }}
                   >
                     <Image
+                      recyclingKey={item.avatar}
+                      transition={imageTransition}
                       source={{ uri: item.avatar }}
                       style={styles.imgAvatar}
                     />
