@@ -6,7 +6,7 @@ import { ReactNode } from 'react';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
-export const tabBarHeight = Platform.select({ ios: 60, android: 66 }) ?? 66;
+export const tabBarHeight = Platform.select({ ios: 54, android: 60 }) ?? 60;
 
 
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps): ReactNode {
@@ -54,13 +54,15 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps): R
             onLongPress={onLongPress}
             style={styles.tabBarPressable(index, arr.length)}
           >
-            {Icon &&
-              Icon({
-                color: isFocused ? activeTintColor : inactiveTintColor,
-                focused: isFocused,
-                size: 24
-              })
-            }
+            <View style={styles.shadow(isFocused)}>
+              {Icon &&
+                Icon({
+                  color: isFocused ? activeTintColor : inactiveTintColor,
+                  focused: isFocused,
+                  size: 24,
+                })
+              }
+            </View>
             <Text style={[styles.tabBarText, { color: isFocused ? activeTintColor : inactiveTintColor }]}>
               {label as ReactNode}
             </Text>
@@ -105,5 +107,21 @@ const tabBarStylesheet = createStyleSheet((theme, runtime) => ({
     color: theme.colors.gray900,
     fontSize: theme.text.size.s2,
     fontFamily: theme.text.fontSemibold
-  }
+  },
+  shadow: (isFocused: boolean) => ({
+    backgroundColor: isFocused ? 'rgba(228, 63, 98, 0.08)' : 'transparent',
+    width: 50,
+    paddingVertical: 2,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: theme.colors.red100,
+    shadowOffset: {
+      width: 4,
+      height: 4
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3
+  })
 }));
