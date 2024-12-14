@@ -107,9 +107,8 @@ export function SelectLanguages(): ReactNode {
                   ref={listRef}
                   data={[''].concat(filteredLanguagesData)}
                   bounces={false}
-                  estimatedItemSize={theme.spacing.sp20}
+                  estimatedItemSize={theme.spacing.sp18}
                   stickyHeaderIndices={[0]}
-                  contentContainerStyle={{ padding: theme.spacing.sp8 }}
                   onViewableItemsChanged={({ viewableItems }) => {
                     const firstItem = viewableItems[0];
                     const isVisible = firstItem?.index === 0;
@@ -187,7 +186,8 @@ const styleSheet = createStyleSheet((theme, runtime) => ({
     borderRadius: 6,
   },
   language: {
-    height: theme.spacing.sp22,
+    height: theme.spacing.sp18,
+    paddingHorizontal: theme.spacing.sp8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

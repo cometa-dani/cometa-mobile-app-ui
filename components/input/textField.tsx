@@ -190,7 +190,7 @@ const inputSheet = createStyleSheet((theme) => ({
   }),
   fieldContainer: {
     flexDirection: 'row',
-    backgroundColor: theme.colors.white80,
+    backgroundColor: theme.colors.slate100,
     borderRadius: theme.radius.sm,
     borderWidth: 1.6,
     animationTimingFunction: 'ease-in-out',

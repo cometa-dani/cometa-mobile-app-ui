@@ -22,7 +22,7 @@ export default function WelcomeScreen() {
   const [isUserProfileModalVisible, setUserProfileModalVisible] = useReducer(prev => !prev, false);
 
   const toggleLoginModal = (): void => {
-    router.push('/user/login');
+    router.push('/(userStacks)/login');
   };
 
   const toggleRegisterModal = (): void => {
@@ -31,11 +31,11 @@ export default function WelcomeScreen() {
 
   const openUserProfileBottomSheet = (): void => {
     setUserProfileModalVisible();
-    router.push('/user/onboarding');
+    router.push('/(userStacks)/onboarding');
   };
 
   const openCompanyProfileModal = (): void => {
-    router.push('/(company)/onboarding');
+    router.push('/(companyStacks)/onboarding');
   };
 
   if (isLoading) {

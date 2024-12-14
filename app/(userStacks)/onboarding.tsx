@@ -5,11 +5,13 @@ import { CreateYourProfileForm } from '@/components/onboarding/user/steps/create
 import { UploadYouPhotosForm } from '@/components/onboarding/user/steps/uploadYourPhotos';
 import PagerView, { usePagerView } from 'react-native-pager-view';
 import { Stack } from 'expo-router';
+import { useStyles } from 'react-native-unistyles';
 
 
 const title = ['Create Your Profile', 'About Yourself', 'Upload Your Photos', 'Done'];
 
 export default function OnboardUserScreen() {
+  const { theme } = useStyles();
   const { ref, setPage, setProgress, progress } = usePagerView();
   const nextPage = progress.position + 1;
   return (
@@ -25,6 +27,9 @@ export default function OnboardUserScreen() {
           headerTitle: '',
           headerShown: true,
           animation: 'slide_from_bottom',
+          contentStyle: {
+            backgroundColor: theme.colors.white100
+          }
         }}
       />
 

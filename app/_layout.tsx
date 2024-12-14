@@ -23,6 +23,7 @@ export { ErrorBoundary } from 'expo-router';
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '/(userTabs)/index',
+  // initialRouteName: '/index',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -111,7 +112,13 @@ function Root(): ReactNode {
                 headerBackTitle: 'Back',
               }}
             >
-              <Stack.Screen name='welcome' />
+              <Stack.Screen name='index'
+                options={{
+                  headerShown: true,
+                  headerTransparent: true,
+                  headerStyle: { backgroundColor: 'transparent' },
+                }}
+              />
               <Stack.Screen name='(userTabs)' />
               <Stack.Screen name='(companyTabs)' />
             </Stack>

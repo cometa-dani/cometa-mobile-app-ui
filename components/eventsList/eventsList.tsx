@@ -283,7 +283,7 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
 
 const styleSheet = createStyleSheet((theme, runtime) => ({
   eventInfoContainer: {
-    bottom: tabBarHeight + runtime.insets.bottom + 24,
+    bottom: tabBarHeight + runtime.insets.bottom + 16,
     gap: theme.spacing.sp4,
     left: theme.spacing.sp6,
     position: 'absolute',
@@ -298,7 +298,7 @@ const styleSheet = createStyleSheet((theme, runtime) => ({
   },
   positionedButtons: {
     position: 'absolute',
-    bottom: tabBarHeight + runtime.insets.bottom + 60,
+    bottom: tabBarHeight + runtime.insets.bottom + 50,
     zIndex: 100,
     right: theme.spacing.sp6
   },

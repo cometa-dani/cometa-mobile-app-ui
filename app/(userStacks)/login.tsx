@@ -58,6 +58,9 @@ export default function LoginScreen() {
           headerTitle: '',
           headerShown: true,
           animation: 'slide_from_bottom',
+          contentStyle: {
+            backgroundColor: theme.colors.white100
+          }
         }}
       />
 

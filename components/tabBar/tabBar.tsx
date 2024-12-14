@@ -6,7 +6,7 @@ import { ReactNode } from 'react';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
-export const tabBarHeight = Platform.select({ ios: 54, android: 60 }) ?? 60;
+export const tabBarHeight = Platform.select({ ios: 50, android: 56 }) ?? 56;
 
 
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps): ReactNode {

@@ -1,6 +1,6 @@
 import { ReactNode, } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { Stack, Tabs, useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { MAX_NUMBER_PHOTOS } from '../../constants/vars';
 import { Condition } from '@/components/utils/ifElse';
@@ -194,70 +194,77 @@ export default function EditUserProfileScreen(): ReactNode {
       <Condition
         if={isFetched}
         then={(
-          <KeyboardAwareScrollView
-            contentContainerStyle={{
-              padding: theme.spacing.sp6,
-              gap: theme.spacing.sp7,
-            }}
-          >
-            <View style={{ paddingBottom: theme.spacing.sp2 }}>
+          <KeyboardAwareScrollView>
+            <View style={{
+              paddingBottom: theme.spacing.sp10,
+              padding: theme.spacing.sp6
+            }}>
               <PhotosGrid2
                 action='update'
                 setInitialPhotos={setInitialPlaceholders}
                 onSelect={handleUserState}
               />
             </View>
-            <FieldText
-              label='Occupation'
-              name='occupation'
-              placeholder='Enter your Occupation'
-              iconName='suitcase'
-              defaultErrMessage={errorMessages.occupation}
-            />
-            <FieldText
-              label='Bio'
-              multiline={true}
-              name='biography'
-              placeholder='Enter your Biography'
-              iconName='sticky-note-o'
-              defaultErrMessage={errorMessages.biography}
-            />
-            <FieldText
-              editable={false}
-              label='Languages you know'
-              name='languages'
-              onShowSelector={() => navigateToSelectLanguages()}
-              placeholder='Enter your Languages'
-              iconName='language'
-              defaultErrMessage={errorMessages.languages}
-            />
-            <FieldText
-              editable={false}
-              label='Location'
-              name='currentLocation'
-              onShowSelector={() => navigateToSelectCity('currentLocation')}
-              placeholder='Enter your current Location'
-              iconName='map-o'
-              defaultErrMessage={errorMessages.currentLocation}
-            />
-            <FieldText
-              editable={false}
-              label='Home Town'
-              name='homeTown'
-              onShowSelector={() => navigateToSelectCity('homeTown')}
-              placeholder='Enter your home Town'
-              iconName='map-marker'
-              defaultErrMessage={errorMessages.homeTown}
-            />
 
-            <Button
-              variant='primary'
-              style={{ marginTop: theme.spacing.sp8 }}
-              onPress={formProps.handleSubmit(handleUserCreation)}
-            >
-              Done
-            </Button>
-            <View style={{ height: tabBarHeight * 1 }} />
+            <View style={{
+              gap: theme.spacing.sp7,
+              backgroundColor: theme.colors.white100,
+              paddingHorizontal: theme.spacing.sp6,
+              paddingVertical: theme.spacing.sp10,
+              borderRadius: theme.spacing.sp6
+            }}>
+              <FieldText
+                label='Occupation'
+                name='occupation'
+                placeholder='Enter your Occupation'
+                iconName='suitcase'
+                defaultErrMessage={errorMessages.occupation}
+              />
+              <FieldText
+                label='Bio'
+                multiline={true}
+                name='biography'
+                placeholder='Enter your Biography'
+                iconName='sticky-note-o'
+                defaultErrMessage={errorMessages.biography}
+              />
+              <FieldText
+                editable={false}
+                label='Languages you know'
+                name='languages'
+                onShowSelector={() => navigateToSelectLanguages()}
+                placeholder='Enter your Languages'
+                iconName='language'
+                defaultErrMessage={errorMessages.languages}
+              />
+              <FieldText
+                editable={false}
+                label='Location'
+                name='currentLocation'
+                onShowSelector={() => navigateToSelectCity('currentLocation')}
+                placeholder='Enter your current Location'
+                iconName='map-o'
+                defaultErrMessage={errorMessages.currentLocation}
+              />
+              <FieldText
+                editable={false}
+                label='Home Town'
+                name='homeTown'
+                onShowSelector={() => navigateToSelectCity('homeTown')}
+                placeholder='Enter your home Town'
+                iconName='map-marker'
+                defaultErrMessage={errorMessages.homeTown}
+              />
+
+              <Button
+                variant='primary'
+                style={{ marginTop: theme.spacing.sp8 }}
+                onPress={formProps.handleSubmit(handleUserCreation)}
+              >
+                Done
+              </Button>
+              <View style={{ height: tabBarHeight }} />
+            </View>
           </KeyboardAwareScrollView>
         )}
         else={(
