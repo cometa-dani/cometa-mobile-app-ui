@@ -3,7 +3,7 @@ import '../styles/unistyles';
 // components
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { SplashScreen, Stack } from 'expo-router';
-import ToastManager from 'toastify-react-native';
+import { NotifierWrapper } from 'react-native-notifier';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 // hooks
@@ -17,6 +17,7 @@ import { useCometaStore } from '@/store/cometaStore';
 import NetInfo from '@react-native-community/netinfo';
 import { onlineManager } from '@tanstack/react-query';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Catch any errors thrown by the Layout component.
 export { ErrorBoundary } from 'expo-router';
@@ -93,38 +94,37 @@ function Root(): ReactNode {
 
   return (
     <QueryClientProvider client={new QueryClient()}>
-      <ToastManager
-        duration={2800 * 2}
-        animationOutTiming={800}
-        animationInTiming={800}
-      />
-      <KeyboardProvider>
-        <GestureHandlerRootView>
-          <BottomSheetModalProvider>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                headerTitle: '',
-                headerStyle: { backgroundColor: theme.colors.white100 },
-                contentStyle: { backgroundColor: theme.colors.white80 },
-                headerTitleStyle: { fontFamily: theme.text.fontSemibold },
-                headerBackTitleStyle: { fontFamily: theme.text.fontMedium },
-                headerBackTitle: 'Back',
-              }}
-            >
-              <Stack.Screen name='index'
-                options={{
-                  headerShown: true,
-                  headerTransparent: true,
-                  headerStyle: { backgroundColor: 'transparent' },
-                }}
-              />
-              <Stack.Screen name='(userTabs)' />
-              <Stack.Screen name='(companyTabs)' />
-            </Stack>
-          </BottomSheetModalProvider>
-        </GestureHandlerRootView>
-      </KeyboardProvider>
+      <SafeAreaProvider>
+        <KeyboardProvider>
+          <GestureHandlerRootView>
+            <BottomSheetModalProvider>
+              <NotifierWrapper duration={5_000}>
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                    headerTitle: '',
+                    headerStyle: { backgroundColor: theme.colors.white100 },
+                    contentStyle: { backgroundColor: theme.colors.white80 },
+                    headerTitleStyle: { fontFamily: theme.text.fontSemibold },
+                    headerBackTitleStyle: { fontFamily: theme.text.fontMedium },
+                    headerBackTitle: 'Back',
+                  }}
+                >
+                  <Stack.Screen name='index'
+                    options={{
+                      headerShown: true,
+                      headerTransparent: true,
+                      headerStyle: { backgroundColor: 'transparent' },
+                    }}
+                  />
+                  <Stack.Screen name='(userTabs)' />
+                  <Stack.Screen name='(companyTabs)' />
+                </Stack>
+              </NotifierWrapper>
+            </BottomSheetModalProvider>
+          </GestureHandlerRootView>
+        </KeyboardProvider>
+      </SafeAreaProvider>
     </QueryClientProvider>
   );
 }

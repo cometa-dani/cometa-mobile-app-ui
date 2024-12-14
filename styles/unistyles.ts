@@ -55,6 +55,11 @@ export const lightTheme = {
     indigo600: '#2563eb',
     lime600: '#65a30d',
 
+    // toast colors
+    success: '#22c55e',
+    info: '#60a5fa',
+    error: '#fb923c',
+
     gray50: '#f3f4f6',
     gray100: '#e5e7eb',
     gray200: '#d1d5db',

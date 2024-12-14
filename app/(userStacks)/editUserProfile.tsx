@@ -1,7 +1,6 @@
 import { ReactNode, } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { Image } from 'expo-image';
 import { MAX_NUMBER_PHOTOS } from '../../constants/vars';
 import { Condition } from '@/components/utils/ifElse';
 import { Center } from '@/components/utils/stacks';
@@ -30,7 +29,8 @@ import { FieldText } from '@/components/input/textField';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { Button } from '@/components/button/button';
 import { PhotosGrid2 } from '@/components/onboarding/user/photosGrid/photoGrid2';
-
+import { Notifier, NotifierComponents } from 'react-native-notifier';
+import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
 
 const setInitialPlaceholders = () => createEmptyPlaceholders(MAX_NUMBER_PHOTOS);
 
@@ -85,44 +85,49 @@ export default function EditUserProfileScreen(): ReactNode {
   const uploadPhotos = useMutationUploadUserPhotos();
 
   const handleUserCreation = async (values: IFormValues): Promise<void> => {
-    const updateUserPayload: IUpdateUser = {
-      biography: values.biography,
-      currentLocation: values.currentLocation,
-      homeTown: values.homeTown,
-      languages: values.languages ? values.languages.split(',') : [],
-      occupation: values.occupation
-    };
-    try {
-      const { data, error } = await supabase.auth.signUp({ email: userState.email, password: userState.password });
-      if (error) throw error;
-      // const createUserPayload: ICreateUser = {
-      //   email: userState.email,
-      //   name: userState.name,
-      //   username: userState.username,
-      //   uid: data?.user?.id ?? '', // from supabase
-      //   birthday: userState.birthday,
-      // };
-      // const newUser = await createUser.mutateAsync(createUserPayload);
-      if (!userProfile?.id) return;
-      await uploadPhotos.mutateAsync({ userId: userProfile?.id, pickedImgFiles: userState.photos });
-      await updateUser.mutateAsync({ userId: userProfile?.id, payload: updateUserPayload });
-      // await supabase.auth.setSession({
-      //   access_token: data?.session?.access_token ?? '',
-      //   refresh_token: data?.session?.refresh_token ?? ''
-      // });
-      // onNext();
-    } catch (error) {
-      return;
-    }
+    Notifier.showNotification({
+      title: 'Done',
+      description: 'your profile was saved successfully',
+      Component: SucessToast,
+    });
+    // const updateUserPayload: IUpdateUser = {
+    //   biography: values.biography,
+    //   currentLocation: values.currentLocation,
+    //   homeTown: values.homeTown,
+    //   languages: values.languages ? values.languages.split(',') : [],
+    //   occupation: values.occupation
+    // };
+    // try {
+    //   const { data, error } = await supabase.auth.signUp({ email: userState.email, password: userState.password });
+    //   if (error) throw error;
+    //   // const createUserPayload: ICreateUser = {
+    //   //   email: userState.email,
+    //   //   name: userState.name,
+    //   //   username: userState.username,
+    //   //   uid: data?.user?.id ?? '', // from supabase
+    //   //   birthday: userState.birthday,
+    //   // };
+    //   // const newUser = await createUser.mutateAsync(createUserPayload);
+    //   if (!userProfile?.id) return;
+    //   await uploadPhotos.mutateAsync({ userId: userProfile?.id, pickedImgFiles: userState.photos });
+    //   await updateUser.mutateAsync({ userId: userProfile?.id, payload: updateUserPayload });
+    //   // await supabase.auth.setSession({
+    //   //   access_token: data?.session?.access_token ?? '',
+    //   //   refresh_token: data?.session?.refresh_token ?? ''
+    //   // });
+    //   // onNext();
+    // } catch (error) {
+    //   return;
+    // }
   };
 
   const navigateToSelectCity = (kind: keyof ICityKind) => {
     setCityKind(kind);
-    router.push('/stacks/selectCity');
+    router.push('/(userStacks)/selectCity');
   };
 
   const navigateToSelectLanguages = () => {
-    router.push('/stacks/selectLanguages');
+    router.push('/(userStacks)/selectLanguages');
   };
 
   // queries
