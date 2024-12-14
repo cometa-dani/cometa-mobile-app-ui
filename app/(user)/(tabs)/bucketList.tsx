@@ -205,7 +205,7 @@ const BucketItem: FC<BucketItemProps> = ({ item, onDeleteEventLike }) => {
           gap: theme.spacing.sp2
         }}
         onPress={() => {
-          router.push(`/matches/${item.event.id}`);
+          router.push(`/(stacks)/matches?eventId=${item.event.id}`);
           setLikedEvent(item.event);
         }}
       >
