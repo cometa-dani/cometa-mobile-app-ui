@@ -4,11 +4,11 @@ import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import { BaseButton, RectButton } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
-import { gray_50, red_100 } from '../../../../constants/colors';
-import { useCometaStore } from '../../../../store/cometaStore';
+// import { gray_50, red_100 } from '../../../constants/colors';
+import { useCometaStore } from '../../../store/cometaStore';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import notificationService from '../../../../services/notificationService';
-import { INotificationData } from '../../../../store/slices/notificationSlice';
+import notificationService from '../../../services/notificationService';
+import { INotificationData } from '../../../store/slices/notificationSlice';
 import { ReactNode, useCallback } from 'react';
 import { TextView } from '@/components/text/text';
 import { Condition } from '@/components/utils/ifElse';
@@ -72,7 +72,7 @@ export default function NotificationsScreen(): ReactNode {
                       }}
                       style={styles.deleteButton}
                     >
-                      <FontAwesome name='trash-o' size={26} color={red_100} />
+                      {/* <FontAwesome name='trash-o' size={26} color={red_100} /> */}
                     </RectButton>
                   )}>
                   <BaseButton
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
 
   deleteButton: {
-    backgroundColor: gray_50,
+    // backgroundColor: gray_50,
     borderRadius: 18,
     justifyContent: 'center',
     marginRight: 20,

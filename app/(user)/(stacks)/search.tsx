@@ -1,13 +1,13 @@
 import React, { FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, SafeAreaView, View, ActivityIndicator } from 'react-native';
 import { Stack, router } from 'expo-router';
-import { AppSearchInput } from '../../../../legacy_components/textInput/AppSearchInput';
+// import { AppSearchInput } from '../../../legacy_components/textInput/AppSearchInput';
 import { RectButton, } from 'react-native-gesture-handler';
-import { useInfiniteQuerySearchUsers } from '../../../../queries/search/useInfiniteQuerySearchUsers';
+import { useInfiniteQuerySearchUsers } from '../../../queries/search/useInfiniteQuerySearchUsers';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
-import { defaultImgPlaceholder } from '../../../../constants/vars';
-import { IGetBasicUserProfile } from '../../../../models/User';
+import { defaultImgPlaceholder } from '../../../constants/vars';
+import { IGetBasicUserProfile } from '../../../models/User';
 import { TextView } from '@/components/text/text';
 import { Condition } from '@/components/utils/ifElse';
 import { Center } from '@/components/utils/stacks';
@@ -56,11 +56,11 @@ export default function SearchScreen(): ReactNode {
       />
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ padding: 20, paddingTop: 0, paddingBottom: 0 }}>
-          <AppSearchInput
+          {/* <AppSearchInput
             setValue={setSearchUsers}
             value={searchUsers}
             placeholder="Search new people..."
-          />
+          /> */}
         </View>
 
         <Condition
