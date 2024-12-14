@@ -93,7 +93,7 @@ export default function FilterScreen(): ReactNode {
     <>
       <Stack.Screen
         options={{
-          animation: 'default',
+          headerShown: true,
           headerBackTitle: '',
           headerTitle: () => (
             <SearchField

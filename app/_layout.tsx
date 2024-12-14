@@ -6,7 +6,6 @@ import { SplashScreen, Stack } from 'expo-router';
 import ToastManager from 'toastify-react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
-
 // hooks
 import { useFonts } from 'expo-font';
 import { ReactNode, useEffect } from 'react';
@@ -23,7 +22,7 @@ import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-rean
 export { ErrorBoundary } from 'expo-router';
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '/(user)/(tabs)/index',
+  initialRouteName: '/(userTabs)/index',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -98,52 +97,27 @@ function Root(): ReactNode {
         animationOutTiming={800}
         animationInTiming={800}
       />
-      <GestureHandlerRootView>
-        <KeyboardProvider>
+      <KeyboardProvider>
+        <GestureHandlerRootView>
           <BottomSheetModalProvider>
             <Stack
               screenOptions={{
-                animation: 'fade',
+                headerShown: false,
                 headerTitle: '',
                 headerStyle: { backgroundColor: theme.colors.white100 },
-                contentStyle: { backgroundColor: theme.colors.white100 },
+                contentStyle: { backgroundColor: theme.colors.white80 },
                 headerTitleStyle: { fontFamily: theme.text.fontSemibold },
                 headerBackTitleStyle: { fontFamily: theme.text.fontMedium },
                 headerBackTitle: 'Back',
               }}
             >
-              <Stack.Screen
-                name='index'
-                options={{
-                  headerTransparent: true,
-                  headerStyle: { backgroundColor: 'transparent' },
-                  headerTitle: '',
-                }}
-              />
-              <Stack.Screen
-                name='(user)/onboarding'
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name='(user)/login'
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name='(user)/(tabs)'
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name='(company)/onboarding'
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name='(company)/(tabs)'
-                options={{ headerShown: false }}
-              />
+              <Stack.Screen name='welcome' />
+              <Stack.Screen name='(userTabs)' />
+              <Stack.Screen name='(companyTabs)' />
             </Stack>
           </BottomSheetModalProvider>
-        </KeyboardProvider>
-      </GestureHandlerRootView>
+        </GestureHandlerRootView>
+      </KeyboardProvider>
     </QueryClientProvider>
   );
 }

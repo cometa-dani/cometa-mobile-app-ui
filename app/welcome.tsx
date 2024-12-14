@@ -22,7 +22,7 @@ export default function WelcomeScreen() {
   const [isUserProfileModalVisible, setUserProfileModalVisible] = useReducer(prev => !prev, false);
 
   const toggleLoginModal = (): void => {
-    router.push('/(user)/login');
+    router.push('/user/login');
   };
 
   const toggleRegisterModal = (): void => {
@@ -31,7 +31,7 @@ export default function WelcomeScreen() {
 
   const openUserProfileBottomSheet = (): void => {
     setUserProfileModalVisible();
-    router.push('/(user)/onboarding');
+    router.push('/user/onboarding');
   };
 
   const openCompanyProfileModal = (): void => {
@@ -42,7 +42,7 @@ export default function WelcomeScreen() {
     return null;
   }
   // if (session?.user) {
-  //   return <Redirect href="/(user)/(tabs)" />;
+  //   return <Redirect href="/user/(tabs)" />;
   // }
   return (
     <>

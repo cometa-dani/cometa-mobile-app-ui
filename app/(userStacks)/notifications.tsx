@@ -39,16 +39,12 @@ export default function NotificationsScreen(): ReactNode {
     <>
       <Stack.Screen
         options={{
-          animation: 'default',
-          gestureDirection: 'horizontal',
-          fullScreenGestureEnabled: true,
-          // headerShadowVisible: false,
-          contentStyle: { backgroundColor: theme.colors.white80 },
+          headerShown: true,
           headerTitle: 'Notifications',
           headerTitleAlign: 'center'
         }}
       />
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.white80 }}>
         <Condition
           if={notificationsList.length === 0}
           then={(

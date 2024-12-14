@@ -137,6 +137,7 @@ export default function MatchedEventsScreen(): ReactNode {
     <>
       <Stack.Screen
         options={{
+          headerShown: true,
           headerSearchBarOptions: {
             autoFocus: false,
             placeholder: 'search',
@@ -147,15 +148,11 @@ export default function MatchedEventsScreen(): ReactNode {
               setShowImage(false);
             },
             onBlur: () => {
-              // if (!isFirstItemVisible) return;
               setShowImage(true);
             },
           },
           animation: 'fade',
-          gestureDirection: 'horizontal',
-          fullScreenGestureEnabled: true,
           headerTitleAlign: 'center',
-          contentStyle: { backgroundColor: theme.colors.white80 },
           headerTitle: () => (
             <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
               matches
@@ -164,7 +161,11 @@ export default function MatchedEventsScreen(): ReactNode {
         }}
       />
 
-      <SafeAreaView style={{ flex: 1, gap: showImage ? theme.spacing.sp4 : 0 }}>
+      <SafeAreaView style={{
+        flex: 1,
+        gap: showImage ? theme.spacing.sp4 : 0,
+        backgroundColor: theme.colors.white80
+      }}>
         {showImage &&
           <Animated.View
             entering={ZoomIn.withInitialValues({ transform: [{ scale: 0 }] }).duration(460)}

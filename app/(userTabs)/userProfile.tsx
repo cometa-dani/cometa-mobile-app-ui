@@ -54,7 +54,7 @@ export default function UserProfileScreen() {
           headerLeft() {
             return (
               <TouchableOpacity
-                onPress={() => router.push('/(stacks)/settings')}
+                onPress={() => router.push('/(userStacks)/settings')}
                 style={{ marginLeft: theme.spacing.sp6 }}
               >
                 <Octicons size={theme.spacing.sp10} name='gear' color={theme.colors.gray400} />
@@ -64,7 +64,7 @@ export default function UserProfileScreen() {
           headerRight() {
             return (
               <TouchableOpacity
-                onPress={() => router.push('/(stacks)/editUserProfile')}
+                onPress={() => router.push('/(userStacks)/editUserProfile')}
                 style={{ marginRight: theme.spacing.sp6 }}
               >
                 {/* <FontAwesome size={theme.spacing.sp10} name='edit' color={theme.colors.gray400} /> */}

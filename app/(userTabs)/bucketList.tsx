@@ -5,14 +5,8 @@ import { FC, useCallback, useMemo } from 'react';
 import { SafeAreaView } from 'react-native';
 import { Image } from 'expo-image';
 import { RectButton } from 'react-native-gesture-handler';
-import { useMutationLikeOrDislikeEvent } from '../../../queries/currentUser/likeEventHooks';
-import { useInfiniteQueryGetBucketListScreen } from '../../../queries/currentUser/eventHooks';
 import { FlashList } from '@shopify/flash-list';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
-import { red_100 } from '../../../constants/colors';
-import { CreateEventLike, IGetLatestPaginatedEvents, ILikedEvent } from '../../../models/Event';
-import { defaultImgPlaceholder } from '../../../constants/vars';
-import { EmptyMessage } from '../../../legacy_components/empty/Empty';
 import { ForEach } from '@/components/utils/ForEach';
 import { Condition } from '@/components/utils/ifElse';
 import { Center, HStack, VStack } from '@/components/utils/stacks';
@@ -24,6 +18,11 @@ import { IGetPaginatedLikedEventsBucketList } from '@/models/LikedEvent';
 import { QueryKeys } from '@/queries/queryKeys';
 import { useCometaStore } from '@/store/cometaStore';
 import { useRouter } from 'expo-router';
+import { CreateEventLike, IGetLatestPaginatedEvents, ILikedEvent } from '@/models/Event';
+import { useInfiniteQueryGetBucketListScreen } from '@/queries/currentUser/eventHooks';
+import { useMutationLikeOrDislikeEvent } from '@/queries/currentUser/likeEventHooks';
+import { defaultImgPlaceholder } from '@/constants/vars';
+import { EmptyMessage } from '@/legacy_components/empty/Empty';
 
 
 export default function BucketListScreen() {
@@ -192,7 +191,7 @@ const BucketItem: FC<BucketItemProps> = ({ item, onDeleteEventLike }) => {
             <FontAwesome
               name='trash-o'
               size={22}
-              color={red_100}
+              color={theme.colors.red100}
             />
           </RectButton>
         )
@@ -205,7 +204,7 @@ const BucketItem: FC<BucketItemProps> = ({ item, onDeleteEventLike }) => {
           gap: theme.spacing.sp2
         }}
         onPress={() => {
-          router.push(`/(stacks)/matches?eventId=${item.event.id}`);
+          router.push(`/(userStacks)/matches?eventId=${item.event.id}`);
           setLikedEvent(item.event);
         }}
       >

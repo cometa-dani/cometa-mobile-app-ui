@@ -100,11 +100,11 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
 
   const navigateToSelectCity = (kind: keyof ICityKind) => {
     setCityKind(kind);
-    router.push('/(stacks)/selectCity');
+    router.push('/stacks/selectCity');
   };
 
   const navigateToSelectLanguages = () => {
-    router.push('/(stacks)/selectLanguages');
+    router.push('/stacks/selectLanguages');
   };
 
   // update form values homeTown and currentLocation

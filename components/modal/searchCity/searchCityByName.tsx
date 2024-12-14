@@ -59,7 +59,7 @@ export function SearchCityByName(): ReactNode {
     <>
       <Stack.Screen
         options={{
-          animation: 'default',
+          headerShown: true,
           headerBackTitle: '',
           headerTitle: () => (
             <SearchField

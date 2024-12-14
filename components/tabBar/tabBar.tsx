@@ -114,14 +114,6 @@ const tabBarStylesheet = createStyleSheet((theme, runtime) => ({
     paddingVertical: 2,
     borderRadius: 50,
     justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: theme.colors.red100,
-    shadowOffset: {
-      width: 4,
-      height: 4
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3
+    alignItems: 'center'
   })
 }));

@@ -1,6 +1,6 @@
 import { ReactNode, } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, Tabs, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { MAX_NUMBER_PHOTOS } from '../../constants/vars';
 import { Condition } from '@/components/utils/ifElse';
@@ -118,11 +118,11 @@ export default function EditUserProfileScreen(): ReactNode {
 
   const navigateToSelectCity = (kind: keyof ICityKind) => {
     setCityKind(kind);
-    router.push('/(stacks)/selectCity');
+    router.push('/stacks/selectCity');
   };
 
   const navigateToSelectLanguages = () => {
-    router.push('/(stacks)/selectLanguages');
+    router.push('/stacks/selectLanguages');
   };
 
   // queries
@@ -174,7 +174,7 @@ export default function EditUserProfileScreen(): ReactNode {
   };
 
   const navigateToUserProfile = (): void => {
-    router.push(`/(stacks)/editUserProfile?userId=${userProfile?.id}`);
+    router.push(`/stacks/editUserProfile?userId=${userProfile?.id}`);
   };
 
   const handleLogout = (): void => {
@@ -186,11 +186,9 @@ export default function EditUserProfileScreen(): ReactNode {
     <FormProvider {...formProps}>
       <Stack.Screen
         options={{
-          animation: 'default',
-          gestureDirection: 'horizontal',
-          fullScreenGestureEnabled: true,
+          headerShown: true,
           headerTitle: 'Edit Profile',
-          headerTitleAlign: 'center'
+          headerTitleAlign: 'center',
         }}
       />
       <Condition

@@ -84,9 +84,9 @@ export function SelectLanguages(): ReactNode {
     <>
       <Stack.Screen
         options={{
+          headerShown: true,
           headerTitleAlign: 'center',
           headerTitle: 'Your languages',
-          animation: 'default',
         }}
       />
       <View style={{ flex: 1, flexGrow: 1 }}>
