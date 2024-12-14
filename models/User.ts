@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { EventCategory, ILikeableEvent } from './Event';
 import { IPhoto } from './Photo';
-import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photosGrid';
+import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid2';
 import { IPaginated } from './utils/Paginated';
 
 
@@ -109,9 +109,11 @@ export type ICreateUser = Pick<IGetBasicUserProfile, (
   'birthday'
 )>
 
-export type IUpdateUser = Partial<Omit<IGetDetailedUserProfile, (
-  'outgoingFriendships' | 'incomingFriendships' | 'likedEvents' | 'id'
-)>>
+export interface IUpdateUser extends Partial<Omit<IGetDetailedUserProfile, (
+  'outgoingFriendships' | 'incomingFriendships' | 'likedEvents' | 'id' | 'languages'
+)>> {
+  languages?: string
+}
 
 export interface IGetPaginatedUsersWhoLikedSameEvent extends
   IPaginated<IUsersWhoLikedSameEvent> { }

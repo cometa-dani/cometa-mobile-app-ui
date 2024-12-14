@@ -3,7 +3,7 @@ import { Text, View, useColors } from '../../../legacy_components/Themed';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../../config/firebase/firebase';
 import { useCometaStore } from '../../../store/cometaStore';
-import { useMutationDeleteUserById, useMutationUploadUserPhotos, useMutationUpdateUserById, useQueryGetUserProfile } from '../../../queries/currentUser/userHooks';
+import { useMutationDeleteUserPhotoById, useMutationUploadUserPhotos, useMutationUpdateUserById, useQueryGetUserProfile } from '../../../queries/currentUser/userHooks';
 import { AppButton } from '../../../legacy_components/buttons/buttons';
 import { FC, useEffect, useRef, useState } from 'react';
 import { Stack, router } from 'expo-router';
@@ -52,7 +52,7 @@ export default function LoggedInUserProfileScreen(): JSX.Element {
 
   // mutations
   const mutateLoggedInUserPhotosUpload = useMutationUploadUserPhotos(loggedInUserUuid);
-  const mutateLoggedInUserPhotosDelete = useMutationDeleteUserById(loggedInUserUuid);
+  const mutateLoggedInUserPhotosDelete = useMutationDeleteUserPhotoById(loggedInUserUuid);
   const mutateLoggedInUserProfileById = useMutationUpdateUserById();
 
   // queries

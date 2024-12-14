@@ -1,6 +1,7 @@
 import { Pressable } from 'react-native';
 import { TextView } from './text';
-import { FC, useReducer } from 'react';
+import { FC, useReducer, useState } from 'react';
+import { Condition } from '../utils/ifElse';
 
 
 const reducer = (initialLines: number, maxLines: number) => {
@@ -12,28 +13,30 @@ const reducer = (initialLines: number, maxLines: number) => {
 
 interface IExpandableTextProps {
   children?: string;
-  initialLines?: number;
+  minLines?: number;
   maxLines?: number;
 }
-export const ExpandableText: FC<IExpandableTextProps> = ({ children, initialLines = 2, maxLines = 30 }) => {
-  const [numberOfLines, setNumberOfLines] = useReducer(reducer(initialLines, maxLines), initialLines);
+export const ExpandableText: FC<IExpandableTextProps> = ({ children, minLines = 2, maxLines = 30 }) => {
+  const [numberOfLines, setNumberOfLines] = useReducer(reducer(minLines, maxLines), minLines);
+  const [isBelowMinLines, setIsBelowMinLines] = useState(false);
   return (
     <Pressable onPress={setNumberOfLines}>
       <TextView
+        onTextLayout={({ nativeEvent: { lines } }) => lines?.length < minLines && setIsBelowMinLines(true)}
         numberOfLines={numberOfLines}
         ellipsis={true}
       >
-        {children ?? ('\
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis \
-          temporibus sed odit exercitationem, suscipit debitis quaerat laboriosam \
-          reprehenderit reiciendis dolore velit deserunt voluptates laudantium, accusamus \
-          dolorem cupiditate laborum natus facilis.'
-        )}
+        {children}
       </TextView>
 
-      <TextView bold={true}>
-        {numberOfLines === initialLines ? 'show more' : 'show less'}
-      </TextView>
+      <Condition
+        if={!isBelowMinLines}
+        then={
+          <TextView bold={true}>
+            {numberOfLines === minLines ? 'show more' : 'show less'}
+          </TextView>
+        }
+      />
     </Pressable>
   );
 };

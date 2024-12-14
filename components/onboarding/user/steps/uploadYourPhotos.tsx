@@ -4,10 +4,11 @@ import { useCometaStore } from '@/store/cometaStore';
 import { HStack } from '@/components/utils/stacks';
 import { Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { createEmptyPlaceholders, hasAsset, IPhotoPlaceholder, PhotosGrid } from '../photosGrid/photosGrid';
+import { createEmptyPlaceholders, hasAsset, IPhotoPlaceholder } from '../photosGrid/photoGrid2';
 import { MAX_NUMBER_PHOTOS, MIN_NUMBER_PHOTOS } from '@/constants/vars';
 import { FooterButton } from './components/footerButton';
 import { IProps } from './components/interface';
+import { PhotosGrid2 } from '../photosGrid/photoGrid2';
 
 
 const setInitialPlaceholders = () => createEmptyPlaceholders(MAX_NUMBER_PHOTOS);
@@ -17,7 +18,7 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNext }) => {
   const setOnboardingState = useCometaStore(state => state.setOnboarding);
   const userPhotos = useCometaStore(state => state.onboarding.user.photos) ?? [];
 
-  const handleUserState = (photos: IPhotoPlaceholder[]) => {
+  const handlePhotosPickUp = (photos: IPhotoPlaceholder[]) => {
     const filteredPhotos = photos.filter(hasAsset);
     setOnboardingState({ photos: filteredPhotos });
   };
@@ -36,10 +37,10 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNext }) => {
           paddingBottom: theme.spacing.sp14,
           gap: theme.spacing.sp7,
         }}>
-        <PhotosGrid
+        <PhotosGrid2
           action='create'
           setInitialPhotos={setInitialPlaceholders}
-          onSelect={handleUserState}
+          onSelect={handlePhotosPickUp}
         />
         <HStack
           $y='center'

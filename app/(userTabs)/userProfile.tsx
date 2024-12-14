@@ -4,7 +4,7 @@ import { useInfiniteQueryGetBucketListScreen } from '@/queries/currentUser/event
 import { useQueryGetUserProfile } from '@/queries/currentUser/userHooks';
 import { Tabs, useRouter } from 'expo-router';
 import { useCallback } from 'react';
-import { SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View, SafeAreaView } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
@@ -24,7 +24,7 @@ export default function UserProfileScreen() {
   const router = useRouter();
   const { data: userBucketList } = useInfiniteQueryGetBucketListScreen();
   const { data: userProfile } = useQueryGetUserProfile();
-  const bucketListEvents =
+  const bucketListEvents = (
     userBucketList?.pages.
       flatMap(({ items: events }) => (
         events.map(
@@ -34,7 +34,8 @@ export default function UserProfileScreen() {
             placeholder: item.event?.photos[0]?.placeholder
           })
         )
-      )) || [];
+      )) || []
+  );
 
   const renderItem = useCallback(({ item }: { item: IPhoto }) => {
     return (
@@ -70,7 +71,6 @@ export default function UserProfileScreen() {
                 onPress={() => router.push('/(userStacks)/editUserProfile')}
                 style={{ marginRight: theme.spacing.sp6 }}
               >
-                {/* <FontAwesome size={theme.spacing.sp10} name='edit' color={theme.colors.gray400} /> */}
                 <Feather size={theme.spacing.sp10} name='edit' color={theme.colors.gray400} />
               </TouchableOpacity >
             );
@@ -110,12 +110,12 @@ export default function UserProfileScreen() {
                 </Heading>
                 <HStack gap={theme.spacing.sp1}>
                   <Ionicons name="bag-remove-outline" size={theme.spacing.sp8} color={theme.colors.gray900} />
-                  <TextView ellipsis={true}>{userProfile?.occupation ?? 'occupation'}</TextView>
+                  <TextView ellipsis={true}>{userProfile?.occupation || 'what is your occupation'}</TextView>
                 </HStack>
                 <HStack gap={theme.spacing.sp2}>
                   <HStack gap={theme.spacing.sp1}>
                     <FontAwesome name="map-o" size={theme.spacing.sp7} color={theme.colors.gray900} />
-                    <TextView>{userProfile?.homeTown ?? 'homeTown'},</TextView>
+                    <TextView>{userProfile?.homeTown || 'where you from'},</TextView>
                   </HStack>
                   <HStack>
                     <MaterialCommunityIcons
@@ -124,7 +124,7 @@ export default function UserProfileScreen() {
                       style={{ color: theme.colors.gray900 }}
                     />
                     <TextView style={{ marginLeft: -2 }}>
-                      {userProfile?.currentLocation ?? 'currentLocation'}
+                      {userProfile?.currentLocation || 'where you live'}
                     </TextView>
                   </HStack>
                 </HStack>
@@ -134,9 +134,20 @@ export default function UserProfileScreen() {
                 <Heading size='s6'>
                   Bio
                 </Heading>
-                <ExpandableText>{userProfile?.biography}</ExpandableText>
+                <ExpandableText>{userProfile?.biography || 'tell us something about yourself'}</ExpandableText>
               </View>
-              <Heading size='s6' style={{ paddingHorizontal: theme.spacing.sp6, paddingBottom: theme.spacing.sp1 }}>
+
+              <View style={styles.container}>
+                <Heading size='s6'>
+                  Languages
+                </Heading>
+                <ExpandableText>{userProfile?.languages?.join(', ') || 'languages you speak'}</ExpandableText>
+              </View>
+
+              <Heading size='s6' style={{
+                paddingHorizontal: theme.spacing.sp6,
+                paddingBottom: theme.spacing.sp1
+              }}>
                 Bucketlist
               </Heading>
             </VStack>

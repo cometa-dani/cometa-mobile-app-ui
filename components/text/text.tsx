@@ -1,6 +1,6 @@
 import { textStyleSheet } from '@/styles/textStyleSheet';
 import { FC } from 'react';
-import { StyleProp, Text, TextStyle } from 'react-native';
+import { NativeSyntheticEvent, StyleProp, Text, TextLayoutEventData, TextStyle } from 'react-native';
 import { useStyles } from 'react-native-unistyles';
 
 
@@ -11,6 +11,7 @@ interface TextProps {
   ellipsis?: boolean,
   numberOfLines?: number,
   onPress?: () => void
+  onTextLayout?: (event: NativeSyntheticEvent<TextLayoutEventData>) => void
 }
 export const TextView: FC<TextProps> = ({
   children,
@@ -18,7 +19,8 @@ export const TextView: FC<TextProps> = ({
   style,
   ellipsis,
   numberOfLines = 1,
-  onPress
+  onPress,
+  onTextLayout
 }) => {
   const { styles } = useStyles(textStyleSheet);
   return (
@@ -26,6 +28,7 @@ export const TextView: FC<TextProps> = ({
       onPress={onPress && onPress}
       allowFontScaling={true}
       ellipsizeMode='tail'
+      onTextLayout={onTextLayout}
       numberOfLines={ellipsis ? numberOfLines : undefined}
       style={[styles.font(bold), style]}
     >

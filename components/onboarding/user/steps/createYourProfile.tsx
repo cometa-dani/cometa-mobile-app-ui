@@ -23,7 +23,7 @@ export const errorMessages = {
   birthday: 'Birthday is required',
 };
 
-type IFormValues = Pick<IUserOnboarding, (
+export type IFormValues = Pick<IUserOnboarding, (
   'email' |
   'password' |
   'repassword' |
@@ -32,7 +32,7 @@ type IFormValues = Pick<IUserOnboarding, (
   'birthday'
 )>
 
-const validationSchema = Yup.object<IFormValues>().shape({
+export const validationSchema = Yup.object<IFormValues>().shape({
   email: Yup.string().email().required(errorMessages.email),
   password: Yup.string().min(6).max(18).required(errorMessages.password),
   repassword:
@@ -44,7 +44,7 @@ const validationSchema = Yup.object<IFormValues>().shape({
   birthday: Yup.string().min(3).max(18).required(errorMessages.birthday),
 });
 
-const defaultValues: IFormValues = {
+export const defaultValues: IFormValues = {
   email: '',
   password: '',
   repassword: '',

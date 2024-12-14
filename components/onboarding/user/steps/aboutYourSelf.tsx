@@ -28,7 +28,7 @@ export const errorMessages = {
   languages: 'How many languages do you speak',
 };
 
-interface IFormValues extends Partial<Pick<IUserOnboarding, (
+export interface IFormValues extends Partial<Pick<IUserOnboarding, (
   'occupation' |
   'biography' |
   'currentLocation' |
@@ -37,7 +37,7 @@ interface IFormValues extends Partial<Pick<IUserOnboarding, (
   languages?: string
 }
 
-const validationSchema = Yup.object<IFormValues>().shape({
+export const validationSchema = Yup.object<IFormValues>().shape({
   occupation: Yup.string().max(120).optional(),
   biography: Yup.string().max(200).optional(),
   currentLocation: Yup.string().max(120).optional(),
@@ -45,7 +45,7 @@ const validationSchema = Yup.object<IFormValues>().shape({
   languages: Yup.string().optional(),
 });
 
-const defaultValues: IFormValues = {
+export const defaultValues: IFormValues = {
   occupation: '',
   biography: '',
   currentLocation: '',
@@ -72,7 +72,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       biography: values.biography,
       currentLocation: values.currentLocation,
       homeTown: values.homeTown,
-      languages: values.languages ? values.languages.split(',') : [],
+      languages: values.languages?.length ? values.languages.split(',') : [],
       occupation: values.occupation
     };
     try {

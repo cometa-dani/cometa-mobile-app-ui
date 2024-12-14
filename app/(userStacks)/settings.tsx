@@ -1,10 +1,7 @@
-import React, { FC, ReactNode, useEffect, useMemo, useState } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { StyleSheet, SafeAreaView, View, ActivityIndicator } from 'react-native';
-import { Stack, Tabs, router } from 'expo-router';
-import { AppSearchInput } from '../../legacy_components/textInput/AppSearchInput';
+import { Stack } from 'expo-router';
 import { RectButton, } from 'react-native-gesture-handler';
-import { useInfiniteQuerySearchUsers } from '../../queries/search/useInfiniteQuerySearchUsers';
-import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import { defaultImgPlaceholder } from '../../constants/vars';
 import { IGetBasicUserProfile } from '../../models/User';
@@ -12,13 +9,21 @@ import { TextView } from '@/components/text/text';
 import { Condition } from '@/components/utils/ifElse';
 import { Center } from '@/components/utils/stacks';
 import { useStyles } from 'react-native-unistyles';
+import { useQueryClient } from '@tanstack/react-query';
 
 
 export default function SettingsScreen(): ReactNode {
   const { theme } = useStyles();
+  const queryClient = useQueryClient();
+
+  const handleLogout = (): void => {
+    queryClient.clear();
+    // signOut(auth);
+  };
+
   return (
     <>
-      <Tabs.Screen
+      <Stack.Screen
         options={{
           headerShown: true,
           headerTitle: 'Settings',

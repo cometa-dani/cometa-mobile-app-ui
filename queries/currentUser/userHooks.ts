@@ -4,7 +4,7 @@ import { IGetBasicUserProfile, IGetDetailedUserProfile, ICreateUser, IUpdateUser
 import { IPhoto } from '../../models/Photo';
 import { QueryKeys } from '../queryKeys';
 import { useCometaStore } from '../../store/cometaStore';
-import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photosGrid';
+import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid2';
 
 
 export const useMutationCreateUser = () => {
@@ -53,7 +53,7 @@ export const useMutationUpdateUserById = () => {
       onSuccess: async () => {
         // await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE] });
       },
-      retry: 2,
+      retry: 1,
       retryDelay: 1_000 * 6
     })
   );
@@ -75,7 +75,7 @@ export const useQueryGetUserProfile = () => {
           throw new Error('failed to fetched');
         }
       },
-      retry: 2,
+      retry: 1,
       retryDelay: 1_000 * 6
     })
   );
@@ -133,7 +133,7 @@ export const useMutationUploadUserPhotos = (uuId?: string) => {
 
 type DeletePhotoArgs = { userID: number, photoUuid: string }
 
-export const useMutationDeleteUserById = (dynamicParam?: string) => {
+export const useMutationDeleteUserPhotoById = (dynamicParam?: string) => {
   const queryClient = useQueryClient();
   return (
     useMutation({
@@ -154,7 +154,6 @@ export const useMutationDeleteUserById = (dynamicParam?: string) => {
           .setQueryData<IGetDetailedUserProfile>
           ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam], (oldState): IGetDetailedUserProfile => {
             const filteredPhotos: IPhoto[] = oldState?.photos.filter(({ uuid }) => photoUuid !== uuid) || [];
-
             const optimisticState = {
               ...oldState,
               photos: filteredPhotos
@@ -167,7 +166,7 @@ export const useMutationDeleteUserById = (dynamicParam?: string) => {
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam] });
       },
-      retry: 2,
+      retry: 1,
       retryDelay: 1_000 * 6
     })
   );

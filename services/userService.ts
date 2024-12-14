@@ -3,7 +3,7 @@ import { RestApiService } from './restService';
 import { ImagePickerAsset } from 'expo-image-picker';
 import FormData from 'form-data';
 import { AxiosInstance } from 'axios';
-import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photosGrid';
+import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid2';
 
 
 class UsersService {
@@ -33,18 +33,7 @@ class UsersService {
   }
 
   public updateById(loggedInUserID: number, payload: Partial<IUpdateUser>) {
-    let updatedPayload;
-
-    if (payload.languages?.length) {
-      updatedPayload = {
-        ...payload,
-        languages: (payload.languages as string[]).join(',')
-      };
-    }
-    else {
-      updatedPayload = payload;
-    }
-    return this.http.patch<IGetBasicUserProfile>(`/users/${loggedInUserID}`, updatedPayload);
+    return this.http.patch<IGetBasicUserProfile>(`/users/${loggedInUserID}`, payload);
   }
 
   /**

@@ -8,6 +8,8 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { Condition } from '@/components/utils/ifElse';
 import { ForEach } from '@/components/utils/ForEach';
 import { imageTransition } from '@/constants/vars';
+import { Notifier } from 'react-native-notifier';
+import { ErrorToast } from '@/components/toastNotification/toastNotification';
 
 
 type ImagePickerAsset = ImagePicker.ImagePickerAsset
@@ -136,13 +138,18 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
       }
     }
     catch (error) {
+      Notifier.showNotification({
+        title: 'Error',
+        description: 'the image could not be loaded',
+        Component: ErrorToast
+      });
       return null;
     }
   };
 
   const Grid: FC = useCallback(() => (
     <ForEach items={generate2DArray(restPhotos)}>
-      {(row, i = 0) => (
+      {(row, i = 0, arr = []) => (
         <View key={i} style={{ flexDirection: 'row', flex: 1, flexWrap: 'wrap', gap: theme.spacing.sp2 }}>
           <ForEach items={row}>
             {(cell, j = 0) => (
@@ -167,7 +174,7 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
                   }
                 />
                 <View style={styles.imageNum}>
-                  <Text style={styles.imageNumText}>{j + (i * 3) + 2}</Text>
+                  <Text style={styles.imageNumText}>{j + (i * arr?.length) + 2}</Text>
                 </View>
               </Pressable>
             )}
@@ -193,9 +200,7 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
               transition={imageTransition}
             />
           }
-          else={
-            <FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />
-          }
+          else={<FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />}
         />
         <View style={styles.imageNum}>
           <Text style={styles.imageNumText}>{1}</Text>
