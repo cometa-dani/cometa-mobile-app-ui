@@ -24,7 +24,6 @@ export const FooterButton: FC<IProps> = ({ text, onNext }) => {
 
 const styleSheet = createStyleSheet((theme, runtime) => ({
   container: {
-    flex: 1,
     width: '100%',
     paddingTop: theme.spacing.sp4,
     paddingBottom: runtime.insets.bottom,

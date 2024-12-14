@@ -41,9 +41,9 @@ export default function WelcomeScreen() {
   if (isLoading) {
     return null;
   }
-  if (session?.user) {
-    return <Redirect href="/(user)/(tabs)" />;
-  }
+  // if (session?.user) {
+  //   return <Redirect href="/(user)/(tabs)" />;
+  // }
   return (
     <>
       <SystemBars style='light' />

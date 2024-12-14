@@ -102,7 +102,6 @@ function Root(): ReactNode {
         <KeyboardProvider>
           <BottomSheetModalProvider>
             <Stack
-              initialRouteName='index'
               screenOptions={{
                 animation: 'fade',
                 headerTitle: '',
