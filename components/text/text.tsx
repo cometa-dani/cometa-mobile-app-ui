@@ -12,7 +12,14 @@ interface TextProps {
   numberOfLines?: number,
   onPress?: () => void
 }
-export const TextView: FC<TextProps> = ({ children, bold = false, style, ellipsis, numberOfLines = 1, onPress }) => {
+export const TextView: FC<TextProps> = ({
+  children,
+  bold = false,
+  style,
+  ellipsis,
+  numberOfLines = 1,
+  onPress
+}) => {
   const { styles } = useStyles(textStyleSheet);
   return (
     <Text

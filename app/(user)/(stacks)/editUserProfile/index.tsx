@@ -1,19 +1,22 @@
-import React, { ReactNode, } from 'react';
-import { SafeAreaView, View, ActivityIndicator } from 'react-native';
-import { Stack, router, useRouter } from 'expo-router';
-import { FlashList } from '@shopify/flash-list';
+import { ReactNode, } from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import { Stack, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
-import { defaultImgPlaceholder, MAX_NUMBER_PHOTOS } from '../../../../constants/vars';
-import { TextView } from '@/components/text/text';
+import { MAX_NUMBER_PHOTOS } from '../../../../constants/vars';
 import { Condition } from '@/components/utils/ifElse';
 import { Center } from '@/components/utils/stacks';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { useQueryClient } from '@tanstack/react-query';
-import { useMutationDeleteUserById, useMutationUpdateUserById, useMutationUploadUserPhotos, useQueryGetUserProfile } from '@/queries/currentUser/userHooks';
+import {
+  useMutationDeleteUserById,
+  useMutationUpdateUserById,
+  useMutationUploadUserPhotos,
+  useQueryGetUserProfile
+} from '@/queries/currentUser/userHooks';
 import { useInfiniteQueryGetBucketListScreen } from '@/queries/currentUser/eventHooks';
 import { IPhoto } from '@/models/Photo';
 import * as ImagePicker from 'expo-image-picker';
-import { createEmptyPlaceholders, hasAsset, IPhotoPlaceholder, PhotosGrid } from '@/components/onboarding/user/photosGrid/photosGrid';
+import { createEmptyPlaceholders, hasAsset, IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photosGrid';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FormProvider, useForm } from 'react-hook-form';
 import { IUpdateUser, IUserOnboarding } from '@/models/User';
@@ -25,7 +28,6 @@ import { useSelectLanguages } from '@/components/modal/selectLanguages/hook';
 import { supabase } from '@/supabase/config';
 import { FieldText } from '@/components/input/textField';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
-import { FooterButton } from '@/components/onboarding/user/steps/components/footerButton';
 import { Button } from '@/components/button/button';
 import { PhotosGrid2 } from '@/components/onboarding/user/photosGrid/photoGrid2';
 
@@ -73,7 +75,6 @@ export default function EditUserProfileScreen(): ReactNode {
   const router = useRouter();
   const { data: userBucketList } = useInfiniteQueryGetBucketListScreen();
   const { data: userProfile, isFetched } = useQueryGetUserProfile();
-  // const mutateLoggedInUserProfileById = useMutationUpdateUserById();
   const formProps = useForm<IFormValues>({
     defaultValues,
     resolver: yupResolver(validationSchema),
@@ -128,7 +129,6 @@ export default function EditUserProfileScreen(): ReactNode {
   const { data: loggedInUserBucketList } = useInfiniteQueryGetBucketListScreen();
   const userPhotos: IPhoto[] = userProfile?.photos ?? [];
   const remainingPhotosToUpload: number = MAX_NUMBER_PHOTOS - (userPhotos?.length || 0);
-
 
   const handleSumitLoggedInUserInfo =
     async (): Promise<void> => {
@@ -209,7 +209,6 @@ export default function EditUserProfileScreen(): ReactNode {
                 onSelect={handleUserState}
               />
             </View>
-
             <FieldText
               label='Occupation'
               name='occupation'

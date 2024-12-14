@@ -207,22 +207,17 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
               >
                 {item.description}
               </Text>
-              <Condition
-                if={isTextExpanded}
-                else={
-                  <Text
-                    style={[
-                      styles.textShadow,
-                      {
-                        fontFamily: theme.text.fontBold,
-                        fontSize: 14,
-                        opacity: pressed ? 0.84 : 1
-                      }
-                    ]}>
-                    more
-                  </Text>
-                }
-              />
+              <Text
+                style={[
+                  styles.textShadow,
+                  {
+                    fontFamily: theme.text.fontBold,
+                    fontSize: 14,
+                    opacity: pressed ? 0.84 : 1
+                  }
+                ]}>
+                {!isTextExpanded ? 'show more' : 'show less'}
+              </Text>
             </>
           )}
         </Pressable>

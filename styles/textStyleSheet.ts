@@ -16,7 +16,7 @@ export const textStyleSheet = createStyleSheet((theme, runtime) => ({
       ?? theme.text.size.s4;
     return ({
       fontSize: size,
-      fontFamily: bold ? theme.text.fontSemibold : theme.text.fontRegular,
+      fontFamily: bold ? theme.text.fontBold : theme.text.fontRegular,
       color: theme.colors.gray900,
     });
   }

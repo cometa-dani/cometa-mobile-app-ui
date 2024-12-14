@@ -36,7 +36,11 @@ export default function BucketListScreen() {
 }
 
 
-const handleDeleteEventLike = (queryClient: QueryClient, mutation: UseMutationResult<CreateEventLike>, searchQuery: string) => {
+const handleDeleteEventLike = (
+  queryClient: QueryClient,
+  mutation: UseMutationResult<CreateEventLike>,
+  searchQuery: string
+) => {
   return async function (eventID: number) {
     queryClient
       .setQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>
@@ -217,7 +221,7 @@ const BucketItem: FC<BucketItemProps> = ({ item, onDeleteEventLike }) => {
               ellipsis={true}
               style={{
                 fontSize: 14.8,
-                fontFamily: theme.text.fontMedium
+                fontFamily: theme.text.fontSemibold
               }}
             >
               {item?.event.name}

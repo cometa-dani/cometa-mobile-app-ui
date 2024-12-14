@@ -36,13 +36,11 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNext }) => {
           paddingBottom: theme.spacing.sp14,
           gap: theme.spacing.sp7,
         }}>
-
         <PhotosGrid
           action='create'
           setInitialPhotos={setInitialPlaceholders}
           onSelect={handleUserState}
         />
-
         <HStack
           $y='center'
           $x='center'
