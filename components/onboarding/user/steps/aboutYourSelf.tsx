@@ -72,7 +72,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       biography: values.biography,
       currentLocation: values.currentLocation,
       homeTown: values.homeTown,
-      languages: values.languages?.length ? values.languages.split(',') : [],
+      languages: values.languages,
       occupation: values.occupation
     };
     try {

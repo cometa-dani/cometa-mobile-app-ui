@@ -2,7 +2,7 @@ import { IUserOnboarding } from '@/models/User';
 import { FC, useState } from 'react';
 import { HStack, VStack } from '../utils/stacks';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import { KeyboardTypeOptions, Text, View, TextInput, Pressable, Platform } from 'react-native';
+import { KeyboardTypeOptions, Text, View, TextInput, Pressable } from 'react-native';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Controller, useFormContext } from 'react-hook-form';

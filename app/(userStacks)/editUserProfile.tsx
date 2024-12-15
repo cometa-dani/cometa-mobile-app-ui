@@ -52,11 +52,11 @@ export default function EditUserProfileScreen(): ReactNode {
   const formProps = useForm<IFormValues>({
     defaultValues,                        // initial form values
     values: {                             // updates form values when data changes
-      biography: userProfile?.biography ?? '',
-      currentLocation: selectedCity.currentLocation ?? userProfile?.currentLocation ?? '',
-      homeTown: selectedCity.homeTown ?? userProfile?.homeTown ?? '',
-      languages: selectedLanguages.join(',') ?? userProfile?.languages?.join(',') ?? '',
-      occupation: userProfile?.occupation ?? ''
+      biography: userProfile?.biography || '',
+      currentLocation: selectedCity.currentLocation || userProfile?.currentLocation || '',
+      homeTown: selectedCity.homeTown || userProfile?.homeTown || '',
+      languages: selectedLanguages.join(', ') || userProfile?.languages?.join(', ') || '',
+      occupation: userProfile?.occupation || ''
     },
     resolver: yupResolver(validationSchema),
   });
@@ -89,7 +89,7 @@ export default function EditUserProfileScreen(): ReactNode {
     }
   };
 
-  const handlePhotosPickUp = async (photos: IPhotoPlaceholder[]) => {
+  const handlePhotoPickUp = async (photos: IPhotoPlaceholder[]) => {
     // const filteredPhotos = photos.filter(hasAsset);
     console.log(photos);
     //   deleteUser.mutate({ userID: userProfile?.id as number, photoUuid });
@@ -124,7 +124,7 @@ export default function EditUserProfileScreen(): ReactNode {
               <PhotosGrid2
                 action='update'
                 setInitialPhotos={() => createPlaceholders(MAX_NUMBER_PHOTOS, userPhotos)}
-                onSelect={handlePhotosPickUp}
+                onSelect={handlePhotoPickUp}
               />
             </View>
 
