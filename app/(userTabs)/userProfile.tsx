@@ -176,8 +176,8 @@ const stylesheet = createStyleSheet((theme, rt) => ({
     padding: theme.spacing.sp6
   },
   avatarImage: {
-    height: rt.screen.height * 0.33,
     width: rt.screen.width - (theme.spacing.sp6 * 2),
+    aspectRatio: 1.2
   },
   eventImage: {
     height: rt.screen.height * 0.25,

@@ -143,7 +143,8 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
         if (action === 'update') {
           onSelect([{         // lift up the single updated photo
             position: selectedPosition,
-            pickedUpAsset: pickedPhotos.assets[0]
+            pickedUpAsset: pickedPhotos.assets[0],
+            storedPhoto: userPhotos.at(selectedPosition)?.storedPhoto
           }]);
         }
       }
@@ -163,50 +164,59 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
       {(row, i = 0, arr = []) => (
         <View key={i} style={{ flexDirection: 'row', flex: 1, flexWrap: 'wrap', gap: theme.spacing.sp2 }}>
           <ForEach items={row}>
-            {(cell, j = 0) => (
-              <Pressable
-                key={j}
-                style={({ pressed }) => styles.imageViewer(pressed, !cell?.pickedUpAsset)}
-                onPress={() => handlePickMultipleImages(cell.position, !!cell?.pickedUpAsset?.uri)}
-              >
-                <Condition
-                  if={cell?.pickedUpAsset}
-                  then={
-                    <Image
-                      recyclingKey={cell?.pickedUpAsset?.uri}
-                      style={styles.image}
-                      source={{ uri: cell?.pickedUpAsset?.uri }}
-                      contentFit='cover'
-                      transition={imageTransition}
-                    />
-                  }
-                  else={
-                    <FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />
-                  }
-                />
-                <View style={styles.imageNum}>
-                  <Text style={styles.imageNumText}>{j + (i * arr?.length) + 2}</Text>
-                </View>
-              </Pressable>
-            )}
+            {(cell, j = 0) => {
+              const initialUrl = cell?.storedPhoto?.url || cell?.pickedUpAsset?.uri;
+              const placeholder = cell?.storedPhoto?.placeholder;
+              const source = action === 'create' ? cell?.pickedUpAsset?.uri : cell?.storedPhoto?.url;
+              return (
+                <Pressable
+                  key={j}
+                  style={({ pressed }) => styles.imageViewer(pressed, !source)}
+                  onPress={() => handlePickMultipleImages(cell.position, !!source)}
+                >
+                  <Condition
+                    if={initialUrl}
+                    then={
+                      <Image
+                        recyclingKey={initialUrl}
+                        source={{ uri: source, placeholder }}
+                        style={styles.image}
+                        contentFit='cover'
+                        transition={imageTransition}
+                      />
+                    }
+                    else={
+                      <FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />
+                    }
+                  />
+                  <View style={styles.imageNum}>
+                    <Text style={styles.imageNumText}>{j + (i * arr?.length) + 2}</Text>
+                  </View>
+                </Pressable>
+              );
+            }}
           </ForEach>
         </View>
       )}
     </ForEach>
   ), [restPhotos]);
 
+  const initialUrl = firstPhoto?.storedPhoto?.url || firstPhoto?.pickedUpAsset?.uri;
+  const placeholder = firstPhoto?.storedPhoto?.placeholder;
+  const source = action === 'create' ? firstPhoto?.pickedUpAsset?.uri : firstPhoto?.storedPhoto?.url;
+
   return (
     <VStack gap={theme.spacing.sp2}>
       <Pressable
-        onPress={() => handlePickMultipleImages(0, !!firstPhoto.pickedUpAsset?.uri)}
-        style={({ pressed }) => styles.mainImageViewer(pressed, !firstPhoto?.pickedUpAsset)}
+        onPress={() => handlePickMultipleImages(0, !!source)}
+        style={({ pressed }) => styles.mainImageViewer(pressed, !source)}
       >
         <Condition
-          if={firstPhoto?.pickedUpAsset}
+          if={initialUrl}
           then={
             <Image
               style={styles.mainImage}
-              source={{ uri: firstPhoto?.pickedUpAsset?.uri }}
+              source={{ uri: source, placeholder }}
               contentFit='cover'
               transition={imageTransition}
             />
@@ -227,18 +237,12 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
 const uploadYourPhotosSheet = createStyleSheet((theme) => ({
   mainImage: {
     flex: 1,
-    aspectRatio: 2.4,
-    borderRadius: theme.radius.sm,
-  },
-  image: {
-    height: '100%',
-    flex: 1,
-    aspectRatio: 1,
+    aspectRatio: 1.2,
     borderRadius: theme.radius.sm,
   },
   mainImageViewer: (isPressed: boolean, showBorder = true) => ({
     position: 'relative',
-    aspectRatio: 2.4,
+    aspectRatio: 1.2,
     borderWidth: showBorder ? 2 : undefined,
     backgroundColor: isPressed ? theme.colors.white80 : theme.colors.white100,
     borderColor: theme.colors.gray100,
@@ -247,11 +251,17 @@ const uploadYourPhotosSheet = createStyleSheet((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
   }),
+  image: {
+    height: '100%',
+    flex: 1,
+    aspectRatio: 1.06,
+    borderRadius: theme.radius.sm,
+  },
   imageViewer: (isPressed: boolean, showBorder = true) => ({
     position: 'relative',
     height: '100%',
     flex: 1,
-    aspectRatio: 1.05,
+    aspectRatio: 1.06,
     borderWidth: showBorder ? 2 : undefined,
     backgroundColor: isPressed ? theme.colors.white80 : theme.colors.white100,
     borderColor: theme.colors.gray100,
