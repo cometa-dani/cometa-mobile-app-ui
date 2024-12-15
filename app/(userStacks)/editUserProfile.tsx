@@ -20,7 +20,6 @@ import {
 } from '@/components/onboarding/user/steps/aboutYourSelf';
 import {
   createPlaceholders,
-  hasAsset,
   IPhotoPlaceholder
 } from '@/components/onboarding/user/photosGrid/photoGrid2';
 import { IPhoto } from '@/models/Photo';
@@ -37,9 +36,6 @@ import { PhotosGrid2 } from '@/components/onboarding/user/photosGrid/photoGrid2'
 import { Notifier } from 'react-native-notifier';
 import { ErrorToast, SucessToast } from '@/components/toastNotification/toastNotification';
 import { QueryKeys } from '@/queries/queryKeys';
-
-
-// const setInitialPlaceholders = () => createPlaceholders(MAX_NUMBER_PHOTOS);
 
 
 export default function EditUserProfileScreen(): ReactNode {
@@ -94,7 +90,8 @@ export default function EditUserProfileScreen(): ReactNode {
   };
 
   const handlePhotosPickUp = async (photos: IPhotoPlaceholder[]) => {
-    const filteredPhotos = photos.filter(hasAsset);
+    // const filteredPhotos = photos.filter(hasAsset);
+    console.log(photos);
     //   deleteUser.mutate({ userID: userProfile?.id as number, photoUuid });
   };
 

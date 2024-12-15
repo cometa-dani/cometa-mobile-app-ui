@@ -17,6 +17,7 @@ import { HStack, VStack } from '@/components/utils/stacks';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { ExpandableText } from '@/components/text/expandableText';
 import { imageTransition } from '@/constants/vars';
+import { Badge } from '@/components/button/badge';
 
 
 export default function UserProfileScreen() {
@@ -31,7 +32,8 @@ export default function UserProfileScreen() {
           item => ({
             id: item.event?.photos[0]?.id,
             img: item.event?.photos[0]?.url,
-            placeholder: item.event?.photos[0]?.placeholder
+            placeholder: item.event?.photos[0]?.placeholder,
+            location: item.event?.location?.name
           })
         )
       )) || []
@@ -153,14 +155,19 @@ export default function UserProfileScreen() {
             </VStack>
           )}
           renderItem={({ item }) => (
-            <Image
-              placeholder={{ thumbhash: item.placeholder }}
-              recyclingKey={item.img}
-              source={{ uri: item.img }}
-              style={styles.eventImage}
-              contentFit='cover'
-              transition={imageTransition}
-            />
+            <View style={{ position: 'relative' }}>
+              <Image
+                placeholder={{ thumbhash: item.placeholder }}
+                recyclingKey={item.img}
+                source={{ uri: item.img }}
+                style={styles.eventImage}
+                contentFit='cover'
+                transition={imageTransition}
+              />
+              <Badge>
+                {item.location}
+              </Badge>
+            </View>
           )}
         />
       </SafeAreaView>

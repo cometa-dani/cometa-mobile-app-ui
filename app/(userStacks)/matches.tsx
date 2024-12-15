@@ -17,6 +17,7 @@ import { Button } from '@/components/button/button';
 import Animated, { ZoomIn, FadeOut, LinearTransition, } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import { imageTransition } from '@/constants/vars';
+import { Badge } from '@/components/button/badge';
 
 
 const users = [
@@ -172,13 +173,16 @@ export default function MatchedEventsScreen(): ReactNode {
             entering={ZoomIn.withInitialValues({ transform: [{ scale: 0 }] }).duration(460)}
             exiting={FadeOut.duration(390)}
           >
-            <View style={{ padding: theme.spacing.sp6, paddingBottom: 0 }}>
+            <View style={{ padding: theme.spacing.sp6, paddingBottom: 0, position: 'relative' }}>
               <Image
                 transition={imageTransition}
                 contentFit='cover'
                 style={styles.imgHeader}
                 source={{ uri: likedEvent.photos.at(0)?.url, }}
               />
+              <Badge>
+                {likedEvent?.location?.name}
+              </Badge>
             </View>
           </Animated.View>
         }
