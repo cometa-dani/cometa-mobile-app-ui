@@ -4,14 +4,14 @@ import { useCometaStore } from '@/store/cometaStore';
 import { HStack } from '@/components/utils/stacks';
 import { Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { createEmptyPlaceholders, hasAsset, IPhotoPlaceholder } from '../photosGrid/photoGrid2';
+import { createPlaceholders, hasAsset, IPhotoPlaceholder } from '../photosGrid/photoGrid2';
 import { MAX_NUMBER_PHOTOS, MIN_NUMBER_PHOTOS } from '@/constants/vars';
 import { FooterButton } from './components/footerButton';
 import { IProps } from './components/interface';
 import { PhotosGrid2 } from '../photosGrid/photoGrid2';
 
 
-const setInitialPlaceholders = () => createEmptyPlaceholders(MAX_NUMBER_PHOTOS);
+const setInitialPlaceholders = () => createPlaceholders(MAX_NUMBER_PHOTOS);
 
 export const UploadYouPhotosForm: FC<IProps> = ({ onNext }) => {
   const { theme } = useStyles();

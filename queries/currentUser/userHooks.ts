@@ -25,8 +25,6 @@ export const useMutationCreateUser = () => {
 
 
 export const useMutationUpdateUserById = () => {
-  const queryClient = useQueryClient();
-  const uuid = useCometaStore(state => state.uid);
   return (
     useMutation({
       mutationFn: async (args: { userId: number, payload: Partial<IUpdateUser> }) => {
@@ -37,21 +35,6 @@ export const useMutationUpdateUserById = () => {
         else {
           throw new Error('failed fetched');
         }
-      },
-      onMutate: async ({ payload }) => {
-        queryClient
-          .setQueryData<IGetDetailedUserProfile>
-          ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuid], (oldState): IGetDetailedUserProfile => {
-            const optimisticState = {
-              ...oldState,
-              ...payload
-            } as IGetDetailedUserProfile;
-
-            return optimisticState;
-          });
-      },
-      onSuccess: async () => {
-        // await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE] });
       },
       retry: 1,
       retryDelay: 1_000 * 6
@@ -65,7 +48,7 @@ export const useQueryGetUserProfile = () => {
   return (
     useQuery({
       enabled: !!session?.user.id,
-      queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE],
+      queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE],
       queryFn: async (): Promise<IGetDetailedUserProfile> => {
         const res = await userService.getUserInfoByUidWithLikedEvents(session?.user.id as string);
         if (res.status === 200) {
@@ -107,10 +90,10 @@ export const useMutationUploadUserPhotos = (uuId?: string) => {
           }
         },
       onMutate: async ({ pickedImgFiles }) => {
-        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuId] });
+        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE, uuId] });
         queryClient
           .setQueryData<IGetDetailedUserProfile>
-          ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuId], (oldState): IGetDetailedUserProfile => {
+          ([QueryKeys.GET_LOGGED_IN_USER_PROFILE, uuId], (oldState): IGetDetailedUserProfile => {
 
             const optimisticState = {
               ...oldState,
@@ -122,7 +105,7 @@ export const useMutationUploadUserPhotos = (uuId?: string) => {
           });
       },
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, uuId] });
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE, uuId] });
       },
       retry: 1,
       retryDelay: 1_000 * 6
@@ -148,11 +131,11 @@ export const useMutationDeleteUserPhotoById = (dynamicParam?: string) => {
           }
         },
       onMutate: async ({ photoUuid }) => {
-        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam] });
+        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE, dynamicParam] });
         // TODO
         queryClient
           .setQueryData<IGetDetailedUserProfile>
-          ([QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam], (oldState): IGetDetailedUserProfile => {
+          ([QueryKeys.GET_LOGGED_IN_USER_PROFILE, dynamicParam], (oldState): IGetDetailedUserProfile => {
             const filteredPhotos: IPhoto[] = oldState?.photos.filter(({ uuid }) => photoUuid !== uuid) || [];
             const optimisticState = {
               ...oldState,
@@ -164,7 +147,7 @@ export const useMutationDeleteUserPhotoById = (dynamicParam?: string) => {
           });
       },
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_INFO_PROFILE, dynamicParam] });
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE, dynamicParam] });
       },
       retry: 1,
       retryDelay: 1_000 * 6

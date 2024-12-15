@@ -65,11 +65,11 @@ class UsersService {
     const headers = { 'Content-Type': 'multipart/form-data', };
 
     pickedImgFiles.forEach((pickedImgFile, index) => {
-      const fileExtension = pickedImgFile.asset?.uri.split('.').at(-1);
+      const fileExtension = pickedImgFile.pickedUpAsset?.uri.split('.').at(-1);
       const imgFile = ({
-        uri: pickedImgFile.asset?.uri,
+        uri: pickedImgFile.pickedUpAsset?.uri,
         type: `image/${fileExtension}`,
-        name: pickedImgFile.asset?.fileName ?? index,
+        name: pickedImgFile.pickedUpAsset?.fileName ?? index,
       });
       formData.append(`files[${index}]`, imgFile);
     });

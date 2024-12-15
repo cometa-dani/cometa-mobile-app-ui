@@ -76,7 +76,7 @@ export default function UserProfileScreen() {
             );
           },
           headerTitle: () => (
-            <GradientHeading styles={[{ fontSize: theme.text.size.s7 }]}>
+            <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
               {userProfile?.username}
             </GradientHeading>
           ),

@@ -1,9 +1,10 @@
 import { createStyleSheet } from 'react-native-unistyles';
 import { forwardRef, ReactNode } from 'react';
-import { GestureResponderEvent, Pressable, StyleProp, View, ViewStyle } from 'react-native';
+import { ActivityIndicator, GestureResponderEvent, Pressable, StyleProp, View, ViewStyle } from 'react-native';
 import { useStyles } from 'react-native-unistyles';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { TextView } from '../text/text';
+import { Condition } from '../utils/ifElse';
 
 
 interface IButtonProps {
@@ -12,7 +13,8 @@ interface IButtonProps {
   size?: 'sm' | 'md' | 'lg',
   onPress: (event: GestureResponderEvent) => void,
   isInsideBottomSheet?: boolean,
-  style?: StyleProp<ViewStyle>
+  style?: StyleProp<ViewStyle>,
+  showLoading?: boolean
 }
 
 export const Button = forwardRef<View, IButtonProps>(({
@@ -20,7 +22,8 @@ export const Button = forwardRef<View, IButtonProps>(({
   onPress,
   variant,
   isInsideBottomSheet = false,
-  style = {}
+  style = {},
+  showLoading = false
 },
   ref
 ) => {
@@ -28,26 +31,51 @@ export const Button = forwardRef<View, IButtonProps>(({
     color: variant
   });
 
+  const handleOnPress = (event: GestureResponderEvent): void => {
+    if (showLoading) return; // if loading or submitting disable onPress
+    onPress(event);
+  };
+
   if (isInsideBottomSheet) {
     return (
       <TouchableOpacity
         style={[buttonsStyles.buttonContainer(), style]}
-        onPress={onPress}
+        onPress={handleOnPress}
       >
         <TextView style={buttonsStyles.buttonText()}>{children}</TextView>
+        <Condition
+          if={showLoading}
+          then={
+            <ActivityIndicator
+              size="small"
+              color="white"
+            />
+          }
+        />
       </TouchableOpacity>
     );
   }
   return (
     <Pressable
       ref={ref}
-      onPress={onPress}
+      onPress={handleOnPress}
       style={({ pressed }) => [buttonsStyles.buttonContainer(pressed), style]}
     >
       {() => (
-        <TextView style={buttonsStyles.buttonText()}>
-          {children}
-        </TextView>
+        <>
+          <TextView style={buttonsStyles.buttonText()}>
+            {children}
+          </TextView>
+          <Condition
+            if={showLoading}
+            then={
+              <ActivityIndicator
+                size="small"
+                color="white"
+              />
+            }
+          />
+        </>
       )}
     </Pressable>
   );
@@ -83,6 +111,10 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
   }),
   buttonContainer: (pressed = false) => ({
     width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.spacing.sp1,
     padding: theme.spacing.sp4,
     borderRadius: theme.radius.sm,
     borderWidth: 1.6,

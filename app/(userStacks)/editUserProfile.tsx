@@ -19,12 +19,11 @@ import {
   errorMessages
 } from '@/components/onboarding/user/steps/aboutYourSelf';
 import {
-  createEmptyPlaceholders,
+  createPlaceholders,
   hasAsset,
   IPhotoPlaceholder
 } from '@/components/onboarding/user/photosGrid/photoGrid2';
 import { IPhoto } from '@/models/Photo';
-import * as ImagePicker from 'expo-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FormProvider, useForm } from 'react-hook-form';
 import { IUpdateUser } from '@/models/User';
@@ -37,9 +36,10 @@ import { Button } from '@/components/button/button';
 import { PhotosGrid2 } from '@/components/onboarding/user/photosGrid/photoGrid2';
 import { Notifier } from 'react-native-notifier';
 import { ErrorToast, SucessToast } from '@/components/toastNotification/toastNotification';
+import { QueryKeys } from '@/queries/queryKeys';
 
 
-const setInitialPlaceholders = () => createEmptyPlaceholders(MAX_NUMBER_PHOTOS);
+// const setInitialPlaceholders = () => createPlaceholders(MAX_NUMBER_PHOTOS);
 
 
 export default function EditUserProfileScreen(): ReactNode {
@@ -75,7 +75,10 @@ export default function EditUserProfileScreen(): ReactNode {
     };
     try {
       if (!userProfile?.id) return;
-      await updateUser.mutateAsync({ userId: userProfile?.id, payload: updateUserPayload });
+      await updateUser.mutateAsync(
+        { userId: userProfile?.id, payload: updateUserPayload },
+        { onSuccess: async () => await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] }) }
+      );
       Notifier.showNotification({
         title: 'Done',
         description: 'your profile was saved successfully',
@@ -84,10 +87,9 @@ export default function EditUserProfileScreen(): ReactNode {
     } catch (error) {
       Notifier.showNotification({
         title: 'Error',
-        description: 'your profile was not saved successfully',
+        description: 'something went wrong, try again',
         Component: ErrorToast,
       });
-      return;
     }
   };
 
@@ -124,7 +126,7 @@ export default function EditUserProfileScreen(): ReactNode {
             }}>
               <PhotosGrid2
                 action='update'
-                setInitialPhotos={setInitialPlaceholders}
+                setInitialPhotos={() => createPlaceholders(MAX_NUMBER_PHOTOS, userPhotos)}
                 onSelect={handlePhotosPickUp}
               />
             </View>
@@ -132,8 +134,8 @@ export default function EditUserProfileScreen(): ReactNode {
             <View style={{
               gap: theme.spacing.sp7,
               backgroundColor: theme.colors.white100,
-              paddingHorizontal: theme.spacing.sp6,
-              paddingVertical: theme.spacing.sp10,
+              paddingHorizontal: theme.spacing.sp8,
+              paddingVertical: theme.spacing.sp11,
               borderRadius: theme.spacing.sp6
             }}>
               <FieldText
@@ -181,6 +183,7 @@ export default function EditUserProfileScreen(): ReactNode {
 
               <Button
                 variant='primary'
+                showLoading={updateUser.isPending}
                 style={{ marginTop: theme.spacing.sp8 }}
                 onPress={formProps.handleSubmit(handleUserUpdate)}
               >

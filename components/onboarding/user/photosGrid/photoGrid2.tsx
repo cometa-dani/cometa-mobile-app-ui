@@ -10,6 +10,7 @@ import { ForEach } from '@/components/utils/ForEach';
 import { imageTransition } from '@/constants/vars';
 import { Notifier } from 'react-native-notifier';
 import { ErrorToast } from '@/components/toastNotification/toastNotification';
+import { IPhoto } from '@/models/Photo';
 
 
 type ImagePickerAsset = ImagePicker.ImagePickerAsset
@@ -17,19 +18,28 @@ type ImagePickerAsset = ImagePicker.ImagePickerAsset
 
 export type IPhotoPlaceholder = {
   position: number;
-  asset?: ImagePickerAsset
+  pickedUpAsset?: ImagePickerAsset,
+  storedPhoto?: IPhoto
 }
 
-export const createEmptyPlaceholders = (x: number): IPhotoPlaceholder[] => (
-  Array
-    .from({ length: x })
-    .map(
-      (_, i) => ({
-        position: i,
-        asset: undefined
-      })
-    )
-);
+export const createPlaceholders = (MAX_NUMBER: number, usersPhotos: IPhoto[] = []): IPhotoPlaceholder[] => {
+  const fullPlaceholders = usersPhotos.map((asset, index) => ({
+    position: index,
+    pickedUpAsset: undefined,
+    storedPhoto: asset
+  }));
+  const remainingPlaceholders = MAX_NUMBER - usersPhotos.length;
+  const emptyPlaceholders = (
+    Array
+      .from({ length: remainingPlaceholders })
+      .map((_, index) => ({
+        position: fullPlaceholders.length + index,
+        pickedUpAsset: undefined,
+        storedPhoto: undefined
+      }))
+  );
+  return [...fullPlaceholders, ...emptyPlaceholders,];
+};
 
 
 /**
@@ -50,7 +60,7 @@ function generate2DArray<T>(arr: T[], nestedLength: number = 3): T[][] {
 }
 
 
-export const hasAsset = (photo: IPhotoPlaceholder) => photo?.asset;
+export const hasAsset = (photo: IPhotoPlaceholder) => photo?.pickedUpAsset;
 
 const appendPhoto = (pickedPhotos: ImagePickerAsset[]) => {
   const appendPhoto = (prev: IPhotoPlaceholder[]) => {
@@ -62,7 +72,7 @@ const appendPhoto = (pickedPhotos: ImagePickerAsset[]) => {
         if (shouldReplace) {
           const newPhoto = {
             ...photo,
-            asset: pickedPhotos?.at(counter)
+            pickedUpAsset: pickedPhotos?.at(counter)
           };
           counter++;
           return newPhoto;
@@ -81,7 +91,7 @@ const replacePhoto = (pickedPhotos: ImagePickerAsset[], selectedPosition: number
       if (isSelected) {
         return {
           ...photo,
-          asset: pickedPhotos?.at(0)
+          pickedUpAsset: pickedPhotos?.at(0)
         };
       }
       return photo;
@@ -105,6 +115,7 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
   const { styles, theme } = useStyles(uploadYourPhotosSheet);
   const [userPhotos = [], setUserPhotos] = useState<IPhotoPlaceholder[]>(setInitialPhotos);
   const [firstPhoto, ...restPhotos] = userPhotos;
+  console.log({ userPhotos });
 
   const handlePickMultipleImages = async (selectedPosition = 0, isPositionSelected = false) => {
     const currentAssets = userPhotos.filter(hasAsset); // filter out the already exisisting images
@@ -132,7 +143,7 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
         if (action === 'update') {
           onSelect([{         // lift up the single updated photo
             position: selectedPosition,
-            asset: pickedPhotos.assets[0]
+            pickedUpAsset: pickedPhotos.assets[0]
           }]);
         }
       }
@@ -155,16 +166,16 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
             {(cell, j = 0) => (
               <Pressable
                 key={j}
-                style={({ pressed }) => styles.imageViewer(pressed, !cell?.asset)}
-                onPress={() => handlePickMultipleImages(cell.position, !!cell?.asset?.uri)}
+                style={({ pressed }) => styles.imageViewer(pressed, !cell?.pickedUpAsset)}
+                onPress={() => handlePickMultipleImages(cell.position, !!cell?.pickedUpAsset?.uri)}
               >
                 <Condition
-                  if={cell?.asset}
+                  if={cell?.pickedUpAsset}
                   then={
                     <Image
-                      recyclingKey={cell?.asset?.uri}
+                      recyclingKey={cell?.pickedUpAsset?.uri}
                       style={styles.image}
-                      source={{ uri: cell?.asset?.uri }}
+                      source={{ uri: cell?.pickedUpAsset?.uri }}
                       contentFit='cover'
                       transition={imageTransition}
                     />
@@ -187,15 +198,15 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
   return (
     <VStack gap={theme.spacing.sp2}>
       <Pressable
-        onPress={() => handlePickMultipleImages(0, !!firstPhoto.asset?.uri)}
-        style={({ pressed }) => styles.mainImageViewer(pressed, !firstPhoto?.asset)}
+        onPress={() => handlePickMultipleImages(0, !!firstPhoto.pickedUpAsset?.uri)}
+        style={({ pressed }) => styles.mainImageViewer(pressed, !firstPhoto?.pickedUpAsset)}
       >
         <Condition
-          if={firstPhoto?.asset}
+          if={firstPhoto?.pickedUpAsset}
           then={
             <Image
               style={styles.mainImage}
-              source={{ uri: firstPhoto?.asset?.uri }}
+              source={{ uri: firstPhoto?.pickedUpAsset?.uri }}
               contentFit='cover'
               transition={imageTransition}
             />
