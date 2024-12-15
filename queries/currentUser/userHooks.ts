@@ -76,7 +76,6 @@ interface IPhotosParams {
  * @returns
  */
 export const useMutationUploadUserPhotos = () => {
-  // const queryClient = useQueryClient();
   return (
     useMutation({
       mutationFn:
@@ -89,9 +88,6 @@ export const useMutationUploadUserPhotos = () => {
             throw new Error('failed fech');
           }
         },
-      // onSuccess: async () => {
-      //   await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
-      // },
       retry: 1,
       retryDelay: 1_000 * 6
     })
@@ -122,28 +118,6 @@ export const useMutationUpdateUserPhoto = () => {
             throw new Error('failed fech');
           }
         },
-      // onMutate: async ({ pickedAsset }) => {
-      //   await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
-      //   queryClient
-      //     .setQueryData<IGetDetailedUserProfile>
-      //     ([QueryKeys.GET_LOGGED_IN_USER_PROFILE], (oldState): IGetDetailedUserProfile => {
-      //       const optimisticState = {
-      //         ...oldState,
-      //         photos: (
-      //           oldState?.photos.map((photo) => (
-      //             photo.id === pickedAsset.fromBackend?.id ?
-      //               { ...photo, url: pickedAsset.fromFileSystem?.uri }
-      //               : photo)
-      //           )
-      //         )
-      //       } as IGetDetailedUserProfile;
-
-      //       return optimisticState;
-      //     });
-      // },
-      // onSuccess: async () => {
-      //   await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
-      // },
       retry: 1,
       retryDelay: 1_000 * 6
     })

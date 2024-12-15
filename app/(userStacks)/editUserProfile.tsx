@@ -67,10 +67,8 @@ export default function EditUserProfileScreen(): ReactNode {
     };
     try {
       if (!userProfile?.id) return;
-      await updateUser.mutateAsync(
-        { userId: userProfile?.id, payload: updateUserPayload },
-        { onSuccess: async () => await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] }) }
-      );
+      await updateUser.mutateAsync({ userId: userProfile?.id, payload: updateUserPayload });
+      await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
       Notifier.showNotification({
         title: 'Done',
         description: 'your profile was saved successfully',
