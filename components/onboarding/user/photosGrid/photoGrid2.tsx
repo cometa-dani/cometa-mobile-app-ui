@@ -1,13 +1,13 @@
 import { VStack } from '@/components/utils/stacks';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { FC, ReactNode, useCallback, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { Condition } from '@/components/utils/ifElse';
 import { ForEach } from '@/components/utils/ForEach';
-import { imageTransition } from '@/constants/vars';
+import { imageTransition, MAX_NUMBER_PHOTOS } from '@/constants/vars';
 import { Notifier } from 'react-native-notifier';
 import { ErrorToast } from '@/components/toastNotification/toastNotification';
 import { IPhoto } from '@/models/Photo';
@@ -18,24 +18,33 @@ type ImagePickerAsset = ImagePicker.ImagePickerAsset
 
 export type IPhotoPlaceholder = {
   position: number;
-  pickedUpAsset?: ImagePickerAsset,
-  storedPhoto?: IPhoto
+  /**
+   *
+   * @description picked up photo from the phone's file system
+   */
+  fromFileSystem?: ImagePickerAsset,
+  /**
+   *
+   * @description saved photo in the backend
+   */
+  fromBackend?: IPhoto
 }
 
 export const createPlaceholders = (MAX_NUMBER: number, usersPhotos: IPhoto[] = []): IPhotoPlaceholder[] => {
-  const fullPlaceholders = usersPhotos.map((asset, index) => ({
+  const fullPlaceholders = usersPhotos.map((fromBackend, index) => ({
     position: index,
-    pickedUpAsset: undefined,
-    storedPhoto: asset
+    fromFileSystem: undefined,
+    fromBackend
   }));
   const remainingPlaceholders = MAX_NUMBER - usersPhotos.length;
+  if (remainingPlaceholders < 0) throw new Error('Not enough placeholders');
   const emptyPlaceholders = (
     Array
       .from({ length: remainingPlaceholders })
       .map((_, index) => ({
         position: fullPlaceholders.length + index,
-        pickedUpAsset: undefined,
-        storedPhoto: undefined
+        fromFileSystem: undefined,
+        fromBackend: undefined
       }))
   );
   return [...fullPlaceholders, ...emptyPlaceholders];
@@ -46,10 +55,10 @@ export const createPlaceholders = (MAX_NUMBER: number, usersPhotos: IPhoto[] = [
  *
  * @description Generates a 2D array from a 1D array
  */
-function generate2DArray<T>(arr: T[], nestedLength: number = 3): T[][] {
+function generate2DArray<T>(arr: T[], numberOfColumns: number = 3): T[][] {
   const _2DArr: T[][] = [];
   arr.forEach((photo, index) => {
-    if (index % nestedLength === 0) {
+    if (index % numberOfColumns === 0) {
       _2DArr.push([photo]);
     }
     else {
@@ -60,19 +69,21 @@ function generate2DArray<T>(arr: T[], nestedLength: number = 3): T[][] {
 }
 
 
-export const hasAsset = (photo: IPhotoPlaceholder) => photo?.pickedUpAsset;
+export const isFromFileSystem = (photo: IPhotoPlaceholder) => photo?.fromFileSystem;
+export const isTaken = (photo: IPhotoPlaceholder) => photo?.fromFileSystem || photo?.fromBackend;
+
 
 const appendPhoto = (pickedPhotos: ImagePickerAsset[]) => {
-  const appendPhoto = (prev: IPhotoPlaceholder[]) => {
+  const appendPhoto = (prev: IPhotoPlaceholder[]): IPhotoPlaceholder[] => {
     let counter = 0;
-    const currentAssets = prev.filter(hasAsset);
+    const currentAssets = prev.filter(isFromFileSystem);
     return (
-      prev.map((photo, index, arr) => {
+      prev.map((photo, index) => {
         const shouldReplace = (index + 1) > (currentAssets.length);
         if (shouldReplace) {
           const newPhoto = {
             ...photo,
-            pickedUpAsset: pickedPhotos?.at(counter)
+            fromFileSystem: pickedPhotos?.at(counter)
           };
           counter++;
           return newPhoto;
@@ -85,13 +96,13 @@ const appendPhoto = (pickedPhotos: ImagePickerAsset[]) => {
 };
 
 const replacePhoto = (pickedPhotos: ImagePickerAsset[], selectedPosition: number) => {
-  const replacePhoto = (prev: IPhotoPlaceholder[]) => {
+  const replacePhoto = (prev: IPhotoPlaceholder[]): IPhotoPlaceholder[] => {
     return prev.map(photo => {
       const isSelected = photo.position === selectedPosition;
       if (isSelected) {
         return {
           ...photo,
-          pickedUpAsset: pickedPhotos?.at(0)
+          fromFileSystem: pickedPhotos?.at(0)
         };
       }
       return photo;
@@ -107,25 +118,23 @@ interface IPhotosGridProps {
    * @description if acttion is 'update' returns 1 photo, if 'create' returns all photos
    */
   onSelect: (photos: IPhotoPlaceholder[]) => void
-  setInitialPhotos: () => IPhotoPlaceholder[],
-  action?: 'create' | 'update',
-  footer?: () => ReactNode
+  initialPhotos?: IPhoto[],
+  mode?: 'create' | 'update',
 }
-export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, action = 'create', footer }) => {
+export const PhotosGrid2: FC<IPhotosGridProps> = ({ initialPhotos = [], onSelect, mode = 'create' }) => {
   const { styles, theme } = useStyles(uploadYourPhotosSheet);
-  const [userPhotos = [], setUserPhotos] = useState<IPhotoPlaceholder[]>(setInitialPhotos);
+  const [userPhotos = [], setUserPhotos] = useState<IPhotoPlaceholder[]>(createPlaceholders(MAX_NUMBER_PHOTOS, initialPhotos));
   const [firstPhoto, ...restPhotos] = userPhotos;
 
   const handlePickMultipleImages = async (selectedPosition = 0, isPositionEmpty = false) => {
-    const currentAssets = userPhotos.filter(hasAsset); // filter out the already exisisting images
-    const isGridFull = userPhotos.length === currentAssets.length;
+    const takenPlaceholders = userPhotos.filter(isTaken); // photos that have been taken
+    const remainingPhotos: number = MAX_NUMBER_PHOTOS - takenPlaceholders.length; // take a number below the limit
     try {
-      const takePhotos: number = userPhotos.length - currentAssets.length; // take a number below the limit
       const pickedPhotos = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
-        allowsMultipleSelection: action === 'update' ? false : !isGridFull, // picks multiple images
-        allowsEditing: action === 'update' ? true : isPositionEmpty,
-        selectionLimit: isGridFull ? 1 : takePhotos,
+        allowsMultipleSelection: isPositionEmpty, // picks multiple images
+        allowsEditing: !isPositionEmpty,
+        selectionLimit: remainingPhotos === 0 ? 1 : remainingPhotos,
         aspect: [4, 3],
         quality: 1,
       });
@@ -136,15 +145,19 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
             : appendPhoto(pickedPhotos.assets)(userPhotos)
         );
         setUserPhotos(newPhotos); // update the grid's state
-        if (action === 'create') {
+        if (mode === 'create') {
           onSelect(newPhotos); // lift up all the new photos
         }
-        if (action === 'update') {
-          onSelect([{         // lift up the single updated photo
-            position: selectedPosition,
-            pickedUpAsset: pickedPhotos.assets[0],
-            storedPhoto: userPhotos.at(selectedPosition)?.storedPhoto
-          }]);
+        if (mode === 'update') {
+          if (isPositionEmpty) {
+            onSelect(newPhotos.filter(isFromFileSystem)); // lifts state up
+          } else {
+            onSelect([{  // one to one lifts state up
+              position: selectedPosition,
+              fromFileSystem: pickedPhotos.assets[0],
+              fromBackend: userPhotos.at(selectedPosition)?.fromBackend
+            }]);
+          }
         }
       }
     }
@@ -164,9 +177,8 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
         <View key={i} style={{ flexDirection: 'row', flex: 1, flexWrap: 'wrap', gap: theme.spacing.sp2 }}>
           <ForEach items={row}>
             {(cell, j = 0) => {
-              const initialUrl = cell?.storedPhoto?.url || cell?.pickedUpAsset?.uri;
-              const placeholder = cell?.storedPhoto?.placeholder;
-              const source = action === 'create' ? cell?.pickedUpAsset?.uri : cell?.storedPhoto?.url;
+              const placeholder = cell?.fromBackend?.placeholder;
+              const source = cell?.fromFileSystem?.uri ?? cell?.fromBackend?.url;
               return (
                 <Pressable
                   key={j}
@@ -174,10 +186,10 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
                   onPress={() => handlePickMultipleImages(cell.position, !!source)}
                 >
                   <Condition
-                    if={initialUrl}
+                    if={source}
                     then={
                       <Image
-                        recyclingKey={initialUrl}
+                        recyclingKey={source}
                         source={{ uri: source, placeholder }}
                         style={styles.image}
                         contentFit='cover'
@@ -200,9 +212,8 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
     </ForEach>
   ), [restPhotos]);
 
-  const initialUrl = firstPhoto?.storedPhoto?.url || firstPhoto?.pickedUpAsset?.uri;
-  const placeholder = firstPhoto?.storedPhoto?.placeholder;
-  const source = action === 'create' ? firstPhoto?.pickedUpAsset?.uri : firstPhoto?.storedPhoto?.url;
+  const source = firstPhoto?.fromFileSystem?.uri ?? firstPhoto?.fromBackend?.url;
+  const placeholder = firstPhoto?.fromBackend?.placeholder;
 
   return (
     <VStack gap={theme.spacing.sp2}>
@@ -211,7 +222,7 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
         style={({ pressed }) => styles.mainImageViewer(pressed, !source)}
       >
         <Condition
-          if={initialUrl}
+          if={source}
           then={
             <Image
               style={styles.mainImage}

@@ -76,7 +76,7 @@ interface IPhotosParams {
  * @returns
  */
 export const useMutationUploadUserPhotos = () => {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   return (
     useMutation({
       mutationFn:
@@ -89,9 +89,9 @@ export const useMutationUploadUserPhotos = () => {
             throw new Error('failed fech');
           }
         },
-      onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
-      },
+      // onSuccess: async () => {
+      //   await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
+      // },
       retry: 1,
       retryDelay: 1_000 * 6
     })
@@ -101,8 +101,7 @@ export const useMutationUploadUserPhotos = () => {
 
 interface IUpdatePhotoParams {
   userId: number,
-  pickedAsset: IPhotoPlaceholder,
-  photoId: number
+  pickedAsset: IPhotoPlaceholder
 }
 
 /**
@@ -111,12 +110,11 @@ interface IUpdatePhotoParams {
  * @returns
  */
 export const useMutationUpdateUserPhoto = () => {
-  const queryClient = useQueryClient();
   return (
     useMutation({
       mutationFn:
-        async ({ photoId, userId, pickedAsset }: IUpdatePhotoParams): Promise<IGetBasicUserProfile> => {
-          const res = await userService.updateUserPhoto(userId, photoId, pickedAsset);
+        async ({ userId, pickedAsset }: IUpdatePhotoParams): Promise<IGetBasicUserProfile> => {
+          const res = await userService.updateUserPhoto(userId, pickedAsset);
           if (res.status === 200) {
             return res.data;
           }
@@ -124,25 +122,25 @@ export const useMutationUpdateUserPhoto = () => {
             throw new Error('failed fech');
           }
         },
-      onMutate: async ({ pickedAsset, photoId }) => {
-        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
-        queryClient
-          .setQueryData<IGetDetailedUserProfile>
-          ([QueryKeys.GET_LOGGED_IN_USER_PROFILE], (oldState): IGetDetailedUserProfile => {
-            const optimisticState = {
-              ...oldState,
-              photos: (
-                oldState?.photos.map((photo) => (
-                  photo.id === photoId ?
-                    { ...photo, url: pickedAsset.pickedUpAsset?.uri }
-                    : photo)
-                )
-              )
-            } as IGetDetailedUserProfile;
+      // onMutate: async ({ pickedAsset }) => {
+      //   await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
+      //   queryClient
+      //     .setQueryData<IGetDetailedUserProfile>
+      //     ([QueryKeys.GET_LOGGED_IN_USER_PROFILE], (oldState): IGetDetailedUserProfile => {
+      //       const optimisticState = {
+      //         ...oldState,
+      //         photos: (
+      //           oldState?.photos.map((photo) => (
+      //             photo.id === pickedAsset.fromBackend?.id ?
+      //               { ...photo, url: pickedAsset.fromFileSystem?.uri }
+      //               : photo)
+      //           )
+      //         )
+      //       } as IGetDetailedUserProfile;
 
-            return optimisticState;
-          });
-      },
+      //       return optimisticState;
+      //     });
+      // },
       // onSuccess: async () => {
       //   await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
       // },

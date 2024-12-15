@@ -1,7 +1,6 @@
 import { ReactNode, } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { MAX_NUMBER_PHOTOS } from '../../constants/vars';
 import { Condition } from '@/components/utils/ifElse';
 import { Center } from '@/components/utils/stacks';
 import { useStyles } from 'react-native-unistyles';
@@ -9,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import {
   useMutationUpdateUserById,
   useMutationUpdateUserPhoto,
+  useMutationUploadUserPhotos,
   useQueryGetUserProfile
 } from '@/queries/currentUser/userHooks';
 import {
@@ -17,10 +17,7 @@ import {
   validationSchema,
   errorMessages
 } from '@/components/onboarding/user/steps/aboutYourSelf';
-import {
-  createPlaceholders,
-  IPhotoPlaceholder
-} from '@/components/onboarding/user/photosGrid/photoGrid2';
+import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid2';
 import { IPhoto } from '@/models/Photo';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -43,6 +40,7 @@ export default function EditUserProfileScreen(): ReactNode {
   const queryClient = useQueryClient();
   const updateUser = useMutationUpdateUserById();
   const updatePhoto = useMutationUpdateUserPhoto();
+  const uploadPhoto = useMutationUploadUserPhotos();
   const { data: userProfile, isFetched } = useQueryGetUserProfile();
   const { selectedCity, setCityKind } = useSelectCityByName();
   const { selectedLanguages } = useSelectLanguages();
@@ -89,12 +87,34 @@ export default function EditUserProfileScreen(): ReactNode {
 
   const handlePhotoPickUp = async (photos: IPhotoPlaceholder[]) => {
     if (!userProfile?.id) return;
-    const payload = {
-      pickedAsset: photos[0],
-      userId: userProfile?.id,
-      photoId: userPhotos[0].id
-    };
-    updatePhoto.mutate(payload);
+    try {
+      if (photos.length === 1 && photos[0].fromBackend && photos[0].fromFileSystem) {
+        const payload = {
+          pickedAsset: photos[0],
+          userId: userProfile?.id,
+          photoId: userPhotos[0].id
+        };
+        await updatePhoto.mutateAsync(payload);
+      }
+      else if (photos.length === 1 && photos[0].fromFileSystem && !photos[0].fromBackend) {
+        await uploadPhoto.mutateAsync({ pickedImgFiles: photos, userId: userProfile?.id });
+      }
+      else if (photos.length > 1) {
+        await uploadPhoto.mutateAsync({ pickedImgFiles: photos, userId: userProfile?.id });
+      }
+      await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
+      Notifier.showNotification({
+        title: 'Done',
+        description: 'your profile was saved successfully',
+        Component: SucessToast,
+      });
+    } catch (error) {
+      Notifier.showNotification({
+        title: 'Error',
+        description: 'something went wrong, try again',
+        Component: ErrorToast,
+      });
+    }
   };
 
   const navigateToSelectCity = (kind: keyof ICityKind) => {
@@ -124,8 +144,8 @@ export default function EditUserProfileScreen(): ReactNode {
               padding: theme.spacing.sp6
             }}>
               <PhotosGrid2
-                action='update'
-                setInitialPhotos={() => createPlaceholders(MAX_NUMBER_PHOTOS, userPhotos)}
+                mode='update'
+                initialPhotos={userPhotos}
                 onSelect={handlePhotoPickUp}
               />
             </View>
@@ -182,7 +202,7 @@ export default function EditUserProfileScreen(): ReactNode {
 
               <Button
                 variant='primary'
-                showLoading={updateUser.isPending}
+                showLoading={updateUser.isPending || updatePhoto.isPending || uploadPhoto.isPending}
                 style={{ marginTop: theme.spacing.sp8 }}
                 onPress={formProps.handleSubmit(handleUserUpdate)}
               >

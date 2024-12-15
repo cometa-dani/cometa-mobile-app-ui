@@ -4,14 +4,12 @@ import { useCometaStore } from '@/store/cometaStore';
 import { HStack } from '@/components/utils/stacks';
 import { Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { createPlaceholders, hasAsset, IPhotoPlaceholder } from '../photosGrid/photoGrid2';
-import { MAX_NUMBER_PHOTOS, MIN_NUMBER_PHOTOS } from '@/constants/vars';
+import { isFromFileSystem, IPhotoPlaceholder } from '../photosGrid/photoGrid2';
+import { MIN_NUMBER_PHOTOS } from '@/constants/vars';
 import { FooterButton } from './components/footerButton';
 import { IProps } from './components/interface';
 import { PhotosGrid2 } from '../photosGrid/photoGrid2';
 
-
-const setInitialPlaceholders = () => createPlaceholders(MAX_NUMBER_PHOTOS);
 
 export const UploadYouPhotosForm: FC<IProps> = ({ onNext }) => {
   const { theme } = useStyles();
@@ -19,12 +17,12 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNext }) => {
   const userPhotos = useCometaStore(state => state.onboarding.user.photos) ?? [];
 
   const handlePhotosPickUp = (photos: IPhotoPlaceholder[]) => {
-    const filteredPhotos = photos.filter(hasAsset);
+    const filteredPhotos = photos.filter(isFromFileSystem);
     setOnboardingState({ photos: filteredPhotos });
   };
 
   const handleNextStep = () => {
-    if (userPhotos.filter(hasAsset).length < MIN_NUMBER_PHOTOS) return;
+    if (userPhotos.filter(isFromFileSystem).length < MIN_NUMBER_PHOTOS) return;
     onNext();
   };
 
@@ -38,8 +36,8 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNext }) => {
           gap: theme.spacing.sp7,
         }}>
         <PhotosGrid2
-          action='create'
-          setInitialPhotos={setInitialPlaceholders}
+          mode='create'
+          initialPhotos={[]}
           onSelect={handlePhotosPickUp}
         />
         <HStack

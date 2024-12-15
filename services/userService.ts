@@ -72,11 +72,11 @@ class UsersService {
     const headers = { 'Content-Type': 'multipart/form-data', };
 
     pickedAssets.forEach((pickedImgFile, index) => {
-      const fileExtension = pickedImgFile.pickedUpAsset?.uri.split('.').at(-1) ?? 'png';
+      const fileExtension = pickedImgFile.fromFileSystem?.uri.split('.').at(-1) ?? 'png';
       const imgFile = ({
-        uri: pickedImgFile.pickedUpAsset?.uri,
-        type: pickedImgFile.pickedUpAsset?.mimeType ?? `image/${fileExtension}`,
-        name: pickedImgFile.pickedUpAsset?.fileName ?? pickedAssets,
+        uri: pickedImgFile.fromFileSystem?.uri,
+        type: pickedImgFile.fromFileSystem?.mimeType ?? `image/${fileExtension}`,
+        name: pickedImgFile.fromFileSystem?.fileName ?? index,
       });
       formData.append(`files[${index}]`, imgFile);
     });
@@ -87,17 +87,17 @@ class UsersService {
     return this.http.delete(`/users/${loggedInUserID}/photos/${photoId}`);
   }
 
-  public updateUserPhoto(userId: number, photoId: number, pickedAsset: IPhotoPlaceholder) {
+  public updateUserPhoto(userId: number, pickedAsset: IPhotoPlaceholder) {
     const formData = new FormData();
     const headers = { 'Content-Type': 'multipart/form-data' };
-    const fileExtension = pickedAsset?.pickedUpAsset?.uri.split('.').at(-1) ?? 'png';
+    const fileExtension = pickedAsset?.fromFileSystem?.uri.split('.').at(-1) ?? 'png';
     const imgFile = ({
-      uri: pickedAsset.pickedUpAsset?.uri,
-      type: pickedAsset.pickedUpAsset?.mimeType ?? `image/${fileExtension}`,
-      name: pickedAsset.pickedUpAsset?.fileName ?? photoId,
+      uri: pickedAsset.fromFileSystem?.uri,
+      type: pickedAsset.fromFileSystem?.mimeType ?? `image/${fileExtension}`,
+      name: pickedAsset.fromFileSystem?.fileName ?? pickedAsset.fromBackend?.order,
     });
     formData.append('file', imgFile);
-    return this.http.patch<IGetBasicUserProfile>(`/users/${userId}/photos/${photoId}`, formData, { headers });
+    return this.http.patch<IGetBasicUserProfile>(`/users/${userId}/photos/${pickedAsset.fromBackend?.id}`, formData, { headers });
   }
 }
 
