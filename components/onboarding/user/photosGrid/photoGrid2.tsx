@@ -38,7 +38,7 @@ export const createPlaceholders = (MAX_NUMBER: number, usersPhotos: IPhoto[] = [
         storedPhoto: undefined
       }))
   );
-  return [...fullPlaceholders, ...emptyPlaceholders,];
+  return [...fullPlaceholders, ...emptyPlaceholders];
 };
 
 
@@ -115,9 +115,8 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
   const { styles, theme } = useStyles(uploadYourPhotosSheet);
   const [userPhotos = [], setUserPhotos] = useState<IPhotoPlaceholder[]>(setInitialPhotos);
   const [firstPhoto, ...restPhotos] = userPhotos;
-  console.log({ userPhotos });
 
-  const handlePickMultipleImages = async (selectedPosition = 0, isPositionSelected = false) => {
+  const handlePickMultipleImages = async (selectedPosition = 0, isPositionEmpty = false) => {
     const currentAssets = userPhotos.filter(hasAsset); // filter out the already exisisting images
     const isGridFull = userPhotos.length === currentAssets.length;
     try {
@@ -125,14 +124,14 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ setInitialPhotos, onSelect, 
       const pickedPhotos = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsMultipleSelection: action === 'update' ? false : !isGridFull, // picks multiple images
-        allowsEditing: action === 'update' ? true : isPositionSelected,
+        allowsEditing: action === 'update' ? true : isPositionEmpty,
         selectionLimit: isGridFull ? 1 : takePhotos,
         aspect: [4, 3],
         quality: 1,
       });
       if (!pickedPhotos.canceled) {
         const newPhotos = (
-          isPositionSelected ?
+          isPositionEmpty ?
             replacePhoto(pickedPhotos.assets, selectedPosition)(userPhotos)
             : appendPhoto(pickedPhotos.assets)(userPhotos)
         );

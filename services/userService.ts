@@ -1,9 +1,16 @@
-import { ICreateUser, IGetBasicUserProfile, IGetDetailedUserProfile, IGetTargetUser, IGetPaginatedUsers, IUserOnboarding, IUpdateUser } from '../models/User';
 import { RestApiService } from './restService';
-import { ImagePickerAsset } from 'expo-image-picker';
 import FormData from 'form-data';
 import { AxiosInstance } from 'axios';
 import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid2';
+import {
+  ICreateUser,
+  IGetBasicUserProfile,
+  IGetDetailedUserProfile,
+  IGetTargetUser,
+  IGetPaginatedUsers,
+  IUserOnboarding,
+  IUpdateUser
+} from '../models/User';
 
 
 class UsersService {
@@ -60,16 +67,16 @@ class UsersService {
     return this.http.delete(`/users/${loggedInUserID}`);
   }
 
-  public uploadUserPhotos(userId: number, pickedImgFiles: IPhotoPlaceholder[]) {
+  public uploadUserPhotos(userId: number, pickedAssets: IPhotoPlaceholder[]) {
     const formData = new FormData();
     const headers = { 'Content-Type': 'multipart/form-data', };
 
-    pickedImgFiles.forEach((pickedImgFile, index) => {
-      const fileExtension = pickedImgFile.pickedUpAsset?.uri.split('.').at(-1);
+    pickedAssets.forEach((pickedImgFile, index) => {
+      const fileExtension = pickedImgFile.pickedUpAsset?.uri.split('.').at(-1) ?? 'png';
       const imgFile = ({
         uri: pickedImgFile.pickedUpAsset?.uri,
-        type: `image/${fileExtension}`,
-        name: pickedImgFile.pickedUpAsset?.fileName ?? index,
+        type: pickedImgFile.pickedUpAsset?.mimeType ?? `image/${fileExtension}`,
+        name: pickedImgFile.pickedUpAsset?.fileName ?? pickedAssets,
       });
       formData.append(`files[${index}]`, imgFile);
     });
@@ -80,21 +87,17 @@ class UsersService {
     return this.http.delete(`/users/${loggedInUserID}/photos/${photoId}`);
   }
 
-  public updateUserPhotos(loggedInUserID: number, pickedImgFiles: ImagePickerAsset[], imgsUuid: string[]) {
+  public updateUserPhoto(userId: number, photoId: number, pickedAsset: IPhotoPlaceholder) {
     const formData = new FormData();
-    const headers = { 'Content-Type': 'multipart/form-data', };
-
-    pickedImgFiles.forEach((pickedImgFile, i) => {
-      const fileExtension = pickedImgFile.uri.split('.').at(-1);
-      const imgFile = ({
-        uri: pickedImgFile.uri,
-        type: `${pickedImgFile.type}/${fileExtension}`,
-        name: imgsUuid[i],
-      });
-
-      formData.append('files', imgFile);
+    const headers = { 'Content-Type': 'multipart/form-data' };
+    const fileExtension = pickedAsset?.pickedUpAsset?.uri.split('.').at(-1) ?? 'png';
+    const imgFile = ({
+      uri: pickedAsset.pickedUpAsset?.uri,
+      type: pickedAsset.pickedUpAsset?.mimeType ?? `image/${fileExtension}`,
+      name: pickedAsset.pickedUpAsset?.fileName ?? photoId,
     });
-    return this.http.patch<IGetBasicUserProfile>(`/users/${loggedInUserID}/photos`, formData, { headers });
+    formData.append('file', imgFile);
+    return this.http.patch<IGetBasicUserProfile>(`/users/${userId}/photos/${photoId}`, formData, { headers });
   }
 }
 

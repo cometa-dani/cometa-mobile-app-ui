@@ -7,9 +7,8 @@ import { Center } from '@/components/utils/stacks';
 import { useStyles } from 'react-native-unistyles';
 import { useQueryClient } from '@tanstack/react-query';
 import {
-  useMutationDeleteUserPhotoById,
   useMutationUpdateUserById,
-  useMutationUploadUserPhotos,
+  useMutationUpdateUserPhoto,
   useQueryGetUserProfile
 } from '@/queries/currentUser/userHooks';
 import {
@@ -42,9 +41,8 @@ export default function EditUserProfileScreen(): ReactNode {
   const { theme } = useStyles();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const deletePhoto = useMutationDeleteUserPhotoById();
   const updateUser = useMutationUpdateUserById();
-  const uploadPhoto = useMutationUploadUserPhotos();
+  const updatePhoto = useMutationUpdateUserPhoto();
   const { data: userProfile, isFetched } = useQueryGetUserProfile();
   const { selectedCity, setCityKind } = useSelectCityByName();
   const { selectedLanguages } = useSelectLanguages();
@@ -90,9 +88,13 @@ export default function EditUserProfileScreen(): ReactNode {
   };
 
   const handlePhotoPickUp = async (photos: IPhotoPlaceholder[]) => {
-    // const filteredPhotos = photos.filter(hasAsset);
-    console.log(photos);
-    //   deleteUser.mutate({ userID: userProfile?.id as number, photoUuid });
+    if (!userProfile?.id) return;
+    const payload = {
+      pickedAsset: photos[0],
+      userId: userProfile?.id,
+      photoId: userPhotos[0].id
+    };
+    updatePhoto.mutate(payload);
   };
 
   const navigateToSelectCity = (kind: keyof ICityKind) => {
