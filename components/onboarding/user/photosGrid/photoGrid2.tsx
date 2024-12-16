@@ -95,6 +95,7 @@ const appendPhoto = (pickedPhotos: ImagePickerAsset[]) => {
   return appendPhoto;
 };
 
+
 const replacePhoto = (pickedPhotos: ImagePickerAsset[], selectedPosition: number) => {
   const replacePhoto = (prev: IPhotoPlaceholder[]): IPhotoPlaceholder[] => {
     return prev.map(photo => {
@@ -132,13 +133,14 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ initialPhotos = [], onSelect
     try {
       const pickedPhotos = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
-        allowsMultipleSelection: isPositionEmpty, // picks multiple images
+        allowsMultipleSelection: !isPositionEmpty, // picks multiple images
         allowsEditing: !isPositionEmpty,
         selectionLimit: remainingPhotos === 0 ? 1 : remainingPhotos,
         aspect: [4, 3],
         quality: 1,
       });
       if (!pickedPhotos.canceled) {
+        console.log(pickedPhotos.assets[0].uri);
         const newPhotos = (
           isPositionEmpty ?
             replacePhoto(pickedPhotos.assets, selectedPosition)(userPhotos)
@@ -167,7 +169,6 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ initialPhotos = [], onSelect
         description: 'the image could not be loaded',
         Component: ErrorToast
       });
-      return null;
     }
   };
 
@@ -196,9 +197,7 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ initialPhotos = [], onSelect
                         transition={imageTransition}
                       />
                     }
-                    else={
-                      <FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />
-                    }
+                    else={<FontAwesome6 name="add" size={theme.icons.md} color={theme.colors.gray300} />}
                   />
                   <View style={styles.imageNum}>
                     <Text style={styles.imageNumText}>{j + (i * arr?.length) + 2}</Text>
@@ -212,11 +211,10 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ initialPhotos = [], onSelect
     </ForEach>
   ), [restPhotos]);
 
-  const source = firstPhoto?.fromFileSystem?.uri ?? firstPhoto?.fromBackend?.url;
-  const placeholder = firstPhoto?.fromBackend?.placeholder;
-
-  return (
-    <VStack gap={theme.spacing.sp2}>
+  const FirstPhoto: FC = useCallback(() => {
+    const source = firstPhoto?.fromFileSystem?.uri ?? firstPhoto?.fromBackend?.url;
+    const placeholder = firstPhoto?.fromBackend?.placeholder;
+    return (
       <Pressable
         onPress={() => handlePickMultipleImages(0, !!source)}
         style={({ pressed }) => styles.mainImageViewer(pressed, !source)}
@@ -237,7 +235,12 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ initialPhotos = [], onSelect
           <Text style={styles.imageNumText}>{1}</Text>
         </View>
       </Pressable>
+    );
+  }, [firstPhoto]);
 
+  return (
+    <VStack gap={theme.spacing.sp2}>
+      <FirstPhoto />
       <Grid />
     </VStack>
   );

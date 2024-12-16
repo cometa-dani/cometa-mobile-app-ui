@@ -70,9 +70,9 @@ class UsersService {
   public uploadUserPhotos(userId: number, pickedAssets: IPhotoPlaceholder[]) {
     const formData = new FormData();
     const headers = { 'Content-Type': 'multipart/form-data', };
-
     pickedAssets.forEach((pickedImgFile, index) => {
       const fileExtension = pickedImgFile.fromFileSystem?.uri.split('.').at(-1) ?? 'png';
+      console.log(pickedImgFile.fromFileSystem?.uri);
       const imgFile = ({
         uri: pickedImgFile.fromFileSystem?.uri,
         type: pickedImgFile.fromFileSystem?.mimeType ?? `image/${fileExtension}`,
