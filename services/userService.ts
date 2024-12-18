@@ -1,7 +1,7 @@
 import { RestApiService } from './restService';
 import FormData from 'form-data';
 import { AxiosInstance } from 'axios';
-import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid2';
+import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid';
 import {
   ICreateUser,
   IGetBasicUserProfile,

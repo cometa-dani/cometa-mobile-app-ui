@@ -122,7 +122,7 @@ interface IPhotosGridProps {
   initialPhotos?: IPhoto[],
   mode?: 'create' | 'update',
 }
-export const PhotosGrid2: FC<IPhotosGridProps> = ({ initialPhotos = [], onSelect, mode = 'create' }) => {
+export const PhotosGrid: FC<IPhotosGridProps> = ({ initialPhotos = [], onSelect, mode = 'create' }) => {
   const { styles, theme } = useStyles(uploadYourPhotosSheet);
   const [userPhotos = [], setUserPhotos] = useState<IPhotoPlaceholder[]>(createPlaceholders(MAX_NUMBER_PHOTOS, initialPhotos));
   const [firstPhoto, ...restPhotos] = userPhotos;
@@ -137,8 +137,7 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ initialPhotos = [], onSelect
         allowsEditing: !isPositionEmpty,
         selectionLimit: remainingPhotos === 0 ? 1 : remainingPhotos,
         aspect: [4, 3],
-        quality: 1,
-        base64: true
+        quality: 1
       });
       if (!pickedPhotos.canceled) {
         const newPhotos = (

@@ -17,7 +17,7 @@ import {
   validationSchema,
   errorMessages
 } from '@/components/onboarding/user/steps/aboutYourSelf';
-import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid2';
+import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid';
 import { IPhoto } from '@/models/Photo';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -28,7 +28,7 @@ import { useSelectLanguages } from '@/components/modal/selectLanguages/hook';
 import { FieldText } from '@/components/input/textField';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { Button } from '@/components/button/button';
-import { PhotosGrid2 } from '@/components/onboarding/user/photosGrid/photoGrid2';
+import { PhotosGrid } from '@/components/onboarding/user/photosGrid/photoGrid';
 import { Notifier } from 'react-native-notifier';
 import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
 import { QueryKeys } from '@/queries/queryKeys';
@@ -65,16 +65,24 @@ export default function EditUserProfileScreen(): ReactNode {
       languages: values.languages,
       occupation: values.occupation
     };
+    Notifier.showNotification({
+      duration: 0,
+      title: 'Saving...',
+      description: 'your profile is being saved',
+      Component: InfoToast,
+    });
     try {
       if (!userProfile?.id) return;
       await updateUser.mutateAsync({ userId: userProfile?.id, payload: updateUserPayload });
       await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
+      Notifier.hideNotification();
       Notifier.showNotification({
         title: 'Done',
         description: 'your profile was saved successfully',
         Component: SucessToast,
       });
     } catch (error) {
+      Notifier.hideNotification();
       Notifier.showNotification({
         title: 'Error',
         description: 'something went wrong, try again',
@@ -150,7 +158,7 @@ export default function EditUserProfileScreen(): ReactNode {
               paddingBottom: theme.spacing.sp10,
               padding: theme.spacing.sp6
             }}>
-              <PhotosGrid2
+              <PhotosGrid
                 mode='update'
                 initialPhotos={userPhotos.slice(0, 7)}
                 onSelect={handlePhotoPickUp}

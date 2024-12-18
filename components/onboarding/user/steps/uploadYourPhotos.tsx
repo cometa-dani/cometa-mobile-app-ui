@@ -4,11 +4,11 @@ import { useCometaStore } from '@/store/cometaStore';
 import { HStack } from '@/components/utils/stacks';
 import { Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { isFromFileSystem, IPhotoPlaceholder } from '../photosGrid/photoGrid2';
+import { isFromFileSystem, IPhotoPlaceholder } from '../photosGrid/photoGrid';
 import { MIN_NUMBER_PHOTOS } from '@/constants/vars';
 import { FooterButton } from './components/footerButton';
 import { IProps } from './components/interface';
-import { PhotosGrid2 } from '../photosGrid/photoGrid2';
+import { PhotosGrid } from '../photosGrid/photoGrid';
 
 
 export const UploadYouPhotosForm: FC<IProps> = ({ onNext }) => {
@@ -35,7 +35,7 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNext }) => {
           paddingBottom: theme.spacing.sp14,
           gap: theme.spacing.sp7,
         }}>
-        <PhotosGrid2
+        <PhotosGrid
           mode='create'
           initialPhotos={[]}
           onSelect={handlePhotosPickUp}
