@@ -11,6 +11,9 @@ import {
   IUserOnboarding,
   IUpdateUser
 } from '../models/User';
+import { Platform } from 'react-native';
+import * as Crypto from 'expo-crypto';
+// const FormData = globalThis.FormData;
 
 
 class UsersService {
@@ -67,37 +70,59 @@ class UsersService {
     return this.http.delete(`/users/${loggedInUserID}`);
   }
 
-  public uploadUserPhotos(userId: number, pickedAssets: IPhotoPlaceholder[]) {
+  public async uploadUserPhotos(userId: number, pickedAssets: IPhotoPlaceholder[]) {
     const formData = new FormData();
-    const headers = { 'Content-Type': 'multipart/form-data', };
-    pickedAssets.forEach((pickedImgFile, index) => {
-      const fileExtension = pickedImgFile.fromFileSystem?.uri.split('.').at(-1) ?? 'png';
-      console.log(pickedImgFile.fromFileSystem?.uri);
-      const imgFile = ({
-        uri: pickedImgFile.fromFileSystem?.uri,
-        type: pickedImgFile.fromFileSystem?.mimeType ?? `image/${fileExtension}`,
-        name: pickedImgFile.fromFileSystem?.fileName ?? index,
+    pickedAssets.forEach((pickedImgFile) => {
+      const uri = pickedImgFile.fromFileSystem?.uri ?? '';
+      const mimeType = pickedImgFile.fromFileSystem?.mimeType ?? '';
+      const fileExtension = uri.split('.').at(-1);
+      const filename = pickedImgFile.fromFileSystem?.fileName ?? '';
+      formData.append('files', {
+        uri: Platform.OS === 'android' ? uri : uri.replace('file://', ''),
+        name: filename || Crypto.randomUUID(),
+        type: mimeType || `image/${fileExtension}`,
       });
-      formData.append(`files[${index}]`, imgFile);
     });
-    return this.http.post<IGetBasicUserProfile>(`/users/${userId}/photos`, formData, { headers });
-  }
-
-  public deletePhotoById(loggedInUserID: number, photoId: number | string) {
-    return this.http.delete(`/users/${loggedInUserID}/photos/${photoId}`);
+    return (
+      this.http.post<IGetBasicUserProfile>(`/users/${userId}/photos`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        transformRequest: () => {
+          return formData; // this is doing the trick
+        }
+      })
+    );
   }
 
   public updateUserPhoto(userId: number, pickedAsset: IPhotoPlaceholder) {
     const formData = new FormData();
-    const headers = { 'Content-Type': 'multipart/form-data' };
-    const fileExtension = pickedAsset?.fromFileSystem?.uri.split('.').at(-1) ?? 'png';
-    const imgFile = ({
-      uri: pickedAsset.fromFileSystem?.uri,
-      type: pickedAsset.fromFileSystem?.mimeType ?? `image/${fileExtension}`,
-      name: pickedAsset.fromFileSystem?.fileName ?? pickedAsset.fromBackend?.order,
+    const uri = pickedAsset.fromFileSystem?.uri ?? '';
+    const mimeType = pickedAsset.fromFileSystem?.mimeType ?? '';
+    const fileExtension = uri.split('.').at(-1);
+    const filename = pickedAsset.fromFileSystem?.fileName ?? '';
+    formData.append('file', {
+      uri: Platform.OS === 'android' ? uri : uri.replace('file://', ''),
+      name: filename || Crypto.randomUUID(),
+      type: mimeType || `image/${fileExtension}`,
     });
-    formData.append('file', imgFile);
-    return this.http.patch<IGetBasicUserProfile>(`/users/${userId}/photos/${pickedAsset.fromBackend?.id}`, formData, { headers });
+    return (
+      this.http.patch<IGetBasicUserProfile>(
+        `/users/${userId}/photos/${pickedAsset.fromBackend?.id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          transformRequest: () => {
+            return formData;
+          }
+        })
+    );
+  }
+
+  public deletePhotoById(loggedInUserID: number, photoId: number | string) {
+    return this.http.delete(`/users/${loggedInUserID}/photos/${photoId}`);
   }
 }
 

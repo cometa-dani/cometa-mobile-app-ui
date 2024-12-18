@@ -37,7 +37,7 @@ export const createPlaceholders = (MAX_NUMBER: number, usersPhotos: IPhoto[] = [
     fromBackend
   }));
   const remainingPlaceholders = MAX_NUMBER - usersPhotos.length;
-  if (remainingPlaceholders < 0) throw new Error('Not enough placeholders');
+  // if (remainingPlaceholders < 0) throw new Error('Not enough placeholders');
   const emptyPlaceholders = (
     Array
       .from({ length: remainingPlaceholders })
@@ -76,7 +76,7 @@ export const isTaken = (photo: IPhotoPlaceholder) => photo?.fromFileSystem || ph
 const appendPhoto = (pickedPhotos: ImagePickerAsset[]) => {
   const appendPhoto = (prev: IPhotoPlaceholder[]): IPhotoPlaceholder[] => {
     let counter = 0;
-    const currentAssets = prev.filter(isFromFileSystem);
+    const currentAssets = prev.filter(isTaken);
     return (
       prev.map((photo, index) => {
         const shouldReplace = (index + 1) > (currentAssets.length);
@@ -133,20 +133,19 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ initialPhotos = [], onSelect
     try {
       const pickedPhotos = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
-        allowsMultipleSelection: !isPositionEmpty, // picks multiple images
+        allowsMultipleSelection: isPositionEmpty && remainingPhotos > 1, // picks multiple images
         allowsEditing: !isPositionEmpty,
         selectionLimit: remainingPhotos === 0 ? 1 : remainingPhotos,
         aspect: [4, 3],
         quality: 1,
+        base64: true
       });
       if (!pickedPhotos.canceled) {
-        console.log(pickedPhotos.assets[0].uri);
         const newPhotos = (
           isPositionEmpty ?
+            appendPhoto(pickedPhotos.assets)(userPhotos) :
             replacePhoto(pickedPhotos.assets, selectedPosition)(userPhotos)
-            : appendPhoto(pickedPhotos.assets)(userPhotos)
         );
-        setUserPhotos(newPhotos); // update the grid's state
         if (mode === 'create') {
           onSelect(newPhotos); // lift up all the new photos
         }
@@ -161,6 +160,7 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ initialPhotos = [], onSelect
             }]);
           }
         }
+        setUserPhotos(newPhotos); // update the grid's state
       }
     }
     catch (error) {
@@ -184,12 +184,13 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ initialPhotos = [], onSelect
                 <Pressable
                   key={j}
                   style={({ pressed }) => styles.imageViewer(pressed, !source)}
-                  onPress={() => handlePickMultipleImages(cell.position, !!source)}
+                  onPress={() => handlePickMultipleImages(cell.position, !source)}
                 >
                   <Condition
                     if={source}
                     then={
                       <Image
+                        cachePolicy="disk"
                         recyclingKey={source}
                         source={{ uri: source, placeholder }}
                         style={styles.image}
@@ -223,6 +224,7 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ initialPhotos = [], onSelect
           if={source}
           then={
             <Image
+              cachePolicy="disk"
               style={styles.mainImage}
               source={{ uri: source, placeholder }}
               contentFit='cover'

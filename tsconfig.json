@@ -7,8 +7,10 @@
     "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "@firebase/auth": [
-        "./node_modules/@firebase/auth/dist/index.rn.d.ts"
+      // "@firebase/auth": [
+      //   "./node_modules/@firebase/auth/dist/index.rn.d.ts"
+      "@dr.pogodin/react-native-fs": [
+        "./node_modules/@dr.pogodin/react-native-fs/lib/typescript/module/src/index.d.ts"
       ],
       "@/*": [
         "./*"

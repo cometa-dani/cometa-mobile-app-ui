@@ -13,7 +13,7 @@ export class RestApiService {
   private constructor() {
     this.http = axios.create({
       baseURL: apiUrl,
-      timeout: 1_000 * 15, // 15 seconds
+      timeout: 1_000 * 25, // 25 seconds
     });
   }
 

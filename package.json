@@ -34,7 +34,7 @@
     "@supabase/supabase-js": "^2.47.2",
     "@tanstack/react-query": "^5.0.5",
     "axios": "^1.5.1",
-    "expo": "~52.0.18",
+    "expo": "~52.0.19",
     "expo-av": "~15.0.1",
     "expo-checkbox": "^4.0.0",
     "expo-constants": "~17.0.3",
@@ -43,7 +43,7 @@
     "expo-image": "~2.0.3",
     "expo-image-picker": "^16.0.3",
     "expo-linking": "~7.0.3",
-    "expo-router": "~4.0.11",
+    "expo-router": "~4.0.13",
     "expo-splash-screen": "~0.29.18",
     "expo-system-ui": "~4.0.6",
     "expo-web-browser": "~14.0.1",
@@ -69,7 +69,8 @@
     "react-native-url-polyfill": "^2.0.0",
     "universal-gradient-text": "^0.1.2",
     "yup": "^1.4.0",
-    "zustand": "^4.4.3"
+    "zustand": "^4.4.3",
+    "expo-crypto": "~14.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

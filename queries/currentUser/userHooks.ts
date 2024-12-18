@@ -87,9 +87,7 @@ export const useMutationUploadUserPhotos = () => {
           else {
             throw new Error('failed fech');
           }
-        },
-      retry: 1,
-      retryDelay: 1_000 * 6
+        }
     })
   );
 };
@@ -117,9 +115,7 @@ export const useMutationUpdateUserPhoto = () => {
           else {
             throw new Error('failed fech');
           }
-        },
-      retry: 1,
-      retryDelay: 1_000 * 6
+        }
     })
   );
 };
@@ -159,9 +155,7 @@ export const useMutationDeleteUserPhotoById = (dynamicParam?: string) => {
       },
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE, dynamicParam] });
-      },
-      retry: 1,
-      retryDelay: 1_000 * 6
+      }
     })
   );
 };

@@ -92,17 +92,13 @@ export default function EditUserProfileScreen(): ReactNode {
           userId: userProfile?.id,
           photoId: userPhotos[0].id
         };
-        await updatePhoto.mutateAsync(payload); // update
+        //  update/replace
+        await updatePhoto.mutateAsync(payload);
       }
       else {
-        await uploadPhoto.mutateAsync({ pickedImgFiles: photos, userId: userProfile?.id }); // create
+        // create
+        await uploadPhoto.mutateAsync({ pickedImgFiles: photos, userId: userProfile?.id });
       }
-      // else if (photos.length === 1 && photos[0].fromFileSystem && !photos[0].fromBackend) {
-      //   await uploadPhoto.mutateAsync({ pickedImgFiles: photos, userId: userProfile?.id }); // create
-      // }
-      // else if (photos.length > 1) {
-      //   await uploadPhoto.mutateAsync({ pickedImgFiles: photos, userId: userProfile?.id });  // create
-      // }
       await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
       Notifier.showNotification({
         title: 'Done',
