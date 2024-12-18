@@ -18,11 +18,13 @@ interface IExpandableTextProps {
 }
 export const ExpandableText: FC<IExpandableTextProps> = ({ children, minLines = 2, maxLines = 30 }) => {
   const [numberOfLines, setNumberOfLines] = useReducer(reducer(minLines, maxLines), minLines);
-  const [isBelowMinLines, setIsBelowMinLines] = useState(false);
+  const [isOverMinLines, setIsOverMinLines] = useState(false);
   return (
     <Pressable onPress={setNumberOfLines}>
       <TextView
-        onTextLayout={({ nativeEvent: { lines } }) => lines?.length < minLines && setIsBelowMinLines(true)}
+        onTextLayout={({ nativeEvent: { lines } }) => {
+          lines?.length > minLines && setIsOverMinLines(true);
+        }}
         numberOfLines={numberOfLines}
         ellipsis={true}
       >
@@ -30,7 +32,7 @@ export const ExpandableText: FC<IExpandableTextProps> = ({ children, minLines = 
       </TextView>
 
       <Condition
-        if={!isBelowMinLines}
+        if={isOverMinLines}
         then={
           <TextView bold={true}>
             {numberOfLines === minLines ? 'show more' : 'show less'}

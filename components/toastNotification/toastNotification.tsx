@@ -1,9 +1,11 @@
 import { FC } from 'react';
-import { View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { TextView } from '../text/text';
 import { AlertComponentProps } from 'react-native-notifier/lib/typescript/src/components/Alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { HStack } from '../utils/stacks';
+import { Condition } from '../utils/ifElse';
 
 
 interface AlertComponentAllProps extends Partial<AlertComponentProps> {
@@ -12,13 +14,21 @@ interface AlertComponentAllProps extends Partial<AlertComponentProps> {
   type?: 'success' | 'error' | 'info';
 }
 const ToastNotification: FC<AlertComponentAllProps> = ({ title, description, type }) => {
-  const { styles } = useStyles(styleSheet);
+  const { styles, theme } = useStyles(styleSheet);
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea(type)}>
       <View style={styles.container}>
-        <TextView ellipsis={true} style={styles.title}>
-          {title}
-        </TextView>
+        <HStack $y='center' gap={theme.spacing.sp2}>
+          <Condition
+            if={type === 'info'}
+            then={
+              <ActivityIndicator size="small" color={theme.colors.white100} />
+            }
+          />
+          <TextView ellipsis={true} style={styles.title}>
+            {title}
+          </TextView>
+        </HStack>
         <TextView ellipsis={true} numberOfLines={2} style={styles.description}>
           {description}
         </TextView>

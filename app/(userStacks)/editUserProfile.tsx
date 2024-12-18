@@ -30,7 +30,7 @@ import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { Button } from '@/components/button/button';
 import { PhotosGrid2 } from '@/components/onboarding/user/photosGrid/photoGrid2';
 import { Notifier } from 'react-native-notifier';
-import { ErrorToast, SucessToast } from '@/components/toastNotification/toastNotification';
+import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
 import { QueryKeys } from '@/queries/queryKeys';
 
 
@@ -85,6 +85,12 @@ export default function EditUserProfileScreen(): ReactNode {
 
   const handlePhotoPickUp = async (photos: IPhotoPlaceholder[]) => {
     if (!userProfile?.id) return;
+    Notifier.showNotification({
+      duration: 0,
+      title: 'Uploading...',
+      description: 'photos are being uploaded',
+      Component: InfoToast,
+    });
     try {
       if (photos.length === 1 && photos[0].fromBackend && photos[0].fromFileSystem) {
         const payload = {
@@ -100,13 +106,17 @@ export default function EditUserProfileScreen(): ReactNode {
         await uploadPhoto.mutateAsync({ pickedImgFiles: photos, userId: userProfile?.id });
       }
       await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
+      Notifier.hideNotification();
       Notifier.showNotification({
+        duration: 5_000,
         title: 'Done',
         description: 'your profile was saved successfully',
         Component: SucessToast,
       });
     } catch (error) {
+      Notifier.hideNotification();
       Notifier.showNotification({
+        duration: 5_000,
         title: 'Error',
         description: 'something went wrong, try again',
         Component: ErrorToast,
@@ -142,7 +152,7 @@ export default function EditUserProfileScreen(): ReactNode {
             }}>
               <PhotosGrid2
                 mode='update'
-                initialPhotos={userPhotos}
+                initialPhotos={userPhotos.slice(0, 7)}
                 onSelect={handlePhotoPickUp}
               />
             </View>

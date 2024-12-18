@@ -217,7 +217,7 @@ export const PhotosGrid2: FC<IPhotosGridProps> = ({ initialPhotos = [], onSelect
     const placeholder = firstPhoto?.fromBackend?.placeholder;
     return (
       <Pressable
-        onPress={() => handlePickMultipleImages(0, !!source)}
+        onPress={() => handlePickMultipleImages(0, !source)}
         style={({ pressed }) => styles.mainImageViewer(pressed, !source)}
       >
         <Condition
