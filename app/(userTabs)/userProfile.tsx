@@ -1,5 +1,4 @@
 import { GradientHeading } from '@/components/text/gradientText';
-import { IPhoto } from '@/models/Photo';
 import { useInfiniteQueryGetBucketListScreen } from '@/queries/currentUser/eventHooks';
 import { useQueryGetUserProfile } from '@/queries/currentUser/userHooks';
 import { Tabs, useRouter } from 'expo-router';
@@ -18,7 +17,15 @@ import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { ExpandableText } from '@/components/text/expandableText';
 import { imageTransition } from '@/constants/vars';
 import { Badge } from '@/components/button/badge';
+import { Carousel } from '@/components/carousel/carousel';
 
+
+type IBucketListItem = {
+  id: number;
+  img?: string;
+  placeholder?: string;
+  location?: string;
+}
 
 export default function UserProfileScreen() {
   const { styles, theme } = useStyles(stylesheet);
@@ -31,7 +38,7 @@ export default function UserProfileScreen() {
   } = useInfiniteQueryGetBucketListScreen();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const { data: userProfile } = useQueryGetUserProfile();
-  const bucketListEvents = (
+  const bucketListEvents: IBucketListItem[] = (
     userBucketList?.pages.
       flatMap(({ items: events }) => (
         events.map(
@@ -39,24 +46,27 @@ export default function UserProfileScreen() {
             id: item.event?.photos[0]?.id,
             img: item.event?.photos[0]?.url,
             placeholder: item.event?.photos[0]?.placeholder,
-            location: item.event?.location?.name
+            location: item.event?.location?.name,
           })
         )
       )) || []
   );
 
-  const renderItem = useCallback(({ item }: { item: IPhoto }) => {
-    return (
+  const renderBucketItem = useCallback(({ item }: { item: IBucketListItem }) => (
+    <View style={{ position: 'relative' }}>
       <Image
-        recyclingKey={item.url}
-        transition={imageTransition}
         placeholder={{ thumbhash: item.placeholder }}
-        source={{ uri: item.url }}
-        style={styles.avatarImage}
+        recyclingKey={item.img}
+        source={{ uri: item.img }}
+        style={styles.eventImage}
         contentFit='cover'
+        transition={imageTransition}
       />
-    );
-  }, []);
+      <Badge>
+        {item.location}
+      </Badge>
+    </View>
+  ), []);
 
   return (
     <>
@@ -96,21 +106,12 @@ export default function UserProfileScreen() {
           estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
           contentContainerStyle={{ paddingVertical: theme.spacing.sp7 }}
           ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={item => item.id?.toString()}
           ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
           ListHeaderComponent={() => (
             <VStack gap={theme.spacing.sp6} styles={{ paddingHorizontal: theme.spacing.sp6 }}>
-              <View style={{ width: '100%', overflow: 'hidden', borderRadius: theme.spacing.sp7 }}>
-                <FlashList
-                  data={userProfile?.photos}
-                  horizontal={true}
-                  pagingEnabled={true}
-                  decelerationRate={'normal'}
-                  showsHorizontalScrollIndicator={false}
-                  estimatedItemSize={UnistylesRuntime.screen.height * 0.33}
-                  renderItem={renderItem}
-                />
-              </View>
+
+              <Carousel photos={userProfile?.photos ?? []} />
 
               <VStack styles={styles.container} gap={theme.spacing.sp1} >
                 <Heading size='s7'>
@@ -162,21 +163,7 @@ export default function UserProfileScreen() {
           )}
           onEndReachedThreshold={0.4}
           onEndReached={handleInfiniteFetch}
-          renderItem={({ item }) => (
-            <View style={{ position: 'relative' }}>
-              <Image
-                placeholder={{ thumbhash: item.placeholder }}
-                recyclingKey={item.img}
-                source={{ uri: item.img }}
-                style={styles.eventImage}
-                contentFit='cover'
-                transition={imageTransition}
-              />
-              <Badge>
-                {item.location}
-              </Badge>
-            </View>
-          )}
+          renderItem={renderBucketItem}
         />
       </SafeAreaView>
     </>
@@ -189,10 +176,6 @@ const stylesheet = createStyleSheet((theme, rt) => ({
     backgroundColor: theme.colors.white100,
     borderRadius: theme.spacing.sp6,
     padding: theme.spacing.sp6
-  },
-  avatarImage: {
-    width: rt.screen.width - (theme.spacing.sp6 * 2),
-    aspectRatio: 1.2
   },
   eventImage: {
     height: rt.screen.height * 0.25,
