@@ -319,9 +319,6 @@ export default function MatchedEventsScreen(): ReactNode {
             </View>
           </PagerView>
         </Animated.View>
-
-        {/* </Animated.View> */}
-
       </SafeAreaView>
     </>
   );

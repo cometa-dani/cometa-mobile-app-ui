@@ -1,10 +1,11 @@
 import { imageTransition } from '@/constants/vars';
 import { IPhoto } from '@/models/Photo';
-import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
-import { FC, useCallback } from 'react';
+import { FC, useState } from 'react';
 import { View } from 'react-native';
-import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
+import PagerView, { usePagerView } from 'react-native-pager-view';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import { HStack } from '../utils/stacks';
 
 
 interface ICarouselProps {
@@ -12,39 +13,70 @@ interface ICarouselProps {
 }
 export const Carousel: FC<ICarouselProps> = ({ photos }) => {
   const { styles, theme } = useStyles(styleSheet);
-
-  const renderItem = useCallback(({ item }: { item: IPhoto }) => {
-    return (
-      <Image
-        recyclingKey={item.url}
-        transition={imageTransition}
-        placeholder={{ thumbhash: item.placeholder }}
-        source={{ uri: item.url }}
-        style={styles.avatarImage}
-        contentFit='cover'
-      />
-    );
-  }, []);
+  const { ref } = usePagerView();
+  const [step, setStep] = useState(0);
 
   return (
-    <View style={{ width: '100%', overflow: 'hidden', borderRadius: theme.spacing.sp7 }}>
-      <FlashList
-        data={photos}
-        horizontal={true}
-        pagingEnabled={true}
-        decelerationRate={'normal'}
-        showsHorizontalScrollIndicator={false}
-        estimatedItemSize={UnistylesRuntime.screen.height * 0.33}
-        renderItem={renderItem}
-      />
+    <View style={{
+      position: 'relative',
+      borderRadius: theme.spacing.sp7,
+      overflow: 'hidden'
+    }}>
+      <PagerView
+        ref={ref}
+        style={styles.container}
+        initialPage={0}
+        onPageScroll={(e) => {
+          setStep(e.nativeEvent.position);
+        }}
+      >
+        {photos.map((item, index) => (
+          <View key={index} style={{ width: '100%', height: '100%' }}>
+            <Image
+              recyclingKey={item.url}
+              transition={imageTransition}
+              placeholder={{ thumbhash: item.placeholder }}
+              source={{ uri: item.url }}
+              style={styles.avatarImage}
+              contentFit='cover'
+            />
+          </View>
+        ))}
+      </PagerView>
+
+      <HStack gap={theme.spacing.sp4} styles={styles.points}>
+        {photos.map((_, index) => (
+          <View
+            key={index}
+            style={{
+              width: theme.spacing.sp2,
+              height: theme.spacing.sp2,
+              borderRadius: 99_999,
+              backgroundColor: (
+                step === index ?
+                  `rgba(255, 255, 255, ${0.8})` : `rgba(0, 0, 0, ${0.3})`
+              ),
+            }}
+          />
+        ))}
+      </HStack>
     </View>
   );
 };
 
 
 const styleSheet = createStyleSheet((theme, rt) => ({
-  avatarImage: {
-    width: rt.screen.width - (theme.spacing.sp6 * 2),
-    aspectRatio: 1.2
+  container: {
+    width: '100%',
+    aspectRatio: 1.2,
   },
+  avatarImage: {
+    height: '100%',
+    width: '100%',
+  },
+  points: {
+    position: 'absolute',
+    bottom: theme.spacing.sp4,
+    alignSelf: 'center'
+  }
 }));
