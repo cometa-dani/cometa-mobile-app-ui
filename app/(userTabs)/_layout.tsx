@@ -3,6 +3,7 @@ import { TabBar } from '@/components/tabBar/tabBar';
 import { GradientHeading } from '@/components/text/gradientText';
 import { Condition } from '@/components/utils/ifElse';
 import { HStack } from '@/components/utils/stacks';
+import { usePrefetchBucketList } from '@/queries/currentUser/eventHooks';
 import { useQueryGetUserProfile } from '@/queries/currentUser/userHooks';
 import { useCometaStore } from '@/store/cometaStore';
 import { FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -13,6 +14,7 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
 export default function TabLayout(): ReactNode {
+  usePrefetchBucketList();
   const { theme } = useStyles(stylesheet);
   const router = useRouter();
   const notificationIsSeen = useCometaStore(state => state.notificationsList).at(0)?.user?.isSeen;

@@ -4,6 +4,7 @@ import { QueryKeys } from '../queryKeys';
 import { IGetLatestPaginatedEvents } from '../../models/Event';
 import eventService from '../../services/eventService';
 import { IGetPaginatedLikedEventsBucketList } from '../../models/LikedEvent';
+import { useEffect } from 'react';
 
 
 // Query to fetch a list of events with infinite scrolling
@@ -60,7 +61,6 @@ export const useInfiniteQueryGetBucketListScreen = () => {
         }
       },
       getNextPageParam: (lastPage) => {
-        // stops incrementing next page because there no more events left
         if (lastPage?.hasNextCursor) {
           return lastPage.nextCursor;
         }
@@ -70,6 +70,32 @@ export const useInfiniteQueryGetBucketListScreen = () => {
       retryDelay: 1_000 * 6,
     })
   );
+};
+
+
+export const usePrefetchBucketList = () => {
+  const queryClient = useQueryClient();
+  const session = useCometaStore(state => state.session);
+  useEffect(() => {
+    if (!session?.user.id) return;
+    queryClient.prefetchInfiniteQuery({
+      queryKey: [QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST],
+      initialPageParam: -1,
+      pages: 1,
+      queryFn: async ({ pageParam }): Promise<IGetPaginatedLikedEventsBucketList> => {
+        const res = await eventService.getLikedEventsByUserIdWithPagination(pageParam = -1, 8);
+        if (res.status === 200) {
+          return res.data;
+        }
+        else {
+          throw new Error('failed to request data');
+        }
+      },
+      getNextPageParam: (lastPage) => lastPage?.hasNextCursor ? lastPage.nextCursor : null,
+    })
+      .then()
+      .catch();
+  }, [session]);
 };
 
 

@@ -5,6 +5,7 @@ import { IPhoto } from '../../models/Photo';
 import { QueryKeys } from '../queryKeys';
 import { useCometaStore } from '../../store/cometaStore';
 import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid';
+import { useEffect } from 'react';
 
 
 export const useMutationCreateUser = () => {
@@ -62,6 +63,31 @@ export const useQueryGetUserProfile = () => {
       retryDelay: 1_000 * 6
     })
   );
+};
+
+
+export const usePrefetchUserProfile = () => {
+  const queryClient = useQueryClient();
+  const session = useCometaStore(state => state.session);
+  useEffect(() => {
+    if (!session?.user.id) return;
+    queryClient.prefetchQuery({
+      queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE],
+      queryFn: async (): Promise<IGetDetailedUserProfile> => {
+        const res = await userService.getUserInfoByUidWithLikedEvents(session?.user.id as string);
+        if (res.status === 200) {
+          return res.data;
+        }
+        else {
+          throw new Error('failed to fetched');
+        }
+      },
+      retry: 1,
+      retryDelay: 1_000 * 6
+    })
+      .then()
+      .catch();
+  }, [session]);
 };
 
 
