@@ -12,7 +12,7 @@ import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { red_100 } from '../../constants/colors';
 import { CreateEventLike, IGetLatestPaginatedEvents, ILikedEvent } from '../../models/Event';
 import { defaultImgPlaceholder, imageTransition } from '../../constants/vars';
-import { EmptyMessage } from '../../legacy_components/empty/Empty';
+import { EmptyMessage } from '../../components/empty/Empty';
 import { ForEach } from '@/components/utils/ForEach';
 import { Condition } from '@/components/utils/ifElse';
 import { Center, HStack, VStack } from '@/components/utils/stacks';

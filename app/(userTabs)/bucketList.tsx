@@ -22,7 +22,7 @@ import { CreateEventLike, IGetLatestPaginatedEvents, ILikedEvent } from '@/model
 import { useInfiniteQueryGetBucketListScreen } from '@/queries/currentUser/eventHooks';
 import { useMutationLikeOrDislikeEvent } from '@/queries/currentUser/likeEventHooks';
 import { defaultImgPlaceholder } from '@/constants/vars';
-import { EmptyMessage } from '@/legacy_components/empty/Empty';
+import { EmptyMessage } from '@/components/empty/Empty';
 
 
 export default function BucketListScreen() {

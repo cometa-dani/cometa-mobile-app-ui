@@ -16,7 +16,7 @@ import { ForEach } from '../../../legacy_components/utils';
 import { ILikeableEvent } from '../../../models/Event';
 import { defaultImgPlaceholder } from '../../../constants/vars';
 import { SkeletonLoaderList } from '../../../legacy_components/lodingSkeletons/LoadingSkeletonList';
-import { EmptyMessage } from '../../../legacy_components/empty/Empty';
+import { EmptyMessage } from '../../../components/empty/Empty';
 
 
 export default function BuckectListScreen(): ReactNode {

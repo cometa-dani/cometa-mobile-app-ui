@@ -17,7 +17,7 @@ import { IGetBasicUserProfile } from '../../models/User';
 import { defaultImgPlaceholder } from '../../constants/vars';
 import { SkeletonLoaderList } from '../../legacy_components/lodingSkeletons/LoadingSkeletonList';
 import { useCometaStore } from '../../store/cometaStore';
-import { EmptyMessage } from '../../legacy_components/empty/Empty';
+import { EmptyMessage } from '../../components/empty/Empty';
 
 
 export default function HomeScreen(): JSX.Element {
