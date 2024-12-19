@@ -160,7 +160,7 @@ export default function EditUserProfileScreen(): ReactNode {
             }}>
               <PhotosGrid
                 mode='update'
-                initialPhotos={userPhotos.slice(0, 7)}
+                initialPhotos={userPhotos}
                 onSelect={handlePhotoPickUp}
               />
             </View>

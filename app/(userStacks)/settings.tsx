@@ -1,28 +1,25 @@
-import React, { FC, ReactNode, useState } from 'react';
-import { StyleSheet, View, ScrollView, Switch } from 'react-native';
+import { FC, ReactNode, useState } from 'react';
+import { StyleSheet, Switch } from 'react-native';
 import { Stack } from 'expo-router';
 import { RectButton, } from 'react-native-gesture-handler';
 import { Image } from 'expo-image';
 import { defaultImgPlaceholder } from '../../constants/vars';
 import { IGetBasicUserProfile, IUserOnboarding } from '../../models/User';
 import { TextView } from '@/components/text/text';
-import { Condition } from '@/components/utils/ifElse';
-import { Center, HStack, VStack } from '@/components/utils/stacks';
+import { HStack, VStack } from '@/components/utils/stacks';
 import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { useQueryClient } from '@tanstack/react-query';
 import { Heading } from '@/components/text/heading';
 import { FieldText } from '@/components/input/textField';
 import { testIds } from '@/components/onboarding/user/steps/components/testIds';
 import { errorMessages } from '@/components/onboarding/user/steps/createYourProfile';
-// import { Picker } from '@react-native-picker/picker';
-import RNPickerSelect from 'react-native-picker-select';
-
 import { FormProvider, useForm } from 'react-hook-form';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { Button } from '@/components/button/button';
+import { SelectField } from '@/components/input/selectField';
 
 
 export type IFormValues = Pick<IUserOnboarding, (
@@ -51,7 +48,7 @@ export default function SettingsScreen(): ReactNode {
     defaultValues,
     resolver: yupResolver<IFormValues>(validationSchema),
   });
-  const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [toggleNotification, setToggleNotification] = useState(true);
 
   const handleLogout = (): void => {
     queryClient.clear();
@@ -69,10 +66,12 @@ export default function SettingsScreen(): ReactNode {
       />
       <FormProvider  {...formProps}>
         <KeyboardAwareScrollView
-          contentContainerStyle={{ gap: theme.spacing.sp8 }}
+          contentContainerStyle={{
+            gap: theme.spacing.sp10,
+            padding: theme.spacing.sp10
+          }}
           style={{
-            padding: theme.spacing.sp8,
-            backgroundColor: theme.colors.white100,
+            backgroundColor: theme.colors.white100
           }}
         >
           <VStack gap={theme.spacing.sp4}>
@@ -105,47 +104,15 @@ export default function SettingsScreen(): ReactNode {
               Preferences
             </Heading>
 
-            <RNPickerSelect
-              style={{
-                inputIOSContainer: { pointerEvents: 'none' },
-                inputIOS: {
-                  fontFamily: theme.text.fontRegular,
-                  color: theme.colors.gray900
-                },
-                inputAndroid: {
-                  fontFamily: theme.text.fontRegular,
-                  color: theme.colors.gray900
-                },
-              }}
-              pickerProps={{
-                mode: 'dropdown',
-                itemStyle: {
-                  fontFamily: theme.text.fontRegular,
-                  fontSize: theme.text.size.s4,
-                  color: theme.colors.gray900
-                },
-              }}
-              touchableWrapperProps={{
-                style: {
-                  backgroundColor: theme.colors.slate75,
-                  paddingVertical: theme.spacing.sp7,
-                  paddingHorizontal: theme.spacing.sp10,
-                  borderRadius: theme.radius.sm,
-                }
-              }}
-              placeholder={{
-                label: 'Select a language',
-                value: null,
-                color: theme.colors.gray900
-              }}
-              value={'eng'}
-              onValueChange={(value) => console.log(value)}
-              items={[
+            <SelectField
+              initialValue='eng'
+              options={[
                 { label: 'English', value: 'eng' },
                 { label: 'French', value: 'fr' },
                 { label: 'Spanish', value: 'es' },
               ]}
             />
+
             <HStack
               $y='center'
               $x='space-between'
@@ -164,47 +131,16 @@ export default function SettingsScreen(): ReactNode {
                 </TextView>
               </HStack>
               <Switch
-                value={true}
+                value={toggleNotification}
+                onValueChange={setToggleNotification}
                 thumbColor={theme.colors.slate75}
                 trackColor={{ true: theme.colors.blue100 }}
               />
             </HStack>
-            <RNPickerSelect
-              style={{
-                inputIOSContainer: { pointerEvents: 'none' },
-                inputIOS: {
-                  fontFamily: theme.text.fontRegular,
-                  color: theme.colors.gray900
-                },
-                inputAndroid: {
-                  fontFamily: theme.text.fontRegular,
-                  color: theme.colors.gray900
-                },
-              }}
-              pickerProps={{
-                mode: 'dropdown',
-                itemStyle: {
-                  fontFamily: theme.text.fontRegular,
-                  fontSize: theme.text.size.s4,
-                  color: theme.colors.gray900
-                },
-              }}
-              touchableWrapperProps={{
-                style: {
-                  backgroundColor: theme.colors.slate75,
-                  paddingVertical: theme.spacing.sp7,
-                  paddingHorizontal: theme.spacing.sp10,
-                  borderRadius: theme.radius.sm,
-                }
-              }}
-              placeholder={{
-                label: 'Select a theme',
-                value: null,
-                color: theme.colors.gray900
-              }}
-              value={'light'}
-              onValueChange={(value) => console.log(value)}
-              items={[
+
+            <SelectField
+              initialValue='light'
+              options={[
                 { label: 'Light', value: 'light' },
                 { label: 'Dark', value: 'dark' },
               ]}

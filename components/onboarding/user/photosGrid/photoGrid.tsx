@@ -37,7 +37,6 @@ export const createPlaceholders = (MAX_NUMBER: number, usersPhotos: IPhoto[] = [
     fromBackend
   }));
   const remainingPlaceholders = MAX_NUMBER - usersPhotos.length;
-  // if (remainingPlaceholders < 0) throw new Error('Not enough placeholders');
   const emptyPlaceholders = (
     Array
       .from({ length: remainingPlaceholders })
