@@ -23,7 +23,13 @@ import { Badge } from '@/components/button/badge';
 export default function UserProfileScreen() {
   const { styles, theme } = useStyles(stylesheet);
   const router = useRouter();
-  const { data: userBucketList } = useInfiniteQueryGetBucketListScreen();
+  const {
+    data: userBucketList,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQueryGetBucketListScreen();
+  const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const { data: userProfile } = useQueryGetUserProfile();
   const bucketListEvents = (
     userBucketList?.pages.
@@ -154,6 +160,8 @@ export default function UserProfileScreen() {
               </Heading>
             </VStack>
           )}
+          onEndReachedThreshold={0.4}
+          onEndReached={handleInfiniteFetch}
           renderItem={({ item }) => (
             <View style={{ position: 'relative' }}>
               <Image
