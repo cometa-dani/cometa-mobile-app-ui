@@ -11,8 +11,8 @@ export type UserSlice = {
   // TODO: add userProfile info
   session?: Session
   setSession: (session: Session) => void,
-  isLoading: boolean,
-  setIsLoading: (isLoading: boolean) => void,
+  isLoaded: boolean,
+  setIsLoaded: (isLoading: boolean) => void,
   setIsAuthenticated: (isAuth: boolean) => void,
   setAccessToken: (authToken: string) => void,
   setUid: (uid: string) => void
@@ -20,9 +20,9 @@ export type UserSlice = {
 
 
 export const createUserSlice: StateCreator<UserSlice> = (set) => ({
-  isLoading: true,
-  setIsLoading: (isLoading: boolean) => {
-    set({ isLoading });
+  isLoaded: false,
+  setIsLoaded: (isLoading: boolean) => {
+    set({ isLoaded: isLoading });
   },
   isAuthenticated: false,
   accessToken: '',

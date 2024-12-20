@@ -19,6 +19,7 @@ import { onlineManager } from '@tanstack/react-query';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+
 // Catch any errors thrown by the Layout component.
 export { ErrorBoundary } from 'expo-router';
 export const unstable_settings = {
@@ -45,36 +46,16 @@ configureReanimatedLogger({
 
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
+  const [isFontLoaded, error] = useFonts({
     Poppins: require('../assets/fonts/Poppins-Regular.ttf'),
     PoppinsMedium: require('../assets/fonts/Poppins-Medium.ttf'),
     PoppinsSemibold: require('../assets/fonts/Poppins-SemiBold.ttf'),
     PoppinsBold: require('../assets/fonts/Poppins-Bold.ttf'),
     ...FontAwesome.font,
   });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-  return <Root />;
-}
-
-
-function Root(): ReactNode {
-  const { theme } = useStyles();
   const setSession = useCometaStore(state => state.setSession);
-  const setIsLoading = useCometaStore(state => state.setIsLoading);
+  const setIsLoading = useCometaStore(state => state.setIsLoaded);
+  const isSessionLoaded = useCometaStore(state => state.isLoaded);
 
   useEffect(() => {
     supabase.auth.getSession()
@@ -83,15 +64,35 @@ function Root(): ReactNode {
         setSession(session);
       })
       .catch()
-      .finally(() => setIsLoading(false));
+      .finally(() => setIsLoading(true));
 
     supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoading(false);
+      setIsLoading(true);
       if (!session) return;
       setSession(session);
     });
   }, []);
 
+  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
+  useEffect(() => {
+    if (isFontLoaded && isSessionLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [isFontLoaded, isSessionLoaded]);
+
+  if (!isFontLoaded && !isSessionLoaded) {
+    return null;
+  }
+  return <Root />;
+}
+
+
+function Root(): ReactNode {
+  const { theme } = useStyles();
   return (
     <QueryClientProvider client={new QueryClient()}>
       <SafeAreaProvider>
@@ -100,6 +101,7 @@ function Root(): ReactNode {
             <BottomSheetModalProvider>
               <NotifierWrapper duration={5_000}>
                 <Stack
+                  initialRouteName='(userTabs)'
                   screenOptions={{
                     headerShown: false,
                     headerTitle: '',
@@ -110,15 +112,17 @@ function Root(): ReactNode {
                     headerBackTitle: 'Back',
                   }}
                 >
-                  <Stack.Screen name='index'
+                  <Stack.Screen name='welcome'
                     options={{
+                      animation: 'fade',
                       headerShown: true,
                       headerTransparent: true,
+                      headerBackVisible: false,
                       headerStyle: { backgroundColor: 'transparent' },
                     }}
                   />
-                  <Stack.Screen name='(userTabs)' />
-                  <Stack.Screen name='(companyTabs)' />
+                  <Stack.Screen name='(userTabs)' options={{ animation: 'fade' }} />
+                  <Stack.Screen name='(companyTabs)' options={{ animation: 'fade' }} />
                 </Stack>
               </NotifierWrapper>
             </BottomSheetModalProvider>

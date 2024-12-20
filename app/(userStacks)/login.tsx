@@ -1,5 +1,5 @@
 import { SystemBars } from 'react-native-edge-to-edge';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FieldText } from '@/components/input/textField';
 import { testIds } from '@/components/onboarding/user/steps/components/testIds';
@@ -12,6 +12,9 @@ import { Heading } from '@/components/text/heading';
 import { useStyles } from 'react-native-unistyles';
 import { Button } from '@/components/button/button';
 import { supabase } from '@/supabase/config';
+import { Notifier } from 'react-native-notifier';
+import { InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
+import { AxiosError } from 'axios';
 
 
 type IFormValues = Pick<IUserOnboarding, (
@@ -31,18 +34,41 @@ const validationSchema = Yup.object<IFormValues>().shape({
 
 export default function LoginScreen() {
   const { theme } = useStyles();
+  const router = useRouter();
   const formProps = useForm({
     defaultValues,
     resolver: yupResolver<IFormValues>(validationSchema),
   });
 
   const handleSignIn = async (values: IFormValues) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: values.email,
-      password: values.password
+    Notifier.showNotification({
+      duration: 0,
+      title: 'Signing in',
+      description: 'wait a moment...',
+      Component: InfoToast,
     });
-    if (error) {
-      return error.name;
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password
+      });
+      if (error) {
+        return error.name;
+      }
+      Notifier.hideNotification();
+      Notifier.showNotification({
+        title: 'Welcome',
+        description: 'you are logged in',
+        Component: SucessToast
+      });
+      router.replace('/(userTabs)/');
+    } catch (error) {
+      Notifier.hideNotification();
+      Notifier.showNotification({
+        title: 'Error',
+        description: `there was an error: ${(error as AxiosError).message}`,
+        Component: InfoToast
+      });
     }
   };
 

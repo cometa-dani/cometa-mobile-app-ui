@@ -1,13 +1,10 @@
-import { FC, ReactNode, useState } from 'react';
-import { StyleSheet, Switch } from 'react-native';
-import { Stack } from 'expo-router';
-import { RectButton, } from 'react-native-gesture-handler';
-import { Image } from 'expo-image';
-import { defaultImgPlaceholder } from '../../constants/vars';
+import { ReactNode, useReducer, useState } from 'react';
+import { Modal, Pressable, Switch, View } from 'react-native';
+import { Stack, useRouter } from 'expo-router';
 import { IGetBasicUserProfile, IUserOnboarding } from '../../models/User';
 import { TextView } from '@/components/text/text';
 import { HStack, VStack } from '@/components/utils/stacks';
-import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
+import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { useQueryClient } from '@tanstack/react-query';
 import { Heading } from '@/components/text/heading';
 import { FieldText } from '@/components/input/textField';
@@ -20,6 +17,11 @@ import * as Yup from 'yup';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Button } from '@/components/button/button';
 import { SelectField } from '@/components/input/selectField';
+import { supabase } from '@/supabase/config';
+import { useMutationDeleteUser } from '@/queries/currentUser/userHooks';
+import { QueryKeys } from '@/queries/queryKeys';
+import { Notifier } from 'react-native-notifier';
+import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
 
 
 export type IFormValues = Pick<IUserOnboarding, (
@@ -42,17 +44,68 @@ export const defaultValues: IFormValues = {
 };
 
 export default function SettingsScreen(): ReactNode {
-  const { theme } = useStyles();
+  const { styles, theme } = useStyles(styleSheet);
+  const router = useRouter();
   const queryClient = useQueryClient();
+  const deleteUser = useMutationDeleteUser();
   const formProps = useForm({
     defaultValues,
     resolver: yupResolver<IFormValues>(validationSchema),
   });
   const [toggleNotification, setToggleNotification] = useState(true);
+  const [toggleDeleteModal, setToggleDeleteModal] = useReducer(prev => !prev, false);
 
-  const handleLogout = (): void => {
+  const handleLogout = async () => {
+    const userProfile = queryClient.getQueryData<IGetBasicUserProfile>([QueryKeys.GET_LOGGED_IN_USER_PROFILE]);
+    Notifier.showNotification({
+      duration: 0,
+      title: 'Logging out...',
+      description: `Good bye ${userProfile?.name || ''} 👋`,
+      Component: InfoToast,
+    });
+    try {
+      await supabase.auth.signOut();
+      queryClient.removeQueries();
+      queryClient.clear();
+      Notifier.hideNotification();
+      router.replace('/welcome');
+    } catch (error) {
+      Notifier.hideNotification();
+      Notifier.showNotification({
+        title: 'Error',
+        description: 'there was an error, try again',
+        Component: ErrorToast,
+      });
+    }
+  };
+
+  const handleDeleteUserProfile = async () => {
     queryClient.clear();
-    // signOut(auth);
+    const userProfile = queryClient.getQueryData<IGetBasicUserProfile>([QueryKeys.GET_LOGGED_IN_USER_PROFILE]);
+    if (!userProfile?.id) return;
+    Notifier.showNotification({
+      duration: 0,
+      title: 'Deleting...',
+      description: 'your profile is being deleted',
+      Component: InfoToast,
+    });
+    try {
+      await deleteUser.mutateAsync(userProfile.id);
+      Notifier.hideNotification();
+      Notifier.showNotification({
+        title: 'Done',
+        description: 'your profile was deleted successfully',
+        Component: SucessToast,
+      });
+      router.replace('/welcome');
+    } catch (error) {
+      Notifier.hideNotification();
+      Notifier.showNotification({
+        title: 'Error',
+        description: 'there was an error deleting your profile',
+        Component: ErrorToast,
+      });
+    }
   };
 
   return (
@@ -193,59 +246,62 @@ export default function SettingsScreen(): ReactNode {
             gap={theme.spacing.sp6}
             styles={{ marginBottom: UnistylesRuntime.insets.bottom }}
           >
-            <Button variant='primary-alt' onPress={() => console.log('pressed')}>
-              Delete Account
+            <Button variant='primary' onPress={handleLogout}>
+              Log Out
             </Button>
-            <Button variant='primary' onPress={() => console.log('pressed')}>
-              Logout
+            <Button variant='primary-alt' onPress={setToggleDeleteModal}>
+              Delete Account
             </Button>
           </VStack>
         </KeyboardAwareScrollView>
       </FormProvider>
+
+      <Modal
+        transparent={true}
+        visible={toggleDeleteModal}
+        animationType='fade'
+        statusBarTranslucent={true}
+      >
+        <Pressable onPress={setToggleDeleteModal} style={styles.backdrop}>
+          <View style={styles.modal}>
+            <VStack
+              gap={theme.spacing.sp6}
+              styles={{ marginTop: theme.spacing.sp8 }}
+            >
+              <Heading size='s6'>
+                Do you want to delete your account?
+              </Heading>
+              <TextView>
+                Once deleted, your account and personal data cannot be recovered.
+              </TextView>
+              <Button variant='primary' onPress={handleDeleteUserProfile}>
+                Delete
+              </Button>
+              <Button variant='secondary-alt' onPress={setToggleDeleteModal}>
+                Close
+              </Button>
+            </VStack>
+          </View>
+        </Pressable>
+      </Modal>
     </>
   );
 }
 
 
-interface UserItem {
-  user: IGetBasicUserProfile,
-  onPress: () => void;
-}
-const UserItem: FC<UserItem> = ({ user, onPress }) => {
-  return (
-    <RectButton
-      style={styles.eventItem}
-      onPress={() => onPress()}
-    >
-      <Image
-        style={{ width: 42, height: 42, borderRadius: 100 }}
-        source={{
-          thumbhash: user.photos[0]?.placeholder,
-          uri: user.photos[0]?.url ?? defaultImgPlaceholder
-        }}
-      />
-
-      <TextView
-        ellipsis={true}
-        style={{
-          flex: 1,
-        }}
-      >
-        {user.username}
-      </TextView>
-
-    </RectButton>
-  );
-};
-
-const styles = StyleSheet.create({
-  eventItem: {
+const styleSheet = createStyleSheet((theme) => ({
+  backdrop: {
+    flex: 1,
+    backgroundColor: theme.colors.backDrop,
     alignItems: 'center',
-    flexDirection: 'row',
-    gap: 20,
-    height: 64,
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    width: '100%'
-  }
-});
+    justifyContent: 'center',
+    padding: theme.spacing.sp8,
+  },
+  modal: {
+    width: '100%',
+    backgroundColor: theme.colors.white100,
+    padding: theme.spacing.sp10,
+    borderRadius: theme.radius.md,
+    minHeight: 300,
+  },
+}));

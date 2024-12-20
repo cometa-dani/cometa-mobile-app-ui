@@ -10,13 +10,10 @@ import { Button } from '@/components/button/button';
 import { AntDesign } from '@expo/vector-icons';
 import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
-import { Redirect, useRouter } from 'expo-router';
-import { useCometaStore } from '@/store/cometaStore';
+import { useRouter } from 'expo-router';
 
 
 export default function WelcomeScreen() {
-  const session = useCometaStore(state => state.session);
-  const isLoading = useCometaStore(state => state.isLoading);
   const router = useRouter();
   const { styles, theme } = useStyles(stylesheet);
   const [isUserProfileModalVisible, setUserProfileModalVisible] = useReducer(prev => !prev, false);
@@ -38,18 +35,13 @@ export default function WelcomeScreen() {
     router.push('/(companyStacks)/onboarding');
   };
 
-  if (isLoading) {
-    return null;
-  }
-  // if (session?.user) {
-  //   return <Redirect href="/user/(tabs)" />;
-  // }
   return (
     <>
       <SystemBars style='light' />
 
       <Modal
         transparent={true}
+        statusBarTranslucent={true}
         visible={isUserProfileModalVisible}
         animationType='fade'
         onRequestClose={setUserProfileModalVisible}

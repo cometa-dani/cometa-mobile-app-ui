@@ -185,3 +185,23 @@ export const useMutationDeleteUserPhotoById = (dynamicParam?: string) => {
     })
   );
 };
+
+
+export const useMutationDeleteUser = () => {
+  return (
+    useMutation({
+      mutationFn:
+        async (userId: number): Promise<IGetBasicUserProfile> => {
+          const res = await userService.deleteUserById(userId);
+          if (res.status === 204) {
+            return res.data;
+          }
+          else {
+            throw new Error('failed fech');
+          }
+        },
+      retry: 1,
+      retryDelay: 1_000 * 6
+    })
+  );
+};

@@ -18,6 +18,8 @@ import { useRouter } from 'expo-router';
 import { ICityKind, useSelectCityByName } from '@/components/modal/searchCity/hook';
 import { useSelectLanguages } from '@/components/modal/selectLanguages/hook';
 import { supabase } from '@/supabase/config';
+import { Notifier } from 'react-native-notifier';
+import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
 
 
 export const errorMessages = {
@@ -75,6 +77,12 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       languages: values.languages,
       occupation: values.occupation
     };
+    Notifier.showNotification({
+      duration: 0,
+      title: 'Creating your profile',
+      description: 'your profile is being created',
+      Component: InfoToast,
+    });
     try {
       const { data, error } = await supabase.auth.signUp({ email: userState.email, password: userState.password });
       if (error) throw error;
@@ -88,12 +96,25 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       const newUser = await createUser.mutateAsync(createUserPayload);
       await uploadPhotos.mutateAsync({ userId: newUser.id, pickedImgFiles: userState.photos });
       await updateUser.mutateAsync({ userId: newUser.id, payload: updateUserPayload });
+      Notifier.hideNotification();
+      Notifier.showNotification({
+        title: 'Done',
+        description: 'your profile was created successfully',
+        Component: SucessToast,
+      });
       // await supabase.auth.setSession({
       //   access_token: data?.session?.access_token ?? '',
       //   refresh_token: data?.session?.refresh_token ?? ''
       // });
       onNext();
+      router.replace('/(userTabs)/');
     } catch (error) {
+      Notifier.hideNotification();
+      Notifier.showNotification({
+        title: 'Error',
+        description: 'something went wrong',
+        Component: ErrorToast,
+      });
       return;
     }
   };

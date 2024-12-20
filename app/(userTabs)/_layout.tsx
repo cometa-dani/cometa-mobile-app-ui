@@ -7,7 +7,7 @@ import { usePrefetchBucketList } from '@/queries/currentUser/eventHooks';
 import { useQueryGetUserProfile } from '@/queries/currentUser/userHooks';
 import { useCometaStore } from '@/store/cometaStore';
 import { FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Tabs, useRouter } from 'expo-router';
+import { Redirect, Tabs, useRouter } from 'expo-router';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
@@ -18,8 +18,12 @@ export default function TabLayout(): ReactNode {
   const { theme } = useStyles(stylesheet);
   const router = useRouter();
   const notificationIsSeen = useCometaStore(state => state.notificationsList).at(0)?.user?.isSeen;
+  const session = useCometaStore(state => state.session);
   const { data: userProfile } = useQueryGetUserProfile();
 
+  if (!session?.user) {
+    return <Redirect href="/welcome" />;
+  }
   return (
     <Tabs
       screenOptions={{
