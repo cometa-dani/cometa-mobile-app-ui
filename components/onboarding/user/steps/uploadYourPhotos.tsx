@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { useStyles } from 'react-native-unistyles';
 import { useCometaStore } from '@/store/cometaStore';
 import { HStack } from '@/components/utils/stacks';
-import { Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { isFromFileSystem, IPhotoPlaceholder } from '../photosGrid/photoGrid';
 import { MIN_NUMBER_PHOTOS } from '@/constants/vars';
@@ -27,7 +27,7 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNext }) => {
   };
 
   return (
-    <View style={{ flex: 1, position: 'relative' }}>
+    <ScrollView style={{ flex: 1, position: 'relative' }}>
       <View
         style={{
           flex: 1,
@@ -63,6 +63,6 @@ export const UploadYouPhotosForm: FC<IProps> = ({ onNext }) => {
         text='Next'
         onNext={handleNextStep}
       />
-    </View>
+    </ScrollView>
   );
 };

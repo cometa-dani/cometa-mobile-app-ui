@@ -1,3 +1,4 @@
+import '../styles/unistyles';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { GradientHeading } from '@/components/text/gradientText';
 import { Image, ImageBackground } from 'expo-image';

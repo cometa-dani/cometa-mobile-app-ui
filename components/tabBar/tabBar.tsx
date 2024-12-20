@@ -73,6 +73,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps): R
   );
 }
 
+
 const tabBarStylesheet = createStyleSheet((theme, runtime) => ({
   tabBarContainer: {
     position: 'absolute',
@@ -104,6 +105,8 @@ const tabBarStylesheet = createStyleSheet((theme, runtime) => ({
     backgroundColor: theme.colors.white100,
   }),
   tabBarText: {
+    textAlign: 'center',
+    minWidth: 80,
     color: theme.colors.gray900,
     fontSize: theme.text.size.s2,
     fontFamily: theme.text.fontSemibold

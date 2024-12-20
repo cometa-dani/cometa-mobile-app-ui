@@ -89,6 +89,7 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
     textAlign: 'center',
     fontFamily: theme.text.fontSemibold,
     animationTimingFunction: 'ease-in-out',
+    flex: 1,
     variants: {
       color: {
         'primary': {

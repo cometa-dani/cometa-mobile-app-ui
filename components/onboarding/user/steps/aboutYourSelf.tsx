@@ -98,8 +98,8 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       await updateUser.mutateAsync({ userId: newUser.id, payload: updateUserPayload });
       Notifier.hideNotification();
       Notifier.showNotification({
-        title: 'Done',
-        description: 'your profile was created successfully',
+        title: 'Welcome to cometa',
+        description: 'Congrats, your profile was created successfully',
         Component: SucessToast,
       });
       // await supabase.auth.setSession({
@@ -149,7 +149,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: theme.spacing.sp10,
-            paddingBottom: theme.spacing.sp14,
+            paddingBottom: theme.spacing.sp12,
             gap: theme.spacing.sp7,
           }}>
           <FieldText
