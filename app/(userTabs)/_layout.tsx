@@ -30,6 +30,7 @@ export default function TabLayout(): ReactNode {
         animation: 'shift',
         headerTitleAlign: 'center',
         headerShown: true,
+        sceneStyle: { backgroundColor: theme.colors.white80 },
         headerStyle: {
           elevation: 1,
         },
