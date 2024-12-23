@@ -31,13 +31,22 @@ export const unstable_settings = {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-
 onlineManager.setEventListener((setOnline) => {
   return NetInfo.addEventListener((state) => {
     setOnline(!!state.isConnected);
   });
 });
-
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnReconnect: true,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      retry: 1,
+      retryDelay: 1_000 * 6
+    },
+  },
+});
 
 configureReanimatedLogger({
   level: ReanimatedLogLevel.warn,
@@ -54,8 +63,7 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
   const setSession = useCometaStore(state => state.setSession);
-  const setIsLoading = useCometaStore(state => state.setIsLoaded);
-  const isSessionLoaded = useCometaStore(state => state.isLoaded);
+  const session = useCometaStore(state => state.session);
 
   useEffect(() => {
     supabase.auth.getSession()
@@ -63,14 +71,16 @@ export default function RootLayout() {
         if (!session) return;
         setSession(session);
       })
-      .catch()
-      .finally(() => setIsLoading(true));
+      .catch();
 
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoading(true);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) return;
       setSession(session);
     });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
@@ -79,22 +89,22 @@ export default function RootLayout() {
   }, [error]);
 
   useEffect(() => {
-    if (isFontLoaded && isSessionLoaded) {
+    if (isFontLoaded && session?.access_token) {
       SplashScreen.hideAsync();
     }
-  }, [isFontLoaded, isSessionLoaded]);
+  }, [isFontLoaded, session?.access_token]);
 
-  if (!isFontLoaded && !isSessionLoaded) {
+  if (!session?.access_token) {
     return null;
   }
-  return <Root />;
+  return <Root />; // too  many re-renders
 }
 
 
 function Root(): ReactNode {
   const { theme } = useStyles();
   return (
-    <QueryClientProvider client={new QueryClient()}>
+    <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <KeyboardProvider>
           <GestureHandlerRootView>

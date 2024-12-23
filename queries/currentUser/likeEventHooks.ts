@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { CreateEventLike } from '../../models/Event';
 import eventService from '../../services/eventService';
-import { MutationKeys } from '../mutationKeys';
 
 
 type MutateEventLikeArgs = { eventID: number, targetUserId?: number };
@@ -9,9 +8,11 @@ type MutateEventLikeArgs = { eventID: number, targetUserId?: number };
 
 // Mutation to like or dislike an event
 export const useMutationLikeOrDislikeEvent = () => {
+  // const queryClient = useQueryClient();
+  // const queryCache = queryClient.getQueryCache();
+  // console.log(queryCache.getAll());
   return (
     useMutation({
-      mutationKey: [MutationKeys.EVENT_LIKE],
       mutationFn: async ({ eventID }: MutateEventLikeArgs): Promise<CreateEventLike | null> => {
         const res = await eventService.createOrDeleteLikeByEventID(eventID);
         if (res.status === 201) {
@@ -23,9 +24,7 @@ export const useMutationLikeOrDislikeEvent = () => {
         else {
           throw new Error('failed to request data');
         }
-      },
-      retry: 2,
-      retryDelay: 1_000 * 6
+      }
     })
   );
 };
