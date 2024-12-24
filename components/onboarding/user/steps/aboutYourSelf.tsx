@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useStyles } from 'react-native-unistyles';
 import { FieldText } from '@/components/input/textField';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -67,14 +67,17 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
   });
   const onboardingUser = useCometaStore(state => state.onboarding.user);
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
+  const clearOnboarding = useCometaStore(state => state.clearOnboarding);
   const { selectedCity, cityKind, setCityKind } = useSelectCityByName();
   const { selectedLanguages } = useSelectLanguages();
   const createUser = useMutationCreateUser();
   const updateUser = useMutationUpdateUserById();
   const uploadPhotos = useMutationUploadUserPhotos();
   const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleUserCreation = async (values: IFormValues): Promise<void> => {
+    setIsLoading(true);
     const updateUserPayload: IUpdateUser = {
       biography: values.biography,
       currentLocation: values.currentLocation,
@@ -122,6 +125,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       });
       onNext();
       router.replace('/(userTabs)/');
+      clearOnboarding();
     } catch (error) {
       Notifier.hideNotification();
       Notifier.showNotification({
@@ -129,7 +133,9 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
         description: 'something went wrong',
         Component: ErrorToast,
       });
-      return;
+    }
+    finally {
+      setIsLoading(false);
     }
   };
 
@@ -211,6 +217,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
         </KeyboardAwareScrollView>
 
         <FooterButton
+          isLoading={isLoading}
           text='Register'
           onNext={formProps.handleSubmit(handleUserCreation)}
         />

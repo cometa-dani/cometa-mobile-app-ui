@@ -6,13 +6,15 @@ import { FC } from 'react';
 
 interface IProps {
   onNext: () => void;
-  text: string
+  text: string,
+  isLoading?: boolean
 }
-export const FooterButton: FC<IProps> = ({ text, onNext }) => {
+export const FooterButton: FC<IProps> = ({ text, onNext, isLoading }) => {
   const { styles } = useStyles(styleSheet);
   return (
     <View style={styles.container}>
       <Button
+        showLoading={isLoading}
         variant='primary'
         onPress={onNext}
       >

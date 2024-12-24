@@ -54,10 +54,13 @@ export default function SettingsScreen(): ReactNode {
     defaultValues,
     resolver: yupResolver<IFormValues>(validationSchema),
   });
+  const [isDeleteUserLoading, setIsDeleteUserLoading] = useState(false);
+  const [isLogOutLoading, setIsLogOutLoading] = useState(false);
   const [toggleNotification, setToggleNotification] = useState(true);
   const [toggleDeleteModal, setToggleDeleteModal] = useReducer(prev => !prev, false);
 
   const handleLogout = async () => {
+    setIsLogOutLoading(true);
     const userProfile = queryClient.getQueryData<IGetBasicUserProfile>([QueryKeys.GET_LOGGED_IN_USER_PROFILE]);
     Notifier.showNotification({
       duration: 0,
@@ -79,10 +82,13 @@ export default function SettingsScreen(): ReactNode {
         description: 'there was an error, try again',
         Component: ErrorToast,
       });
+    } finally {
+      setIsLogOutLoading(false);
     }
   };
 
   const handleDeleteUserProfile = async () => {
+    setIsDeleteUserLoading(true);
     queryClient.clear();
     const userProfile = queryClient.getQueryData<IGetBasicUserProfile>([QueryKeys.GET_LOGGED_IN_USER_PROFILE]);
     if (!userProfile?.id) return;
@@ -109,6 +115,8 @@ export default function SettingsScreen(): ReactNode {
         description: 'there was an error deleting your profile',
         Component: ErrorToast,
       });
+    } finally {
+      setIsDeleteUserLoading(false);
     }
   };
 
@@ -255,10 +263,18 @@ export default function SettingsScreen(): ReactNode {
             gap={theme.spacing.sp6}
             styles={{ marginBottom: UnistylesRuntime.insets.bottom }}
           >
-            <Button variant='primary' onPress={handleLogout}>
+            <Button
+              showLoading={isLogOutLoading}
+              variant='primary'
+              onPress={handleLogout}
+            >
               Log Out
             </Button>
-            <Button variant='primary-alt' onPress={setToggleDeleteModal}>
+            <Button
+              showLoading={isDeleteUserLoading}
+              variant='primary-alt'
+              onPress={setToggleDeleteModal}
+            >
               Delete Account
             </Button>
           </VStack>

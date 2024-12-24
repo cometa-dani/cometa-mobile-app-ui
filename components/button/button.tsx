@@ -39,6 +39,7 @@ export const Button = forwardRef<View, IButtonProps>(({
   if (isInsideBottomSheet) {
     return (
       <TouchableOpacity
+        disabled={showLoading}
         style={[buttonsStyles.buttonContainer(), style]}
         onPress={handleOnPress}
       >
@@ -58,6 +59,7 @@ export const Button = forwardRef<View, IButtonProps>(({
   return (
     <Pressable
       ref={ref}
+      disabled={showLoading}
       onPress={handleOnPress}
       style={({ pressed }) => [buttonsStyles.buttonContainer(pressed), style]}
     >

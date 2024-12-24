@@ -15,6 +15,7 @@ import { supabase } from '@/supabase/config';
 import { Notifier } from 'react-native-notifier';
 import { InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
 import { AxiosError } from 'axios';
+import { useState } from 'react';
 
 
 type IFormValues = Pick<IUserOnboarding, (
@@ -39,8 +40,10 @@ export default function LoginScreen() {
     defaultValues,
     resolver: yupResolver<IFormValues>(validationSchema),
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSignIn = async (values: IFormValues) => {
+    setIsLoading(true);
     Notifier.showNotification({
       duration: 0,
       title: 'Signing in',
@@ -69,6 +72,8 @@ export default function LoginScreen() {
         description: `there was an error: ${(error as AxiosError).message}`,
         Component: InfoToast
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -125,6 +130,7 @@ export default function LoginScreen() {
             defaultErrMessage={errorMessages.password}
           />
           <Button
+            showLoading={isLoading}
             style={{ marginTop: theme.spacing.sp10 }}
             variant='primary'
             onPress={formProps.handleSubmit(handleSignIn)}

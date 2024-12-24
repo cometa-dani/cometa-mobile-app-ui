@@ -6,26 +6,29 @@ export type IOnboardingSlice = {
   onboarding: {
     user: IUserOnboarding
   }
-  setOnboarding: (user: Partial<IUserOnboarding>) => void
+  setOnboarding: (user: Partial<IUserOnboarding>) => void,
+  clearOnboarding: () => void
 }
+
+const initialValue = {
+  name: '',
+  username: '',
+  email: '',
+  birthday: '',
+  password: '',
+  repassword: '',
+  homeTown: '',
+  currentLocation: '',
+  languages: [],
+  occupation: '',
+  biography: '',
+  photos: [],
+  uid: ''
+};
 
 export const createOnboardingSlice: StateCreator<IOnboardingSlice> = (set) => ({
   onboarding: {
-    user: {
-      name: '',
-      username: '',
-      email: '',
-      birthday: '',
-      password: '',
-      repassword: '',
-      homeTown: '',
-      currentLocation: '',
-      languages: [],
-      occupation: '',
-      biography: '',
-      photos: [],
-      uid: ''
-    }
+    user: initialValue
   },
 
   setOnboarding: (user: Partial<IUserOnboarding>) => {
@@ -37,5 +40,9 @@ export const createOnboardingSlice: StateCreator<IOnboardingSlice> = (set) => ({
         }
       }
     }));
+  },
+
+  clearOnboarding: () => {
+    set({ onboarding: { user: initialValue } });
   }
 });
