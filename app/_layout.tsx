@@ -54,6 +54,10 @@ configureReanimatedLogger({
 });
 
 
+/**
+ *
+ * TODO: improve race conditions promises vs subscriptions
+ */
 export default function RootLayout() {
   const [isFontLoaded, error] = useFonts({
     Poppins: require('../assets/fonts/Poppins-Regular.ttf'),
