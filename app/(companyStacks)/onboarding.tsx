@@ -18,9 +18,6 @@ export default function OnboardCompanyScreen() {
 
       <Stack.Screen
         options={{
-          gestureDirection: 'vertical',
-          fullScreenGestureEnabled: true,
-          gestureEnabled: true,
           headerShadowVisible: false,
           headerTitle: '',
           headerShown: true,

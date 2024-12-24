@@ -63,21 +63,26 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
   const setSession = useCometaStore(state => state.setSession);
-  const session = useCometaStore(state => state.session);
+  const setIsLoaded = useCometaStore(state => state.setIsLoaded);
+  const isLoaded = useCometaStore(state => state.isLoaded);
 
   useEffect(() => {
     supabase.auth.getSession()
       .then(({ data: { session } }) => {
+        if (!isLoaded) {
+          setIsLoaded(true);
+        }
         if (!session) return;
         setSession(session);
       })
       .catch();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) return;
+      if (!isLoaded) {
+        setIsLoaded(true);
+      }
       setSession(session);
     });
-
     return () => {
       subscription.unsubscribe();
     };
@@ -89,12 +94,12 @@ export default function RootLayout() {
   }, [error]);
 
   useEffect(() => {
-    if (isFontLoaded && session?.access_token) {
+    if (isFontLoaded && isLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [isFontLoaded, session?.access_token]);
+  }, [isFontLoaded, isLoaded]);
 
-  if (!session?.access_token) {
+  if (!isLoaded) {
     return null;
   }
   return <Root />; // too  many re-renders

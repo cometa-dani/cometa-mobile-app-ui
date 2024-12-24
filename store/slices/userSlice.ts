@@ -9,8 +9,8 @@ export type UserSlice = {
   accessToken: string,
   uid: string,
   // TODO: add userProfile info
-  session?: Session
-  setSession: (session: Session) => void,
+  session: Session | null
+  setSession: (session: Session | null) => void,
   isLoaded: boolean,
   setIsLoaded: (isLoading: boolean) => void,
   setIsAuthenticated: (isAuth: boolean) => void,
@@ -27,9 +27,11 @@ export const createUserSlice: StateCreator<UserSlice> = (set) => ({
   isAuthenticated: false,
   accessToken: '',
   uid: '',
-  session: undefined,
-  setSession: (session: Session) => {
-    RestApiService.getInstance().setBearerToken(session.access_token);
+  session: null,
+  setSession: (session: Session | null) => {
+    if (session) {
+      RestApiService.getInstance().setBearerToken(session?.access_token);
+    }
     set({ session });
   },
 

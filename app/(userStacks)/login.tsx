@@ -78,9 +78,6 @@ export default function LoginScreen() {
 
       <Stack.Screen
         options={{
-          gestureDirection: 'vertical',
-          fullScreenGestureEnabled: true,
-          gestureEnabled: true,
           headerTitle: '',
           headerShown: true,
           animation: 'slide_from_bottom',
