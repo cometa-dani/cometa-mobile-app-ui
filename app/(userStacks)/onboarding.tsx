@@ -8,7 +8,7 @@ import { Stack } from 'expo-router';
 import { useStyles } from 'react-native-unistyles';
 
 
-const title = ['Create Your Profile', 'About Yourself', 'Upload Your Photos', 'Done'];
+const title = ['Create Your Profile', 'Upload Your Photos', 'About Yourself'];
 
 export default function OnboardUserScreen() {
   const { theme } = useStyles();
