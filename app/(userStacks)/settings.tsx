@@ -23,6 +23,7 @@ import { QueryKeys } from '@/queries/queryKeys';
 import { Notifier } from 'react-native-notifier';
 import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
 import { useCometaStore } from '@/store/cometaStore';
+import { AuthError } from '@supabase/supabase-js';
 
 
 export type IFormValues = Pick<IUserOnboarding, (
@@ -36,7 +37,6 @@ export const validationSchema = Yup.object<IFormValues>().shape({
     Yup.string()
       .oneOf([Yup.ref('password'), ''])
       .required(errorMessages.repeatPassword),
-
 });
 
 export const defaultValues: IFormValues = {
@@ -69,17 +69,23 @@ export default function SettingsScreen(): ReactNode {
       Component: InfoToast,
     });
     try {
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
       queryClient.removeQueries();
       queryClient.clear();
       setIsAuthenticated(false);
       Notifier.hideNotification();
       router.replace('/welcome');
-    } catch (error) {
+    }
+    catch (error) {
+      let errorMessage = 'try again';
+      if (error instanceof AuthError) {
+        errorMessage = error?.message;
+      }
       Notifier.hideNotification();
       Notifier.showNotification({
         title: 'Error',
-        description: 'there was an error, try again',
+        description: `there was an error: ${errorMessage}`,
         Component: ErrorToast,
       });
     } finally {
@@ -129,7 +135,7 @@ export default function SettingsScreen(): ReactNode {
           headerTitleAlign: 'center'
         }}
       />
-      <FormProvider  {...formProps}>
+      <FormProvider {...formProps}>
         <KeyboardAwareScrollView
           contentContainerStyle={{
             gap: theme.spacing.sp10,

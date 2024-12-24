@@ -23,6 +23,8 @@ import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotificati
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '@/queries/queryKeys';
 import userService from '@/services/userService';
+import { AuthError } from '@supabase/supabase-js';
+import { AxiosError } from 'axios';
 
 
 export const errorMessages = {
@@ -126,11 +128,19 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       onNext();
       router.replace('/(userTabs)/');
       clearOnboarding();
-    } catch (error) {
+    }
+    catch (error) {
+      let errorMessage = 'try again';
+      if (error instanceof AxiosError) {
+        errorMessage = error?.message;
+      }
+      if (error instanceof AuthError) {
+        errorMessage = error?.message;
+      }
       Notifier.hideNotification();
       Notifier.showNotification({
         title: 'Error',
-        description: 'something went wrong',
+        description: `something went wrong: ${errorMessage}`,
         Component: ErrorToast,
       });
     }

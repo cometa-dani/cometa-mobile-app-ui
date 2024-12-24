@@ -91,7 +91,6 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
     textAlign: 'center',
     fontFamily: theme.text.fontSemibold,
     animationTimingFunction: 'ease-in-out',
-    flex: 1,
     variants: {
       color: {
         'primary': {
@@ -117,7 +116,7 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: theme.spacing.sp1,
+    gap: theme.spacing.sp2,
     padding: theme.spacing.sp4,
     borderRadius: theme.radius.sm,
     borderWidth: 1.6,

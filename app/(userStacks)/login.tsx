@@ -13,9 +13,9 @@ import { useStyles } from 'react-native-unistyles';
 import { Button } from '@/components/button/button';
 import { supabase } from '@/supabase/config';
 import { Notifier } from 'react-native-notifier';
-import { InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
-import { AxiosError } from 'axios';
+import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
 import { useState } from 'react';
+import { AuthError } from '@supabase/supabase-js';
 
 
 type IFormValues = Pick<IUserOnboarding, (
@@ -55,9 +55,7 @@ export default function LoginScreen() {
         email: values.email,
         password: values.password
       });
-      if (error) {
-        return error.name;
-      }
+      if (error) throw error;
       Notifier.hideNotification();
       Notifier.showNotification({
         title: 'Welcome',
@@ -65,12 +63,17 @@ export default function LoginScreen() {
         Component: SucessToast
       });
       router.replace('/(userTabs)/');
-    } catch (error) {
+    }
+    catch (error) {
+      let errorMessage = 'try again';
+      if (error instanceof AuthError) {
+        errorMessage = error?.message;
+      }
       Notifier.hideNotification();
       Notifier.showNotification({
         title: 'Error',
-        description: `there was an error: ${(error as AxiosError).message}`,
-        Component: InfoToast
+        description: `there was an error: ${errorMessage}`,
+        Component: ErrorToast
       });
     } finally {
       setIsLoading(false);

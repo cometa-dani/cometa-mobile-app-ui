@@ -68,10 +68,16 @@ export default function WelcomeScreen() {
               <TextView>
                 Create you profile and start matching with others who share your bucket list goals
               </TextView>
-              <Button variant='primary' onPress={openUserProfileBottomSheet}>
+              <Button
+                variant='primary'
+                onPress={openUserProfileBottomSheet}
+              >
                 User Profile
               </Button>
-              <Button variant='secondary-alt' onPress={openCompanyProfileModal}>
+              <Button
+                variant='secondary-alt'
+                onPress={openCompanyProfileModal}
+              >
                 Company Profile
               </Button>
             </VStack>
