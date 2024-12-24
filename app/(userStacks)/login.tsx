@@ -16,6 +16,7 @@ import { Notifier } from 'react-native-notifier';
 import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
 import { useState } from 'react';
 import { AuthError } from '@supabase/supabase-js';
+import { AxiosError } from 'axios';
 
 
 type IFormValues = Pick<IUserOnboarding, (
@@ -58,7 +59,7 @@ export default function LoginScreen() {
       if (error) throw error;
       Notifier.hideNotification();
       Notifier.showNotification({
-        title: 'Welcome',
+        title: 'Welcome back',
         description: 'you are logged in',
         Component: SucessToast
       });
@@ -66,6 +67,9 @@ export default function LoginScreen() {
     }
     catch (error) {
       let errorMessage = 'try again';
+      if (error instanceof AxiosError) {
+        errorMessage = error?.message;
+      }
       if (error instanceof AuthError) {
         errorMessage = error?.message;
       }

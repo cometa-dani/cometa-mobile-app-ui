@@ -121,7 +121,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       });
       Notifier.hideNotification();
       Notifier.showNotification({
-        title: 'Welcome to cometa',
+        title: `Welcome to cometa ${onboardingUser.name}`,
         description: 'Congrats, your profile was created successfully',
         Component: SucessToast,
       });
