@@ -9,6 +9,9 @@ export type AuthSlice = {
   setSession: (session: Session | null) => void,
   isLoaded: boolean,
   setIsLoaded: (isLoading: boolean) => void,
+  isAuthenticated: boolean,
+  setIsAuthenticated: (isAuthenticated: boolean) => void,
+  preFetchUserProfile: (shouldRefetch: boolean) => void
 }
 
 
@@ -23,5 +26,13 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
       RestApiService.getInstance().setBearerToken(session?.access_token);
     }
     set({ session });
+  },
+  isAuthenticated: false,
+  setIsAuthenticated: (isAuthenticated: boolean) => {
+    set({ isAuthenticated });
+  },
+  shouldFetchUserProfile: false,
+  preFetchUserProfile: (shouldRefetch: boolean) => {
+    // set({ shouldFetchUserProfile: shouldRefetch });
   }
 });

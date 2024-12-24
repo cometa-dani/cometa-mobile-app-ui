@@ -52,7 +52,7 @@ class UsersService {
    * @param {string} loggedInUserAccessToken
    * @returns
    */
-  public getUserInfoByUidWithLikedEvents(userUuid: string) {
+  public getUserProfileWithLikedEvents(userUuid: string) {
     return this.http.get<IGetDetailedUserProfile>(`/users/${userUuid}`);
   }
 

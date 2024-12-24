@@ -22,6 +22,7 @@ import { useMutationDeleteUser } from '@/queries/currentUser/userHooks';
 import { QueryKeys } from '@/queries/queryKeys';
 import { Notifier } from 'react-native-notifier';
 import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
+import { useCometaStore } from '@/store/cometaStore';
 
 
 export type IFormValues = Pick<IUserOnboarding, (
@@ -47,6 +48,7 @@ export default function SettingsScreen(): ReactNode {
   const { styles, theme } = useStyles(styleSheet);
   const router = useRouter();
   const queryClient = useQueryClient();
+  const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const deleteUser = useMutationDeleteUser();
   const formProps = useForm({
     defaultValues,
@@ -67,6 +69,7 @@ export default function SettingsScreen(): ReactNode {
       await supabase.auth.signOut();
       queryClient.removeQueries();
       queryClient.clear();
+      setIsAuthenticated(false);
       Notifier.hideNotification();
       router.replace('/welcome');
     } catch (error) {
@@ -91,6 +94,7 @@ export default function SettingsScreen(): ReactNode {
     });
     try {
       await deleteUser.mutateAsync(userProfile.id);
+      setIsAuthenticated(false);
       Notifier.hideNotification();
       Notifier.showNotification({
         title: 'Done',

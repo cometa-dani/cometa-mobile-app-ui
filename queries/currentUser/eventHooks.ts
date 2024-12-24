@@ -10,10 +10,10 @@ import { QueryKeys } from '../queryKeys';
 // Query to fetch a list of events with infinite scrolling
 export const useInfiniteQueryGetEventsHomeScreen = (eventName?: string) => {
   const categoriesSearchFilters = useCometaStore(state => state.searchFilters);
-  const session = useCometaStore(state => state.session);
+  const isAuthenticated = useCometaStore(state => state.isAuthenticated);
   return (
     useInfiniteQuery({
-      enabled: !!session?.access_token,
+      enabled: isAuthenticated,
       queryKey: [QueryKeys.SEARCH_PAGINATED_EVENTS, eventName],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<IGetLatestPaginatedEvents> => {
@@ -44,10 +44,10 @@ export const useInfiniteQueryGetEventsHomeScreen = (eventName?: string) => {
 
 
 export const useInfiniteQueryGetBucketListScreen = () => {
-  const session = useCometaStore(state => state.session);
+  const isAuthenticated = useCometaStore(state => state.isAuthenticated);
   return (
     useInfiniteQuery({
-      enabled: !!session?.access_token,
+      enabled: isAuthenticated,
       queryKey: [QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<IGetPaginatedLikedEventsBucketList> => {
@@ -72,9 +72,9 @@ export const useInfiniteQueryGetBucketListScreen = () => {
 
 export const usePrefetchBucketList = () => {
   const queryClient = useQueryClient();
-  const session = useCometaStore(state => state.session);
+  const isAuthenticated = useCometaStore(state => state.isAuthenticated);
   useEffect(() => {
-    if (!session?.user.id) return;
+    if (!isAuthenticated) return;
     queryClient.prefetchInfiniteQuery({
       queryKey: [QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST],
       initialPageParam: -1,
@@ -92,7 +92,7 @@ export const usePrefetchBucketList = () => {
     })
       .then()
       .catch();
-  }, [session]);
+  }, [isAuthenticated]);
 };
 
 

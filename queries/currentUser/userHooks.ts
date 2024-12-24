@@ -46,21 +46,20 @@ export const useMutationUpdateUserById = () => {
 
 export const useQueryGetUserProfile = () => {
   const session = useCometaStore(state => state.session);
+  const isAuthenticated = useCometaStore(state => state.isAuthenticated);
   return (
     useQuery({
-      enabled: !!session?.user.id,
+      enabled: isAuthenticated,
       queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE],
       queryFn: async (): Promise<IGetDetailedUserProfile> => {
-        const res = await userService.getUserInfoByUidWithLikedEvents(session?.user.id as string);
+        const res = await userService.getUserProfileWithLikedEvents(session?.user.id as string);
         if (res.status === 200) {
           return res.data;
         }
         else {
           throw new Error('failed to fetched');
         }
-      },
-      retry: 1,
-      retryDelay: 1_000 * 6
+      }
     })
   );
 };
@@ -69,25 +68,28 @@ export const useQueryGetUserProfile = () => {
 export const usePrefetchUserProfile = () => {
   const queryClient = useQueryClient();
   const session = useCometaStore(state => state.session);
+  const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
+  const isAuthenticated = useCometaStore(state => state.isAuthenticated);
+
   useEffect(() => {
     if (!session?.user.id) return;
+    if (isAuthenticated) return;
     queryClient.prefetchQuery({
       queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE],
       queryFn: async (): Promise<IGetDetailedUserProfile> => {
-        const res = await userService.getUserInfoByUidWithLikedEvents(session?.user.id as string);
+        const res = await userService.getUserProfileWithLikedEvents(session?.user.id as string);
         if (res.status === 200) {
+          setIsAuthenticated(true);
           return res.data;
         }
         else {
           throw new Error('failed to fetched');
         }
-      },
-      retry: 1,
-      retryDelay: 1_000 * 6
+      }
     })
       .then()
       .catch();
-  }, [session]);
+  }, [session?.user]);
 };
 
 
@@ -199,9 +201,7 @@ export const useMutationDeleteUser = () => {
           else {
             throw new Error('failed fech');
           }
-        },
-      retry: 1,
-      retryDelay: 1_000 * 6
+        }
     })
   );
 };

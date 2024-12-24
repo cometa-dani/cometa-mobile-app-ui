@@ -17,21 +17,21 @@ import { useStyles } from 'react-native-unistyles';
 
 export default function NotificationsScreen(): ReactNode {
   const { theme } = useStyles();
-  const loggedInUserUUID = useLocalSearchParams<{ uuid: string }>()['uuid'];
+  // const loggedInUserUUID = useLocalSearchParams<{ uuid: string }>()['uuid'];
   const notificationsList = useCometaStore(state => state.notificationsList) ?? [];
 
   const handleDeleteNotification = (notification: INotificationData) => {
     if (!notification?.chatUUID) return;
-    notificationService.deleteNotification(loggedInUserUUID, notification.user._id);
+    // notificationService.deleteNotification(loggedInUserUUID, notification.user._id);
   };
 
   useFocusEffect(
     useCallback(() => {
       const lastMessage = notificationsList.at(0);
       if (!lastMessage || lastMessage?.user?.isSeen) return;
-      notificationService.setNotificationAsSeen(loggedInUserUUID, lastMessage.user._id)
-        .then()
-        .catch();
+      // notificationService.setNotificationAsSeen(loggedInUserUUID, lastMessage.user._id)
+      //   .then()
+      //   .catch();
     }, [])
   );
 

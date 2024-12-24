@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useCometaStore } from '@/store/cometaStore';
-import { ICreateUser, IUpdateUser, IUserOnboarding } from '@/models/User';
+import { ICreateUser, IGetDetailedUserProfile, IUpdateUser, IUserOnboarding } from '@/models/User';
 import {
   useMutationCreateUser,
   useMutationUpdateUserById,
@@ -20,6 +20,9 @@ import { useSelectLanguages } from '@/components/modal/selectLanguages/hook';
 import { supabase } from '@/supabase/config';
 import { Notifier } from 'react-native-notifier';
 import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
+import { useQueryClient } from '@tanstack/react-query';
+import { QueryKeys } from '@/queries/queryKeys';
+import userService from '@/services/userService';
 
 
 export const errorMessages = {
@@ -62,12 +65,14 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
     defaultValues,
     resolver: yupResolver(validationSchema),
   });
-  const userState = useCometaStore(state => state.onboarding.user);
+  const onboardingUser = useCometaStore(state => state.onboarding.user);
+  const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const { selectedCity, cityKind, setCityKind } = useSelectCityByName();
   const { selectedLanguages } = useSelectLanguages();
   const createUser = useMutationCreateUser();
   const updateUser = useMutationUpdateUserById();
   const uploadPhotos = useMutationUploadUserPhotos();
+  const queryClient = useQueryClient();
 
   const handleUserCreation = async (values: IFormValues): Promise<void> => {
     const updateUserPayload: IUpdateUser = {
@@ -84,28 +89,37 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       Component: InfoToast,
     });
     try {
-      const { data, error } = await supabase.auth.signUp({ email: userState.email, password: userState.password });
+      const { data, error } = await supabase.auth.signUp({ email: onboardingUser.email, password: onboardingUser.password });
       if (error) throw error;
       const createUserPayload: ICreateUser = {
-        email: userState.email,
-        name: userState.name,
-        username: userState.username,
+        email: onboardingUser.email,
+        name: onboardingUser.name,
+        username: onboardingUser.username,
         uid: data?.user?.id ?? '', // from supabase
-        birthday: userState.birthday,
+        birthday: onboardingUser.birthday,
       };
       const newUser = await createUser.mutateAsync(createUserPayload);
-      await uploadPhotos.mutateAsync({ userId: newUser.id, pickedImgFiles: userState.photos });
+      await uploadPhotos.mutateAsync({ userId: newUser.id, pickedImgFiles: onboardingUser.photos });
       await updateUser.mutateAsync({ userId: newUser.id, payload: updateUserPayload });
+      await queryClient.prefetchQuery({
+        queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE],
+        queryFn: async (): Promise<IGetDetailedUserProfile> => {
+          const res = await userService.getUserProfileWithLikedEvents(data?.user?.id as string);
+          if (res.status === 200) {
+            setIsAuthenticated(true);
+            return res.data;
+          }
+          else {
+            throw new Error('failed to fetched');
+          }
+        }
+      });
       Notifier.hideNotification();
       Notifier.showNotification({
         title: 'Welcome to cometa',
         description: 'Congrats, your profile was created successfully',
         Component: SucessToast,
       });
-      // await supabase.auth.setSession({
-      //   access_token: data?.session?.access_token ?? '',
-      //   refresh_token: data?.session?.refresh_token ?? ''
-      // });
       onNext();
       router.replace('/(userTabs)/');
     } catch (error) {

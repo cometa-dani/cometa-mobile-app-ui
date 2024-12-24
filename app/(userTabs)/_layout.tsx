@@ -4,7 +4,7 @@ import { GradientHeading } from '@/components/text/gradientText';
 import { Condition } from '@/components/utils/ifElse';
 import { HStack } from '@/components/utils/stacks';
 import { usePrefetchBucketList } from '@/queries/currentUser/eventHooks';
-import { useQueryGetUserProfile } from '@/queries/currentUser/userHooks';
+import { usePrefetchUserProfile } from '@/queries/currentUser/userHooks';
 import { useCometaStore } from '@/store/cometaStore';
 import { FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Redirect, Tabs, useRouter } from 'expo-router';
@@ -19,7 +19,7 @@ export default function TabLayout(): ReactNode {
   const router = useRouter();
   const notificationIsSeen = useCometaStore(state => state.notificationsList).at(0)?.user?.isSeen;
   const session = useCometaStore(state => state.session);
-  const { data: userProfile } = useQueryGetUserProfile();
+  usePrefetchUserProfile(); // don't remove
 
   if (!session?.user) {
     return <Redirect href="/welcome" />;
@@ -77,7 +77,7 @@ export default function TabLayout(): ReactNode {
               styles={{ marginRight: theme.spacing.sp4 }}
             >
               <CircleButton
-                onPress={() => router.push(`/(userStacks)/notifications?userId=${userProfile?.id}`)}
+                onPress={() => router.push('/(userStacks)/notifications')}
               >
                 <>
                   <Condition
@@ -170,4 +170,3 @@ const stylesheet = createStyleSheet((theme) => ({
     top: -2
   }
 }));
-

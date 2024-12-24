@@ -18,6 +18,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { onlineManager } from '@tanstack/react-query';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Subscription } from '@supabase/supabase-js';
 
 
 // Catch any errors thrown by the Layout component.
@@ -43,9 +44,13 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       retry: 1,
-      retryDelay: 1_000 * 6
+      retryDelay: 1_000 * 6,
     },
-  },
+    mutations: {
+      retry: 1,
+      retryDelay: 1_000 * 6,
+    }
+  }
 });
 
 configureReanimatedLogger({
@@ -67,28 +72,27 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
   const setSession = useCometaStore(state => state.setSession);
-  const setIsLoaded = useCometaStore(state => state.setIsLoaded);
-  const isLoaded = useCometaStore(state => state.isLoaded);
+  const isSessionLoaded = useCometaStore(state => state.isLoaded);
+  const setSessionIsLoaded = useCometaStore(state => state.setIsLoaded);
 
   useEffect(() => {
-    supabase.auth.getSession()
-      .then(({ data: { session } }) => {
-        if (!isLoaded) {
-          setIsLoaded(true);
-        }
-        if (!session) return;
+    let subscription: Subscription;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
         setSession(session);
-      })
-      .catch();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!isLoaded) {
-        setIsLoaded(true);
+        setSessionIsLoaded(true);
       }
-      setSession(session);
-    });
+      const { data: { subscription: subs } } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (!isSessionLoaded) {
+          setSessionIsLoaded(true);
+        }
+        setSession(session);
+      });
+      subscription = subs;
+    })();
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, []);
 
@@ -98,12 +102,12 @@ export default function RootLayout() {
   }, [error]);
 
   useEffect(() => {
-    if (isFontLoaded && isLoaded) {
+    if (isFontLoaded && isSessionLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [isFontLoaded, isLoaded]);
+  }, [isFontLoaded, isSessionLoaded]);
 
-  if (!isLoaded) {
+  if (!isSessionLoaded) {
     return null;
   }
   return <Root />; // too  many re-renders
