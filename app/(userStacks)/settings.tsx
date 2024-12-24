@@ -133,6 +133,7 @@ export default function SettingsScreen(): ReactNode {
             </Heading>
 
             <FieldText
+              editable={false}
               testId={testIds.password}
               secureTextEntry={true}
               label='Password'
@@ -142,6 +143,7 @@ export default function SettingsScreen(): ReactNode {
               defaultErrMessage={errorMessages.password}
             />
             <FieldText
+              editable={false}
               testId={testIds.repeatPassword}
               secureTextEntry={true}
               label='Re-enter Password'
@@ -158,6 +160,7 @@ export default function SettingsScreen(): ReactNode {
             </Heading>
 
             <SelectField
+              disabled={true}
               initialValue='eng'
               options={[
                 { label: 'English', value: 'eng' },
@@ -184,6 +187,7 @@ export default function SettingsScreen(): ReactNode {
                 </TextView>
               </HStack>
               <Switch
+                disabled={true}
                 value={toggleNotification}
                 onValueChange={setToggleNotification}
                 thumbColor={theme.colors.slate75}
@@ -192,6 +196,7 @@ export default function SettingsScreen(): ReactNode {
             </HStack>
 
             <SelectField
+              disabled={true}
               initialValue='light'
               options={[
                 { label: 'Light', value: 'light' },

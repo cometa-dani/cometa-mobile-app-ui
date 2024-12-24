@@ -24,7 +24,7 @@ interface IFieldTextProps {
   editable?: boolean,
   isDateTimePicker?: boolean,
   isInsideBottomSheet?: boolean,
-  onShowSelector?: () => void
+  onShowSelector?: () => void,
 }
 
 export const FieldText: FC<IFieldTextProps> = ({
@@ -40,7 +40,7 @@ export const FieldText: FC<IFieldTextProps> = ({
   isDateTimePicker = false,
   testId,
   isInsideBottomSheet = false,
-  onShowSelector
+  onShowSelector,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const { styles, theme } = useStyles(inputSheet);

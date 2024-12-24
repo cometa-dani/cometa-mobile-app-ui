@@ -9,12 +9,14 @@ interface IProps {
   options: { label: string, value: string }[];
   onValueChange?: (value: string) => void;
   initialValue: string;
+  disabled?: boolean
 }
-export const SelectField: FC<IProps> = ({ initialValue, options, onValueChange }) => {
+export const SelectField: FC<IProps> = ({ initialValue, options, disabled, onValueChange }) => {
   const { theme } = useStyles();
   const [value, setValue] = useState(initialValue);
   return (
     <RNPickerSelect
+      disabled={disabled}
       useNativeAndroidPickerStyle={false}
       style={{
         inputIOSContainer: {
