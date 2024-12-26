@@ -30,7 +30,7 @@ export const useQueryGetTargetUserPeopleProfile = (userUuid: string) => {
 export const useInfiteQueryGetUsersWhoLikedSameEvent = (eventId: number) => {
   return (
     useInfiniteQuery({
-      queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, eventId],
+      queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, eventId],
       initialPageParam: -1,
       enabled: !!eventId,
       queryFn: async ({ pageParam }): Promise<IPaginated<IUsersWhoLikedSameEvent>> => {

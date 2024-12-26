@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { View, useColors } from '../../../../legacy_components/Themed';
-import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser } from '../../../../queries/targetUser/eventHooks';
+import { useInfiniteQueryGetTargetUserBucketList } from '../../../../queries/targetUser/eventHooks';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { EventsFlashList } from '../../../../legacy_components/eventsFlashList/eventsFlashList';
 import { useQueryClient } from '@tanstack/react-query';
@@ -19,7 +19,7 @@ export default function TargetUserBucketListScreen(): JSX.Element {
   const targetUserProfileCached = queryClient.getQueryData<IGetTargetUser>([QueryKeys.GET_TARGET_USER_PROFILE, targetUserUuid]);
 
   // events & function to handle fetching more events when reaching the end
-  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfileCached?.id);
+  const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetTargetUserBucketList(targetUserProfileCached?.id);
 
   // const memoizedEventsList = useMemo(() => data?.pages.flatMap(page => page.events) || [], [data?.pages]);
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();

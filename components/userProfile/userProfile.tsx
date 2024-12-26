@@ -1,5 +1,5 @@
 import { FlashList } from '@shopify/flash-list';
-import { FC, useCallback } from 'react';
+import { FC, ReactNode, useCallback } from 'react';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { tabBarHeight } from '../tabBar/tabBar';
 import { View } from 'react-native';
@@ -16,6 +16,7 @@ import { Badge } from '../button/badge';
 import { imageTransition } from '@/constants/vars';
 import { IGetPaginatedLikedEventsBucketList } from '@/models/LikedEvent';
 import { InfiniteData } from '@tanstack/react-query';
+import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
 
 
 type IBucketListItem = {
@@ -29,9 +30,16 @@ interface IProps {
   userBucketList?: InfiniteData<IGetPaginatedLikedEventsBucketList, unknown>,
   userProfile?: IGetDetailedUserProfile | IGetTargetUser,
   onBucketListEndReached: () => void,
-  isTargetUser?: boolean
+  isTargetUser?: boolean,
+  isLoading?: boolean
 }
-export const UserProfile: FC<IProps> = ({ userBucketList, userProfile, isTargetUser = false, onBucketListEndReached }) => {
+export const UserProfile: FC<IProps> = ({
+  userBucketList,
+  userProfile,
+  isTargetUser = false,
+  isLoading = false,
+  onBucketListEndReached
+}) => {
   const { styles, theme } = useStyles(stylesheet);
   const bucketListEvents: IBucketListItem[] = (
     userBucketList?.pages.
@@ -63,6 +71,9 @@ export const UserProfile: FC<IProps> = ({ userBucketList, userProfile, isTargetU
     </View>
   ), []);
 
+  if (isLoading) {
+    return <UseProfileSkeleton />;
+  }
   return (
     <FlashList
       data={bucketListEvents}
@@ -144,3 +155,52 @@ const stylesheet = createStyleSheet((theme, rt) => ({
     marginHorizontal: theme.spacing.sp6
   }
 }));
+
+
+const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
+
+
+const UseProfileSkeleton: FC = () => {
+  const { theme, styles } = useStyles(stylesheet);
+  return (
+    <FlashList
+      data={[1, 2, 3, 4, 5, 6, 7]}
+      estimatedItemSize={60}
+      contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
+      ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
+      renderItem={() => (
+        <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
+          <HStack
+            $y='center'
+            gap={theme.spacing.sp4}
+            styles={{ paddingHorizontal: theme.spacing.sp6 }}
+          >
+            <View style={{ backgroundColor: theme.colors.gray200 }} />
+            <VStack
+              $y='center'
+              gap={theme.spacing.sp1}
+              styles={{ flex: 1 }}
+            >
+              <View style={{
+                backgroundColor: theme.colors.gray200,
+                height: 16,
+                width: '60%',
+                flexDirection: 'row',
+                borderRadius: 10
+              }}
+              />
+              <View style={{
+                backgroundColor: theme.colors.gray200,
+                height: 16,
+                width: '80%',
+                flexDirection: 'row',
+                borderRadius: 10
+              }}
+              />
+            </VStack>
+          </HStack>
+        </MySkeleton>
+      )}
+    />
+  );
+};

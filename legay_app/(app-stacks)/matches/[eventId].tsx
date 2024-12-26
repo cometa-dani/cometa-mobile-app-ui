@@ -30,7 +30,7 @@ export default function MatchedEventsScreen(): JSX.Element {
   const urlParams = useGlobalSearchParams<{ eventId: string, eventIndex: string }>();
   // cached data
   const queryClient = useQueryClient();
-  const bucketListCahedData = queryClient.getQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>([QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST]);
+  const bucketListCahedData = queryClient.getQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST]);
   const eventByIdCachedData = bucketListCahedData?.pages.flatMap(page => page?.items)[+urlParams.eventIndex] ?? null;
 
   // people state
@@ -152,8 +152,8 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
               setToggleModal(true);
               // refetch on screen focus
               await Promise.all([
-                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId] }),
-                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_PAGINATED_NEWEST_FRIENDS] })
+                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId] }),
+                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] })
               ]);
             },
             onError: ({ response }) => {
@@ -198,7 +198,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
      */
     handleOptimisticUpdate: (userID: number) => {
       queryClient.setQueryData<InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>>(
-        [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId],
+        [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId],
         (oldData) => ({
           pageParams: oldData?.pageParams,
           pages:
@@ -239,7 +239,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
       {
         onSuccess: () => {
           queryClient.invalidateQueries({
-            queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
+            queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
           });
         },
         onError: ({ response }) => {
@@ -286,7 +286,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
             .then()
             .catch();
           queryClient.invalidateQueries({
-            queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
+            queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
           });
         }
       }

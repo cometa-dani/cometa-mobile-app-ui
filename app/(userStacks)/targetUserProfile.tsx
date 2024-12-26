@@ -3,7 +3,7 @@ import { UserProfile } from '@/components/userProfile/userProfile';
 import { MutateFrienship } from '@/models/Friendship';
 import { IGetBasicUserProfile } from '@/models/User';
 import { useQueryGetFriendshipByTargetUserID } from '@/queries/currentUser/friendshipHooks';
-import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser, useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '@/queries/targetUser/eventHooks';
+import { useInfiniteQueryGetTargetUserBucketList, useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '@/queries/targetUser/eventHooks';
 import { useQueryGetTargetUserPeopleProfile } from '@/queries/targetUser/userProfileHooks';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { ReactNode, useState } from 'react';
@@ -16,11 +16,11 @@ export default function TargetUserProfileScreen(): ReactNode {
   const { uuid } = useLocalSearchParams<{ uuid: string }>();
   console.log(uuid);
   const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(uuid ?? '');
-  const { data: targetUserProfile, isSuccess, isLoading } = useQueryGetTargetUserPeopleProfile(uuid);
+  const targetUserProfile = useQueryGetTargetUserPeopleProfile(uuid);
   const { data: matchedEvents } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(uuid);
-  const { data: targetUserbucketList } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfile?.id);
-  const hasIncommingFriendship: boolean = targetUserProfile?.hasIncommingFriendship ?? false;
-  const hasOutgoingFriendship: boolean = targetUserProfile?.hasOutgoingFriendship ?? false;
+  const targetUserbucketList = useInfiniteQueryGetTargetUserBucketList(targetUserProfile?.data?.id);
+  const hasIncommingFriendship: boolean = targetUserProfile?.data?.hasIncommingFriendship ?? false;
+  const hasOutgoingFriendship: boolean = targetUserProfile?.data?.hasOutgoingFriendship ?? false;
 
   const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState({} as IGetBasicUserProfile);
   const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
@@ -36,16 +36,17 @@ export default function TargetUserProfileScreen(): ReactNode {
           // presentation: 'modal',
           headerTitle: () => (
             <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
-              {targetUserProfile?.username}
+              {targetUserProfile?.data?.username}
             </GradientHeading>
           ),
         }}
       />
       <UserProfile
+        isLoading={!targetUserProfile.isSuccess || !targetUserbucketList.isSuccess}
         isTargetUser={true}
         onBucketListEndReached={() => { }}
-        userBucketList={targetUserbucketList}
-        userProfile={targetUserProfile}
+        userBucketList={targetUserbucketList?.data}
+        userProfile={targetUserProfile?.data}
       />
     </>
   );

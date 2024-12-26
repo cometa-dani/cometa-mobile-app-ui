@@ -44,7 +44,7 @@ const handleDeleteEventLike = (
   return async function (eventID: number) {
     queryClient
       .setQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>
-      ([QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST], (oldData) => ({
+      ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST], (oldData) => ({
         pages: oldData?.pages.map(
           (page) => (
             {
@@ -56,7 +56,7 @@ const handleDeleteEventLike = (
       }));
     queryClient
       .setQueryData<InfiniteData<IGetLatestPaginatedEvents, number>>
-      ([QueryKeys.SEARCH_PAGINATED_EVENTS, searchQuery], (oldData) => ({
+      ([QueryKeys.SEARCH_EVENTS_BY_NAME, searchQuery], (oldData) => ({
         pages: oldData?.pages.map(
           (page) => (
             {

@@ -7,7 +7,7 @@ import { Text, View, useColors } from '../../../legacy_components/Themed';
 import * as Yup from 'yup';
 import { profileStyles } from '../../../legacy_components/profile/profileStyles';
 import { useQueryGetTargetUserPeopleProfile } from '../../../queries/targetUser/userProfileHooks';
-import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser, useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../../queries/targetUser/eventHooks';
+import { useInfiniteQueryGetTargetUserBucketList, useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../../queries/targetUser/eventHooks';
 import { AppButton, appButtonstyles } from '../../../legacy_components/buttons/buttons';
 import { AppCarousel } from '../../../legacy_components/carousels/carousel';
 import { useCometaStore } from '../../../store/cometaStore';
@@ -55,7 +55,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(!targetUserUrlParams.chatuuid ? targetUserUrlParams.uuid : '');
   const { data: targetUserProfile, isSuccess, isLoading } = useQueryGetTargetUserPeopleProfile(targetUserUrlParams.uuid);
   const { data: matchedEvents } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUserUrlParams.uuid);
-  const { data: targetUserbucketList } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfile?.id);
+  const { data: targetUserbucketList } = useInfiniteQueryGetTargetUserBucketList(targetUserProfile?.id);
   const hasIncommingFriendship: boolean = targetUserProfile?.hasIncommingFriendship ?? false;
   const hasOutgoingFriendship: boolean = targetUserProfile?.hasOutgoingFriendship ?? false;
 
@@ -137,7 +137,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
             setToggleModal(true);
             if (urlParams.eventId) {
               queryClient.invalidateQueries({
-                queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
+                queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
               });
             }
             await Promise.all([
@@ -145,7 +145,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
                 queryKey: [QueryKeys.GET_TARGET_USER_PROFILE, targetUserAsSender.uid]
               }),
               queryClient.invalidateQueries({
-                queryKey: [QueryKeys.GET_PAGINATED_NEWEST_FRIENDS]
+                queryKey: [QueryKeys.GET_NEWEST_FRIENDS]
               })
             ]);
           },
@@ -198,7 +198,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
         onSuccess() {
           if (urlParams.eventId) {
             queryClient.invalidateQueries({
-              queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
+              queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
             });
           }
           queryClient.invalidateQueries({
@@ -248,7 +248,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
           .catch();
         if (urlParams.eventId) {
           queryClient.invalidateQueries({
-            queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
+            queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
           });
         }
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_PROFILE, targetUserAsReceiver.uid] });
@@ -271,12 +271,12 @@ export default function TargerUserProfileScreen(): JSX.Element {
         onSuccess: async () => {
           if (urlParams.eventId) {
             queryClient.invalidateQueries({
-              queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
+              queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
             });
           }
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_PROFILE, targetUserProfile.uid] }),
-            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_PAGINATED_NEWEST_FRIENDS] })
+            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] })
           ]);
         },
       });

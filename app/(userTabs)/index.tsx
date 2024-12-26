@@ -46,12 +46,12 @@ const handleLikeButton = (
     const bucketListCache = (
       queryClient
         .getQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList>>
-        ([QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST])
+        ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST])
     );
     // Update the likes cache with the new liked state
     queryClient
       .setQueryData<InfiniteData<IGetLatestPaginatedEvents, number>>
-      ([QueryKeys.SEARCH_PAGINATED_EVENTS, searchQuery], homeScreenOpimisticUpdate(event));
+      ([QueryKeys.SEARCH_EVENTS_BY_NAME, searchQuery], homeScreenOpimisticUpdate(event));
 
     // create or delete like
     mutateEventLike.mutate({ eventID: event.id });
@@ -60,7 +60,7 @@ const handleLikeButton = (
     // Update the bucketlist cache with the new liked state
     queryClient
       .setQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>
-      ([QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST], bucketListScreenOpimisticUpdate(event));
+      ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST], bucketListScreenOpimisticUpdate(event));
   };
 };
 

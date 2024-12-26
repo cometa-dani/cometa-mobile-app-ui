@@ -1,16 +1,14 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import eventService from '../../services/eventService';
 import { IGetPaginatedLikedEventsBucketList } from '../../models/LikedEvent';
-import { IGetPaginatedUsersWhoLikedSameEvent } from '../../models/User';
 import { QueryKeys } from '../queryKeys';
-import userService from '@/services/userService';
 
 
-export const useInfiniteQueryGetLikedEventsForBucketListByTargerUser = (targetUserId?: number) => {
+export const useInfiniteQueryGetTargetUserBucketList = (targetUserId?: number) => {
   return (
     useInfiniteQuery({
       enabled: !!targetUserId,
-      queryKey: [QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST_BY_TARGET_USER_ID, targetUserId],
+      queryKey: [QueryKeys.GET_TARGET_USER_BUCKETLIST, targetUserId],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<IGetPaginatedLikedEventsBucketList> => {
         const res = await eventService.getLikedEventsByUserIdWithPagination(pageParam, 4, targetUserId);
@@ -28,9 +26,7 @@ export const useInfiniteQueryGetLikedEventsForBucketListByTargerUser = (targetUs
           return lastPage.nextCursor;
         }
         return null; // makes hasNextPage evalutes to false
-      },
-      retry: 2,
-      retryDelay: 1_000 * 6
+      }
     })
   );
 };
@@ -40,7 +36,7 @@ export const useInfiniteQueryGetSameMatchedEventsByTwoUsers = (targetUserID: str
   return (
     useInfiniteQuery({
       initialPageParam: -1,
-      queryKey: [QueryKeys.GET_PAGINATED_MATCHED_EVENTS_BY_TWO_USERS, targetUserID],
+      queryKey: [QueryKeys.GET_MATCHED_EVENTS_BY_TWO_USERS, targetUserID],
       queryFn: async ({ pageParam }): Promise<IGetPaginatedLikedEventsBucketList> => {
         const res = await eventService.getSameMatchedEventsByTwoUsersWithPagination(targetUserID, pageParam, take, allPhotos);
         if (res.status === 200) {
@@ -56,9 +52,7 @@ export const useInfiniteQueryGetSameMatchedEventsByTwoUsers = (targetUserID: str
           return lastPage.nextCursor;
         }
         return null; // makes hasNextPage evalutes to false
-      },
-      retry: 2,
-      retryDelay: 1_000 * 6
+      }
     })
   );
 };

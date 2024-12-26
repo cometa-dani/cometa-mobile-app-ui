@@ -86,7 +86,7 @@ export default function SettingsScreen(): JSX.Element {
           btnColor='black'
           onPress={() => {
             queryClient.invalidateQueries({
-              queryKey: [QueryKeys.SEARCH_PAGINATED_EVENTS]
+              queryKey: [QueryKeys.SEARCH_EVENTS_BY_NAME]
             });
             router.back();
           }}

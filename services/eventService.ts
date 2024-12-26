@@ -63,8 +63,7 @@ class EventService {
 
   public getLikedEventsByUserIdWithPagination(cursor: number, limit: number, targerUserID?: number) {
     const params = { cursor, limit, userId: targerUserID };
-    const config = { params };
-    return this.http.get<IGetPaginatedLikedEventsBucketList>('/events/liked', config);
+    return this.http.get<IGetPaginatedLikedEventsBucketList>('/events/liked', { params });
   }
 
 

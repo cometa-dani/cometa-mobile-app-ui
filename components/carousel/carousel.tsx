@@ -65,7 +65,7 @@ export const Carousel: FC<ICarouselProps> = ({ photos }) => {
 };
 
 
-const styleSheet = createStyleSheet((theme, rt) => ({
+const styleSheet = createStyleSheet((theme) => ({
   container: {
     width: '100%',
     aspectRatio: 1.2,

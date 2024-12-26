@@ -9,7 +9,7 @@ import { IPaginated } from '@/models/utils/Paginated';
 export const useInfiniteQueryGetNewestFriends = () => {
   return (
     useInfiniteQuery({
-      queryKey: [QueryKeys.GET_PAGINATED_NEWEST_FRIENDS],
+      queryKey: [QueryKeys.GET_NEWEST_FRIENDS],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<IPaginated<Friendship>> => {
         const res = await friendshipService.getAllLatest(pageParam, 5);
@@ -36,7 +36,7 @@ export const useInfiniteQueryGetNewestFriends = () => {
 export const useInfiniteQuerySearchFriendsByUserName = (friendUserName: string) => {
   return (
     useInfiniteQuery({
-      queryKey: [QueryKeys.SEARCH_PAGINATED_FRIENDS_BY_USERNAME, friendUserName],
+      queryKey: [QueryKeys.SEARCH_FRIENDS_BY_USERNAME, friendUserName],
       enabled: !!friendUserName,
       initialPageParam: -1,
       queryFn: async ({ pageParam }) => {
@@ -153,8 +153,8 @@ export const useMutationResetFrienshipInvitation = () => {
       },
       onSuccess: async () => {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_PAGINATED_NEWEST_FRIENDS] }),
-          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT] })
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] }),
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT] })
         ]);
       }
     })

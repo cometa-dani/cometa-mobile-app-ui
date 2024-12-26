@@ -14,7 +14,7 @@ export const useInfiniteQueryGetEventsHomeScreen = (eventName?: string) => {
   return (
     useInfiniteQuery({
       enabled: isAuthenticated,
-      queryKey: [QueryKeys.SEARCH_PAGINATED_EVENTS, eventName],
+      queryKey: [QueryKeys.SEARCH_EVENTS_BY_NAME, eventName],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<IGetLatestPaginatedEvents> => {
         const res =
@@ -48,7 +48,7 @@ export const useInfiniteQueryGetBucketListScreen = () => {
   return (
     useInfiniteQuery({
       enabled: isAuthenticated,
-      queryKey: [QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST],
+      queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST],
       initialPageParam: -1,
       queryFn: async ({ pageParam }): Promise<IGetPaginatedLikedEventsBucketList> => {
         const res = await eventService.getLikedEventsByUserIdWithPagination(pageParam = -1, 8);
@@ -76,7 +76,7 @@ export const usePrefetchBucketList = () => {
   useEffect(() => {
     if (!isAuthenticated) return;
     queryClient.prefetchInfiniteQuery({
-      queryKey: [QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST],
+      queryKey: [QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST],
       initialPageParam: -1,
       pages: 1,
       queryFn: async ({ pageParam }): Promise<IGetPaginatedLikedEventsBucketList> => {
@@ -101,7 +101,7 @@ export const useQueryCachedBucketListItem = (eventIndex: number) => {
   const bucketListCahedData = (
     queryClient
       .getQueryData<InfiniteData<IGetPaginatedLikedEventsBucketList, number>>
-      ([QueryKeys.GET_PAGINATED_LIKED_EVENTS_FOR_BUCKETLIST])
+      ([QueryKeys.GET_LIKED_EVENTS_FOR_BUCKETLIST])
   );
   const eventByIdCachedData = (bucketListCahedData?.pages.flatMap(page => page?.items) ?? []).at(eventIndex);
   return eventByIdCachedData;

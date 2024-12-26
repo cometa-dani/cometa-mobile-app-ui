@@ -7,7 +7,7 @@ export const useInfiniteQuerySearchUsers = (username: string) => {
   return useInfiniteQuery({
     initialPageParam: -1,
     enabled: !!username,
-    queryKey: [QueryKeys.SEARCH_PAGINATED_USERS_BY_USERNAME, username],
+    queryKey: [QueryKeys.SEARCH_USERS_BY_USERNAME, username],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await userService.searchByUsernameWithPagination(username, pageParam, 10);
       if (response.status === 200) {

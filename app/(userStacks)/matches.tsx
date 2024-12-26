@@ -152,8 +152,8 @@ export default function MatchedEventsScreen(): ReactNode {
               setToggleModal(true);
               // refetch on screen focus
               await Promise.all([
-                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +eventId] }),
-                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_PAGINATED_NEWEST_FRIENDS] })
+                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, +eventId] }),
+                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] })
               ]);
             },
             onError: ({ response }) => {
@@ -198,7 +198,7 @@ export default function MatchedEventsScreen(): ReactNode {
      */
     handleOptimisticUpdate: (userID: number) => {
       queryClient.setQueryData<InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>>(
-        [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, eventId],
+        [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, eventId],
         (oldData) => ({
           pageParams: oldData?.pageParams,
           pages:
@@ -238,7 +238,7 @@ export default function MatchedEventsScreen(): ReactNode {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({
-            queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, eventId]
+            queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, eventId]
           });
         },
         onError: ({ response }) => {
