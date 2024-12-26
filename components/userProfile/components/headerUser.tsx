@@ -10,13 +10,15 @@ import { FC, ReactNode } from 'react';
 import { View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
+import { Condition } from '@/components/utils/ifElse';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
 interface IProps {
-  userProfile?: IGetDetailedUserProfile
+  userProfile?: IGetDetailedUserProfile,
+  isTargetUser?: boolean
 }
-export const HeaderUserProfile: FC<IProps> = ({ userProfile }) => {
+export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = false }) => {
   const { theme, styles } = useStyles(styleSheet);
   return (
     <VStack gap={theme.spacing.sp6} styles={{ paddingHorizontal: theme.spacing.sp6 }}>
@@ -61,18 +63,25 @@ export const HeaderUserProfile: FC<IProps> = ({ userProfile }) => {
         <ExpandableText>{userProfile?.languages?.join(', ') || 'languages you speak'}</ExpandableText>
       </View>
 
-      <Heading size='s6' style={{
-        paddingHorizontal: theme.spacing.sp6,
-        paddingBottom: theme.spacing.sp1
-      }}>
-        Bucketlist
-      </Heading>
+      <Condition
+        if={!isTargetUser}
+        then={(
+          <Heading size='s6' style={{
+            paddingHorizontal: theme.spacing.sp6,
+            paddingBottom: theme.spacing.sp1
+          }}>
+            Bucketlist
+          </Heading>
+        )}
+      />
     </VStack>
   );
 };
 
-
-export const HeaderSkeleton = () => {
+interface IHeaderSkeletonProps {
+  isTargetUser?: boolean
+}
+export const HeaderSkeleton: FC<IHeaderSkeletonProps> = ({ isTargetUser = false }) => {
   const { theme, styles } = useStyles(styleSheet);
   return (
     <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
@@ -125,12 +134,17 @@ export const HeaderSkeleton = () => {
           <ExpandableText>{'languages you speak'}</ExpandableText>
         </View>
 
-        <Heading size='s6' style={{
-          paddingHorizontal: theme.spacing.sp6,
-          paddingBottom: theme.spacing.sp1
-        }}>
-          Bucketlist
-        </Heading>
+        <Condition
+          if={!isTargetUser}
+          then={(
+            <Heading size='s6' style={{
+              paddingHorizontal: theme.spacing.sp6,
+              paddingBottom: theme.spacing.sp1
+            }}>
+              Bucketlist
+            </Heading>
+          )}
+        />
       </VStack>
     </MySkeleton>
   );

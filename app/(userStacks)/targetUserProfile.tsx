@@ -1,4 +1,5 @@
 import { GradientHeading } from '@/components/text/gradientText';
+import { TargetUserProfile } from '@/components/userProfile/targetUserProfile';
 import { UserProfile } from '@/components/userProfile/userProfile';
 import { MutateFrienship } from '@/models/Friendship';
 import { IGetBasicUserProfile } from '@/models/User';
@@ -14,14 +15,12 @@ import { useStyles } from 'react-native-unistyles';
 export default function TargetUserProfileScreen(): ReactNode {
   const { theme } = useStyles();
   const { uuid } = useLocalSearchParams<{ uuid: string }>();
-  console.log(uuid);
-  const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(uuid ?? '');
+  // const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(uuid ?? '');
   const targetUserProfile = useQueryGetTargetUserPeopleProfile(uuid);
   const { data: matchedEvents } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(uuid);
   const targetUserbucketList = useInfiniteQueryGetTargetUserBucketList(targetUserProfile?.data?.id);
   const hasIncommingFriendship: boolean = targetUserProfile?.data?.hasIncommingFriendship ?? false;
   const hasOutgoingFriendship: boolean = targetUserProfile?.data?.hasOutgoingFriendship ?? false;
-
   const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState({} as IGetBasicUserProfile);
   const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
   const [toggleModal, setToggleModal] = useState(false);
@@ -40,7 +39,8 @@ export default function TargetUserProfileScreen(): ReactNode {
           ),
         }}
       />
-      <UserProfile
+      <TargetUserProfile
+        matches={matchedEvents}
         isListLoading={!targetUserbucketList.isSuccess}
         isHeaderLoading={!targetUserProfile.isSuccess}
         userBucketList={targetUserbucketList?.data}

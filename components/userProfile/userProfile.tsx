@@ -3,7 +3,7 @@ import { FC, useCallback } from 'react';
 import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { tabBarHeight } from '../tabBar/tabBar';
 import { View } from 'react-native';
-import { IGetDetailedUserProfile, IGetTargetUser } from '@/models/User';
+import { IGetDetailedUserProfile } from '@/models/User';
 import { defaultImgPlaceholder } from '@/constants/vars';
 import { IGetPaginatedLikedEventsBucketList } from '@/models/LikedEvent';
 import { InfiniteData } from '@tanstack/react-query';
@@ -40,7 +40,7 @@ const dummyBucketListItems = [
 
 interface IProps {
   userBucketList?: InfiniteData<IGetPaginatedLikedEventsBucketList, unknown>,
-  userProfile?: IGetDetailedUserProfile | IGetTargetUser,
+  userProfile?: IGetDetailedUserProfile,
   onBucketListEndReached: () => void,
   isListLoading?: boolean,
   isHeaderLoading?: boolean

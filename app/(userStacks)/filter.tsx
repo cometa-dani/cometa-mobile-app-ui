@@ -105,20 +105,17 @@ export default function FilterScreen(): ReactNode {
           )
         }}
       />
-      <View style={{ flex: 1, flexGrow: 1 }}>
-        <FlashList
-          estimatedItemSize={theme.spacing.sp20}
-          data={filterOptions}
-          bounces={false}
-          // onEndReached={handleInfiniteFetch}
-          // onEndReachedThreshold={0.5}
-          disableAutoLayout={true}
-          contentContainerStyle={{ padding: theme.spacing.sp8 }}
-          ListFooterComponentStyle={{ height: tabBarHeight * 3 }} // 280px height
-          keyExtractor={item => item.toString()}
-          renderItem={renderItem}
-        />
-      </View>
+      <FlashList
+        estimatedItemSize={theme.spacing.sp20}
+        data={filterOptions}
+        // onEndReached={handleInfiniteFetch}
+        // onEndReachedThreshold={0.5}
+        disableAutoLayout={true}
+        contentContainerStyle={{ padding: theme.spacing.sp8 }}
+        ListFooterComponentStyle={{ height: tabBarHeight * 3 }} // 280px height
+        keyExtractor={item => item.toString()}
+        renderItem={renderItem}
+      />
     </>
   );
 }

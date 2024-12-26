@@ -86,7 +86,7 @@ class EventService {
   public getSameMatchedEventsByTwoUsersWithPagination(targetUserUuid: string, cursor: number, limit: number, allPhotos?: boolean,) {
     const params = { cursor, limit, allPhotos };
     const config = { params };
-    return this.http.get<IGetPaginatedLikedEventsBucketList>(`/events/liked/matches/${targetUserUuid}`, config);
+    return this.http.get<IGetLatestPaginatedEvents>(`/events/liked/matches/${targetUserUuid}`, config);
   }
 }
 

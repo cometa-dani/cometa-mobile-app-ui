@@ -51,6 +51,7 @@ export const EventItemSkeleton: FC = () => {
 const stylesheet = createStyleSheet((theme, rt) => ({
   eventImage: {
     height: rt.screen.height * 0.25,
+    width: 'auto',
     borderRadius: theme.spacing.sp7,
     marginHorizontal: theme.spacing.sp6
   }

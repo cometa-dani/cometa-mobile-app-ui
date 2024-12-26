@@ -2,6 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import eventService from '../../services/eventService';
 import { IGetPaginatedLikedEventsBucketList } from '../../models/LikedEvent';
 import { QueryKeys } from '../queryKeys';
+import { IGetLatestPaginatedEvents } from '@/models/Event';
 
 
 export const useInfiniteQueryGetTargetUserBucketList = (targetUserId?: number) => {
@@ -37,7 +38,7 @@ export const useInfiniteQueryGetSameMatchedEventsByTwoUsers = (targetUserID: str
     useInfiniteQuery({
       initialPageParam: -1,
       queryKey: [QueryKeys.GET_MATCHED_EVENTS_BY_TWO_USERS, targetUserID],
-      queryFn: async ({ pageParam }): Promise<IGetPaginatedLikedEventsBucketList> => {
+      queryFn: async ({ pageParam }): Promise<IGetLatestPaginatedEvents> => {
         const res = await eventService.getSameMatchedEventsByTwoUsersWithPagination(targetUserID, pageParam, take, allPhotos);
         if (res.status === 200) {
           return res.data;
