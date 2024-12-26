@@ -13,11 +13,38 @@ import { calAge } from '@/helpers/calcAge';
 import { ExpandableText } from '../text/expandableText';
 import { Image } from 'expo-image';
 import { Badge } from '../button/badge';
-import { imageTransition } from '@/constants/vars';
+import { defaultImgPlaceholder, imageTransition } from '@/constants/vars';
 import { IGetPaginatedLikedEventsBucketList } from '@/models/LikedEvent';
 import { InfiniteData } from '@tanstack/react-query';
 import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
+const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
+const dummyBucketListItems = [
+  {
+    id: 1,
+    img: defaultImgPlaceholder,
+    placeholder: 'thumbhash1',
+    location: 'New York City'
+  },
+  {
+    id: 2,
+    img: defaultImgPlaceholder,
+    placeholder: 'thumbhash2',
+    location: 'Los Angeles'
+  },
+  {
+    id: 3,
+    img: defaultImgPlaceholder,
+    placeholder: 'thumbhash3',
+    location: 'Chicago'
+  },
+  {
+    id: 4,
+    img: defaultImgPlaceholder,
+    placeholder: 'thumbhash4',
+    location: 'Houston'
+  }
+];
 
 type IBucketListItem = {
   id: number;
@@ -31,13 +58,15 @@ interface IProps {
   userProfile?: IGetDetailedUserProfile | IGetTargetUser,
   onBucketListEndReached: () => void,
   isTargetUser?: boolean,
-  isLoading?: boolean
+  isListLoading?: boolean,
+  isHeaderLoading?: boolean
 }
 export const UserProfile: FC<IProps> = ({
   userBucketList,
   userProfile,
   isTargetUser = false,
-  isLoading = false,
+  isListLoading = false,
+  isHeaderLoading = false,
   onBucketListEndReached
 }) => {
   const { styles, theme } = useStyles(stylesheet);
@@ -56,49 +85,51 @@ export const UserProfile: FC<IProps> = ({
   );
 
   const renderBucketItem = useCallback(({ item }: { item: IBucketListItem }) => (
-    <View style={{ position: 'relative' }}>
-      <Image
-        placeholder={{ thumbhash: item.placeholder }}
-        recyclingKey={item.img}
-        source={{ uri: item.img }}
-        style={styles.eventImage}
-        contentFit='cover'
-        transition={imageTransition}
-      />
-      <Badge>
-        {item.location}
-      </Badge>
-    </View>
-  ), []);
+    isListLoading ? (
+      <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
+        <View style={[styles.eventImage, { backgroundColor: theme.colors.gray200 }]} />
+      </MySkeleton>
+    ) : (
+      <View style={{ position: 'relative' }}>
+        <Image
+          placeholder={{ thumbhash: item.placeholder }}
+          recyclingKey={item.img}
+          source={{ uri: item.img }}
+          style={styles.eventImage}
+          contentFit='cover'
+          transition={imageTransition}
+        />
+        <Badge>
+          {item.location}
+        </Badge>
+      </View>
+    )
+  ), [isListLoading]);
 
-  if (isLoading) {
-    return <UseProfileSkeleton />;
-  }
-  return (
-    <FlashList
-      data={bucketListEvents}
-      estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
-      contentContainerStyle={{ paddingVertical: theme.spacing.sp7 }}
-      ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
-      keyExtractor={item => item.id?.toString()}
-      ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
-      ListHeaderComponent={() => (
+  const renderHeader = useCallback(() => (
+    isHeaderLoading ? (
+      <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
         <VStack gap={theme.spacing.sp6} styles={{ paddingHorizontal: theme.spacing.sp6 }}>
-
-          <Carousel photos={userProfile?.photos ?? []} />
-
+          <View
+            style={{
+              width: '100%',
+              aspectRatio: 1.2,
+              backgroundColor: theme.colors.gray200,
+              borderRadius: theme.spacing.sp7
+            }}
+          />
           <VStack styles={styles.container} gap={theme.spacing.sp1} >
             <Heading size='s7'>
-              {userProfile?.name}, {userProfile?.birthday && calAge(new Date(userProfile?.birthday))}
+              User name, your age
             </Heading>
             <HStack gap={theme.spacing.sp1}>
               <Ionicons name="bag-remove-outline" size={theme.spacing.sp8} color={theme.colors.gray900} />
-              <TextView ellipsis={true}>{userProfile?.occupation || 'what is your occupation'}</TextView>
+              <TextView ellipsis={true}>{'what is your occupation'}</TextView>
             </HStack>
             <HStack gap={theme.spacing.sp2}>
               <HStack gap={theme.spacing.sp1}>
                 <FontAwesome name="map-o" size={theme.spacing.sp7} color={theme.colors.gray900} />
-                <TextView>{userProfile?.homeTown || 'where you from'},</TextView>
+                <TextView>{'where you from'},</TextView>
               </HStack>
               <HStack>
                 <MaterialCommunityIcons
@@ -107,7 +138,7 @@ export const UserProfile: FC<IProps> = ({
                   style={{ color: theme.colors.gray900 }}
                 />
                 <TextView style={{ marginLeft: -2 }}>
-                  {userProfile?.currentLocation || 'where you live'}
+                  {'where you live'}
                 </TextView>
               </HStack>
             </HStack>
@@ -117,14 +148,14 @@ export const UserProfile: FC<IProps> = ({
             <Heading size='s6'>
               Bio
             </Heading>
-            <ExpandableText>{userProfile?.biography || 'tell us something about yourself'}</ExpandableText>
+            <ExpandableText>{'tell us something about yourself'}</ExpandableText>
           </View>
 
           <View style={styles.container}>
             <Heading size='s6'>
               Languages
             </Heading>
-            <ExpandableText>{userProfile?.languages?.join(', ') || 'languages you speak'}</ExpandableText>
+            <ExpandableText>{'languages you speak'}</ExpandableText>
           </View>
 
           <Heading size='s6' style={{
@@ -134,7 +165,72 @@ export const UserProfile: FC<IProps> = ({
             Bucketlist
           </Heading>
         </VStack>
-      )}
+      </MySkeleton>
+    ) : (
+      <VStack gap={theme.spacing.sp6} styles={{ paddingHorizontal: theme.spacing.sp6 }}>
+
+        <Carousel photos={userProfile?.photos ?? []} />
+
+        <VStack styles={styles.container} gap={theme.spacing.sp1} >
+          <Heading size='s7'>
+            {userProfile?.name}, {userProfile?.birthday && calAge(new Date(userProfile?.birthday))}
+          </Heading>
+          <HStack gap={theme.spacing.sp1}>
+            <Ionicons name="bag-remove-outline" size={theme.spacing.sp8} color={theme.colors.gray900} />
+            <TextView ellipsis={true}>{userProfile?.occupation || 'what is your occupation'}</TextView>
+          </HStack>
+          <HStack gap={theme.spacing.sp2}>
+            <HStack gap={theme.spacing.sp1}>
+              <FontAwesome name="map-o" size={theme.spacing.sp7} color={theme.colors.gray900} />
+              <TextView>{userProfile?.homeTown || 'where you from'},</TextView>
+            </HStack>
+            <HStack>
+              <MaterialCommunityIcons
+                name="map-marker-outline"
+                size={22}
+                style={{ color: theme.colors.gray900 }}
+              />
+              <TextView style={{ marginLeft: -2 }}>
+                {userProfile?.currentLocation || 'where you live'}
+              </TextView>
+            </HStack>
+          </HStack>
+        </VStack>
+
+        <View style={styles.container}>
+          <Heading size='s6'>
+            Bio
+          </Heading>
+          <ExpandableText>{userProfile?.biography || 'tell us something about yourself'}</ExpandableText>
+        </View>
+
+        <View style={styles.container}>
+          <Heading size='s6'>
+            Languages
+          </Heading>
+          <ExpandableText>{userProfile?.languages?.join(', ') || 'languages you speak'}</ExpandableText>
+        </View>
+
+        <Heading size='s6' style={{
+          paddingHorizontal: theme.spacing.sp6,
+          paddingBottom: theme.spacing.sp1
+        }}>
+          Bucketlist
+        </Heading>
+      </VStack>
+    )
+  ), [isHeaderLoading]);
+
+  return (
+    <FlashList
+      data={isListLoading ? dummyBucketListItems : bucketListEvents}
+      showsVerticalScrollIndicator={false}
+      estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
+      contentContainerStyle={{ paddingVertical: theme.spacing.sp7 }}
+      ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
+      keyExtractor={item => item.id?.toString()}
+      ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
+      ListHeaderComponent={renderHeader}
       onEndReachedThreshold={0.4}
       onEndReached={onBucketListEndReached}
       renderItem={renderBucketItem}
@@ -155,52 +251,3 @@ const stylesheet = createStyleSheet((theme, rt) => ({
     marginHorizontal: theme.spacing.sp6
   }
 }));
-
-
-const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
-
-
-const UseProfileSkeleton: FC = () => {
-  const { theme, styles } = useStyles(stylesheet);
-  return (
-    <FlashList
-      data={[1, 2, 3, 4, 5, 6, 7]}
-      estimatedItemSize={60}
-      contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
-      ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
-      renderItem={() => (
-        <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
-          <HStack
-            $y='center'
-            gap={theme.spacing.sp4}
-            styles={{ paddingHorizontal: theme.spacing.sp6 }}
-          >
-            <View style={{ backgroundColor: theme.colors.gray200 }} />
-            <VStack
-              $y='center'
-              gap={theme.spacing.sp1}
-              styles={{ flex: 1 }}
-            >
-              <View style={{
-                backgroundColor: theme.colors.gray200,
-                height: 16,
-                width: '60%',
-                flexDirection: 'row',
-                borderRadius: 10
-              }}
-              />
-              <View style={{
-                backgroundColor: theme.colors.gray200,
-                height: 16,
-                width: '80%',
-                flexDirection: 'row',
-                borderRadius: 10
-              }}
-              />
-            </VStack>
-          </HStack>
-        </MySkeleton>
-      )}
-    />
-  );
-};

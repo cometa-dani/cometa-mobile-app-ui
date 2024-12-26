@@ -33,7 +33,6 @@ export default function TargetUserProfileScreen(): ReactNode {
         options={{
           headerShown: true,
           animation: 'slide_from_bottom',
-          // presentation: 'modal',
           headerTitle: () => (
             <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
               {targetUserProfile?.data?.username}
@@ -42,7 +41,8 @@ export default function TargetUserProfileScreen(): ReactNode {
         }}
       />
       <UserProfile
-        isLoading={!targetUserProfile.isSuccess || !targetUserbucketList.isSuccess}
+        isListLoading={!targetUserbucketList.isSuccess}
+        isHeaderLoading={!targetUserProfile.isSuccess}
         isTargetUser={true}
         onBucketListEndReached={() => { }}
         userBucketList={targetUserbucketList?.data}

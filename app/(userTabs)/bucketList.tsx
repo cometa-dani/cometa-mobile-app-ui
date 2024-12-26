@@ -309,6 +309,8 @@ const SkeletonList: FC = () => {
     <FlashList
       data={[1, 2, 3, 4, 5, 6]}
       estimatedItemSize={112}
+      showsVerticalScrollIndicator={false}
+      alwaysBounceVertical={false}
       contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
       ListFooterComponentStyle={{ height: tabBarHeight * 2 }}
       ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp8 }} />}

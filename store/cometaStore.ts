@@ -8,6 +8,7 @@ import { createNotificationsSlice, NotificationsSlice } from './slices/notificat
 import { createSearchFiltersSlice, SearchFiltersSlice } from './slices/searchFiltersSlice';
 import { createSearchPlaceSlice, SearchPlaceSlice } from './slices/searchPlacesSlide';
 import { createMatchedEventSlice, MatchecEventSlice } from './slices/eventActionSheet';
+import { TargetUserSlice, createTargetUserSlice } from './slices/targetUserSlice';
 
 
 type StoreSlices = (
@@ -19,7 +20,8 @@ type StoreSlices = (
   NotificationsSlice &
   SearchFiltersSlice &
   SearchPlaceSlice &
-  MatchecEventSlice
+  MatchecEventSlice &
+  TargetUserSlice
 );
 
 export const useCometaStore = create<StoreSlices>(
@@ -33,5 +35,6 @@ export const useCometaStore = create<StoreSlices>(
     ...createSearchFiltersSlice(...args),
     ...createSearchPlaceSlice(...args),
     ...createMatchedEventSlice(...args),
+    ...createTargetUserSlice(...args)
   })
 );
