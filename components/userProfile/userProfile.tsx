@@ -1,23 +1,15 @@
 import { FlashList } from '@shopify/flash-list';
-import { FC, ReactNode, useCallback } from 'react';
-import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
+import { FC, useCallback } from 'react';
+import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { tabBarHeight } from '../tabBar/tabBar';
 import { View } from 'react-native';
-import { HStack, VStack } from '../utils/stacks';
-import { Carousel } from '../carousel/carousel';
-import { Heading } from '../text/heading';
-import { FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { TextView } from '../text/text';
 import { IGetDetailedUserProfile, IGetTargetUser } from '@/models/User';
-import { calAge } from '@/helpers/calcAge';
-import { ExpandableText } from '../text/expandableText';
-import { Image } from 'expo-image';
-import { Badge } from '../button/badge';
-import { defaultImgPlaceholder, imageTransition } from '@/constants/vars';
+import { defaultImgPlaceholder } from '@/constants/vars';
 import { IGetPaginatedLikedEventsBucketList } from '@/models/LikedEvent';
 import { InfiniteData } from '@tanstack/react-query';
-import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
-const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
+import { HeaderUserProfile, HeaderSkeleton } from './components/headerUser';
+import { EventItem, EventItemSkeleton, IBucketListItem } from './components/eventItem';
+
 
 const dummyBucketListItems = [
   {
@@ -46,30 +38,21 @@ const dummyBucketListItems = [
   }
 ];
 
-type IBucketListItem = {
-  id: number;
-  img?: string;
-  placeholder?: string;
-  location?: string;
-}
-
 interface IProps {
   userBucketList?: InfiniteData<IGetPaginatedLikedEventsBucketList, unknown>,
   userProfile?: IGetDetailedUserProfile | IGetTargetUser,
   onBucketListEndReached: () => void,
-  isTargetUser?: boolean,
   isListLoading?: boolean,
   isHeaderLoading?: boolean
 }
 export const UserProfile: FC<IProps> = ({
   userBucketList,
   userProfile,
-  isTargetUser = false,
   isListLoading = false,
   isHeaderLoading = false,
   onBucketListEndReached
 }) => {
-  const { styles, theme } = useStyles(stylesheet);
+  const { theme } = useStyles();
   const bucketListEvents: IBucketListItem[] = (
     userBucketList?.pages.
       flatMap(({ items: events }) => (
@@ -84,142 +67,21 @@ export const UserProfile: FC<IProps> = ({
       )) || []
   );
 
-  const renderBucketItem = useCallback(({ item }: { item: IBucketListItem }) => (
-    isListLoading ? (
-      <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
-        <View style={[styles.eventImage, { backgroundColor: theme.colors.gray200 }]} />
-      </MySkeleton>
-    ) : (
-      <View style={{ position: 'relative' }}>
-        <Image
-          placeholder={{ thumbhash: item.placeholder }}
-          recyclingKey={item.img}
-          source={{ uri: item.img }}
-          style={styles.eventImage}
-          contentFit='cover'
-          transition={imageTransition}
-        />
-        <Badge>
-          {item.location}
-        </Badge>
-      </View>
-    )
-  ), [isListLoading]);
-
   const renderHeader = useCallback(() => (
     isHeaderLoading ? (
-      <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
-        <VStack gap={theme.spacing.sp6} styles={{ paddingHorizontal: theme.spacing.sp6 }}>
-          <View
-            style={{
-              width: '100%',
-              aspectRatio: 1.2,
-              backgroundColor: theme.colors.gray200,
-              borderRadius: theme.spacing.sp7
-            }}
-          />
-          <VStack styles={styles.container} gap={theme.spacing.sp1} >
-            <Heading size='s7'>
-              User name, your age
-            </Heading>
-            <HStack gap={theme.spacing.sp1}>
-              <Ionicons name="bag-remove-outline" size={theme.spacing.sp8} color={theme.colors.gray900} />
-              <TextView ellipsis={true}>{'what is your occupation'}</TextView>
-            </HStack>
-            <HStack gap={theme.spacing.sp2}>
-              <HStack gap={theme.spacing.sp1}>
-                <FontAwesome name="map-o" size={theme.spacing.sp7} color={theme.colors.gray900} />
-                <TextView>{'where you from'},</TextView>
-              </HStack>
-              <HStack>
-                <MaterialCommunityIcons
-                  name="map-marker-outline"
-                  size={22}
-                  style={{ color: theme.colors.gray900 }}
-                />
-                <TextView style={{ marginLeft: -2 }}>
-                  {'where you live'}
-                </TextView>
-              </HStack>
-            </HStack>
-          </VStack>
-
-          <View style={styles.container}>
-            <Heading size='s6'>
-              Bio
-            </Heading>
-            <ExpandableText>{'tell us something about yourself'}</ExpandableText>
-          </View>
-
-          <View style={styles.container}>
-            <Heading size='s6'>
-              Languages
-            </Heading>
-            <ExpandableText>{'languages you speak'}</ExpandableText>
-          </View>
-
-          <Heading size='s6' style={{
-            paddingHorizontal: theme.spacing.sp6,
-            paddingBottom: theme.spacing.sp1
-          }}>
-            Bucketlist
-          </Heading>
-        </VStack>
-      </MySkeleton>
+      <HeaderSkeleton />
     ) : (
-      <VStack gap={theme.spacing.sp6} styles={{ paddingHorizontal: theme.spacing.sp6 }}>
-
-        <Carousel photos={userProfile?.photos ?? []} />
-
-        <VStack styles={styles.container} gap={theme.spacing.sp1} >
-          <Heading size='s7'>
-            {userProfile?.name}, {userProfile?.birthday && calAge(new Date(userProfile?.birthday))}
-          </Heading>
-          <HStack gap={theme.spacing.sp1}>
-            <Ionicons name="bag-remove-outline" size={theme.spacing.sp8} color={theme.colors.gray900} />
-            <TextView ellipsis={true}>{userProfile?.occupation || 'what is your occupation'}</TextView>
-          </HStack>
-          <HStack gap={theme.spacing.sp2}>
-            <HStack gap={theme.spacing.sp1}>
-              <FontAwesome name="map-o" size={theme.spacing.sp7} color={theme.colors.gray900} />
-              <TextView>{userProfile?.homeTown || 'where you from'},</TextView>
-            </HStack>
-            <HStack>
-              <MaterialCommunityIcons
-                name="map-marker-outline"
-                size={22}
-                style={{ color: theme.colors.gray900 }}
-              />
-              <TextView style={{ marginLeft: -2 }}>
-                {userProfile?.currentLocation || 'where you live'}
-              </TextView>
-            </HStack>
-          </HStack>
-        </VStack>
-
-        <View style={styles.container}>
-          <Heading size='s6'>
-            Bio
-          </Heading>
-          <ExpandableText>{userProfile?.biography || 'tell us something about yourself'}</ExpandableText>
-        </View>
-
-        <View style={styles.container}>
-          <Heading size='s6'>
-            Languages
-          </Heading>
-          <ExpandableText>{userProfile?.languages?.join(', ') || 'languages you speak'}</ExpandableText>
-        </View>
-
-        <Heading size='s6' style={{
-          paddingHorizontal: theme.spacing.sp6,
-          paddingBottom: theme.spacing.sp1
-        }}>
-          Bucketlist
-        </Heading>
-      </VStack>
+      <HeaderUserProfile userProfile={userProfile} />
     )
   ), [isHeaderLoading]);
+
+  const renderBucketItem = useCallback(({ item }: { item: IBucketListItem }) => (
+    isListLoading ? (
+      <EventItemSkeleton />
+    ) : (
+      <EventItem item={item} />
+    )
+  ), [isListLoading]);
 
   return (
     <FlashList
@@ -237,17 +99,3 @@ export const UserProfile: FC<IProps> = ({
     />
   );
 };
-
-
-const stylesheet = createStyleSheet((theme, rt) => ({
-  container: {
-    backgroundColor: theme.colors.white100,
-    borderRadius: theme.spacing.sp6,
-    padding: theme.spacing.sp6
-  },
-  eventImage: {
-    height: rt.screen.height * 0.25,
-    borderRadius: theme.spacing.sp7,
-    marginHorizontal: theme.spacing.sp6
-  }
-}));

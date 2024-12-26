@@ -43,10 +43,9 @@ export default function TargetUserProfileScreen(): ReactNode {
       <UserProfile
         isListLoading={!targetUserbucketList.isSuccess}
         isHeaderLoading={!targetUserProfile.isSuccess}
-        isTargetUser={true}
-        onBucketListEndReached={() => { }}
         userBucketList={targetUserbucketList?.data}
         userProfile={targetUserProfile?.data}
+        onBucketListEndReached={() => { }}
       />
     </>
   );
