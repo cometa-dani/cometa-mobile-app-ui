@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 import { SafeAreaView, View, } from 'react-native';
 import { Stack, useGlobalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
@@ -18,6 +18,48 @@ import { useInfiteQueryGetUsersWhoLikedSameEvent } from '@/queries/targetUser/us
 import { Condition } from '@/components/utils/ifElse';
 import { EmptyMessage } from '@/components/empty/Empty';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
+import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
+const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
+
+
+const SkeletonList: FC = () => {
+  const { theme, styles } = useStyles(styleSheet);
+  return (
+    <FlashList
+      data={[1, 2, 3, 4, 5, 6]}
+      estimatedItemSize={60}
+      contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
+      ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
+      renderItem={() => (
+        <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
+          <HStack
+            $y='center'
+            gap={theme.spacing.sp4}
+            styles={{ paddingHorizontal: theme.spacing.sp6 }}
+          >
+            <View
+              style={[styles.imgAvatar, { backgroundColor: theme.colors.gray200 }]}
+            />
+            <VStack
+              $y='center'
+              gap={theme.spacing.sp1}
+              styles={{ flex: 1 }}
+            >
+              <View style={{ backgroundColor: theme.colors.gray200, height: 16, width: '60%', flexDirection: 'row', borderRadius: 10 }} />
+              <View style={{ backgroundColor: theme.colors.gray200, height: 16, width: '80%', flexDirection: 'row', borderRadius: 10 }} />
+            </VStack>
+            <Button
+              style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
+              onPress={() => { }}
+              variant='primary'>
+              FOLLOW
+            </Button>
+          </HStack>
+        </MySkeleton>
+      )}
+    />
+  );
+};
 
 
 const initialTab = 1;
@@ -148,127 +190,140 @@ export default function MatchedEventsScreen(): ReactNode {
           >
             <View key={0} style={{ flex: 1, height: '100%' }}>
               <Condition
-                if={!newFriendsData?.length}
-                then={(
-                  <Center styles={{ paddingHorizontal: 34, paddingTop: 0, flex: 1 / 3 }}>
-                    <EmptyMessage
-                      title='Oops! Looks like your list is empty'
-                      subtitle='Head back to the homepage and add some exciting events!'
-                    />
-                  </Center>
-                )}
+                if={!newFriends.isSuccess}
+                then={<SkeletonList />}
                 else={(
-                  <FlashList
-                    nestedScrollEnabled={true}
-                    data={newFriendsData}
-                    estimatedItemSize={60}
-                    ListFooterComponentStyle={{ height: 400 }}
-                    contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
-                    ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
-                    onViewableItemsChanged={({ viewableItems }) => {
-                      const firstItem = viewableItems[0];
-                      const isVisible = firstItem?.index === 0;
-                      setIsFirstItemVisible(isVisible);
-                    }}
-                    onEndReachedThreshold={0.5}
-                    onEndReached={handleNewFriendsInfiniteScroll}
-                    renderItem={({ item: { friend } }) => (
-                      <HStack
-                        $y='center'
-                        gap={theme.spacing.sp4}
-                        styles={{ paddingHorizontal: theme.spacing.sp6 }}
-                      >
-                        <Image
-                          recyclingKey={friend.uid}
-                          placeholder={{ thumbhash: friend.photos.at(0)?.placeholder }}
-                          transition={imageTransition}
-                          source={{ uri: friend.photos.at(0)?.url }}
-                          style={styles.imgAvatar}
+                  <Condition
+                    if={!newFriendsData?.length}
+                    then={(
+                      <Center styles={{ paddingHorizontal: 34, paddingTop: 0, flex: 1 / 3 }}>
+                        <EmptyMessage
+                          title='Oops! Looks like your list is empty'
+                          subtitle='Head back to the homepage and add some exciting events!'
                         />
+                      </Center>
+                    )}
+                    else={(
+                      <FlashList
+                        nestedScrollEnabled={true}
+                        data={newFriendsData}
+                        estimatedItemSize={60}
+                        ListFooterComponentStyle={{ height: 400 }}
+                        contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
+                        ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
+                        onViewableItemsChanged={({ viewableItems }) => {
+                          const firstItem = viewableItems[0];
+                          const isVisible = firstItem?.index === 0;
+                          setIsFirstItemVisible(isVisible);
+                        }}
+                        onEndReachedThreshold={0.5}
+                        onEndReached={handleNewFriendsInfiniteScroll}
+                        renderItem={({ item: { friend } }) => (
+                          <HStack
+                            $y='center'
+                            gap={theme.spacing.sp4}
+                            styles={{ paddingHorizontal: theme.spacing.sp6 }}
+                          >
+                            <Image
+                              recyclingKey={friend.uid}
+                              placeholder={{ thumbhash: friend.photos.at(0)?.placeholder }}
+                              transition={imageTransition}
+                              source={{ uri: friend.photos.at(0)?.url }}
+                              style={styles.imgAvatar}
+                            />
 
-                        <VStack
-                          $y='center'
-                          styles={{ flex: 1 }}
-                        >
-                          <TextView bold={true} ellipsis={true}>
-                            {friend.name}
-                          </TextView>
-                          <TextView ellipsis={true}>
-                            {friend.username}
-                          </TextView>
-                        </VStack>
+                            <VStack
+                              $y='center'
+                              styles={{ flex: 1 }}
+                            >
+                              <TextView bold={true} ellipsis={true}>
+                                {friend.name}
+                              </TextView>
+                              <TextView ellipsis={true}>
+                                {friend.username}
+                              </TextView>
+                            </VStack>
 
-                        <Button
-                          style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-                          onPress={() => { console.log('follow'); }}
-                          variant='primary-alt'>
-                          CHAT
-                        </Button>
-                      </HStack>
+                            <Button
+                              style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
+                              onPress={() => { console.log('follow'); }}
+                              variant='primary-alt'>
+                              CHAT
+                            </Button>
+                          </HStack>
+                        )}
+                      />
                     )}
                   />
                 )}
               />
             </View>
+
             <View key={1} style={{ flex: 1, height: '100%' }}>
               <Condition
-                if={!newPeopleData?.length}
-                then={(
-                  <Center styles={{ paddingHorizontal: 34, paddingTop: 0, flex: 1 / 3 }}>
-                    <EmptyMessage
-                      title='Oops! Looks like your list is empty'
-                      subtitle='Head back to the homepage and add some exciting events!'
-                    />
-                  </Center>
-                )}
+                if={!newPeople.isSuccess}
+                then={<SkeletonList />}
                 else={(
-                  <FlashList
-                    nestedScrollEnabled={true}
-                    ListFooterComponentStyle={{ height: 400 }}
-                    contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
-                    ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
-                    onViewableItemsChanged={({ viewableItems }) => {
-                      const firstItem = viewableItems[0];
-                      const isVisible = firstItem?.index === 0;
-                      setIsFirstItemVisible(isVisible);
-                    }}
-                    data={newPeopleData}
-                    estimatedItemSize={60}
-                    onEndReachedThreshold={0.5}
-                    onEndReached={handleNewPeopleInfiniteScroll}
-                    renderItem={({ item: { user } }) => (
-                      <HStack
-                        $y='center'
-                        gap={theme.spacing.sp4}
-                        styles={{ paddingHorizontal: theme.spacing.sp6 }}
-                      >
-                        <Image
-                          recyclingKey={user?.uid}
-                          transition={imageTransition}
-                          source={{ uri: user.photos.at(0)?.url }}
-                          placeholder={{ thumbhash: user?.photos.at(0)?.placeholder }}
-                          style={styles.imgAvatar}
+                  <Condition
+                    if={!newPeopleData?.length}
+                    then={(
+                      <Center styles={{ paddingHorizontal: 34, paddingTop: 0, flex: 1 / 3 }}>
+                        <EmptyMessage
+                          title='Oops! Looks like your list is empty'
+                          subtitle='Head back to the homepage and add some exciting events!'
                         />
+                      </Center>
+                    )}
+                    else={(
+                      <FlashList
+                        nestedScrollEnabled={true}
+                        ListFooterComponentStyle={{ height: 400 }}
+                        contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
+                        ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
+                        onViewableItemsChanged={({ viewableItems }) => {
+                          const firstItem = viewableItems[0];
+                          const isVisible = firstItem?.index === 0;
+                          setIsFirstItemVisible(isVisible);
+                        }}
+                        data={newPeopleData}
+                        estimatedItemSize={60}
+                        onEndReachedThreshold={0.5}
+                        onEndReached={handleNewPeopleInfiniteScroll}
+                        renderItem={({ item: { user } }) => (
+                          <HStack
+                            $y='center'
+                            gap={theme.spacing.sp4}
+                            styles={{ paddingHorizontal: theme.spacing.sp6 }}
+                          >
+                            <Image
+                              recyclingKey={user?.uid}
+                              transition={imageTransition}
+                              source={{ uri: user.photos.at(0)?.url }}
+                              placeholder={{ thumbhash: user?.photos.at(0)?.placeholder }}
+                              style={styles.imgAvatar}
+                            />
 
-                        <VStack
-                          $y='center'
-                          styles={{ flex: 1 }}
-                        >
-                          <TextView bold={true} ellipsis={true}>
-                            {user.name}
-                          </TextView>
-                          <TextView ellipsis={true}>
-                            {user.username}
-                          </TextView>
-                        </VStack>
+                            <VStack
+                              $y='center'
+                              styles={{ flex: 1 }}
+                            >
+                              <TextView bold={true} ellipsis={true}>
+                                {user.name}
+                              </TextView>
+                              <TextView ellipsis={true}>
+                                {user.username}
+                              </TextView>
+                            </VStack>
 
-                        <Button
-                          style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-                          onPress={() => { console.log('follow'); }}
-                          variant='primary'>
-                          FOLLOW
-                        </Button>
-                      </HStack>
+                            <Button
+                              style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
+                              onPress={() => { console.log('follow'); }}
+                              variant='primary'>
+                              FOLLOW
+                            </Button>
+                          </HStack>
+                        )}
+                      />
                     )}
                   />
                 )}
