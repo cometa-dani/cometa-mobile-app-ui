@@ -1,16 +1,17 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import friendshipService from '../../services/friendshipService';
-import { GetLatestFriendships, MutateFrienship } from '../../models/Friendship';
+import { Friendship, MutateFrienship } from '../../models/Friendship';
 import { QueryKeys } from '../queryKeys';
 import { TypedAxiosError } from '../errors/typedError';
+import { IPaginated } from '@/models/utils/Paginated';
 
 
-export const useInfiniteQueryGetLoggedInUserNewestFriends = () => {
+export const useInfiniteQueryGetNewestFriends = () => {
   return (
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_PAGINATED_NEWEST_FRIENDS],
       initialPageParam: -1,
-      queryFn: async ({ pageParam }): Promise<GetLatestFriendships> => {
+      queryFn: async ({ pageParam }): Promise<IPaginated<Friendship>> => {
         const res = await friendshipService.getAllLatest(pageParam, 5);
         if (res.status == 200) {
           return res.data;
@@ -26,9 +27,7 @@ export const useInfiniteQueryGetLoggedInUserNewestFriends = () => {
           return lastPage.nextCursor;
         }
         return null; // makes hasNextPage evalutes to false
-      },
-      retry: 2,
-      retryDelay: 1_000 * 6,
+      }
     })
   );
 };
@@ -57,8 +56,6 @@ export const useInfiniteQuerySearchFriendsByUserName = (friendUserName: string) 
         }
         return null; // makes hasNextPage evalutes to false
       },
-      retry: 2,
-      retryDelay: 1_000 * 6,
     })
   );
 };
@@ -77,9 +74,7 @@ export const useQueryGetFriendshipByTargetUserID = (targetUserUUID: string) => {
         else {
           throw new Error('failed to fetch');
         }
-      },
-      retry: 2,
-      retryDelay: 1_000 * 6,
+      }
     })
   );
 };

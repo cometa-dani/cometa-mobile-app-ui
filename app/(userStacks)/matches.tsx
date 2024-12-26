@@ -1,132 +1,37 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { SafeAreaView, View, } from 'react-native';
 import { Stack, useGlobalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
-import { InfiniteData, useQueryClient } from '@tanstack/react-query';
-import { useInfiteQueryGetUsersWhoLikedSameEventByID } from '@/queries/targetUser/eventHooks';
-import { IGetPaginatedLikedEventsBucketList } from '@/models/LikedEvent';
-import { QueryKeys } from '@/queries/queryKeys';
-import { useInfiniteQueryGetLoggedInUserNewestFriends } from '@/queries/currentUser/friendshipHooks';
+import { useInfiniteQueryGetNewestFriends } from '@/queries/currentUser/friendshipHooks';
 import { GradientHeading } from '@/components/text/gradientText';
-import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { TextView } from '@/components/text/text';
 import PagerView, { usePagerView } from 'react-native-pager-view';
-import { HStack, VStack } from '@/components/utils/stacks';
+import { Center, HStack, VStack } from '@/components/utils/stacks';
 import { useCometaStore } from '@/store/cometaStore';
 import { Button } from '@/components/button/button';
 import Animated, { ZoomIn, FadeOut, LinearTransition, } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import { imageTransition } from '@/constants/vars';
 import { Badge } from '@/components/button/badge';
+import { useInfiteQueryGetUsersWhoLikedSameEvent } from '@/queries/targetUser/userProfileHooks';
+import { Condition } from '@/components/utils/ifElse';
+import { EmptyMessage } from '@/components/empty/Empty';
+import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 
 
-const users = [
-  {
-    'name': 'Emily Chen',
-    'email': 'emily.chen@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=1'
-  },
-  {
-    'name': 'Liam Patel',
-    'email': 'liam.patel@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=2'
-  },
-  {
-    'name': 'Ava Lee',
-    'email': 'ava.lee@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=3'
-  },
-  {
-    'name': 'Noah Kim',
-    'email': 'noah.kim@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=4'
-  },
-  {
-    'name': 'Sophia Rodriguez',
-    'email': 'sophia.rodriguez@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=5'
-  },
-  {
-    'name': 'Ethan Hall',
-    'email': 'ethan.hall@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=6'
-  },
-  {
-    'name': 'Mia Garcia',
-    'email': 'mia.garcia@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=7'
-  },
-  {
-    'name': 'Logan Brooks',
-    'email': 'logan.brooks@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=8'
-  },
-  {
-    'name': 'Isabella Taylor',
-    'email': 'isabella.taylor@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=9'
-  },
-  {
-    'name': 'Alexander White',
-    'email': 'alexander.white@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=10'
-  },
-  {
-    'name': 'Charlotte Davis',
-    'email': 'charlotte.davis@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=11'
-  },
-  {
-    'name': 'Benjamin Martin',
-    'email': 'benjamin.martin@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=12'
-  },
-  {
-    'name': 'Abigail Harris',
-    'email': 'abigail.harris@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=13'
-  },
-  {
-    'name': 'Caleb Thompson',
-    'email': 'caleb.thompson@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=14'
-  },
-  {
-    'name': 'Harper Jenkins',
-    'email': 'harper.jenkins@example.com',
-    'avatar': 'https://picsum.photos/200/300?random=15'
-  }
-];
+const initialTab = 1;
 
 export default function MatchedEventsScreen(): ReactNode {
   const { styles, theme } = useStyles(styleSheet);
   const { eventId } = useGlobalSearchParams<{ eventId: string }>();
-  const likedEvent = useCometaStore(state => state.likedEvent);
+  // tabs
+  const selectedLikedEvent = useCometaStore(state => state.likedEvent);
   const [isFirstItemVisible, setIsFirstItemVisible] = useState(true);
   const { ref, setPage } = usePagerView();
-  const [step, setStep] = useState(0);
-  // const eventLike = useQueryCachedBucketListItem(+eventIndex);
-  // people state
-  // const newPeopleData = useInfiteQueryGetUsersWhoLikedSameEventByID(+eventId);
-  // const newFriendsData = useInfiniteQueryGetLoggedInUserNewestFriends();
-
-
-  // const memoizedFriendsList = useMemo(() => (
-  //   newFriendsData.data?.pages.flatMap(page => page?.friendships) ?? []
-  // ), [newFriendsData.data?.pages]);
-  // const memoizedNewPeopleList = useMemo(() => (
-  //   // newPeopleData.data?.pages.flatMap(page => page?.items) ?? []
-  // ), [newPeopleData.data?.pages]);
-
-
-  const handleNewPeopleInfiniteScroll = (): void => {
-    // if (newPeopleData) {
-    //   const { hasNextPage, isFetching, fetchNextPage } = newPeopleData;
-    //   hasNextPage && !isFetching && fetchNextPage();
-    // }
-  };
+  const [step, setStep] = useState(initialTab);
+  // header image
   const [showImage, setShowImage] = useState(true);
-
   useEffect(() => {
     if (!isFirstItemVisible) {
       setShowImage(false);
@@ -134,6 +39,26 @@ export default function MatchedEventsScreen(): ReactNode {
       setShowImage(true);
     }
   }, [isFirstItemVisible]);
+  // friends/new people
+  const newPeople = useInfiteQueryGetUsersWhoLikedSameEvent(+eventId);
+  const newFriends = useInfiniteQueryGetNewestFriends();
+  const newPeopleData = newPeople.data?.pages.flatMap(page => page.items) ?? [];
+  const newFriendsData = newFriends.data?.pages.flatMap(page => page.items) ?? [];
+  useRefreshOnFocus(newPeople.refetch);
+
+  const handleNewPeopleInfiniteScroll = (): void => {
+    if (newPeople) {
+      const { hasNextPage, isFetching, fetchNextPage } = newPeople;
+      hasNextPage && !isFetching && fetchNextPage();
+    }
+  };
+
+  const handleNewFriendsInfiniteScroll = (): void => {
+    if (newFriends) {
+      const { hasNextPage, isFetching, fetchNextPage } = newFriends;
+      hasNextPage && !isFetching && fetchNextPage();
+    }
+  };
 
   return (
     <>
@@ -178,10 +103,10 @@ export default function MatchedEventsScreen(): ReactNode {
                 transition={imageTransition}
                 contentFit='cover'
                 style={styles.imgHeader}
-                source={{ uri: likedEvent.photos.at(0)?.url, }}
+                source={{ uri: selectedLikedEvent.photos.at(0)?.url, }}
               />
               <Badge>
-                {likedEvent?.location?.name}
+                {selectedLikedEvent?.location?.name}
               </Badge>
             </View>
           </Animated.View>
@@ -216,104 +141,136 @@ export default function MatchedEventsScreen(): ReactNode {
           <PagerView
             ref={ref}
             style={{ height: '100%', width: '100%' }}
-            initialPage={0}
+            initialPage={initialTab}
             onPageScroll={(e) => {
               setStep(e.nativeEvent.position);
             }}
           >
             <View key={0} style={{ flex: 1, height: '100%' }}>
-              <FlashList
-                nestedScrollEnabled={true}
-                data={users}
-                estimatedItemSize={60}
-                ListFooterComponentStyle={{ height: 400 }}
-                contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
-                ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
-                onViewableItemsChanged={({ viewableItems }) => {
-                  const firstItem = viewableItems[0];
-                  const isVisible = firstItem?.index === 0;
-                  setIsFirstItemVisible(isVisible);
-                }}
-                renderItem={({ item }) => (
-                  <HStack
-                    $y='center'
-                    gap={theme.spacing.sp4}
-                    styles={{ paddingHorizontal: theme.spacing.sp6 }}
-                  >
-                    <Image
-                      recyclingKey={item.avatar}
-                      transition={imageTransition}
-                      source={{ uri: item.avatar }}
-                      style={styles.imgAvatar}
+              <Condition
+                if={!newFriendsData?.length}
+                then={(
+                  <Center styles={{ paddingHorizontal: 34, paddingTop: 0, flex: 1 / 3 }}>
+                    <EmptyMessage
+                      title='Oops! Looks like your list is empty'
+                      subtitle='Head back to the homepage and add some exciting events!'
                     />
+                  </Center>
+                )}
+                else={(
+                  <FlashList
+                    nestedScrollEnabled={true}
+                    data={newFriendsData}
+                    estimatedItemSize={60}
+                    ListFooterComponentStyle={{ height: 400 }}
+                    contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
+                    ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
+                    onViewableItemsChanged={({ viewableItems }) => {
+                      const firstItem = viewableItems[0];
+                      const isVisible = firstItem?.index === 0;
+                      setIsFirstItemVisible(isVisible);
+                    }}
+                    onEndReachedThreshold={0.5}
+                    onEndReached={handleNewFriendsInfiniteScroll}
+                    renderItem={({ item: { friend } }) => (
+                      <HStack
+                        $y='center'
+                        gap={theme.spacing.sp4}
+                        styles={{ paddingHorizontal: theme.spacing.sp6 }}
+                      >
+                        <Image
+                          recyclingKey={friend.uid}
+                          placeholder={{ thumbhash: friend.photos.at(0)?.placeholder }}
+                          transition={imageTransition}
+                          source={{ uri: friend.photos.at(0)?.url }}
+                          style={styles.imgAvatar}
+                        />
 
-                    <VStack
-                      $y='center'
-                      styles={{ flex: 1 }}
-                    >
-                      <TextView ellipsis={true}>
-                        {item.name}
-                      </TextView>
-                      <TextView bold={true} ellipsis={true}>
-                        {item.email}
-                      </TextView>
-                    </VStack>
+                        <VStack
+                          $y='center'
+                          styles={{ flex: 1 }}
+                        >
+                          <TextView bold={true} ellipsis={true}>
+                            {friend.name}
+                          </TextView>
+                          <TextView ellipsis={true}>
+                            {friend.username}
+                          </TextView>
+                        </VStack>
 
-                    <Button
-                      style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-                      onPress={() => { console.log('follow'); }}
-                      variant='primary'>
-                      FOLLOW
-                    </Button>
-                  </HStack>
+                        <Button
+                          style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
+                          onPress={() => { console.log('follow'); }}
+                          variant='primary-alt'>
+                          CHAT
+                        </Button>
+                      </HStack>
+                    )}
+                  />
                 )}
               />
             </View>
             <View key={1} style={{ flex: 1, height: '100%' }}>
-              <FlashList
-                nestedScrollEnabled={true}
-                ListFooterComponentStyle={{ height: 400 }}
-                contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
-                ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
-                onViewableItemsChanged={({ viewableItems }) => {
-                  const firstItem = viewableItems[0];
-                  const isVisible = firstItem?.index === 0;
-                  setIsFirstItemVisible(isVisible);
-                }}
-                data={users}
-                estimatedItemSize={60}
-                renderItem={({ item }) => (
-                  <HStack
-                    $y='center'
-                    gap={theme.spacing.sp4}
-                    styles={{ paddingHorizontal: theme.spacing.sp6 }}
-                  >
-                    <Image
-                      recyclingKey={item.avatar}
-                      transition={imageTransition}
-                      source={{ uri: item.avatar }}
-                      style={styles.imgAvatar}
+              <Condition
+                if={!newPeopleData?.length}
+                then={(
+                  <Center styles={{ paddingHorizontal: 34, paddingTop: 0, flex: 1 / 3 }}>
+                    <EmptyMessage
+                      title='Oops! Looks like your list is empty'
+                      subtitle='Head back to the homepage and add some exciting events!'
                     />
+                  </Center>
+                )}
+                else={(
+                  <FlashList
+                    nestedScrollEnabled={true}
+                    ListFooterComponentStyle={{ height: 400 }}
+                    contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
+                    ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
+                    onViewableItemsChanged={({ viewableItems }) => {
+                      const firstItem = viewableItems[0];
+                      const isVisible = firstItem?.index === 0;
+                      setIsFirstItemVisible(isVisible);
+                    }}
+                    data={newPeopleData}
+                    estimatedItemSize={60}
+                    onEndReachedThreshold={0.5}
+                    onEndReached={handleNewPeopleInfiniteScroll}
+                    renderItem={({ item: { user } }) => (
+                      <HStack
+                        $y='center'
+                        gap={theme.spacing.sp4}
+                        styles={{ paddingHorizontal: theme.spacing.sp6 }}
+                      >
+                        <Image
+                          recyclingKey={user?.uid}
+                          transition={imageTransition}
+                          source={{ uri: user.photos.at(0)?.url }}
+                          placeholder={{ thumbhash: user?.photos.at(0)?.placeholder }}
+                          style={styles.imgAvatar}
+                        />
 
-                    <VStack
-                      $y='center'
-                      styles={{ flex: 1 }}
-                    >
-                      <TextView ellipsis={true}>
-                        {item.name}
-                      </TextView>
-                      <TextView bold={true} ellipsis={true}>
-                        {item.email}
-                      </TextView>
-                    </VStack>
+                        <VStack
+                          $y='center'
+                          styles={{ flex: 1 }}
+                        >
+                          <TextView bold={true} ellipsis={true}>
+                            {user.name}
+                          </TextView>
+                          <TextView ellipsis={true}>
+                            {user.username}
+                          </TextView>
+                        </VStack>
 
-                    <Button
-                      style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-                      onPress={() => { console.log('follow'); }}
-                      variant='primary'>
-                      FOLLOW
-                    </Button>
-                  </HStack>
+                        <Button
+                          style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
+                          onPress={() => { console.log('follow'); }}
+                          variant='primary'>
+                          FOLLOW
+                        </Button>
+                      </HStack>
+                    )}
+                  />
                 )}
               />
             </View>

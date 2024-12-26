@@ -2,6 +2,7 @@
 import { StateCreator } from 'zustand';
 import { RestApiService } from '../../services/restService';
 import { Session } from '@supabase/supabase-js';
+import { IGetDetailedUserProfile } from '@/models/User';
 
 
 export type AuthSlice = {
@@ -11,7 +12,8 @@ export type AuthSlice = {
   setIsLoaded: (isLoading: boolean) => void,
   isAuthenticated: boolean,
   setIsAuthenticated: (isAuthenticated: boolean) => void,
-  preFetchUserProfile: (shouldRefetch: boolean) => void
+  setUserProfile: (user: IGetDetailedUserProfile) => void,
+  userProfile?: IGetDetailedUserProfile
 }
 
 
@@ -32,7 +34,8 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
     set({ isAuthenticated });
   },
   shouldFetchUserProfile: false,
-  preFetchUserProfile: (shouldRefetch: boolean) => {
-    // set({ shouldFetchUserProfile: shouldRefetch });
-  }
+  setUserProfile: (user: IGetDetailedUserProfile) => {
+    set({ userProfile: user });
+  },
+  userProfile: undefined
 });

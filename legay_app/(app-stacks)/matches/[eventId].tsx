@@ -1,12 +1,12 @@
 import React, { FC, useMemo, useState } from 'react';
 import { SafeAreaView, StyleSheet, Pressable, Image as HeaderImage } from 'react-native';
-import { Text, View } from '../../../legacy_components/Themed';
+// import { Text, View } from '../../../legacy_components/Themed';
 import { Stack, router, useGlobalSearchParams } from 'expo-router';
-import { useInfiteQueryGetUsersWhoLikedSameEventByID } from '../../../queries/targetUser/eventHooks';
+// import { useInfiteQueryGetUsersWhoLikedSameEvent } from '../../../queries/targetUser/eventHooks';
 import { Image } from 'expo-image';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { AppButton } from '../../../legacy_components/buttons/buttons';
-import { useInfiniteQueryGetLoggedInUserNewestFriends, useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../../queries/currentUser/friendshipHooks';
+import { useInfiniteQueryGetNewestFriends, useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation } from '../../../queries/currentUser/friendshipHooks';
 import { useCometaStore } from '../../../store/cometaStore';
 import { IGetBasicUserProfile, IGetPaginatedUsersWhoLikedSameEvent } from '../../../models/User';
 import { animationDuration, defaultImgPlaceholder } from '../../../constants/vars';
@@ -23,6 +23,7 @@ import { SkeletonLoaderList } from '../../../legacy_components/lodingSkeletons/L
 import { ErrorMessage } from '../../../queries/errors/errorMessages';
 import { ModalNewFriendship } from '../../../legacy_components/modal/modalNewFriendship';
 import { titles } from '../../../constants/assets';
+import { useInfiteQueryGetUsersWhoLikedSameEvent } from '@/queries/targetUser/userProfileHooks';
 
 
 export default function MatchedEventsScreen(): JSX.Element {
@@ -33,8 +34,8 @@ export default function MatchedEventsScreen(): JSX.Element {
   const eventByIdCachedData = bucketListCahedData?.pages.flatMap(page => page?.items)[+urlParams.eventIndex] ?? null;
 
   // people state
-  const newPeopleData = useInfiteQueryGetUsersWhoLikedSameEventByID(+urlParams.eventId);
-  const newFriendsData = useInfiniteQueryGetLoggedInUserNewestFriends();
+  const newPeopleData = useInfiteQueryGetUsersWhoLikedSameEvent(+urlParams.eventId);
+  const newFriendsData = useInfiniteQueryGetNewestFriends();
 
 
   const memoizedFriendsList = useMemo(() => (

@@ -13,7 +13,6 @@ import {
 } from '../models/User';
 import { Platform } from 'react-native';
 import * as Crypto from 'expo-crypto';
-// const FormData = globalThis.FormData;
 
 
 class UsersService {
@@ -123,6 +122,10 @@ class UsersService {
 
   public deletePhotoById(loggedInUserID: number, photoId: number | string) {
     return this.http.delete(`/users/${loggedInUserID}/photos/${photoId}`);
+  }
+
+  public async getUserWhoLikedSameEventById(eventId: number, cursor: number, limit: number) {
+    return this.http.get('users/liked-same-event', { params: { eventId, cursor, limit } });
   }
 }
 

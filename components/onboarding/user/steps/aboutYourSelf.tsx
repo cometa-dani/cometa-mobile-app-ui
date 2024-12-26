@@ -70,6 +70,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
   const onboardingUser = useCometaStore(state => state.onboarding.user);
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const clearOnboarding = useCometaStore(state => state.clearOnboarding);
+  const setUserProfile = useCometaStore(state => state.setUserProfile);
   const { selectedCity, cityKind, setCityKind } = useSelectCityByName();
   const { selectedLanguages } = useSelectLanguages();
   const createUser = useMutationCreateUser();
@@ -112,6 +113,7 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
           const res = await userService.getUserProfileWithLikedEvents(data?.user?.id as string);
           if (res.status === 200) {
             setIsAuthenticated(true);
+            setUserProfile(res.data);
             return res.data;
           }
           else {

@@ -14,13 +14,13 @@ export interface Friendship {
 
 export type FriendShipStatus = 'PENDING' | 'ACCEPTED' | 'BLOCKED'
 
-export interface GetLatestFriendships {
-  friendships: Friendship[];
-  totalFriendships: number;
-  nextCursor: number;
-  friendshipsPerPage: number;
-  hasNextCursor: boolean;
-}
+// export interface GetLatestFriendships {
+//   friendships: Friendship[];
+//   totalFriendships: number;
+//   nextCursor: number;
+//   friendshipsPerPage: number;
+//   hasNextCursor: boolean;
+// }
 
 export type MutateFrienship = Pick<Friendship, (
   'id' |

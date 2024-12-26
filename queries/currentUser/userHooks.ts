@@ -46,6 +46,7 @@ export const useMutationUpdateUserById = () => {
 
 export const useQueryGetUserProfile = () => {
   const session = useCometaStore(state => state.session);
+  const setUserProfile = useCometaStore(state => state.setUserProfile);
   const isAuthenticated = useCometaStore(state => state.isAuthenticated);
   return (
     useQuery({
@@ -54,6 +55,7 @@ export const useQueryGetUserProfile = () => {
       queryFn: async (): Promise<IGetDetailedUserProfile> => {
         const res = await userService.getUserProfileWithLikedEvents(session?.user.id as string);
         if (res.status === 200) {
+          setUserProfile(res.data);
           return res.data;
         }
         else {
@@ -70,6 +72,7 @@ export const usePrefetchUserProfile = () => {
   const session = useCometaStore(state => state.session);
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
   const isAuthenticated = useCometaStore(state => state.isAuthenticated);
+  const setUserProfile = useCometaStore(state => state.setUserProfile);
 
   useEffect(() => {
     if (!session?.user.id) return;
@@ -80,6 +83,7 @@ export const usePrefetchUserProfile = () => {
         const res = await userService.getUserProfileWithLikedEvents(session?.user.id as string);
         if (res.status === 200) {
           setIsAuthenticated(true);
+          setUserProfile(res.data);
           return res.data;
         }
         else {
