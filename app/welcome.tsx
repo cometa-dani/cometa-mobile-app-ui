@@ -86,18 +86,18 @@ export default function WelcomeScreen() {
       </Modal>
 
       <ImageBackground
-        source={require('../assets/images/welcome-image.jpeg')}
+        source={require('../assets/images/cometa-welcome.png')}
         contentFit='cover'
         style={styles.imgBackground}
       >
         <LinearGradient
-          colors={['rgba(0,0,0,0.76)', 'rgba(0,0,0,0.6)', 'transparent']}
+          colors={['rgba(0,0,0,0.88)', 'rgba(0,0,0,0.65)', 'transparent']}
           style={styles.linearGradientTop}
         >
           <SafeAreaView>
             <View style={{
               top: Platform.select({
-                ios: UnistylesRuntime.statusBar.height,
+                ios: 0,
                 android: UnistylesRuntime.statusBar.height * 2.5
               })
             }}>
@@ -137,13 +137,13 @@ const stylesheet = createStyleSheet((theme, runtime) => ({
   linearGradientTop: {
     position: 'absolute',
     top: 0,
-    height: 314,
+    height: 310,
     width: '100%'
   },
   linearGradient: {
     position: 'absolute',
     bottom: 0,
-    height: 270,
+    height: 290,
     width: '100%',
     justifyContent: 'flex-end'
   },

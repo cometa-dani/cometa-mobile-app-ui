@@ -2,7 +2,7 @@ import { FC, ReactNode, useEffect, useState } from 'react';
 import { SafeAreaView, View, } from 'react-native';
 import { Stack, useGlobalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
-import { useInfiniteQueryGetNewestFriends } from '@/queries/currentUser/friendshipHooks';
+import { useInfiniteQueryGetNewestFriends, useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation } from '@/queries/currentUser/friendshipHooks';
 import { GradientHeading } from '@/components/text/gradientText';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { TextView } from '@/components/text/text';
@@ -19,6 +19,11 @@ import { Condition } from '@/components/utils/ifElse';
 import { EmptyMessage } from '@/components/empty/Empty';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
+import { InfiniteData, useQueryClient } from '@tanstack/react-query';
+import { IGetBasicUserProfile, IGetPaginatedUsersWhoLikedSameEvent } from '@/models/User';
+import { QueryKeys } from '@/queries/queryKeys';
+import { ErrorMessage } from '@/queries/errors/errorMessages';
+import { MutateFrienship } from '@/models/Friendship';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -80,6 +85,7 @@ const SkeletonList: FC = () => {
 const initialTab = 1;
 
 export default function MatchedEventsScreen(): ReactNode {
+  const queryClient = useQueryClient();
   const { styles, theme } = useStyles(styleSheet);
   const { eventId } = useGlobalSearchParams<{ eventId: string }>();
   // tabs
@@ -109,12 +115,180 @@ export default function MatchedEventsScreen(): ReactNode {
       hasNextPage && !isFetching && fetchNextPage();
     }
   };
-
   const handleNewFriendsInfiniteScroll = (): void => {
     if (newFriends) {
       const { hasNextPage, isFetching, fetchNextPage } = newFriends;
       hasNextPage && !isFetching && fetchNextPage();
     }
+  };
+
+  // mutations
+  const mutationSentFriendship = useMutationSentFriendshipInvitation();
+  const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
+  const mutationCancelFriendship = useMutationDeleteFriendshipInvitation();
+  const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState<IGetBasicUserProfile | undefined>(undefined);
+  const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
+  const [toggleModal, setToggleModal] = useState(false);
+
+  /**
+  *
+  * @description from a sender user, accepts friendship with status 'ACCEPTED'
+  */
+  const acceptPendingInvitation = async (targetUserAsSender: IGetBasicUserProfile) => {
+    try {
+      // 1. set button to pending
+      if (!targetUserAsSender.hasOutgoingFriendship) {
+        pendingButton.handleOptimisticUpdate(targetUserAsSender.id);
+      }
+      setTargetUserAsNewFriend(targetUserAsSender);
+
+      // 2. mutation
+      const newCreatedFrienship =
+        await mutationAcceptFriendship.mutateAsync(
+          targetUserAsSender.id,
+          {
+            onSuccess: async () => {
+              setToggleModal(true);
+              // refetch on screen focus
+              await Promise.all([
+                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +eventId] }),
+                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_PAGINATED_NEWEST_FRIENDS] })
+              ]);
+            },
+            onError: ({ response }) => {
+              if (response?.data.message === ErrorMessage.INVITATION_DOES_NOT_EXIST) {
+                sentFriendshipInvitation(targetUserAsSender);
+              }
+            }
+          }
+        ); // set status to 'ACCEPTED' and create chat uuid
+      if (!newCreatedFrienship) return;
+
+      setNewFriendShip(newCreatedFrienship);
+      // const messagePayload = {
+      //   createdAt: new Date().toString(),
+      //   user: {
+      //     _id: loggedInUserUuid,
+      //     avatar: loggedInUserProfile?.photos[0]?.url,
+      //     name: loggedInUserProfile?.username,
+      //     message: `${loggedInUserProfile?.username} is your new match!`,
+      //     isSeen: false
+      //   }
+      // };
+      // await
+      //   notificationService.sentNotificationToTargetUser(
+      //     messagePayload,
+      //     targetUserAsSender.uid, // to
+      //     loggedInUserUuid // from
+      //   )
+      //     .then()
+      //     .catch();
+    }
+    catch (error) {
+      return null;
+    }
+  };
+
+
+  const pendingButton = {
+    /**
+     *
+     * @description sets the button to pending optimistically
+     */
+    handleOptimisticUpdate: (userID: number) => {
+      queryClient.setQueryData<InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>>(
+        [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, eventId],
+        (oldData) => ({
+          pageParams: oldData?.pageParams,
+          pages:
+            oldData?.pages
+              .map((page) => ({
+                ...page,
+                items:
+                  page.items
+                    .map(event => event.userId === userID ?
+                      ({
+                        ...event,
+                        user: {
+                          ...event.user,
+                          hasIncommingFriendship: true
+                        }
+                      })
+                      : event
+                    )
+              }))
+
+        }) as InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>);
+    }
+  };
+
+  /**
+  *
+  * @description for a receiver user, sends a friendship invitation with status 'PENDING'
+  * @param {IGetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
+  */
+  const sentFriendshipInvitation = (targetUserAsReceiver: IGetBasicUserProfile): void => {
+    // 1. set button to pending
+    pendingButton.handleOptimisticUpdate(targetUserAsReceiver.id);
+
+    // 2. mutation
+    mutationSentFriendship.mutateAsync(
+      { targetUserId: targetUserAsReceiver.id },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, eventId]
+          });
+        },
+        onError: ({ response }) => {
+          if (response?.data.message === ErrorMessage.INVITATION_ALREADY_PENDING) {
+            acceptPendingInvitation(targetUserAsReceiver);
+          }
+        }
+      }
+    )
+      .then(() => {
+        // const messagePayload = {
+        //   createdAt: new Date().toString(),
+        //   user: {
+        //     _id: loggedInUserUuid,
+        //     avatar: loggedInUserProfile?.photos[0]?.url,
+        //     name: loggedInUserProfile?.username,
+        //     message: `${loggedInUserProfile?.username} has followed you!`,
+        //     isSeen: false
+        //   }
+        // };
+        // notificationService.sentNotificationToTargetUser(
+        //   messagePayload,
+        //   targetUserAsReceiver.uid, // to
+        //   loggedInUserUuid   // from
+        // )
+        //   .then()
+        //   .catch();
+      })
+      .catch();
+  };
+
+  /**
+  *
+  * @description cancels a friendship invitation with status 'PENDING'
+  * @param {IGetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
+  */
+  const cancelFriendshipInvitation = (targetUserAsReceiver: IGetBasicUserProfile): void => {
+    mutationCancelFriendship.mutate(
+      targetUserAsReceiver.id,
+      {
+        onSuccess() {
+          // notificationService
+          //   .deleteNotification(targetUserAsReceiver.uid, loggedInUserUuid)
+          //   .then()
+          //   .catch();
+          // queryClient.invalidateQueries({
+          //   queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
+          // });
+        }
+      }
+    );
   };
 
   return (
