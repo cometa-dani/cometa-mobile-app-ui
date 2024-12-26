@@ -26,7 +26,7 @@ const SkeletonList: FC = () => {
   const { theme, styles } = useStyles(styleSheet);
   return (
     <FlashList
-      data={[1, 2, 3, 4, 5, 6]}
+      data={[1, 2, 3, 4, 5, 6, 7]}
       estimatedItemSize={60}
       contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
       ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
@@ -37,16 +37,31 @@ const SkeletonList: FC = () => {
             gap={theme.spacing.sp4}
             styles={{ paddingHorizontal: theme.spacing.sp6 }}
           >
-            <View
-              style={[styles.imgAvatar, { backgroundColor: theme.colors.gray200 }]}
-            />
+            <View style={[
+              styles.imgAvatar,
+              { backgroundColor: theme.colors.gray200 }
+            ]} />
             <VStack
               $y='center'
               gap={theme.spacing.sp1}
               styles={{ flex: 1 }}
             >
-              <View style={{ backgroundColor: theme.colors.gray200, height: 16, width: '60%', flexDirection: 'row', borderRadius: 10 }} />
-              <View style={{ backgroundColor: theme.colors.gray200, height: 16, width: '80%', flexDirection: 'row', borderRadius: 10 }} />
+              <View style={{
+                backgroundColor: theme.colors.gray200,
+                height: 16,
+                width: '60%',
+                flexDirection: 'row',
+                borderRadius: 10
+              }}
+              />
+              <View style={{
+                backgroundColor: theme.colors.gray200,
+                height: 16,
+                width: '80%',
+                flexDirection: 'row',
+                borderRadius: 10
+              }}
+              />
             </VStack>
             <Button
               style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}

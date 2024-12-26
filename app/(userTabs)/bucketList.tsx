@@ -1,7 +1,7 @@
-import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import { FC, useCallback, useMemo } from 'react';
+import { FC, ReactNode, useCallback, useMemo } from 'react';
 import { SafeAreaView } from 'react-native';
 import { Image } from 'expo-image';
 import { RectButton } from 'react-native-gesture-handler';
@@ -23,6 +23,7 @@ import { useInfiniteQueryGetBucketListScreen } from '@/queries/currentUser/event
 import { useMutationLikeOrDislikeEvent } from '@/queries/currentUser/likeEventHooks';
 import { defaultImgPlaceholder } from '@/constants/vars';
 import { EmptyMessage } from '@/components/empty/Empty';
+import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
 
 
 export default function BucketListScreen() {
@@ -127,15 +128,7 @@ const BuckectList: FC = () => {
             )}
           />
         }
-        else={(
-          <Center styles={{ flex: 1 }}>
-            <ActivityIndicator
-              size="large"
-              style={{ marginTop: -theme.spacing.sp8 }}
-              color={theme.colors.red100}
-            />
-          </Center>
-        )}
+        else={(<SkeletonList />)}
       />
     </SafeAreaView>
   );
@@ -304,6 +297,106 @@ const BucketItem: FC<BucketItemProps> = ({ item, onDeleteEventLike }) => {
         </HStack>
       </TouchableOpacity>
     </Swipeable>
+  );
+};
+
+const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
+
+
+const SkeletonList: FC = () => {
+  const { theme, styles } = useStyles(styleSheet);
+  return (
+    <FlashList
+      data={[1, 2, 3, 4, 5, 6]}
+      estimatedItemSize={112}
+      contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
+      ListFooterComponentStyle={{ height: tabBarHeight * 2 }}
+      ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp8 }} />}
+      renderItem={() => (
+        <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
+          <TouchableOpacity
+            style={{
+              paddingHorizontal: theme.spacing.sp6,
+              gap: theme.spacing.sp2
+            }}
+          >
+            <HStack gap={theme.spacing.sp4}>
+              <View
+                style={[styles.img, { backgroundColor: theme.colors.gray200 }]}
+              />
+              <VStack $y='center' gap={theme.spacing.sp2} styles={{ flex: 1 }}>
+                <View style={{
+                  backgroundColor: theme.colors.gray200,
+                  height: 16,
+                  width: '60%',
+                  flexDirection: 'row',
+                  borderRadius: 10
+                }} />
+                <View style={{
+                  backgroundColor: theme.colors.gray200,
+                  height: 16,
+                  width: '100%',
+                  flexDirection: 'row',
+                  borderRadius: 10
+                }} />
+                <View style={{
+                  backgroundColor: theme.colors.gray200,
+                  height: 16,
+                  width: '100%',
+                  flexDirection: 'row',
+                  borderRadius: 10
+                }} />
+              </VStack>
+            </HStack>
+
+            <HStack gap={theme.spacing.sp2}>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: theme.colors.gray200,
+                  paddingVertical: theme.spacing.sp1,
+                  paddingHorizontal: 6,
+                  borderRadius: theme.spacing.sp2,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                  gap: theme.spacing.sp1,
+                  flex: 1
+                }}
+              >
+                <View style={{
+                  backgroundColor: theme.colors.gray200,
+                  height: 16,
+                  width: '60%',
+                  flexDirection: 'row',
+                  borderRadius: 10
+                }} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: theme.colors.gray200,
+                  paddingVertical: theme.spacing.sp1,
+                  paddingHorizontal: 6,
+                  borderRadius: theme.spacing.sp2,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                  gap: theme.spacing.sp1,
+                  flex: 1
+                }}
+              >
+                <View style={{
+                  backgroundColor: theme.colors.gray200,
+                  height: 16,
+                  width: '60%',
+                  flexDirection: 'row',
+                  borderRadius: 10
+                }} />
+              </TouchableOpacity>
+            </HStack>
+          </TouchableOpacity>
+        </MySkeleton>
+      )}
+    />
   );
 };
 
