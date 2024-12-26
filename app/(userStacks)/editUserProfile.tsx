@@ -74,7 +74,7 @@ export default function EditUserProfileScreen(): ReactNode {
     try {
       if (!userProfile?.id) return;
       await updateUser.mutateAsync({ userId: userProfile?.id, payload: updateUserPayload });
-      await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
+      await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_CURRENT_USER_PROFILE] });
       Notifier.hideNotification();
       Notifier.showNotification({
         title: 'Done',
@@ -113,7 +113,7 @@ export default function EditUserProfileScreen(): ReactNode {
         // create
         await uploadPhoto.mutateAsync({ pickedImgFiles: photos, userId: userProfile?.id });
       }
-      await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE] });
+      await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_CURRENT_USER_PROFILE] });
       Notifier.hideNotification();
       Notifier.showNotification({
         duration: 5_000,

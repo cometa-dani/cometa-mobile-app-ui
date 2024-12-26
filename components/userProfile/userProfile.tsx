@@ -8,7 +8,7 @@ import { Carousel } from '../carousel/carousel';
 import { Heading } from '../text/heading';
 import { FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { TextView } from '../text/text';
-import { IGetDetailedUserProfile } from '@/models/User';
+import { IGetDetailedUserProfile, IGetTargetUser } from '@/models/User';
 import { calAge } from '@/helpers/calcAge';
 import { ExpandableText } from '../text/expandableText';
 import { Image } from 'expo-image';
@@ -27,7 +27,7 @@ type IBucketListItem = {
 
 interface IProps {
   userBucketList?: InfiniteData<IGetPaginatedLikedEventsBucketList, unknown>,
-  userProfile?: IGetDetailedUserProfile,
+  userProfile?: IGetDetailedUserProfile | IGetTargetUser,
   onBucketListEndReached: () => void,
   isTargetUser?: boolean
 }

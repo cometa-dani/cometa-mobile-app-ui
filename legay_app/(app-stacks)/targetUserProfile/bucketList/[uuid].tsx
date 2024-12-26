@@ -16,7 +16,7 @@ export default function TargetUserBucketListScreen(): JSX.Element {
 
   const { uuid: targetUserUuid, eventId, initialScrollIndex } = useLocalSearchParams<{ uuid: string, eventId: string, initialScrollIndex: string }>();
   const queryClient = useQueryClient();
-  const targetUserProfileCached = queryClient.getQueryData<IGetTargetUser>([QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUuid]);
+  const targetUserProfileCached = queryClient.getQueryData<IGetTargetUser>([QueryKeys.GET_TARGET_USER_PROFILE, targetUserUuid]);
 
   // events & function to handle fetching more events when reaching the end
   const { data, isFetching, fetchNextPage, hasNextPage, isLoading } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfileCached?.id);

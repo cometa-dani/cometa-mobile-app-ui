@@ -1,6 +1,6 @@
 import { FC, ReactNode, useEffect, useState } from 'react';
-import { SafeAreaView, View, } from 'react-native';
-import { Stack, useGlobalSearchParams } from 'expo-router';
+import { SafeAreaView, TouchableOpacity, View, } from 'react-native';
+import { Stack, useGlobalSearchParams, useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQueryGetNewestFriends, useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation } from '@/queries/currentUser/friendshipHooks';
 import { GradientHeading } from '@/components/text/gradientText';
@@ -86,6 +86,7 @@ const initialTab = 1;
 
 export default function MatchedEventsScreen(): ReactNode {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const { styles, theme } = useStyles(styleSheet);
   const { eventId } = useGlobalSearchParams<{ eventId: string }>();
   // tabs
@@ -484,25 +485,34 @@ export default function MatchedEventsScreen(): ReactNode {
                             gap={theme.spacing.sp4}
                             styles={{ paddingHorizontal: theme.spacing.sp6 }}
                           >
-                            <Image
-                              recyclingKey={user?.uid}
-                              transition={imageTransition}
-                              source={{ uri: user.photos.at(0)?.url }}
-                              placeholder={{ thumbhash: user?.photos.at(0)?.placeholder }}
-                              style={styles.imgAvatar}
-                            />
-
-                            <VStack
-                              $y='center'
-                              styles={{ flex: 1 }}
+                            <TouchableOpacity
+                              onPress={() => router.push(`/(userStacks)/targetUserProfile?uuid=${user?.uid}`)}
+                              style={{
+                                flex: 1, flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: theme.spacing.sp4
+                              }}
                             >
-                              <TextView bold={true} ellipsis={true}>
-                                {user.name}
-                              </TextView>
-                              <TextView ellipsis={true}>
-                                {user.username}
-                              </TextView>
-                            </VStack>
+                              <Image
+                                recyclingKey={user?.uid}
+                                transition={imageTransition}
+                                source={{ uri: user.photos.at(0)?.url }}
+                                placeholder={{ thumbhash: user?.photos.at(0)?.placeholder }}
+                                style={styles.imgAvatar}
+                              />
+                              <VStack
+                                $y='center'
+                                styles={{ flex: 1 }}
+                              >
+                                <TextView bold={true} ellipsis={true}>
+                                  {user.name}
+                                </TextView>
+                                <TextView ellipsis={true}>
+                                  {user.username}
+                                </TextView>
+                              </VStack>
+                            </TouchableOpacity>
 
                             <Button
                               style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}

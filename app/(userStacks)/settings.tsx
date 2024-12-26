@@ -61,7 +61,7 @@ export default function SettingsScreen(): ReactNode {
 
   const handleLogout = async () => {
     setIsLogOutLoading(true);
-    const userProfile = queryClient.getQueryData<IGetBasicUserProfile>([QueryKeys.GET_LOGGED_IN_USER_PROFILE]);
+    const userProfile = queryClient.getQueryData<IGetBasicUserProfile>([QueryKeys.GET_CURRENT_USER_PROFILE]);
     Notifier.showNotification({
       duration: 0,
       title: 'Logging out...',
@@ -96,7 +96,7 @@ export default function SettingsScreen(): ReactNode {
   const handleDeleteUserProfile = async () => {
     setIsDeleteUserLoading(true);
     queryClient.clear();
-    const userProfile = queryClient.getQueryData<IGetBasicUserProfile>([QueryKeys.GET_LOGGED_IN_USER_PROFILE]);
+    const userProfile = queryClient.getQueryData<IGetBasicUserProfile>([QueryKeys.GET_CURRENT_USER_PROFILE]);
     if (!userProfile?.id) return;
     Notifier.showNotification({
       duration: 0,

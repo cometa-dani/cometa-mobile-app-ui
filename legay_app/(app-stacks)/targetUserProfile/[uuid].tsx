@@ -6,7 +6,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Text, View, useColors } from '../../../legacy_components/Themed';
 import * as Yup from 'yup';
 import { profileStyles } from '../../../legacy_components/profile/profileStyles';
-import { useQueryGetTargetUserPeopleProfileByUid } from '../../../queries/targetUser/userProfileHooks';
+import { useQueryGetTargetUserPeopleProfile } from '../../../queries/targetUser/userProfileHooks';
 import { useInfiniteQueryGetLikedEventsForBucketListByTargerUser, useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '../../../queries/targetUser/eventHooks';
 import { AppButton, appButtonstyles } from '../../../legacy_components/buttons/buttons';
 import { AppCarousel } from '../../../legacy_components/carousels/carousel';
@@ -53,7 +53,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
   // queries
   const queryClient = useQueryClient();
   const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(!targetUserUrlParams.chatuuid ? targetUserUrlParams.uuid : '');
-  const { data: targetUserProfile, isSuccess, isLoading } = useQueryGetTargetUserPeopleProfileByUid(targetUserUrlParams.uuid);
+  const { data: targetUserProfile, isSuccess, isLoading } = useQueryGetTargetUserPeopleProfile(targetUserUrlParams.uuid);
   const { data: matchedEvents } = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUserUrlParams.uuid);
   const { data: targetUserbucketList } = useInfiniteQueryGetLikedEventsForBucketListByTargerUser(targetUserProfile?.id);
   const hasIncommingFriendship: boolean = targetUserProfile?.hasIncommingFriendship ?? false;
@@ -106,7 +106,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
     handleOptimisticUpdate: (targetUserID: string) => (
       queryClient
         .setQueryData<IGetTargetUser>(
-          [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserID],
+          [QueryKeys.GET_TARGET_USER_PROFILE, targetUserID],
           (oldata) => ({
             ...oldata,
             hasIncommingFriendship: true
@@ -142,7 +142,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
             }
             await Promise.all([
               queryClient.invalidateQueries({
-                queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserAsSender.uid]
+                queryKey: [QueryKeys.GET_TARGET_USER_PROFILE, targetUserAsSender.uid]
               }),
               queryClient.invalidateQueries({
                 queryKey: [QueryKeys.GET_PAGINATED_NEWEST_FRIENDS]
@@ -202,7 +202,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
             });
           }
           queryClient.invalidateQueries({
-            queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserAsReceiver.uid]
+            queryKey: [QueryKeys.GET_TARGET_USER_PROFILE, targetUserAsReceiver.uid]
           });
         },
         onError: ({ response }) => {
@@ -251,7 +251,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
             queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
           });
         }
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserAsReceiver.uid] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_PROFILE, targetUserAsReceiver.uid] });
       },
     });
   };
@@ -275,13 +275,13 @@ export default function TargerUserProfileScreen(): JSX.Element {
             });
           }
           await Promise.all([
-            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserProfile.uid] }),
+            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_TARGET_USER_PROFILE, targetUserProfile.uid] }),
             queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_PAGINATED_NEWEST_FRIENDS] })
           ]);
         },
       });
       queryClient.setQueryData<IGetTargetUser>(
-        [QueryKeys.GET_TARGET_USER_INFO_PROFILE, targetUserUrlParams.uuid],
+        [QueryKeys.GET_TARGET_USER_PROFILE, targetUserUrlParams.uuid],
         (oldData) => ({
           ...oldData,
           isFriend: !oldData?.isFriend

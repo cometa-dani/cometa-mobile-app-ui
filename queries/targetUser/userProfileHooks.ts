@@ -5,13 +5,13 @@ import userService from '../../services/userService';
 import { IPaginated } from '@/models/utils/Paginated';
 
 
-export const useQueryGetTargetUserPeopleProfileByUid = (dynamicParam: string) => {
+export const useQueryGetTargetUserPeopleProfile = (userUuid: string) => {
   return (
     useQuery({
-      enabled: !!dynamicParam,
-      queryKey: [QueryKeys.GET_TARGET_USER_INFO_PROFILE, dynamicParam],
+      enabled: !!userUuid,
+      queryKey: [QueryKeys.GET_TARGET_USER_PROFILE, userUuid],
       queryFn: async (): Promise<IGetTargetUser> => {
-        const res = await userService.getTargetUserProfile(dynamicParam);
+        const res = await userService.getTargetUserProfile(userUuid);
         if (res.status === 200) {
           return res.data;
         }

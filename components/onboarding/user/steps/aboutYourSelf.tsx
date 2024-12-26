@@ -108,9 +108,9 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       await uploadPhotos.mutateAsync({ userId: newUser.id, pickedImgFiles: onboardingUser.photos });
       await updateUser.mutateAsync({ userId: newUser.id, payload: updateUserPayload });
       await queryClient.prefetchQuery({
-        queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE],
+        queryKey: [QueryKeys.GET_CURRENT_USER_PROFILE],
         queryFn: async (): Promise<IGetDetailedUserProfile> => {
-          const res = await userService.getUserProfileWithLikedEvents(data?.user?.id as string);
+          const res = await userService.getCurentUserProfile(data?.user?.id as string);
           if (res.status === 200) {
             setIsAuthenticated(true);
             setUserProfile(res.data);

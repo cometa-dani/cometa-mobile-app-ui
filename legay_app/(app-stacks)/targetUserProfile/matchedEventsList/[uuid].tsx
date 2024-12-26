@@ -21,7 +21,7 @@ export default function MatchedEventsListScreen(): JSX.Element {
   const urlParams = useLocalSearchParams<{ uuid: string, initialScrollIndex: string }>();
 
   const queryClient = useQueryClient();
-  const targetUserProfileCached = queryClient.getQueryData<IGetDetailedUserProfile>([QueryKeys.GET_TARGET_USER_INFO_PROFILE, urlParams.uuid]);
+  const targetUserProfileCached = queryClient.getQueryData<IGetDetailedUserProfile>([QueryKeys.GET_TARGET_USER_PROFILE, urlParams.uuid]);
   const { data: loggedInUserProfile } = useQueryGetUserProfile(loggedInUserUuid);
 
   // events & function to handle fetching more events when reaching the end

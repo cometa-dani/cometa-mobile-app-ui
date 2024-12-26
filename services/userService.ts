@@ -47,22 +47,22 @@ class UsersService {
 
   /**
    *
-   * @param {string} userUuid can be either the loggedInUser or the targetUser
+   * @param {string} uuid can be either the loggedInUser or the targetUser
    * @param {string} loggedInUserAccessToken
    * @returns
    */
-  public getUserProfileWithLikedEvents(userUuid: string) {
-    return this.http.get<IGetDetailedUserProfile>(`/users/${userUuid}`);
+  public getCurentUserProfile(uuid: string) {
+    return this.http.get<IGetDetailedUserProfile>(`/users/${uuid}`);
   }
 
   /**
  *
- * @param {string} targetUser can be either the loggedInUser or the targetUser
+ * @param {string} uuid can be either the loggedInUser or the targetUser
  * @param {string} loggedInUserAccessToken
  * @returns
  */
-  public getTargetUserProfile(targetUser: string) {
-    return this.http.get<IGetTargetUser>(`/users/${targetUser}/targets`,);
+  public getTargetUserProfile(uuid: string) {
+    return this.http.get<IGetTargetUser>(`/users/${uuid}/targets`,);
   }
 
   public deleteUserById(loggedInUserID: number) {

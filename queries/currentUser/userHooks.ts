@@ -51,9 +51,9 @@ export const useQueryGetUserProfile = () => {
   return (
     useQuery({
       enabled: isAuthenticated,
-      queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE],
+      queryKey: [QueryKeys.GET_CURRENT_USER_PROFILE],
       queryFn: async (): Promise<IGetDetailedUserProfile> => {
-        const res = await userService.getUserProfileWithLikedEvents(session?.user.id as string);
+        const res = await userService.getCurentUserProfile(session?.user.id as string);
         if (res.status === 200) {
           setUserProfile(res.data);
           return res.data;
@@ -78,9 +78,9 @@ export const usePrefetchUserProfile = () => {
     if (!session?.user.id) return;
     if (isAuthenticated) return;
     queryClient.prefetchQuery({
-      queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE],
+      queryKey: [QueryKeys.GET_CURRENT_USER_PROFILE],
       queryFn: async (): Promise<IGetDetailedUserProfile> => {
-        const res = await userService.getUserProfileWithLikedEvents(session?.user.id as string);
+        const res = await userService.getCurentUserProfile(session?.user.id as string);
         if (res.status === 200) {
           setIsAuthenticated(true);
           setUserProfile(res.data);
@@ -170,11 +170,11 @@ export const useMutationDeleteUserPhotoById = (dynamicParam?: string) => {
           }
         },
       onMutate: async ({ photoUuid }) => {
-        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE, dynamicParam] });
+        await queryClient.cancelQueries({ queryKey: [QueryKeys.GET_CURRENT_USER_PROFILE, dynamicParam] });
         // TODO
         queryClient
           .setQueryData<IGetDetailedUserProfile>
-          ([QueryKeys.GET_LOGGED_IN_USER_PROFILE, dynamicParam], (oldState): IGetDetailedUserProfile => {
+          ([QueryKeys.GET_CURRENT_USER_PROFILE, dynamicParam], (oldState): IGetDetailedUserProfile => {
             const filteredPhotos: IPhoto[] = oldState?.photos.filter(({ uuid }) => photoUuid !== uuid) || [];
             const optimisticState = {
               ...oldState,
@@ -186,7 +186,7 @@ export const useMutationDeleteUserPhotoById = (dynamicParam?: string) => {
           });
       },
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LOGGED_IN_USER_PROFILE, dynamicParam] });
+        await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_CURRENT_USER_PROFILE, dynamicParam] });
       }
     })
   );
