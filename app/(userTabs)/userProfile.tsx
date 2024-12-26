@@ -2,34 +2,15 @@ import { GradientHeading } from '@/components/text/gradientText';
 import { useInfiniteQueryGetBucketListScreen } from '@/queries/currentUser/eventHooks';
 import { useQueryGetUserProfile } from '@/queries/currentUser/userHooks';
 import { Tabs, useRouter } from 'expo-router';
-import { useCallback } from 'react';
-import { TouchableOpacity, View, SafeAreaView } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
-import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
-import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
-import { FlashList } from '@shopify/flash-list';
-import { TextView } from '@/components/text/text';
-import { Heading } from '@/components/text/heading';
-import { calAge } from '@/helpers/calcAge';
-import { HStack, VStack } from '@/components/utils/stacks';
-import { tabBarHeight } from '@/components/tabBar/tabBar';
-import { ExpandableText } from '@/components/text/expandableText';
-import { imageTransition } from '@/constants/vars';
-import { Badge } from '@/components/button/badge';
-import { Carousel } from '@/components/carousel/carousel';
-import { Condition } from '@/components/utils/ifElse';
+import { useStyles } from 'react-native-unistyles';
+import { Feather, Octicons } from '@expo/vector-icons';
+import { UserProfile } from '@/components/userProfile/userProfile';
 
-
-type IBucketListItem = {
-  id: number;
-  img?: string;
-  placeholder?: string;
-  location?: string;
-}
 
 export default function UserProfileScreen() {
-  const { styles, theme } = useStyles(stylesheet);
+  const { theme } = useStyles();
   const router = useRouter();
   const {
     data: userBucketList,
@@ -39,35 +20,6 @@ export default function UserProfileScreen() {
   } = useInfiniteQueryGetBucketListScreen();
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   const { data: userProfile } = useQueryGetUserProfile();
-  const bucketListEvents: IBucketListItem[] = (
-    userBucketList?.pages.
-      flatMap(({ items: events }) => (
-        events.map(
-          item => ({
-            id: item.event?.photos[0]?.id,
-            img: item.event?.photos[0]?.url,
-            placeholder: item.event?.photos[0]?.placeholder,
-            location: item.event?.location?.name,
-          })
-        )
-      )) || []
-  );
-
-  const renderBucketItem = useCallback(({ item }: { item: IBucketListItem }) => (
-    <View style={{ position: 'relative' }}>
-      <Image
-        placeholder={{ thumbhash: item.placeholder }}
-        recyclingKey={item.img}
-        source={{ uri: item.img }}
-        style={styles.eventImage}
-        contentFit='cover'
-        transition={imageTransition}
-      />
-      <Badge>
-        {item.location}
-      </Badge>
-    </View>
-  ), []);
 
   return (
     <>
@@ -101,86 +53,11 @@ export default function UserProfileScreen() {
           ),
         }}
       />
-      <SafeAreaView style={{ flex: 1 }}>
-        <FlashList
-          data={bucketListEvents}
-          estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
-          contentContainerStyle={{ paddingVertical: theme.spacing.sp7 }}
-          ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
-          keyExtractor={item => item.id?.toString()}
-          ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
-          ListHeaderComponent={() => (
-            <VStack gap={theme.spacing.sp6} styles={{ paddingHorizontal: theme.spacing.sp6 }}>
-
-              <Carousel photos={userProfile?.photos ?? []} />
-
-              <VStack styles={styles.container} gap={theme.spacing.sp1} >
-                <Heading size='s7'>
-                  {userProfile?.name}, {userProfile?.birthday && calAge(new Date(userProfile?.birthday))}
-                </Heading>
-                <HStack gap={theme.spacing.sp1}>
-                  <Ionicons name="bag-remove-outline" size={theme.spacing.sp8} color={theme.colors.gray900} />
-                  <TextView ellipsis={true}>{userProfile?.occupation || 'what is your occupation'}</TextView>
-                </HStack>
-                <HStack gap={theme.spacing.sp2}>
-                  <HStack gap={theme.spacing.sp1}>
-                    <FontAwesome name="map-o" size={theme.spacing.sp7} color={theme.colors.gray900} />
-                    <TextView>{userProfile?.homeTown || 'where you from'},</TextView>
-                  </HStack>
-                  <HStack>
-                    <MaterialCommunityIcons
-                      name="map-marker-outline"
-                      size={22}
-                      style={{ color: theme.colors.gray900 }}
-                    />
-                    <TextView style={{ marginLeft: -2 }}>
-                      {userProfile?.currentLocation || 'where you live'}
-                    </TextView>
-                  </HStack>
-                </HStack>
-              </VStack>
-
-              <View style={styles.container}>
-                <Heading size='s6'>
-                  Bio
-                </Heading>
-                <ExpandableText>{userProfile?.biography || 'tell us something about yourself'}</ExpandableText>
-              </View>
-
-              <View style={styles.container}>
-                <Heading size='s6'>
-                  Languages
-                </Heading>
-                <ExpandableText>{userProfile?.languages?.join(', ') || 'languages you speak'}</ExpandableText>
-              </View>
-
-              <Heading size='s6' style={{
-                paddingHorizontal: theme.spacing.sp6,
-                paddingBottom: theme.spacing.sp1
-              }}>
-                Bucketlist
-              </Heading>
-            </VStack>
-          )}
-          onEndReachedThreshold={0.4}
-          onEndReached={handleInfiniteFetch}
-          renderItem={renderBucketItem}
-        />
-      </SafeAreaView>
+      <UserProfile
+        userBucketList={userBucketList}
+        userProfile={userProfile}
+        onBucketListEndReached={handleInfiniteFetch}
+      />
     </>
   );
 }
-
-
-const stylesheet = createStyleSheet((theme, rt) => ({
-  container: {
-    backgroundColor: theme.colors.white100,
-    borderRadius: theme.spacing.sp6,
-    padding: theme.spacing.sp6
-  },
-  eventImage: {
-    height: rt.screen.height * 0.25,
-    borderRadius: theme.spacing.sp7,
-    marginHorizontal: theme.spacing.sp6
-  }
-}));
