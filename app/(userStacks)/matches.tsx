@@ -4,7 +4,7 @@ import {
   useMutationDeleteFriendshipInvitation,
   useMutationSentFriendshipInvitation
 } from '@/queries/currentUser/friendshipHooks';
-import { FC, ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { SafeAreaView, TouchableOpacity, View, } from 'react-native';
 import { Stack, useGlobalSearchParams, useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
@@ -25,10 +25,12 @@ import { EmptyMessage } from '@/components/empty/Empty';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
-import { IGetBasicUserProfile, IGetPaginatedUsersWhoLikedSameEvent } from '@/models/User';
+import { IGetBasicUserProfile, IGetPaginatedUsersWhoLikedSameEvent, IGetTargetUser } from '@/models/User';
 import { QueryKeys } from '@/queries/queryKeys';
 import { ErrorMessage } from '@/queries/errors/errorMessages';
 import { MutateFrienship } from '@/models/Friendship';
+import { TargetUserProfile, useBootomSheetRef } from '@/components/userProfile/targetUserProfile';
+import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -134,15 +136,17 @@ export default function MatchedEventsScreen(): ReactNode {
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
   const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
   const mutationCancelFriendship = useMutationDeleteFriendshipInvitation();
-  const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState<IGetBasicUserProfile | undefined>(undefined);
+  const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState<IGetTargetUser | undefined>(undefined);
   const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
   const [toggleModal, setToggleModal] = useState(false);
+  // const bottomSheetRef = useRef<BottomSheetMethods>(null);
+  const { bottomSheetRef, setTargetUser: setSelectedTargetUser } = useBootomSheetRef();
 
   /**
   *
   * @description from a sender user, accepts friendship with status 'ACCEPTED'
   */
-  const acceptPendingInvitation = async (targetUserAsSender: IGetBasicUserProfile) => {
+  const acceptPendingInvitation = async (targetUserAsSender: IGetTargetUser) => {
     try {
       // 1. set button to pending
       if (!targetUserAsSender.hasOutgoingFriendship) {
@@ -235,7 +239,7 @@ export default function MatchedEventsScreen(): ReactNode {
   * @description for a receiver user, sends a friendship invitation with status 'PENDING'
   * @param {IGetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
   */
-  const sentFriendshipInvitation = (targetUserAsReceiver: IGetBasicUserProfile): void => {
+  const sentFriendshipInvitation = (targetUserAsReceiver: IGetTargetUser): void => {
     // 1. set button to pending
     pendingButton.handleOptimisticUpdate(targetUserAsReceiver.id);
 
@@ -493,7 +497,13 @@ export default function MatchedEventsScreen(): ReactNode {
                             styles={{ paddingHorizontal: theme.spacing.sp6 }}
                           >
                             <TouchableOpacity
-                              onPress={() => router.push(`/(userStacks)/targetUserProfile?uuid=${user?.uid}`)}
+                              // onPress={() => router.push(`/(userStacks)/targetUserProfile?uuid=${user?.uid}`)}
+                              onPress={() => {
+                                setSelectedTargetUser(user.uid);
+                                setTimeout(() => {
+                                  bottomSheetRef.current?.snapToIndex(0);
+                                }, 200);
+                              }}
                               style={{
                                 flex: 1, flexDirection: 'row',
                                 alignItems: 'center',
@@ -538,6 +548,11 @@ export default function MatchedEventsScreen(): ReactNode {
           </PagerView>
         </Animated.View>
       </SafeAreaView>
+      {/*
+      <TargetUserProfile
+        // ref={bottomSheetRef}
+        userUuid={targetUser?.uid ?? '3cb83f63-a659-453e-b616-3d60435843a4'}
+      /> */}
     </>
   );
 }

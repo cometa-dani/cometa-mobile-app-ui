@@ -37,6 +37,7 @@ export const useInfiniteQueryGetSameMatchedEventsByTwoUsers = (targetUserID: str
   return (
     useInfiniteQuery({
       initialPageParam: -1,
+      enabled: !!targetUserID,
       queryKey: [QueryKeys.GET_MATCHED_EVENTS_BY_TWO_USERS, targetUserID],
       queryFn: async ({ pageParam }): Promise<IGetLatestPaginatedEvents> => {
         const res = await eventService.getSameMatchedEventsByTwoUsersWithPagination(targetUserID, pageParam, take, allPhotos);

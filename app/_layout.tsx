@@ -19,6 +19,7 @@ import { onlineManager } from '@tanstack/react-query';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Subscription } from '@supabase/supabase-js';
+import { TargetUserProfile } from '@/components/userProfile/targetUserProfile';
 
 
 // Catch any errors thrown by the Layout component.
@@ -147,6 +148,8 @@ function Root(): ReactNode {
                   <Stack.Screen name='(userTabs)' options={{ animation: 'fade' }} />
                   <Stack.Screen name='(companyTabs)' options={{ animation: 'fade' }} />
                 </Stack>
+
+                <TargetUserProfile />
               </NotifierWrapper>
             </BottomSheetModalProvider>
           </GestureHandlerRootView>

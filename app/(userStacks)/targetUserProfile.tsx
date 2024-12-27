@@ -40,14 +40,14 @@ export default function TargetUserProfileScreen(): ReactNode {
           ),
         }}
       />
-      <TargetUserProfile
-        matches={matchedEvents}
-        isListLoading={!targetUserbucketList.isSuccess}
+      {/* <TargetUserProfile
+        // matches={matchedEvents}
+        isBucketListLoading={!targetUserbucketList.isSuccess}
         isHeaderLoading={!targetUserProfile.isSuccess}
-        userBucketList={targetUserbucketList?.data}
-        userProfile={targetUserProfile?.data}
+        bucketList={targetUserbucketList?.data}
+        profile={targetUserProfile?.data}
         onBucketListEndReached={() => { }}
-      />
+      /> */}
     </>
   );
 }
