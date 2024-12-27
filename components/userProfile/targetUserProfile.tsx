@@ -1,5 +1,5 @@
-import { FlashList, MasonryFlashList } from '@shopify/flash-list';
-import { createRef, FC, forwardRef, RefObject, useCallback } from 'react';
+import { FlashList } from '@shopify/flash-list';
+import { createRef, FC, RefObject, useCallback } from 'react';
 import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { tabBarHeight } from '../tabBar/tabBar';
 import { FlatList, Platform, ScrollView, View } from 'react-native';
@@ -13,11 +13,12 @@ import { IGetLatestPaginatedEvents } from '@/models/Event';
 import { Heading } from '../text/heading';
 import { TextView } from '../text/text';
 import { Image } from 'expo-image';
-import DefaultBottomSheet, { BottomSheetFlatList, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
+import DefaultBottomSheet, { BottomSheetFlatList, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useQueryGetTargetUserPeopleProfile } from '@/queries/targetUser/userProfileHooks';
 import { useInfiniteQueryGetSameMatchedEventsByTwoUsers, useInfiniteQueryGetTargetUserBucketList } from '@/queries/targetUser/eventHooks';
 import { create } from 'zustand';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 const snapPoints = ['60%', '100%'];
 const dummyBucketListItems = [
@@ -29,16 +30,6 @@ const dummyBucketListItems = [
   }
 ];
 
-// interface IProps {
-//   // bucketList?: InfiniteData<IGetPaginatedLikedEventsBucketList, unknown>,
-//   // matches?: InfiniteData<IGetLatestPaginatedEvents, unknown>,
-//   // profile?: IGetTargetUser,
-//   // isBucketListLoading?: boolean,
-//   // isMatchesLoading?: boolean,
-//   // isHeaderLoading?: boolean
-//   // onBucketListEndReached: () => void,
-//   userUuid: string
-// }
 export const TargetUserProfile: FC = () => {
   const { theme } = useStyles();
   const { bottomSheetRef, userUuid } = useBootomSheetRef();
@@ -58,7 +49,6 @@ export const TargetUserProfile: FC = () => {
         )
       )) || []
   );
-  console.log(userUuid);
   const matchesEvents: IBucketListItem[] = (
     matches.data?.pages.
       flatMap(({ items: events }) => (
@@ -102,38 +92,21 @@ export const TargetUserProfile: FC = () => {
         ios: false                    // needed for e2e testing, don't change
       })}
       ref={bottomSheetRef}
-      // containerStyle={{
-      //   backgroundColor: theme.colors.white80,
-      // }}
-      // style={{ backgroundColor: theme.colors.white80 }}
       index={-1}
+      containerStyle={{
+        flex: 1
+      }}
       enableDynamicSizing={false}     // don't change
       enablePanDownToClose={true}     // don't change
       keyboardBehavior="fillParent"   // don't change
       snapPoints={snapPoints}
     >
-
-      {/* <BottomSheetScrollView style={{
-          // paddingVertical: theme.spacing.sp7,
-          // paddingHorizontal: theme.spacing.sp10,
-        }}>
-
-        </BottomSheetScrollView> */}
-
-
-      <SafeAreaView
-        edges={{ bottom: 'off' }}
-        style={{
-          flex: 1,
-          backgroundColor: theme.colors.white80,
-          paddingVertical: theme.spacing.sp7
-        }}>
+      <SafeAreaView style={{ flex: 1 }}>
         <BottomSheetFlatList
           data={matchesEvents}
           ListHeaderComponent={() => (
             <BottomSheetView>
               <UserHeader />
-
               <FlashList
                 data={!bucketList.isSuccess ? dummyBucketListItems : bucketListEvents}
                 showsHorizontalScrollIndicator={false}
@@ -152,21 +125,20 @@ export const TargetUserProfile: FC = () => {
                 Matches
               </Heading>
             </BottomSheetView>
-            // </SafeAreaView>
           )}
-          style={{ flex: 1 }}
-          // contentContainerStyle={{
-          //   paddingHorizontal: theme.spacing.sp6,
-          //   paddingVertical: theme.spacing.sp7
-          // }}
+          style={{
+            backgroundColor: theme.colors.white80,
+            paddingVertical: theme.spacing.sp7
+          }}
           numColumns={3}
           ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp2 }} />}
+          ListFooterComponent={() => <View style={{ height: 200 }} />}
           columnWrapperStyle={{
             gap: theme.spacing.sp2
           }}
-          renderItem={(item) => (
+          renderItem={({ item }) => (
             <View
-              key={item?.item?.id}
+              key={item?.id}
               style={{
                 height: UnistylesRuntime.screen.height * 0.2,
                 flex: 1 / 3,
@@ -174,8 +146,8 @@ export const TargetUserProfile: FC = () => {
               }}
             >
               <Image
-                source={{ uri: item?.item?.img }}
-                placeholder={{ thumbhash: item?.item?.placeholder }}
+                source={{ uri: item?.img }}
+                placeholder={{ thumbhash: item?.placeholder }}
                 style={{
                   width: '100%',
                   flex: 1,
@@ -186,41 +158,9 @@ export const TargetUserProfile: FC = () => {
           )}
         />
       </SafeAreaView>
-      {/* <FlatList
-        data={dummyBucketListItems}
-        // showsHorizontalScrollIndicator={false}
-        numColumns={3}
-        style={{
-          flex: 1
-        }}
-        columnWrapperStyle={{
-          gap: theme.spacing.sp2
-        }}
-        ItemSeparatorComponent={() => <View style={{ width: theme.spacing.sp2 }} />}
-        renderItem={({ item, index }) => (
-          <Image
-            key={index}
-            source={{ uri: item?.img }}
-            placeholder={{ thumbhash: item?.placeholder }}
-            style={{
-              height: UnistylesRuntime.screen.height * 0.2,
-              // width: 'auto',
-              // flex: 1,
-              width: '100%',
-              // width: UnistylesRuntime.screen.width / 3,
-              borderRadius: theme.spacing.sp4
-            }}
-            contentFit='cover'
-            transition={imageTransition}
-            recyclingKey={item?.img}
-          />
-        )}
-      /> */}
     </DefaultBottomSheet>
   );
 };
-
-// TargetUserProfile.displayName = 'TargetUserProfile';
 
 
 type DefaultBottomSheetProps = {
