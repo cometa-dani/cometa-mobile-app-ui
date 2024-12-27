@@ -28,11 +28,9 @@ export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = fals
       <Condition
         if={isTargetUser}
         then={(
-          <View style={styles.container}>
-            <Button variant='primary' onPress={() => { }} >
-              FOLLOW
-            </Button>
-          </View>
+          <Button variant='primary' onPress={() => { }} >
+            FOLLOW
+          </Button>
         )}
       />
 
@@ -106,11 +104,9 @@ export const HeaderSkeleton: FC<IHeaderSkeletonProps> = ({ isTargetUser = false 
         <Condition
           if={isTargetUser}
           then={(
-            <View style={styles.container}>
-              <Button variant='primary' onPress={() => { }}>
-                FOLLOW
-              </Button>
-            </View>
+            <Button variant='primary' onPress={() => { }}>
+              FOLLOW
+            </Button>
           )}
         />
         <VStack styles={styles.container} gap={theme.spacing.sp1} >

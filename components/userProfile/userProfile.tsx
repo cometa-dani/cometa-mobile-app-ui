@@ -39,15 +39,15 @@ const dummyBucketListItems = [
 ];
 
 interface IProps {
-  userBucketList?: InfiniteData<IGetPaginatedLikedEventsBucketList, unknown>,
-  userProfile?: IGetDetailedUserProfile,
+  bucketList?: InfiniteData<IGetPaginatedLikedEventsBucketList, unknown>,
+  profile?: IGetDetailedUserProfile,
   onBucketListEndReached: () => void,
   isListLoading?: boolean,
   isHeaderLoading?: boolean
 }
 export const UserProfile: FC<IProps> = ({
-  userBucketList,
-  userProfile,
+  bucketList: userBucketList,
+  profile: userProfile,
   isListLoading = false,
   isHeaderLoading = false,
   onBucketListEndReached

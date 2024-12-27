@@ -75,9 +75,9 @@ export default function UserProfileScreen() {
         }}
       />
       <UserProfile
-        userProfile={userProfile}
+        profile={userProfile}
         isHeaderLoading={!isUserProfileSuccess}
-        userBucketList={userBucketList}
+        bucketList={userBucketList}
         isListLoading={!isBucketListSuccess}
         onBucketListEndReached={handleInfiniteFetch}
       />

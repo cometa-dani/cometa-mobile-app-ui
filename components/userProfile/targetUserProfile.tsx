@@ -54,27 +54,30 @@ export const TargetUserProfile: FC<IProps> = ({
         )
       )) || []
   );
-  // const matchesEvents: IBucketListItem[] = (
-  //   matches?.pages.
-  //     flatMap(({ items: events }) => (
-  //       events.map(
-  //         item => ({
-  //           id: item?.photos[0]?.id,
-  //           img: item?.photos[0]?.url,
-  //           placeholder: item?.photos[0]?.placeholder,
-  //           location: item?.location?.name,
-  //         })
-  //       )
-  //     )) || []
-  // );
-
+  const matchesEvents: IBucketListItem[] = (
+    matches?.pages.
+      flatMap(({ items: events }) => (
+        events.map(
+          item => ({
+            id: item?.photos[0]?.id,
+            img: item?.photos[0]?.url,
+            placeholder: item?.photos[0]?.placeholder,
+            location: item?.location?.name,
+          })
+        )
+      )) || []
+  );
+  console.log({ matchesEvents, bucketListEvents });
   const UserHeader: FC = useCallback(() => (
     isHeaderLoading ? (
       <HeaderSkeleton />
     ) : (
-      <HeaderUserProfile isTargetUser={true} userProfile={userProfile} />
+      <HeaderUserProfile
+        isTargetUser={true}
+        userProfile={userProfile}
+      />
     )
-  ), [isHeaderLoading]);
+  ), [isHeaderLoading, userProfile?.id]);
 
   const renderBucketItem = useCallback(({ item }: { item: IBucketListItem }) => (
     isListLoading ? (
@@ -86,11 +89,11 @@ export const TargetUserProfile: FC<IProps> = ({
         <EventItem item={item} />
       </View>
     )
-  ), [isListLoading]);
+  ), [isListLoading, userProfile?.id]);
 
   return (
     <>
-      {/* <ScrollView
+      <ScrollView
         contentContainerStyle={{
           paddingTop: theme.spacing.sp7,
           paddingBottom: tabBarHeight * 2,
@@ -104,7 +107,6 @@ export const TargetUserProfile: FC<IProps> = ({
           horizontal={true}
           pagingEnabled={true}
           estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
-          keyExtractor={item => item?.id?.toString()}
           onEndReachedThreshold={0.4}
           onEndReached={onBucketListEndReached}
           renderItem={renderBucketItem}
@@ -117,9 +119,9 @@ export const TargetUserProfile: FC<IProps> = ({
           Matches
         </Heading>
 
-      </ScrollView> */}
+      </ScrollView>
 
-      <FlatList
+      {/* <FlatList
         data={dummyBucketListItems}
         // showsHorizontalScrollIndicator={false}
         numColumns={3}
@@ -129,7 +131,6 @@ export const TargetUserProfile: FC<IProps> = ({
         columnWrapperStyle={{
           gap: theme.spacing.sp2
         }}
-        keyExtractor={item => item?.id?.toString()}
         ItemSeparatorComponent={() => <View style={{ width: theme.spacing.sp2 }} />}
         renderItem={({ item, index }) => (
           <Image
@@ -149,7 +150,7 @@ export const TargetUserProfile: FC<IProps> = ({
             recyclingKey={item?.img}
           />
         )}
-      />
+      /> */}
     </>
   );
 };
