@@ -206,7 +206,7 @@ export const TargetUserProfile: FC = () => {
                 Matches
               </Heading>
               <BlurView
-                intensity={30}
+                intensity={Platform.select({ ios: 40, android: 100 })}
                 style={{
                   borderRadius: theme.spacing.sp4,
                   overflow: 'hidden',
@@ -219,7 +219,7 @@ export const TargetUserProfile: FC = () => {
                   justifyContent: 'center',
                   alignItems: 'center',
                   zIndex: 100,
-                  top: 42
+                  top: 46
                 }} >
                 <FontAwesome name="lock" size={theme.spacing.sp14} color={theme.colors.gray200} />
               </BlurView>

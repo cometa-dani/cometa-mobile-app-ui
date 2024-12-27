@@ -9,7 +9,7 @@ import { SafeAreaView, TouchableOpacity, View, } from 'react-native';
 import { Stack, useGlobalSearchParams, useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { GradientHeading } from '@/components/text/gradientText';
-import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 import { TextView } from '@/components/text/text';
 import PagerView, { usePagerView } from 'react-native-pager-view';
 import { Center, HStack, VStack } from '@/components/utils/stacks';
@@ -307,19 +307,19 @@ export default function MatchedEventsScreen(): ReactNode {
       <Stack.Screen
         options={{
           headerShown: true,
-          // headerSearchBarOptions: {
-          //   autoFocus: false,
-          //   placeholder: 'search',
-          //   tintColor: theme.colors.red100,
-          //   inputType: 'text',
-          //   barTintColor: theme.colors.white80,
-          //   onFocus: () => {
-          //     setShowImage(false);
-          //   },
-          //   onBlur: () => {
-          //     setShowImage(true);
-          //   },
-          // },
+          headerSearchBarOptions: {
+            autoFocus: false,
+            placeholder: 'search',
+            tintColor: theme.colors.red100,
+            inputType: 'text',
+            barTintColor: theme.colors.white80,
+            onFocus: () => {
+              setShowImage(false);
+            },
+            onBlur: () => {
+              setShowImage(true);
+            },
+          },
           // animation: 'fade',
           headerTitleAlign: 'center',
           headerTitle: () => (
@@ -411,7 +411,7 @@ export default function MatchedEventsScreen(): ReactNode {
                         nestedScrollEnabled={true}
                         data={newFriendsData}
                         estimatedItemSize={60}
-                        ListFooterComponentStyle={{ height: 200 }}
+                        ListFooterComponentStyle={{ height: UnistylesRuntime.screen.height * 0.45 }}
                         contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
                         ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
                         onViewableItemsChanged={({ viewableItems }) => {
@@ -480,7 +480,7 @@ export default function MatchedEventsScreen(): ReactNode {
                     else={(
                       <FlashList
                         nestedScrollEnabled={true}
-                        ListFooterComponentStyle={{ height: 200 }}
+                        ListFooterComponentStyle={{ height: UnistylesRuntime.screen.height * 0.45 }}
                         contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
                         ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
                         onViewableItemsChanged={({ viewableItems }) => {
