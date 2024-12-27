@@ -13,6 +13,7 @@ import { useInfiniteQueryGetSameMatchedEventsByTwoUsers, useInfiniteQueryGetTarg
 import { create } from 'zustand';
 import { GradientHeading } from '../text/gradientText';
 import { Center } from '../utils/stacks';
+import { tabBarHeight } from '../tabBar/tabBar';
 
 
 const snapPoints = ['60%', '100%'];
@@ -108,17 +109,17 @@ export const TargetUserProfile: FC = () => {
       })}
       ref={bottomSheetRef}
       index={-1}
-      containerStyle={{
-        flex: 1,
-        height: '100%'
-      }}
+      containerStyle={{ flex: 1 }}
       enableDynamicSizing={false}     // don't change
       enablePanDownToClose={true}     // don't change
       keyboardBehavior="fillParent"   // don't change
       snapPoints={snapPoints}
     >
       <BottomSheetFlatList
-        style={{ flex: 1, height: '100%', backgroundColor: theme.colors.white80 }}
+        style={{
+          flex: 1,
+          backgroundColor: theme.colors.white80
+        }}
         data={matchesEvents}
         ListHeaderComponent={() => (
           <View>
@@ -153,7 +154,7 @@ export const TargetUserProfile: FC = () => {
         numColumns={3}
         contentContainerStyle={{ paddingVertical: theme.spacing.sp7 }}
         ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp2 }} />}
-        ListFooterComponent={() => <View style={{ height: 200 }} />}
+        ListFooterComponent={() => <View style={{ height: tabBarHeight * 1.5 }} />}
         columnWrapperStyle={{
           gap: theme.spacing.sp2,
           paddingHorizontal: theme.spacing.sp6
