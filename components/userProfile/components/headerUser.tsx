@@ -104,7 +104,11 @@ export const HeaderSkeleton: FC<IHeaderSkeletonProps> = ({ isTargetUser = false 
         <Condition
           if={isTargetUser}
           then={(
-            <Button variant='primary' onPress={() => { }}>
+            <Button
+              style={{ backgroundColor: theme.colors.gray200 }}
+              variant='primary'
+              onPress={() => { }}
+            >
               FOLLOW
             </Button>
           )}

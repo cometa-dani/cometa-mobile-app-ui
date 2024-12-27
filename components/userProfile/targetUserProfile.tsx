@@ -75,7 +75,7 @@ export const TargetUserProfile: FC = () => {
 
   const UserHeader: FC = useCallback(() => (
     !userProfile.isSuccess ? (
-      <HeaderSkeleton />
+      <HeaderSkeleton isTargetUser={true} />
     ) : (
       <HeaderUserProfile
         isTargetUser={true}
