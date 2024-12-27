@@ -14,6 +14,8 @@ import { create } from 'zustand';
 import { GradientHeading } from '../text/gradientText';
 import { Center } from '../utils/stacks';
 import { tabBarHeight } from '../tabBar/tabBar';
+import { BlurView } from 'expo-blur';
+import { FontAwesome } from '@expo/vector-icons';
 
 
 const snapPoints = ['60%', '100%'];
@@ -136,6 +138,7 @@ export const TargetUserProfile: FC = () => {
         height: UnistylesRuntime.screen.height * 0.2,
         flex: 1 / 3,
         flexDirection: 'row',
+        zIndex: -10
       }}
     >
       <Image
@@ -150,6 +153,7 @@ export const TargetUserProfile: FC = () => {
         }}
       />
     </BottomSheetView>
+    // </BlurView>
   ), [userUuid]);
 
 
@@ -160,7 +164,7 @@ export const TargetUserProfile: FC = () => {
       })}
       ref={bottomSheetRef}
       index={-1}
-      containerStyle={{ flex: 1 }}
+      containerStyle={{ flex: 1, position: 'relative' }}
       enableDynamicSizing={false}     // don't change
       enablePanDownToClose={true}     // don't change
       keyboardBehavior="fillParent"   // don't change
@@ -173,7 +177,7 @@ export const TargetUserProfile: FC = () => {
         }}
         data={matchesEvents}
         ListHeaderComponent={() => (
-          <View>
+          <>
             <BottomSheetView style={{ paddingHorizontal: theme.spacing.sp6 }}>
               <UserHeader />
             </BottomSheetView>
@@ -193,7 +197,7 @@ export const TargetUserProfile: FC = () => {
               />
             </BottomSheetView>
 
-            <BottomSheetView>
+            <BottomSheetView style={{ position: 'relative' }}>
               <Heading size='s6' style={{
                 paddingHorizontal: theme.spacing.sp12,
                 paddingBottom: theme.spacing.sp1,
@@ -201,13 +205,31 @@ export const TargetUserProfile: FC = () => {
               }}>
                 Matches
               </Heading>
+              <BlurView
+                intensity={30}
+                style={{
+                  borderRadius: theme.spacing.sp4,
+                  overflow: 'hidden',
+                  width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),
+                  paddingHorizontal: theme.spacing.sp6,
+                  height: calcHeight(matchesEvents.length) * ((UnistylesRuntime.screen.height * 0.2) + theme.spacing.sp2),
+                  flex: 1,
+                  position: 'absolute',
+                  transform: [{ translateX: theme.spacing.sp6 }],
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  zIndex: 100,
+                  top: 42
+                }} >
+                <FontAwesome name="lock" size={theme.spacing.sp14} color={theme.colors.gray200} />
+              </BlurView>
             </BottomSheetView>
-          </View>
+          </>
         )}
         numColumns={3}
         contentContainerStyle={{ paddingVertical: theme.spacing.sp7 }}
         ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp2 }} />}
-        ListFooterComponent={() => <View style={{ height: tabBarHeight * 1.5 }} />}
+        ListFooterComponent={() => (<View style={{ height: tabBarHeight * 1.5 }} />)}
         columnWrapperStyle={{
           gap: theme.spacing.sp2,
           paddingHorizontal: theme.spacing.sp6
@@ -216,6 +238,7 @@ export const TargetUserProfile: FC = () => {
         onEndReached={handleInfinteMatches}
         renderItem={renderMacthesItem}
       />
+
     </DefaultBottomSheet>
   );
 };
@@ -236,3 +259,8 @@ export const useBootomSheetRef = create<DefaultBottomSheetProps>((set, get) => (
     set({ userUuid: targetUser });
   },
 }));
+
+const calcHeight = (length: number): number => {
+  const ones = Array.from({ length: length + 1 }, (_, index) => index).filter(index => index % 3 === 1);
+  return ones.length;
+};
