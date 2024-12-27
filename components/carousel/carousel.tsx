@@ -26,6 +26,7 @@ export const Carousel: FC<ICarouselProps> = ({ photos }) => {
         ref={ref}
         style={styles.container}
         initialPage={0}
+        scrollEnabled={true}
         onPageScroll={(e) => {
           setStep(e.nativeEvent.position);
         }}
