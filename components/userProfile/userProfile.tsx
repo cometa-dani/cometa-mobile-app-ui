@@ -58,9 +58,9 @@ export const UserProfile: FC<IProps> = ({
       flatMap(({ items: events }) => (
         events.map(
           item => ({
-            id: item.event?.photos[0]?.id,
-            img: item.event?.photos[0]?.url,
-            placeholder: item.event?.photos[0]?.placeholder,
+            id: item.event?.id,
+            img: item.event?.photos.at(0)?.url,
+            placeholder: item.event?.photos.at(0)?.placeholder,
             location: item.event?.location?.name,
           })
         )
@@ -90,7 +90,6 @@ export const UserProfile: FC<IProps> = ({
       estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
       contentContainerStyle={{ paddingVertical: theme.spacing.sp7 }}
       ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
-      keyExtractor={item => item.id?.toString()}
       ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
       ListHeaderComponent={renderHeader}
       onEndReachedThreshold={0.4}

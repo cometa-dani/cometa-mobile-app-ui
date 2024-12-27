@@ -9,7 +9,7 @@ const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
 export type IBucketListItem = {
-  id: number;
+  id?: number;
   img?: string;
   placeholder?: string;
   location?: string;

@@ -46,9 +46,9 @@ export const TargetUserProfile: FC<IProps> = ({
       flatMap(({ items: events }) => (
         events.map(
           item => ({
-            id: item?.event?.photos[0]?.id,
-            img: item?.event?.photos[0]?.url,
-            placeholder: item?.event?.photos[0]?.placeholder,
+            id: item?.event?.id,
+            img: item?.event?.photos.at(0)?.url,
+            placeholder: item?.event?.photos.at(0)?.placeholder,
             location: item?.event?.location?.name,
           })
         )
