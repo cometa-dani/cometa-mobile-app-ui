@@ -3,11 +3,11 @@ import { Stack, router, useFocusEffect, useLocalSearchParams } from 'expo-router
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import { BaseButton, RectButton } from 'react-native-gesture-handler';
-import { FontAwesome } from '@expo/vector-icons';
+// import { FontAwesome } from '@expo/vector-icons';
 // import { gray_50, red_100 } from '../../../constants/colors';
 import { useCometaStore } from '../../store/cometaStore';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import notificationService from '../../services/notificationService';
+// import notificationService from '../../services/notificationService';
 import { INotificationData } from '../../store/slices/notificationSlice';
 import { ReactNode, useCallback } from 'react';
 import { TextView } from '@/components/text/text';

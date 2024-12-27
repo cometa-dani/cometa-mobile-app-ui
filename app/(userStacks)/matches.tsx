@@ -4,7 +4,7 @@ import {
   useMutationDeleteFriendshipInvitation,
   useMutationSentFriendshipInvitation
 } from '@/queries/currentUser/friendshipHooks';
-import { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 import { SafeAreaView, TouchableOpacity, View, } from 'react-native';
 import { Stack, useGlobalSearchParams, useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
@@ -15,7 +15,7 @@ import PagerView, { usePagerView } from 'react-native-pager-view';
 import { Center, HStack, VStack } from '@/components/utils/stacks';
 import { useCometaStore } from '@/store/cometaStore';
 import { Button } from '@/components/button/button';
-import Animated, { ZoomIn, FadeOut, LinearTransition, } from 'react-native-reanimated';
+import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import { imageTransition } from '@/constants/vars';
 import { Badge } from '@/components/button/badge';
@@ -29,8 +29,7 @@ import { IGetBasicUserProfile, IGetPaginatedUsersWhoLikedSameEvent, IGetTargetUs
 import { QueryKeys } from '@/queries/queryKeys';
 import { ErrorMessage } from '@/queries/errors/errorMessages';
 import { MutateFrienship } from '@/models/Friendship';
-import { TargetUserProfile, useBootomSheetRef } from '@/components/userProfile/targetUserProfile';
-import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
+import { useBootomSheetRef } from '@/components/userProfile/targetUserProfile';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -308,20 +307,20 @@ export default function MatchedEventsScreen(): ReactNode {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerSearchBarOptions: {
-            autoFocus: false,
-            placeholder: 'search',
-            tintColor: theme.colors.red100,
-            inputType: 'text',
-            barTintColor: theme.colors.white80,
-            onFocus: () => {
-              setShowImage(false);
-            },
-            onBlur: () => {
-              setShowImage(true);
-            },
-          },
-          animation: 'fade',
+          // headerSearchBarOptions: {
+          //   autoFocus: false,
+          //   placeholder: 'search',
+          //   tintColor: theme.colors.red100,
+          //   inputType: 'text',
+          //   barTintColor: theme.colors.white80,
+          //   onFocus: () => {
+          //     setShowImage(false);
+          //   },
+          //   onBlur: () => {
+          //     setShowImage(true);
+          //   },
+          // },
+          // animation: 'fade',
           headerTitleAlign: 'center',
           headerTitle: () => (
             <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
@@ -338,7 +337,7 @@ export default function MatchedEventsScreen(): ReactNode {
       }}>
         {showImage &&
           <Animated.View
-            entering={ZoomIn.withInitialValues({ transform: [{ scale: 0 }] }).duration(460)}
+            // entering={ZoomIn.withInitialValues({ transform: [{ scale: 0 }] }).duration(390)}
             exiting={FadeOut.duration(390)}
           >
             <View style={{ padding: theme.spacing.sp6, paddingBottom: 0, position: 'relative' }}>
@@ -548,11 +547,6 @@ export default function MatchedEventsScreen(): ReactNode {
           </PagerView>
         </Animated.View>
       </SafeAreaView>
-      {/*
-      <TargetUserProfile
-        // ref={bottomSheetRef}
-        userUuid={targetUser?.uid ?? '3cb83f63-a659-453e-b616-3d60435843a4'}
-      /> */}
     </>
   );
 }
