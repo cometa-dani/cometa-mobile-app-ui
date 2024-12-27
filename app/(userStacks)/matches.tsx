@@ -496,7 +496,6 @@ export default function MatchedEventsScreen(): ReactNode {
                             styles={{ paddingHorizontal: theme.spacing.sp6 }}
                           >
                             <TouchableOpacity
-                              // onPress={() => router.push(`/(userStacks)/targetUserProfile?uuid=${user?.uid}`)}
                               onPress={() => {
                                 setSelectedTargetUser(user.uid);
                                 setTimeout(() => {
