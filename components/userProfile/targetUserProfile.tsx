@@ -76,11 +76,19 @@ export const TargetUserProfile: FC = () => {
 
   const renderBucketItem = useCallback(({ item }: { item: IBucketListItem }) => (
     !bucketList.isSuccess ? (
-      <View style={{ position: 'relative', width: UnistylesRuntime.screen.width }}>
+      <View style={{
+        position: 'relative',
+        width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),
+        marginHorizontal: theme.spacing.sp6
+      }}>
         <EventItemSkeleton />
       </View>
     ) : (
-      <View style={{ position: 'relative', width: UnistylesRuntime.screen.width }}>
+      <View style={{
+        position: 'relative',
+        width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),
+        marginHorizontal: theme.spacing.sp6
+      }}>
         <EventItem item={item} />
       </View>
     )
@@ -106,7 +114,9 @@ export const TargetUserProfile: FC = () => {
           data={matchesEvents}
           ListHeaderComponent={() => (
             <BottomSheetView>
-              <UserHeader />
+              <View style={{ paddingHorizontal: theme.spacing.sp6 }}>
+                <UserHeader />
+              </View>
               <FlashList
                 data={!bucketList.isSuccess ? dummyBucketListItems : bucketListEvents}
                 showsHorizontalScrollIndicator={false}
@@ -131,10 +141,15 @@ export const TargetUserProfile: FC = () => {
             paddingVertical: theme.spacing.sp7
           }}
           numColumns={3}
+          contentContainerStyle={{
+            paddingVertical: theme.spacing.sp7,
+            // paddingHorizontal: theme.spacing.sp6
+          }}
           ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp2 }} />}
           ListFooterComponent={() => <View style={{ height: 200 }} />}
           columnWrapperStyle={{
-            gap: theme.spacing.sp2
+            gap: theme.spacing.sp2,
+            paddingHorizontal: theme.spacing.sp6
           }}
           renderItem={({ item }) => (
             <View

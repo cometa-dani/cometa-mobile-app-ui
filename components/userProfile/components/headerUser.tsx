@@ -22,7 +22,7 @@ interface IProps {
 export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = false }) => {
   const { theme, styles } = useStyles(styleSheet);
   return (
-    <VStack gap={theme.spacing.sp6} styles={{ paddingHorizontal: theme.spacing.sp6 }}>
+    <VStack gap={theme.spacing.sp6}>
       <Carousel photos={userProfile?.photos ?? []} />
 
       <Condition
@@ -92,7 +92,7 @@ export const HeaderSkeleton: FC<IHeaderSkeletonProps> = ({ isTargetUser = false 
   const { theme, styles } = useStyles(styleSheet);
   return (
     <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
-      <VStack gap={theme.spacing.sp6} styles={{ paddingHorizontal: theme.spacing.sp6 }}>
+      <VStack gap={theme.spacing.sp6}>
         <View
           style={{
             width: '100%',

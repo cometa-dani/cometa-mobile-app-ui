@@ -88,7 +88,10 @@ export const UserProfile: FC<IProps> = ({
       data={isListLoading ? dummyBucketListItems : bucketListEvents}
       showsVerticalScrollIndicator={false}
       estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
-      contentContainerStyle={{ paddingVertical: theme.spacing.sp7 }}
+      contentContainerStyle={{
+        paddingVertical: theme.spacing.sp7,
+        paddingHorizontal: theme.spacing.sp6
+      }}
       ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
       ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
       ListHeaderComponent={renderHeader}

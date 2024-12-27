@@ -53,6 +53,6 @@ const stylesheet = createStyleSheet((theme, rt) => ({
     height: rt.screen.height * 0.25,
     width: 'auto',
     borderRadius: theme.spacing.sp7,
-    marginHorizontal: theme.spacing.sp6
+    // marginHorizontal: theme.spacing.sp6
   }
 }));
