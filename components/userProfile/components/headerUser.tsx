@@ -17,23 +17,26 @@ const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 interface IProps {
   userProfile?: IGetDetailedUserProfile,
-  isTargetUser?: boolean
+  isTargetUser?: boolean,
+  onPresss?: () => void
 }
-export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = false }) => {
+export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = false, onPresss }) => {
   const { theme, styles } = useStyles(styleSheet);
   return (
     <VStack gap={theme.spacing.sp6}>
       <Carousel photos={userProfile?.photos ?? []} />
-
       <Condition
         if={isTargetUser}
         then={(
-          <Button variant='primary' onPress={() => { }} >
+          <Button
+            isInsideBottomSheet={true}
+            variant='primary'
+            onPress={() => onPresss && onPresss()}
+          >
             FOLLOW
           </Button>
         )}
       />
-
       <VStack styles={styles.container} gap={theme.spacing.sp1} >
         <Heading size='s7'>
           {userProfile?.name}, {userProfile?.birthday && calAge(new Date(userProfile?.birthday))}
@@ -58,7 +61,7 @@ export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = fals
             </TextView>
           </HStack>
         </HStack>
-      </VStack>
+      </VStack >
 
       <View style={styles.container}>
         <Heading size='s6'>
@@ -80,7 +83,7 @@ export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = fals
       }}>
         Bucketlist
       </Heading>
-    </VStack>
+    </VStack >
   );
 };
 
@@ -104,13 +107,17 @@ export const HeaderSkeleton: FC<IHeaderSkeletonProps> = ({ isTargetUser = false 
         <Condition
           if={isTargetUser}
           then={(
-            <Button
-              style={{ backgroundColor: theme.colors.gray200 }}
-              variant='primary'
-              onPress={() => { }}
-            >
-              FOLLOW
-            </Button>
+            <View style={{
+              backgroundColor: theme.colors.gray200,
+              borderRadius: theme.spacing.sp7
+            }}>
+              <Button
+                variant='primary'
+                onPress={() => { }}
+              >
+                FOLLOW
+              </Button>
+            </View>
           )}
         />
         <VStack styles={styles.container} gap={theme.spacing.sp1} >

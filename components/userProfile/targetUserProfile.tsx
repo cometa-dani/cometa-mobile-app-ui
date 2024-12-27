@@ -1,7 +1,7 @@
 import { FlashList } from '@shopify/flash-list';
-import { createRef, FC, RefObject, useCallback } from 'react';
-import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
-import { Platform, View } from 'react-native';
+import { createRef, FC, RefObject, useCallback, useReducer } from 'react';
+import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
+import { Modal, Platform, TouchableOpacity, View } from 'react-native';
 import { defaultImgPlaceholder, imageTransition } from '@/constants/vars';
 import { HeaderUserProfile, HeaderSkeleton, UserNameSkeleton } from './components/headerUser';
 import { EventItem, EventItemSkeleton, IBucketListItem } from './components/eventItem';
@@ -12,10 +12,12 @@ import { useQueryGetTargetUserPeopleProfile } from '@/queries/targetUser/userPro
 import { useInfiniteQueryGetSameMatchedEventsByTwoUsers, useInfiniteQueryGetTargetUserBucketList } from '@/queries/targetUser/eventHooks';
 import { create } from 'zustand';
 import { GradientHeading } from '../text/gradientText';
-import { Center } from '../utils/stacks';
+import { Center, HStack, VStack } from '../utils/stacks';
 import { tabBarHeight } from '../tabBar/tabBar';
 import { BlurView } from 'expo-blur';
-import { FontAwesome } from '@expo/vector-icons';
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
+import { TextView } from '../text/text';
+import { Button } from '../button/button';
 
 
 const snapPoints = ['60%', '100%'];
@@ -41,11 +43,12 @@ const dummyBucketListItems = [
 ];
 
 export const TargetUserProfile: FC = () => {
-  const { theme } = useStyles();
+  const { theme, styles } = useStyles(stylesheet);
   const { bottomSheetRef, userUuid } = useBootomSheetRef();
   const userProfile = useQueryGetTargetUserPeopleProfile(userUuid);
   const matches = useInfiniteQueryGetSameMatchedEventsByTwoUsers(userUuid);
   const bucketList = useInfiniteQueryGetTargetUserBucketList(userProfile?.data?.id);
+  const [toggleModal, setToggleModal] = useReducer(prev => !prev, false);
 
   // TODO: encapsulate in a component, too much rendering on infinite scroll
   // const handleInfinteBucketList = () => {
@@ -106,6 +109,7 @@ export const TargetUserProfile: FC = () => {
         <HeaderUserProfile
           isTargetUser={true}
           userProfile={userProfile.data}
+          onPresss={setToggleModal}
         />
       </>
     )
@@ -153,93 +157,138 @@ export const TargetUserProfile: FC = () => {
         }}
       />
     </BottomSheetView>
-    // </BlurView>
   ), [userUuid]);
 
 
   return (
-    <DefaultBottomSheet
-      accessible={Platform.select({
-        ios: false                    // needed for e2e testing, don't change
-      })}
-      ref={bottomSheetRef}
-      index={-1}
-      containerStyle={{ flex: 1, position: 'relative' }}
-      enableDynamicSizing={false}     // don't change
-      enablePanDownToClose={true}     // don't change
-      keyboardBehavior="fillParent"   // don't change
-      snapPoints={snapPoints}
-    >
-      <BottomSheetFlatList
-        style={{
-          flex: 1,
-          backgroundColor: theme.colors.white80
-        }}
-        data={matchesEvents}
-        ListHeaderComponent={() => (
-          <>
-            <BottomSheetView style={{ paddingHorizontal: theme.spacing.sp6 }}>
-              <UserHeader />
-            </BottomSheetView>
-            <BottomSheetView>
-              <FlashList                      // TODO: encapsulate in a component
-                data={(
-                  !bucketList.isSuccess ?
-                    dummyBucketListItems.slice(0, 1) : bucketListEvents
-                )}
-                showsHorizontalScrollIndicator={false}
-                horizontal={true}
-                pagingEnabled={true}
-                estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
-                onEndReachedThreshold={0.5}
-                // onEndReached={handleInfinteBucketList}
-                renderItem={renderBucketItem}    // TODO: encapsulate in a component
-              />
-            </BottomSheetView>
+    <>
+      <DefaultBottomSheet
+        accessible={Platform.select({
+          ios: false                    // needed for e2e testing, don't change
+        })}
+        ref={bottomSheetRef}
+        index={-1}
+        containerStyle={{ flex: 1, position: 'relative' }}
+        enableDynamicSizing={false}     // don't change
+        enablePanDownToClose={true}     // don't change
+        keyboardBehavior="fillParent"   // don't change
+        snapPoints={snapPoints}
+      >
+        <BottomSheetFlatList
+          style={{
+            flex: 1,
+            backgroundColor: theme.colors.white80
+          }}
+          data={matchesEvents}
+          ListHeaderComponent={() => (
+            <>
+              <BottomSheetView style={{ paddingHorizontal: theme.spacing.sp6 }}>
+                <UserHeader />
+              </BottomSheetView>
+              <BottomSheetView>
+                <FlashList                      // TODO: encapsulate in a component
+                  data={(
+                    !bucketList.isSuccess ?
+                      dummyBucketListItems.slice(0, 1) : bucketListEvents
+                  )}
+                  showsHorizontalScrollIndicator={false}
+                  horizontal={true}
+                  pagingEnabled={true}
+                  estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
+                  onEndReachedThreshold={0.5}
+                  // onEndReached={handleInfinteBucketList}
+                  renderItem={renderBucketItem}    // TODO: encapsulate in a component
+                />
+              </BottomSheetView>
 
-            <BottomSheetView style={{ position: 'relative' }}>
-              <Heading size='s6' style={{
-                paddingHorizontal: theme.spacing.sp12,
-                paddingBottom: theme.spacing.sp1,
-                paddingTop: theme.spacing.sp6
-              }}>
-                Matches
+              <BottomSheetView style={{ position: 'relative' }}>
+                <Heading size='s6' style={{
+                  paddingHorizontal: theme.spacing.sp12,
+                  paddingBottom: theme.spacing.sp1,
+                  paddingTop: theme.spacing.sp6
+                }}>
+                  Matches
+                </Heading>
+                <BlurView
+                  intensity={Platform.select({ ios: 40, android: 100 })}
+                  style={{
+                    borderRadius: theme.spacing.sp4,
+                    overflow: 'hidden',
+                    width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),
+                    paddingHorizontal: theme.spacing.sp6,
+                    height: calcHeight(matchesEvents.length) * ((UnistylesRuntime.screen.height * 0.2) + theme.spacing.sp2),
+                    flex: 1,
+                    position: 'absolute',
+                    transform: [{ translateX: theme.spacing.sp6 }],
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 100,
+                    top: 46
+                  }} >
+                  <FontAwesome name="lock" size={theme.spacing.sp14} color={theme.colors.gray200} />
+                </BlurView>
+              </BottomSheetView>
+            </>
+          )}
+          numColumns={3}
+          contentContainerStyle={{ paddingVertical: theme.spacing.sp7 }}
+          ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp2 }} />}
+          ListFooterComponent={() => (<View style={{ height: tabBarHeight * 1.5 }} />)}
+          columnWrapperStyle={{
+            gap: theme.spacing.sp2,
+            paddingHorizontal: theme.spacing.sp6
+          }}
+          onEndReachedThreshold={0.5}
+          onEndReached={handleInfinteMatches}
+          renderItem={renderMacthesItem}
+        />
+
+      </DefaultBottomSheet>
+
+      <Modal
+        transparent={true}
+        statusBarTranslucent={true}
+        visible={toggleModal}
+        animationType='fade'
+        onRequestClose={setToggleModal}
+      >
+        <View style={styles.backdrop}>
+          <View style={styles.modal}>
+            <HStack $x='space-between' $y='center'>
+              <TouchableOpacity
+                onPress={setToggleModal}
+              >
+                <AntDesign name="closecircle" size={theme.icons.md} color={theme.colors.gray900} />
+              </TouchableOpacity>
+            </HStack>
+
+            <VStack
+              gap={theme.spacing.sp6}
+              styles={{ marginTop: theme.spacing.sp8 }}
+            >
+              <Heading size='s6'>
+                Join to Discover & Connect!
               </Heading>
-              <BlurView
-                intensity={Platform.select({ ios: 40, android: 100 })}
-                style={{
-                  borderRadius: theme.spacing.sp4,
-                  overflow: 'hidden',
-                  width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),
-                  paddingHorizontal: theme.spacing.sp6,
-                  height: calcHeight(matchesEvents.length) * ((UnistylesRuntime.screen.height * 0.2) + theme.spacing.sp2),
-                  flex: 1,
-                  position: 'absolute',
-                  transform: [{ translateX: theme.spacing.sp6 }],
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  zIndex: 100,
-                  top: 46
-                }} >
-                <FontAwesome name="lock" size={theme.spacing.sp14} color={theme.colors.gray200} />
-              </BlurView>
-            </BottomSheetView>
-          </>
-        )}
-        numColumns={3}
-        contentContainerStyle={{ paddingVertical: theme.spacing.sp7 }}
-        ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp2 }} />}
-        ListFooterComponent={() => (<View style={{ height: tabBarHeight * 1.5 }} />)}
-        columnWrapperStyle={{
-          gap: theme.spacing.sp2,
-          paddingHorizontal: theme.spacing.sp6
-        }}
-        onEndReachedThreshold={0.5}
-        onEndReached={handleInfinteMatches}
-        renderItem={renderMacthesItem}
-      />
-
-    </DefaultBottomSheet>
+              <TextView>
+                Create you profile and start matching with others who share your bucket list goals
+              </TextView>
+              <Button
+                variant='primary'
+                onPress={() => { }}
+              >
+                User Profile
+              </Button>
+              <Button
+                variant='secondary-alt'
+                onPress={() => { }}
+              >
+                Company Profile
+              </Button>
+            </VStack>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 };
 
@@ -264,3 +313,47 @@ const calcHeight = (length: number): number => {
   const ones = Array.from({ length: length + 1 }, (_, index) => index).filter(index => index % 3 === 1);
   return ones.length;
 };
+
+
+const stylesheet = createStyleSheet((theme, runtime) => ({
+  imgBackground: {
+    flex: 1,
+    position: 'relative',
+  },
+  linearGradientTop: {
+    position: 'absolute',
+    top: 0,
+    height: 310,
+    width: '100%'
+  },
+  linearGradient: {
+    position: 'absolute',
+    bottom: 0,
+    height: 290,
+    width: '100%',
+    justifyContent: 'flex-end'
+  },
+  buttonsContainer: {
+    padding: theme.spacing.sp10,
+    paddingBottom: theme.spacing.sp18 + runtime.insets.bottom
+  },
+  backdrop: {
+    flex: 1,
+    backgroundColor: theme.colors.backDrop,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: theme.spacing.sp6,
+    paddingBottom: runtime.insets.bottom,
+  },
+  modal: {
+    width: '100%',
+    backgroundColor: theme.colors.white100,
+    padding: theme.spacing.sp10,
+    borderRadius: theme.radius.md,
+    minHeight: 300,
+  },
+  logo: {
+    width: 48,
+    aspectRatio: 1
+  }
+}));

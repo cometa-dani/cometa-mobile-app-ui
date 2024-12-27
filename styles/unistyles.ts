@@ -80,7 +80,7 @@ export const lightTheme = {
     white80: '#F5F5F5', // (a very light grayish-white color)
     white90: '#FAFAFA', // (a very light grayish-white color)
 
-    backDrop: 'rgba(0, 0, 0, 0.6)',
+    backDrop: 'rgba(0, 0, 0, 0.7)',
   },
   radius: {
     xs: 10,
