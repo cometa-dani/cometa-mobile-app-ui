@@ -23,6 +23,18 @@ const dummyBucketListItems = [
     img: defaultImgPlaceholder,
     placeholder: 'thumbhash1',
     location: 'New York City'
+  },
+  {
+    id: 2,
+    img: defaultImgPlaceholder,
+    placeholder: 'thumbhash2',
+    location: 'Los Angeles'
+  },
+  {
+    id: 3,
+    img: defaultImgPlaceholder,
+    placeholder: 'thumbhash3',
+    location: 'San Francisco'
   }
 ];
 
@@ -32,6 +44,21 @@ export const TargetUserProfile: FC = () => {
   const userProfile = useQueryGetTargetUserPeopleProfile(userUuid);
   const matches = useInfiniteQueryGetSameMatchedEventsByTwoUsers(userUuid);
   const bucketList = useInfiniteQueryGetTargetUserBucketList(userProfile?.data?.id);
+
+  // TODO: encapsulate in a component, too much rendering on infinite scroll
+  // const handleInfinteBucketList = () => {
+  //   if (bucketList) {
+  //     const { hasNextPage, isFetching } = bucketList;
+  //     hasNextPage && !isFetching && bucketList.fetchNextPage();
+  //   }
+  // };
+  const handleInfinteMatches = () => {
+    if (matches) {
+      const { hasNextPage, isFetching } = matches;
+      hasNextPage && !isFetching && matches.fetchNextPage();
+    }
+  };
+
   const bucketListEvents: IBucketListItem[] = (
     bucketList.data?.pages.
       flatMap(({ items: events }) => (
@@ -102,6 +129,30 @@ export const TargetUserProfile: FC = () => {
     )
   ), [bucketList.isSuccess, userUuid]);
 
+  const renderMacthesItem = useCallback(({ item }: { item: IBucketListItem }) => (
+    <BottomSheetView
+      key={item?.id}
+      style={{
+        height: UnistylesRuntime.screen.height * 0.2,
+        flex: 1 / 3,
+        flexDirection: 'row',
+      }}
+    >
+      <Image
+        recyclingKey={item?.img}
+        source={{ uri: item?.img }}
+        transition={imageTransition}
+        placeholder={{ thumbhash: item?.placeholder }}
+        style={{
+          width: '100%',
+          flex: 1,
+          borderRadius: theme.spacing.sp4
+        }}
+      />
+    </BottomSheetView>
+  ), [userUuid]);
+
+
   return (
     <DefaultBottomSheet
       accessible={Platform.select({
@@ -126,17 +177,19 @@ export const TargetUserProfile: FC = () => {
             <BottomSheetView style={{ paddingHorizontal: theme.spacing.sp6 }}>
               <UserHeader />
             </BottomSheetView>
-
             <BottomSheetView>
-              <FlashList
-                data={!bucketList.isSuccess ? dummyBucketListItems : bucketListEvents}
+              <FlashList                      // TODO: encapsulate in a component
+                data={(
+                  !bucketList.isSuccess ?
+                    dummyBucketListItems.slice(0, 1) : bucketListEvents
+                )}
                 showsHorizontalScrollIndicator={false}
                 horizontal={true}
                 pagingEnabled={true}
                 estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
-                onEndReachedThreshold={0.4}
-                // onEndReached={onBucketListEndReached}
-                renderItem={renderBucketItem}
+                onEndReachedThreshold={0.5}
+                // onEndReached={handleInfinteBucketList}
+                renderItem={renderBucketItem}    // TODO: encapsulate in a component
               />
             </BottomSheetView>
 
@@ -159,29 +212,10 @@ export const TargetUserProfile: FC = () => {
           gap: theme.spacing.sp2,
           paddingHorizontal: theme.spacing.sp6
         }}
-        renderItem={({ item }) => (
-          <BottomSheetView
-            style={{
-              height: UnistylesRuntime.screen.height * 0.2,
-              flex: 1 / 3,
-              flexDirection: 'row',
-            }}
-          >
-            <Image
-              recyclingKey={item?.img}
-              source={{ uri: item?.img }}
-              transition={imageTransition}
-              placeholder={{ thumbhash: item?.placeholder }}
-              style={{
-                width: '100%',
-                flex: 1,
-                borderRadius: theme.spacing.sp4
-              }}
-            />
-          </BottomSheetView>
-        )}
+        onEndReachedThreshold={0.5}
+        onEndReached={handleInfinteMatches}
+        renderItem={renderMacthesItem}
       />
-      {/* </SafeAreaView> */}
     </DefaultBottomSheet>
   );
 };

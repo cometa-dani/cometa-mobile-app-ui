@@ -353,7 +353,10 @@ export default function MatchedEventsScreen(): ReactNode {
             </View>
           </Animated.View>
         }
-        <Animated.View layout={LinearTransition.duration(450)}>
+        <Animated.View
+          style={{ flex: 1 }}
+          layout={LinearTransition.duration(450)}
+        >
           <View
             style={{
               flexDirection: 'row',
@@ -388,7 +391,7 @@ export default function MatchedEventsScreen(): ReactNode {
               setStep(e.nativeEvent.position);
             }}
           >
-            <View key={0} style={{ flex: 1, height: '100%' }}>
+            <View key={0} style={{ flex: 1 }}>
               <Condition
                 if={!newFriends.isSuccess}
                 then={<SkeletonList />}
@@ -408,7 +411,7 @@ export default function MatchedEventsScreen(): ReactNode {
                         nestedScrollEnabled={true}
                         data={newFriendsData}
                         estimatedItemSize={60}
-                        ListFooterComponentStyle={{ height: 400 }}
+                        ListFooterComponentStyle={{ height: 200 }}
                         contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
                         ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
                         onViewableItemsChanged={({ viewableItems }) => {
@@ -459,7 +462,7 @@ export default function MatchedEventsScreen(): ReactNode {
               />
             </View>
 
-            <View key={1} style={{ flex: 1, height: '100%' }}>
+            <View key={1} style={{ flex: 1 }}>
               <Condition
                 if={!newPeople.isSuccess}
                 then={<SkeletonList />}
@@ -477,7 +480,7 @@ export default function MatchedEventsScreen(): ReactNode {
                     else={(
                       <FlashList
                         nestedScrollEnabled={true}
-                        ListFooterComponentStyle={{ height: 400 }}
+                        ListFooterComponentStyle={{ height: 200 }}
                         contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
                         ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
                         onViewableItemsChanged={({ viewableItems }) => {
