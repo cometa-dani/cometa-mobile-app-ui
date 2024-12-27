@@ -23,15 +23,15 @@ export const EventItem: FC<IProps> = ({ item }) => {
   return (
     <View style={{ position: 'relative' }}>
       <Image
-        placeholder={{ thumbhash: item.placeholder }}
-        recyclingKey={item.img}
-        source={{ uri: item.img }}
+        placeholder={{ thumbhash: item?.placeholder }}
+        recyclingKey={item?.img}
+        source={{ uri: item?.img }}
         style={styles.eventImage}
         contentFit='cover'
         transition={imageTransition}
       />
       <Badge>
-        {item.location}
+        {item?.location}
       </Badge>
     </View>
   );

@@ -32,6 +32,7 @@ export default function TargetUserProfileScreen(): ReactNode {
         options={{
           headerShown: true,
           animation: 'slide_from_bottom',
+          headerTitleAlign: 'center',
           headerTitle: () => (
             <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
               {targetUserProfile?.data?.username}

@@ -33,10 +33,10 @@ export const Carousel: FC<ICarouselProps> = ({ photos }) => {
         {photos.map((item, index) => (
           <View key={index} style={{ width: '100%', height: '100%' }}>
             <Image
-              recyclingKey={item.url}
+              recyclingKey={item?.url}
               transition={imageTransition}
-              placeholder={{ thumbhash: item.placeholder }}
-              source={{ uri: item.url }}
+              placeholder={{ thumbhash: item?.placeholder }}
+              source={{ uri: item?.url }}
               style={styles.avatarImage}
               contentFit='cover'
             />
@@ -44,6 +44,7 @@ export const Carousel: FC<ICarouselProps> = ({ photos }) => {
         ))}
       </PagerView>
 
+      {/* points */}
       <HStack gap={theme.spacing.sp4} styles={styles.points}>
         {photos.map((_, index) => (
           <View

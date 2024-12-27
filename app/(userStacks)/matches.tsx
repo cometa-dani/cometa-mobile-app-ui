@@ -1,8 +1,13 @@
+import {
+  useInfiniteQueryGetNewestFriends,
+  useMutationAcceptFriendshipInvitation,
+  useMutationDeleteFriendshipInvitation,
+  useMutationSentFriendshipInvitation
+} from '@/queries/currentUser/friendshipHooks';
 import { FC, ReactNode, useEffect, useState } from 'react';
 import { SafeAreaView, TouchableOpacity, View, } from 'react-native';
 import { Stack, useGlobalSearchParams, useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
-import { useInfiniteQueryGetNewestFriends, useMutationAcceptFriendshipInvitation, useMutationDeleteFriendshipInvitation, useMutationSentFriendshipInvitation } from '@/queries/currentUser/friendshipHooks';
 import { GradientHeading } from '@/components/text/gradientText';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { TextView } from '@/components/text/text';

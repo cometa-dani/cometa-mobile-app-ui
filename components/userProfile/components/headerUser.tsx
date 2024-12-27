@@ -11,6 +11,7 @@ import { View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
 import { Condition } from '@/components/utils/ifElse';
+import { Button } from '@/components/button/button';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -23,6 +24,18 @@ export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = fals
   return (
     <VStack gap={theme.spacing.sp6} styles={{ paddingHorizontal: theme.spacing.sp6 }}>
       <Carousel photos={userProfile?.photos ?? []} />
+
+      <Condition
+        if={isTargetUser}
+        then={(
+          <View style={styles.container}>
+            <Button variant='primary' onPress={() => { }} >
+              FOLLOW
+            </Button>
+          </View>
+        )}
+      />
+
       <VStack styles={styles.container} gap={theme.spacing.sp1} >
         <Heading size='s7'>
           {userProfile?.name}, {userProfile?.birthday && calAge(new Date(userProfile?.birthday))}
@@ -63,20 +76,16 @@ export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = fals
         <ExpandableText>{userProfile?.languages?.join(', ') || 'languages you speak'}</ExpandableText>
       </View>
 
-      <Condition
-        if={!isTargetUser}
-        then={(
-          <Heading size='s6' style={{
-            paddingHorizontal: theme.spacing.sp6,
-            paddingBottom: theme.spacing.sp1
-          }}>
-            Bucketlist
-          </Heading>
-        )}
-      />
+      <Heading size='s6' style={{
+        paddingHorizontal: theme.spacing.sp6,
+        paddingBottom: theme.spacing.sp1
+      }}>
+        Bucketlist
+      </Heading>
     </VStack>
   );
 };
+
 
 interface IHeaderSkeletonProps {
   isTargetUser?: boolean
@@ -93,6 +102,16 @@ export const HeaderSkeleton: FC<IHeaderSkeletonProps> = ({ isTargetUser = false 
             backgroundColor: theme.colors.gray200,
             borderRadius: theme.spacing.sp7
           }}
+        />
+        <Condition
+          if={isTargetUser}
+          then={(
+            <View style={styles.container}>
+              <Button variant='primary' onPress={() => { }}>
+                FOLLOW
+              </Button>
+            </View>
+          )}
         />
         <VStack styles={styles.container} gap={theme.spacing.sp1} >
           <Heading size='s7'>
@@ -134,17 +153,12 @@ export const HeaderSkeleton: FC<IHeaderSkeletonProps> = ({ isTargetUser = false 
           <ExpandableText>{'languages you speak'}</ExpandableText>
         </View>
 
-        <Condition
-          if={!isTargetUser}
-          then={(
-            <Heading size='s6' style={{
-              paddingHorizontal: theme.spacing.sp6,
-              paddingBottom: theme.spacing.sp1
-            }}>
-              Bucketlist
-            </Heading>
-          )}
-        />
+        <Heading size='s6' style={{
+          paddingHorizontal: theme.spacing.sp6,
+          paddingBottom: theme.spacing.sp1
+        }}>
+          Bucketlist
+        </Heading>
       </VStack>
     </MySkeleton>
   );
