@@ -33,12 +33,12 @@ export const Carousel: FC<ICarouselProps> = ({ photos }) => {
         {photos.map((item, index) => (
           <View key={index} style={{ width: '100%', height: '100%' }}>
             <Image
-              recyclingKey={item?.url}
               transition={imageTransition}
               placeholder={{ thumbhash: item?.placeholder }}
               source={{ uri: item?.url }}
               style={styles.avatarImage}
               contentFit='cover'
+              recyclingKey={item?.placeholder}
             />
           </View>
         ))}

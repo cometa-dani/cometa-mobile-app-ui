@@ -1,23 +1,18 @@
 import { FlashList } from '@shopify/flash-list';
 import { createRef, FC, RefObject, useCallback } from 'react';
 import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
-import { tabBarHeight } from '../tabBar/tabBar';
-import { FlatList, Platform, ScrollView, View } from 'react-native';
-import { IGetTargetUser } from '@/models/User';
+import { Platform, View } from 'react-native';
 import { defaultImgPlaceholder, imageTransition } from '@/constants/vars';
-import { IGetPaginatedLikedEventsBucketList } from '@/models/LikedEvent';
-import { InfiniteData } from '@tanstack/react-query';
-import { HeaderUserProfile, HeaderSkeleton } from './components/headerUser';
+import { HeaderUserProfile, HeaderSkeleton, UserNameSkeleton } from './components/headerUser';
 import { EventItem, EventItemSkeleton, IBucketListItem } from './components/eventItem';
-import { IGetLatestPaginatedEvents } from '@/models/Event';
 import { Heading } from '../text/heading';
-import { TextView } from '../text/text';
 import { Image } from 'expo-image';
 import DefaultBottomSheet, { BottomSheetFlatList, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useQueryGetTargetUserPeopleProfile } from '@/queries/targetUser/userProfileHooks';
 import { useInfiniteQueryGetSameMatchedEventsByTwoUsers, useInfiniteQueryGetTargetUserBucketList } from '@/queries/targetUser/eventHooks';
 import { create } from 'zustand';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { GradientHeading } from '../text/gradientText';
+import { Center } from '../utils/stacks';
 
 
 const snapPoints = ['60%', '100%'];
@@ -65,12 +60,24 @@ export const TargetUserProfile: FC = () => {
 
   const UserHeader: FC = useCallback(() => (
     !userProfile.isSuccess ? (
-      <HeaderSkeleton isTargetUser={true} />
+      <>
+        <Center styles={{ height: 60, paddingBottom: 10 }}>
+          <UserNameSkeleton />
+        </Center>
+        <HeaderSkeleton isTargetUser={true} />
+      </>
     ) : (
-      <HeaderUserProfile
-        isTargetUser={true}
-        userProfile={userProfile.data}
-      />
+      <>
+        <Center styles={{ height: 60, paddingBottom: 10 }}>
+          <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
+            {userProfile.data?.username}
+          </GradientHeading>
+        </Center>
+        <HeaderUserProfile
+          isTargetUser={true}
+          userProfile={userProfile.data}
+        />
+      </>
     )
   ), [userProfile.isSuccess, userUuid]);
 
@@ -102,77 +109,73 @@ export const TargetUserProfile: FC = () => {
       ref={bottomSheetRef}
       index={-1}
       containerStyle={{
-        flex: 1
+        flex: 1,
+        height: '100%'
       }}
       enableDynamicSizing={false}     // don't change
       enablePanDownToClose={true}     // don't change
       keyboardBehavior="fillParent"   // don't change
       snapPoints={snapPoints}
     >
-      <SafeAreaView style={{ flex: 1 }}>
-        <BottomSheetFlatList
-          data={matchesEvents}
-          ListHeaderComponent={() => (
-            <BottomSheetView>
-              <View style={{ paddingHorizontal: theme.spacing.sp6 }}>
-                <UserHeader />
-              </View>
-              <FlashList
-                data={!bucketList.isSuccess ? dummyBucketListItems : bucketListEvents}
-                showsHorizontalScrollIndicator={false}
-                horizontal={true}
-                pagingEnabled={true}
-                estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
-                onEndReachedThreshold={0.4}
-                // onEndReached={onBucketListEndReached}
-                renderItem={renderBucketItem}
-              />
-              <Heading size='s6' style={{
-                paddingHorizontal: theme.spacing.sp6,
-                paddingBottom: theme.spacing.sp1,
-                paddingTop: theme.spacing.sp6
-              }}>
-                Matches
-              </Heading>
+      <BottomSheetFlatList
+        style={{ flex: 1, height: '100%', backgroundColor: theme.colors.white80 }}
+        data={matchesEvents}
+        ListHeaderComponent={() => (
+          <View>
+            <BottomSheetView style={{ paddingHorizontal: theme.spacing.sp6 }}>
+              <UserHeader />
             </BottomSheetView>
-          )}
-          style={{
-            backgroundColor: theme.colors.white80,
-            paddingVertical: theme.spacing.sp7
-          }}
-          numColumns={3}
-          contentContainerStyle={{
-            paddingVertical: theme.spacing.sp7,
-            // paddingHorizontal: theme.spacing.sp6
-          }}
-          ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp2 }} />}
-          ListFooterComponent={() => <View style={{ height: 200 }} />}
-          columnWrapperStyle={{
-            gap: theme.spacing.sp2,
-            paddingHorizontal: theme.spacing.sp6
-          }}
-          renderItem={({ item }) => (
-            <View
-              key={item?.id}
+
+            <FlashList
+              data={!bucketList.isSuccess ? dummyBucketListItems : bucketListEvents}
+              showsHorizontalScrollIndicator={false}
+              horizontal={true}
+              pagingEnabled={true}
+              estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
+              onEndReachedThreshold={0.4}
+              // onEndReached={onBucketListEndReached}
+              renderItem={renderBucketItem}
+            />
+            <Heading size='s6' style={{
+              paddingHorizontal: theme.spacing.sp12,
+              paddingBottom: theme.spacing.sp1,
+              paddingTop: theme.spacing.sp6
+            }}>
+              Matches
+            </Heading>
+          </View>
+        )}
+        numColumns={3}
+        contentContainerStyle={{ paddingVertical: theme.spacing.sp7 }}
+        ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp2 }} />}
+        ListFooterComponent={() => <View style={{ height: 200 }} />}
+        columnWrapperStyle={{
+          gap: theme.spacing.sp2,
+          paddingHorizontal: theme.spacing.sp6
+        }}
+        renderItem={({ item }) => (
+          <BottomSheetView
+            style={{
+              height: UnistylesRuntime.screen.height * 0.2,
+              flex: 1 / 3,
+              flexDirection: 'row',
+            }}
+          >
+            <Image
+              recyclingKey={item?.img}
+              source={{ uri: item?.img }}
+              transition={imageTransition}
+              placeholder={{ thumbhash: item?.placeholder }}
               style={{
-                height: UnistylesRuntime.screen.height * 0.2,
-                flex: 1 / 3,
-                flexDirection: 'row',
+                width: '100%',
+                flex: 1,
+                borderRadius: theme.spacing.sp4
               }}
-            >
-              <Image
-                source={{ uri: item?.img }}
-                placeholder={{ thumbhash: item?.placeholder }}
-                style={{
-                  width: '100%',
-                  flex: 1,
-                  borderRadius: theme.spacing.sp4
-                }}
-              />
-            </View>
-          )}
-        />
-      </SafeAreaView>
+            />
+          </BottomSheetView>
+        )}
+      />
+      {/* </SafeAreaView> */}
     </DefaultBottomSheet>
   );
 };

@@ -164,6 +164,20 @@ export const HeaderSkeleton: FC<IHeaderSkeletonProps> = ({ isTargetUser = false 
   );
 };
 
+export const UserNameSkeleton: FC = () => {
+  const { theme } = useStyles(styleSheet);
+  return (
+    <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
+      <View style={{
+        backgroundColor: theme.colors.gray200,
+        height: theme.spacing.sp11,
+        width: 150,
+        borderRadius: 10
+      }} />
+    </MySkeleton>
+  );
+};
+
 
 const styleSheet = createStyleSheet((theme) => ({
   container: {

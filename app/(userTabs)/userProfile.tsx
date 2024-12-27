@@ -7,11 +7,8 @@ import { SystemBars } from 'react-native-edge-to-edge';
 import { useStyles } from 'react-native-unistyles';
 import { Feather, Octicons } from '@expo/vector-icons';
 import { UserProfile } from '@/components/userProfile/userProfile';
-import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
-import { FC, ReactNode } from 'react';
 import { Condition } from '@/components/utils/ifElse';
-import { View } from 'react-native';
-const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
+import { UserNameSkeleton } from '@/components/userProfile/components/headerUser';
 
 
 export default function UserProfileScreen() {
@@ -55,16 +52,7 @@ export default function UserProfileScreen() {
           headerTitle: () => (
             <Condition
               if={!isUserProfileSuccess}
-              then={
-                <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
-                  <View style={{
-                    backgroundColor: theme.colors.gray200,
-                    height: theme.spacing.sp11,
-                    width: 150,
-                    borderRadius: 10
-                  }} />
-                </MySkeleton>
-              }
+              then={<UserNameSkeleton />}
               else={
                 <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
                   {userProfile?.username}
