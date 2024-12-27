@@ -126,23 +126,28 @@ export const TargetUserProfile: FC = () => {
               <UserHeader />
             </BottomSheetView>
 
-            <FlashList
-              data={!bucketList.isSuccess ? dummyBucketListItems : bucketListEvents}
-              showsHorizontalScrollIndicator={false}
-              horizontal={true}
-              pagingEnabled={true}
-              estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
-              onEndReachedThreshold={0.4}
-              // onEndReached={onBucketListEndReached}
-              renderItem={renderBucketItem}
-            />
-            <Heading size='s6' style={{
-              paddingHorizontal: theme.spacing.sp12,
-              paddingBottom: theme.spacing.sp1,
-              paddingTop: theme.spacing.sp6
-            }}>
-              Matches
-            </Heading>
+            <BottomSheetView>
+              <FlashList
+                data={!bucketList.isSuccess ? dummyBucketListItems : bucketListEvents}
+                showsHorizontalScrollIndicator={false}
+                horizontal={true}
+                pagingEnabled={true}
+                estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
+                onEndReachedThreshold={0.4}
+                // onEndReached={onBucketListEndReached}
+                renderItem={renderBucketItem}
+              />
+            </BottomSheetView>
+
+            <BottomSheetView>
+              <Heading size='s6' style={{
+                paddingHorizontal: theme.spacing.sp12,
+                paddingBottom: theme.spacing.sp1,
+                paddingTop: theme.spacing.sp6
+              }}>
+                Matches
+              </Heading>
+            </BottomSheetView>
           </View>
         )}
         numColumns={3}
