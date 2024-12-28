@@ -324,7 +324,7 @@ export default function MatchedEventsScreen(): ReactNode {
               setShowImage(true);
             },
           },
-          // animation: 'fade',
+          animation: 'fade',
           headerTitleAlign: 'center',
           headerTitle: () => (
             <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
