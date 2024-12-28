@@ -1,10 +1,10 @@
 import { FC } from 'react';
-import Modal from 'react-native-modal';
-import { Text, View } from '../Themed';
+// import Modal from 'react-native-modal';
+// import { Text, View } from '../Themed';
 import { Image } from 'expo-image';
 import { FontAwesome } from '@expo/vector-icons';
-import { Formik, FormikHelpers } from 'formik';
-import uuid from 'react-native-uuid';
+// import { Formik, FormikHelpers } from 'formik';
+// import uuid from 'react-native-uuid';
 import chatWithFriendService from '../../services/chatWithFriendService';
 import * as Yup from 'yup';
 import { IGetBasicUserProfile, IGetDetailedUserProfile } from '../../models/User';
@@ -26,7 +26,6 @@ interface ModalNewFrienshipProps {
   targetUser?: IGetBasicUserProfile,
   frienshipUUID: string
 }
-
 export const ModalNewFriendship: FC<ModalNewFrienshipProps> = ({ onclose, toggle, loggedInUserProfile, targetUser, frienshipUUID }) => {
   /**
    *

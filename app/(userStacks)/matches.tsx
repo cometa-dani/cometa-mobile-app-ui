@@ -6,7 +6,7 @@ import {
 } from '@/queries/currentUser/friendshipHooks';
 import { FC, ReactNode, useEffect, useState } from 'react';
 import { SafeAreaView, TouchableOpacity, View, } from 'react-native';
-import { Stack, useGlobalSearchParams, useRouter } from 'expo-router';
+import { Stack, useGlobalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { GradientHeading } from '@/components/text/gradientText';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
@@ -29,7 +29,8 @@ import { IGetBasicUserProfile, IGetPaginatedUsersWhoLikedSameEvent, IGetTargetUs
 import { QueryKeys } from '@/queries/queryKeys';
 import { ErrorMessage } from '@/queries/errors/errorMessages';
 import { MutateFrienship } from '@/models/Friendship';
-import { useBootomSheetRef } from '@/components/userProfile/targetUserProfile';
+import { useBootomSheetRef } from '@/components/userProfile/bottomSheetTargetUser';
+import { NewFriendsModal, useNewFriendsModal } from '@/components/modal/newFriends/newFriends';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -94,7 +95,6 @@ const initialTab = 1;
 
 export default function MatchedEventsScreen(): ReactNode {
   const queryClient = useQueryClient();
-  const router = useRouter();
   const { styles, theme } = useStyles(styleSheet);
   const { eventId } = useGlobalSearchParams<{ eventId: string }>();
   // tabs
@@ -135,11 +135,13 @@ export default function MatchedEventsScreen(): ReactNode {
   const mutationSentFriendship = useMutationSentFriendshipInvitation();
   const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
   const mutationCancelFriendship = useMutationDeleteFriendshipInvitation();
-  const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState<IGetTargetUser | undefined>(undefined);
+  // const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState<IGetTargetUser | undefined>(undefined);
   const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
-  const [toggleModal, setToggleModal] = useState(false);
+  const setTargetUser = useCometaStore(state => state.setTargetUser);
+  const { onToggle: onToggleModal } = useNewFriendsModal();
+  // const [toggleModal, setToggleModal] = useState(false);
   // const bottomSheetRef = useRef<BottomSheetMethods>(null);
-  const { bottomSheetRef, setTargetUser: setSelectedTargetUser } = useBootomSheetRef();
+  const { bottomSheetRef } = useBootomSheetRef();
 
   /**
   *
@@ -151,7 +153,7 @@ export default function MatchedEventsScreen(): ReactNode {
       if (!targetUserAsSender.hasOutgoingFriendship) {
         pendingButton.handleOptimisticUpdate(targetUserAsSender.id);
       }
-      setTargetUserAsNewFriend(targetUserAsSender);
+      // setTargetUserAsNewFriend(targetUserAsSender);
 
       // 2. mutation
       const newCreatedFrienship =
@@ -159,7 +161,8 @@ export default function MatchedEventsScreen(): ReactNode {
           targetUserAsSender.id,
           {
             onSuccess: async () => {
-              setToggleModal(true);
+              onToggleModal();
+              // setToggleModal(true);
               // refetch on screen focus
               await Promise.all([
                 queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, +eventId] }),
@@ -304,6 +307,7 @@ export default function MatchedEventsScreen(): ReactNode {
 
   return (
     <>
+      <NewFriendsModal />
       <Stack.Screen
         options={{
           headerShown: true,
@@ -500,7 +504,7 @@ export default function MatchedEventsScreen(): ReactNode {
                           >
                             <TouchableOpacity
                               onPress={() => {
-                                setSelectedTargetUser(user.uid);
+                                setTargetUser(user as IGetTargetUser);
                                 setTimeout(() => {
                                   bottomSheetRef.current?.snapToIndex(0);
                                 }, 200);
@@ -534,7 +538,12 @@ export default function MatchedEventsScreen(): ReactNode {
 
                             <Button
                               style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-                              onPress={() => { console.log('follow'); }}
+                              onPress={() => {
+                                setTargetUser(user as IGetTargetUser);
+                                setTimeout(() => {
+                                  onToggleModal();
+                                }, 200);
+                              }}
                               variant='primary'>
                               FOLLOW
                             </Button>
