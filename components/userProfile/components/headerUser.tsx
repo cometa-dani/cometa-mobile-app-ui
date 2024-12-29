@@ -77,13 +77,18 @@ export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = fals
         <ExpandableText>{userProfile?.languages?.join(', ') || 'languages you speak'}</ExpandableText>
       </View>
 
-      <Heading size='s6' style={{
-        paddingHorizontal: theme.spacing.sp6,
-        paddingBottom: theme.spacing.sp1
-      }}>
-        Bucketlist
-      </Heading>
-    </VStack >
+      <Condition
+        if={!isTargetUser}
+        then={(
+          <Heading size='s6' style={{
+            paddingHorizontal: theme.spacing.sp6,
+            paddingBottom: theme.spacing.sp1
+          }}>
+            Bucketlist
+          </Heading>
+        )}
+      />
+    </VStack>
   );
 };
 

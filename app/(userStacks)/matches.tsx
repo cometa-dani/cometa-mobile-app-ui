@@ -142,7 +142,7 @@ export default function MatchedEventsScreen(): ReactNode {
   const { onToggle: onToggleModalNewFriend } = useNewFriendsModal();
   // const [toggleModal, setToggleModal] = useState(false);
   // const bottomSheetRef = useRef<BottomSheetMethods>(null);
-  const { toggle, onToggle: onToggleModalTargetUser } = useModalTargetUser();
+  const { toggle: toggleModalTargetUser, onToggle: onToggleModalTargetUser } = useModalTargetUser();
 
   /**
   *
@@ -308,8 +308,14 @@ export default function MatchedEventsScreen(): ReactNode {
 
   return (
     <>
+      <Condition
+        if={!toggleModalTargetUser}
+        then={
+          <NewFriendsModal />
+        }
+      />
       <ModalTargetUserProfile />
-      <NewFriendsModal />
+
       <Stack.Screen
         options={{
           headerShown: true,

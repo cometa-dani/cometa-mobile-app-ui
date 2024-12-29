@@ -23,6 +23,7 @@ export const NewFriendsModal: FC = () => {
       statusBarTranslucent={true}
       visible={toggle}
       animationType='fade'
+      style={{ zIndex: 10_000 }}
       onRequestClose={onToggle}
     >
       <Pressable style={styles.backdrop}>
