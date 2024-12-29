@@ -285,7 +285,7 @@ const styleSheet = createStyleSheet((theme) => ({
     padding: theme.spacing.sp6,
     borderRadius: theme.spacing.sp4,
     position: 'absolute',
-    top: theme.spacing.sp12,
+    top: theme.spacing.sp11,
     right: 0
     // backgroundColor: theme.colors.red100
   }
