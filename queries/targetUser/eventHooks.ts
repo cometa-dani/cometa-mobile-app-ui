@@ -36,29 +36,6 @@ export const useInfiniteQueryGetTargetUserBucketList = (targetUserId?: number) =
 export const useInfiniteQueryGetSameMatchedEventsByTwoUsers = (targetUserID: string, take = 4, allPhotos = true) => {
   return (
     useInfiniteQuery({
-      placeholderData: {
-        pageParams: [], pages: [
-          {
-            items: [
-              {
-                id: 1,
-                photos: [{ url: '', placeholder: '' }],
-                location: { name: 'New York City' }
-              },
-              {
-                id: 2,
-                photos: [{ url: '', placeholder: '' }],
-                location: { name: 'Los Angeles' }
-              },
-              {
-                id: 3,
-                photos: [{ url: '', placeholder: '' }],
-                location: { name: 'San Francisco' }
-              }
-            ]
-          } as IGetLatestPaginatedEvents
-        ]
-      },
       initialPageParam: -1,
       enabled: !!targetUserID,
       queryKey: [QueryKeys.GET_MATCHED_EVENTS_BY_TWO_USERS, targetUserID],

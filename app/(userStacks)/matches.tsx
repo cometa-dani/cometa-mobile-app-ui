@@ -31,6 +31,7 @@ import { ErrorMessage } from '@/queries/errors/errorMessages';
 import { MutateFrienship } from '@/models/Friendship';
 import { useBootomSheetRef } from '@/components/userProfile/bottomSheetTargetUser';
 import { NewFriendsModal, useNewFriendsModal } from '@/components/modal/newFriends/newFriends';
+import { ModalTargetUserProfile, useModalTargetUser } from '@/components/userProfile/modalTargetUser';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -138,10 +139,10 @@ export default function MatchedEventsScreen(): ReactNode {
   // const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState<IGetTargetUser | undefined>(undefined);
   const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
   const setTargetUser = useCometaStore(state => state.setTargetUser);
-  const { onToggle: onToggleModal } = useNewFriendsModal();
+  const { onToggle: onToggleModalNewFriend } = useNewFriendsModal();
   // const [toggleModal, setToggleModal] = useState(false);
   // const bottomSheetRef = useRef<BottomSheetMethods>(null);
-  const { bottomSheetRef } = useBootomSheetRef();
+  const { toggle, onToggle: onToggleModalTargetUser } = useModalTargetUser();
 
   /**
   *
@@ -161,7 +162,7 @@ export default function MatchedEventsScreen(): ReactNode {
           targetUserAsSender.id,
           {
             onSuccess: async () => {
-              onToggleModal();
+              onToggleModalNewFriend();
               // setToggleModal(true);
               // refetch on screen focus
               await Promise.all([
@@ -307,6 +308,7 @@ export default function MatchedEventsScreen(): ReactNode {
 
   return (
     <>
+      <ModalTargetUserProfile />
       <NewFriendsModal />
       <Stack.Screen
         options={{
@@ -505,9 +507,7 @@ export default function MatchedEventsScreen(): ReactNode {
                             <TouchableOpacity
                               onPress={() => {
                                 setTargetUser(user as IGetTargetUser);
-                                setTimeout(() => {
-                                  bottomSheetRef.current?.snapToIndex(0);
-                                }, 200);
+                                onToggleModalTargetUser();
                               }}
                               style={{
                                 flex: 1, flexDirection: 'row',
@@ -541,7 +541,7 @@ export default function MatchedEventsScreen(): ReactNode {
                               onPress={() => {
                                 setTargetUser(user as IGetTargetUser);
                                 setTimeout(() => {
-                                  onToggleModal();
+                                  onToggleModalNewFriend();
                                 }, 200);
                               }}
                               variant='primary'>

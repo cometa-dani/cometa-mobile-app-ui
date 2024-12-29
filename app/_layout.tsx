@@ -19,7 +19,6 @@ import { onlineManager } from '@tanstack/react-query';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Subscription } from '@supabase/supabase-js';
-import { BottomSheetTargetUserProfile } from '@/components/userProfile/bottomSheetTargetUser';
 
 
 // Catch any errors thrown by the Layout component.
@@ -149,7 +148,6 @@ function Root(): ReactNode {
                   <Stack.Screen name='(companyTabs)' options={{ animation: 'fade' }} />
                 </Stack>
               </NotifierWrapper>
-              <BottomSheetTargetUserProfile />
             </BottomSheetModalProvider>
           </GestureHandlerRootView>
         </KeyboardProvider>
