@@ -3,15 +3,15 @@ import {
   useInfiniteQueryGetTargetUserBucketList
 } from '@/queries/targetUser/eventHooks';
 import { FlashList } from '@shopify/flash-list';
-import { createRef, FC, RefObject, useCallback, useRef } from 'react';
+import { createRef, FC, RefObject, useCallback } from 'react';
 import { UnistylesRuntime, useStyles } from 'react-native-unistyles';
-import { Platform, View } from 'react-native';
-import { imageTransition } from '@/constants/vars';
+import { Platform, SafeAreaView, View } from 'react-native';
+import { defaultImgPlaceholder, imageTransition } from '@/constants/vars';
 import { HeaderUserProfile, HeaderSkeleton, UserNameSkeleton } from './components/headerUser';
-import { EventItem, EventItemSkeleton, IBucketListItem } from './components/eventItem';
+import { EventItem2, EventItemSkeleton, IBucketListItem } from './components/eventItem';
 import { Heading } from '../text/heading';
 import { Image } from 'expo-image';
-import DefaultBottomSheet, { BottomSheetFlatList, BottomSheetFlatListMethods, BottomSheetView } from '@gorhom/bottom-sheet';
+import DefaultBottomSheet, { BottomSheetFlashList, BottomSheetFlatList, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useQueryGetTargetUserPeopleProfile } from '@/queries/targetUser/userProfileHooks';
 import { create } from 'zustand';
 import { GradientHeading } from '../text/gradientText';
@@ -21,29 +21,11 @@ import { BlurView } from 'expo-blur';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNewFriendsModal } from '../modal/newFriends/newFriends';
 import { useCometaStore } from '@/store/cometaStore';
+import { router } from 'expo-router';
 
 
 const snapPoints = ['60%', '100%'];
-// const dummyBucketListItems = [
-//   {
-//     id: 1,
-//     img: defaultImgPlaceholder,
-//     placeholder: 'thumbhash1',
-//     location: 'New York City'
-//   },
-//   {
-//     id: 2,
-//     img: defaultImgPlaceholder,
-//     placeholder: 'thumbhash2',
-//     location: 'Los Angeles'
-//   },
-//   {
-//     id: 3,
-//     img: defaultImgPlaceholder,
-//     placeholder: 'thumbhash3',
-//     location: 'San Francisco'
-//   }
-// ];
+
 
 export const BottomSheetTargetUserProfile: FC = () => {
   const { theme } = useStyles();
@@ -53,7 +35,6 @@ export const BottomSheetTargetUserProfile: FC = () => {
   const detailedProfile = useQueryGetTargetUserPeopleProfile(targetUser?.uid ?? '');
   const matches = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUser?.uid ?? '');
   const { onToggle } = useNewFriendsModal();
-  const bottomSheetFlatListRef = useRef<BottomSheetFlatListMethods>(null);
   // bottomSheetFlatListRef.current?.setNativeProps({refresh: true})
   // const [toggleModal, setToggleModal] = useReducer(prev => !prev, false);
 
@@ -115,11 +96,8 @@ export const BottomSheetTargetUserProfile: FC = () => {
         </View>
       </BottomSheetView>
     ) : (
-      <>
-        <BottomSheetView style={{
-          flex: 1,
-          paddingHorizontal: theme.spacing.sp6
-        }}>
+      <BottomSheetView>
+        <BottomSheetView style={{ paddingHorizontal: theme.spacing.sp6 }}>
           <Center styles={{ height: 60, paddingBottom: 10 }}>
             <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
               {detailedProfile.data?.username}
@@ -128,32 +106,34 @@ export const BottomSheetTargetUserProfile: FC = () => {
           <HeaderUserProfile
             isTargetUser={true}
             userProfile={detailedProfile.data}
-            onPresss={onToggle}
+          // onPresss={onToggle}
+          // onPresss={() => router.push('/(userStacks)/settings')}
           />
         </BottomSheetView>
 
-        <BottomSheetView style={{ flex: 1 }}>
+        {/* <BottomSheetView>
           <FlashList                      // TODO: encapsulate in a component
             data={bucketListEvents}
             showsHorizontalScrollIndicator={false}
             horizontal={true}
             pagingEnabled={true}
-            estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
+            estimatedItemSize={UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)}
             onEndReachedThreshold={0.5}
             // onEndReached={handleInfinteBucketList}
             renderItem={({ item }) => (
-              <View style={{
+              <BottomSheetView style={{
                 position: 'relative',
                 width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),
+                flex: 1,
                 marginHorizontal: theme.spacing.sp6
               }}>
-                <EventItem item={item} />
-              </View>
+                <EventItem2 item={item} />
+              </BottomSheetView>
             )}    // TODO: encapsulate in a component
           />
-        </BottomSheetView>
+        </BottomSheetView> */}
 
-        <BottomSheetView style={{ position: 'relative', flex: 1 }}>
+        <BottomSheetView style={{ position: 'relative' }}>
           <Heading size='s6' style={{
             paddingHorizontal: theme.spacing.sp12,
             paddingBottom: theme.spacing.sp1,
@@ -169,7 +149,6 @@ export const BottomSheetTargetUserProfile: FC = () => {
               width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),
               paddingHorizontal: theme.spacing.sp6,
               height: calcHeight(matchesEvents.length) * ((UnistylesRuntime.screen.height * 0.2) + theme.spacing.sp2),
-              flex: 1,
               position: 'absolute',
               transform: [{ translateX: theme.spacing.sp6 }],
               justifyContent: 'center',
@@ -180,9 +159,9 @@ export const BottomSheetTargetUserProfile: FC = () => {
             <FontAwesome name="lock" size={theme.spacing.sp14} color={theme.colors.gray200} />
           </BlurView>
         </BottomSheetView>
-      </>
+      </BottomSheetView>
     )
-  ), [isListHeaderSucess, matches.isSuccess, onToggle, targetUser?.uid]);
+  ), [isListHeaderSucess, onToggle, targetUser?.uid]);
 
   const renderMacthesItem = useCallback(({ item }: { item: IBucketListItem }) => (
     <BottomSheetView
@@ -206,7 +185,7 @@ export const BottomSheetTargetUserProfile: FC = () => {
         }}
       />
     </BottomSheetView>
-  ), [isListHeaderSucess, matches.isSuccess, targetUser?.uid]);
+  ), [matches.isSuccess, targetUser?.uid]);
 
   return (
     <DefaultBottomSheet
@@ -215,7 +194,6 @@ export const BottomSheetTargetUserProfile: FC = () => {
       })}
       ref={bottomSheetRef}
       index={-1}
-      containerStyle={{ flex: 1, position: 'relative', height: '100%' }}
       enableDynamicSizing={false}     // don't change
       enablePanDownToClose={true}     // don't change
       keyboardBehavior="fillParent"   // don't change
@@ -223,12 +201,7 @@ export const BottomSheetTargetUserProfile: FC = () => {
     >
       <BottomSheetFlatList
         scrollEnabled={true}
-        ref={bottomSheetFlatListRef}
-        refreshing={true}
-        style={{
-          flex: 1,
-          backgroundColor: theme.colors.white80
-        }}
+        style={{ flex: 1, backgroundColor: theme.colors.white80 }}
         data={matchesEvents}
         ListHeaderComponent={renderListHeader}
         numColumns={3}
@@ -257,6 +230,8 @@ export const useBootomSheetRef = create<DefaultBottomSheetProps>((set, get) => (
 }));
 
 const calcHeight = (length: number): number => {
-  const ones = Array.from({ length: length + 1 }, (_, index) => index).filter(index => index % 3 === 1);
+  const ones = Array
+    .from({ length: length + 1 }, (_, index) => index)
+    .filter(index => index % 3 === 1);
   return ones.length;
 };

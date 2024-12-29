@@ -5,6 +5,7 @@ import { FC, ReactNode } from 'react';
 import { View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
+import { BottomSheetView } from '@gorhom/bottom-sheet';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -34,6 +35,25 @@ export const EventItem: FC<IProps> = ({ item }) => {
         {item?.location}
       </Badge>
     </View>
+  );
+};
+
+export const EventItem2: FC<IProps> = ({ item }) => {
+  const { styles } = useStyles(stylesheet);
+  return (
+    <BottomSheetView style={{ position: 'relative' }}>
+      <Image
+        placeholder={{ thumbhash: item?.placeholder }}
+        recyclingKey={item?.img}
+        source={{ uri: item?.img }}
+        style={styles.eventImage}
+        contentFit='cover'
+        transition={imageTransition}
+      />
+      <Badge>
+        {item?.location}
+      </Badge>
+    </BottomSheetView>
   );
 };
 

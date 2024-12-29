@@ -148,8 +148,8 @@ function Root(): ReactNode {
                   <Stack.Screen name='(userTabs)' options={{ animation: 'fade' }} />
                   <Stack.Screen name='(companyTabs)' options={{ animation: 'fade' }} />
                 </Stack>
-                <BottomSheetTargetUserProfile />
               </NotifierWrapper>
+              <BottomSheetTargetUserProfile />
             </BottomSheetModalProvider>
           </GestureHandlerRootView>
         </KeyboardProvider>
