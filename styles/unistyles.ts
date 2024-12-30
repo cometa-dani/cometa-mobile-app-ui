@@ -67,6 +67,7 @@ export const lightTheme = {
     gray400: '#6b7280',
     gray500: '#4b5563',
     gray900: '#030303',
+    black: '#000000',
 
     slate300: '#cbd5e1',
     slate200: '#e2e8f0',

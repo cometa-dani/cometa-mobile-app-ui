@@ -4,8 +4,8 @@ import {
 } from '@/queries/targetUser/eventHooks';
 import { FC, useCallback } from 'react';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
-import { FlatList, Modal, TouchableOpacity, View, ScrollView, SafeAreaView } from 'react-native';
-import { HeaderUserProfile } from './components/headerUser';
+import { FlatList, Modal, TouchableOpacity, View, ScrollView, SafeAreaView, Pressable } from 'react-native';
+import { HeaderSkeleton, HeaderUserProfile } from './components/headerUser';
 import { EventItem, EventItemSkeleton, IBucketListItem } from './components/eventItem';
 import { Heading } from '../text/heading';
 import { useQueryGetTargetUserPeopleProfile } from '@/queries/targetUser/userProfileHooks';
@@ -18,6 +18,8 @@ import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { NewFriendsModal, useNewFriendsModal } from '../modal/newFriends/newFriends';
 import { useCometaStore } from '@/store/cometaStore';
 import { Condition } from '../utils/ifElse';
+import { MatcheEventsModal, useMacthedEvents } from '../eventsList/matchedEventsModal';
+// import { router } from 'expo-router';
 
 
 export const ModalTargetUserProfile: FC = () => {
@@ -28,6 +30,7 @@ export const ModalTargetUserProfile: FC = () => {
   const matches = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUser?.uid ?? '');
   const { onToggle: onToggleNewFriendsModal } = useNewFriendsModal();
   const { toggle, onToggle } = useModalTargetUser();
+  const { onToggle: onToggleMatchedEvents } = useMacthedEvents();
 
   // TODO: encapsulate in a component, too much rendering on infinite scroll
   const handleInfinteBucketList = () => {
@@ -71,8 +74,9 @@ export const ModalTargetUserProfile: FC = () => {
   );
 
   const renderItem = useCallback(({ item }: { item: IBucketListItem }) => (
-    <View
+    <Pressable
       key={item?.id}
+      onPress={onToggleMatchedEvents}
       style={{
         position: 'relative',
         width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),
@@ -80,8 +84,8 @@ export const ModalTargetUserProfile: FC = () => {
         marginHorizontal: theme.spacing.sp6
       }}>
       <EventItem item={item} />
-    </View>
-  ), []);
+    </Pressable>
+  ), [onToggleMatchedEvents]);
 
   return (
     <Modal
@@ -91,6 +95,7 @@ export const ModalTargetUserProfile: FC = () => {
       style={{ position: 'relative', zIndex: 10, flex: 1 }}
     >
       <NewFriendsModal />
+      <MatcheEventsModal />
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView style={{ flex: 1, backgroundColor: theme.colors.white80, position: 'relative' }}>
           <TouchableOpacity
@@ -109,11 +114,16 @@ export const ModalTargetUserProfile: FC = () => {
                 {detailedProfile.data?.username || targetUser?.username}
               </GradientHeading>
             </Center>
-
-            <HeaderUserProfile
-              isTargetUser={true}
-              userProfile={detailedProfile.data || targetUser}
-              onPresss={onToggleNewFriendsModal}
+            <Condition
+              if={detailedProfile.isSuccess}
+              then={
+                <HeaderUserProfile
+                  isTargetUser={true}
+                  userProfile={detailedProfile.data || targetUser}
+                  onPresss={onToggleNewFriendsModal}
+                />
+              }
+              else={<HeaderSkeleton isTargetUser={true} />}
             />
           </View>
           <VStack gap={theme.spacing.sp6} styles={{ flex: 1, marginTop: theme.spacing.sp6 }}>
@@ -129,7 +139,7 @@ export const ModalTargetUserProfile: FC = () => {
                 then={(
                   <View style={{ position: 'relative' }}>
                     <Condition
-                      if={true}
+                      if={false}
                       then={(
                         <BlurView intensity={100}
                           style={{

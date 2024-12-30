@@ -58,24 +58,3 @@ export const useInfiniteQueryGetSameMatchedEventsByTwoUsers = (targetUserID: str
     })
   );
 };
-
-// const dummyBucketListItems = [
-//   {
-//     id: 1,
-//     img: defaultImgPlaceholder,
-//     placeholder: 'thumbhash1',
-//     location: 'New York City'
-//   },
-//   {
-//     id: 2,
-//     img: defaultImgPlaceholder,
-//     placeholder: 'thumbhash2',
-//     location: 'Los Angeles'
-//   },
-//   {
-//     id: 3,
-//     img: defaultImgPlaceholder,
-//     placeholder: 'thumbhash3',
-//     location: 'San Francisco'
-//   }
-// ];

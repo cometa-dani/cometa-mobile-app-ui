@@ -165,12 +165,17 @@ export const HeaderSkeleton: FC<IHeaderSkeletonProps> = ({ isTargetUser = false 
           <ExpandableText>{'languages you speak'}</ExpandableText>
         </View>
 
-        <Heading size='s6' style={{
-          paddingHorizontal: theme.spacing.sp6,
-          paddingBottom: theme.spacing.sp1
-        }}>
-          Bucketlist
-        </Heading>
+        <Condition
+          if={!isTargetUser}
+          then={(
+            <Heading size='s6' style={{
+              paddingHorizontal: theme.spacing.sp6,
+              paddingBottom: theme.spacing.sp1
+            }}>
+              Bucketlist
+            </Heading>
+          )}
+        />
       </VStack>
     </MySkeleton>
   );

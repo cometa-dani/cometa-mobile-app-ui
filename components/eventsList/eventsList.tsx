@@ -1,6 +1,6 @@
-import { FC, useRef, useState } from 'react';
+import { FC, ReactNode, useRef, useState } from 'react';
 import { ILikeableEvent, } from '../../models/Event';
-import { Pressable, View, Text, ActivityIndicator, ScrollView } from 'react-native';
+import { Pressable, View, Text, ActivityIndicator, ScrollView, SafeAreaView } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { ImageBackground } from 'expo-image';
 import { ForEach } from '../utils/ForEach';
@@ -15,14 +15,15 @@ import { tabBarHeight } from '../tabBar/tabBar';
 import * as WebBrowser from 'expo-web-browser';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { imageTransition } from '@/constants/vars';
+// import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 interface EventsListProps {
   items: ILikeableEvent[],
   onInfiniteScroll: () => void,
   isFetched: boolean,
-  hideLikeAndShareButtons?: boolean,
-  targetUserId?: number,
+  hideLikeButton?: boolean,
+  header?: () => ReactNode
   initialScrollIndex?: number,
   onPressLikeButton: (event: ILikeableEvent) => void
 }
@@ -30,9 +31,9 @@ export const EventsList: FC<EventsListProps> = ({
   onInfiniteScroll,
   isFetched,
   items,
-  hideLikeAndShareButtons,
+  hideLikeButton,
   onPressLikeButton,
-  targetUserId,
+  header,
   initialScrollIndex = 0
 }) => {
   const { theme } = useStyles();
@@ -49,17 +50,29 @@ export const EventsList: FC<EventsListProps> = ({
     <Condition
       if={isFetched}
       then={(
-        <FlashList
-          ref={listRef}
-          showsVerticalScrollIndicator={false}
-          estimatedItemSize={UnistylesRuntime.screen.height}
-          // refreshControl={}  // pull to refresh feaature
-          pagingEnabled={true}
-          data={items}
-          onEndReached={onInfiniteScroll}
-          onEndReachedThreshold={1}
-          renderItem={renderItem({ hideLikeAndShareButtons, onPressLikeButton })}
-        />
+        <View style={{ flex: 1, position: 'relative' }}>
+          {header && (
+            <SafeAreaView
+              // edges={{ top: 'maximum' }}
+              style={{ position: 'absolute', left: 0, zIndex: 100 }}
+            >
+              {header()}
+            </SafeAreaView>
+          )}
+          <FlashList
+            ref={listRef}
+            showsVerticalScrollIndicator={false}
+            estimatedItemSize={UnistylesRuntime.screen.height}
+            // refreshControl={}  // pull to refresh feaature
+            initialScrollIndex={initialScrollIndex}
+            contentContainerStyle={{ backgroundColor: theme.colors.black }}
+            pagingEnabled={true}
+            data={items}
+            onEndReached={onInfiniteScroll}
+            onEndReachedThreshold={1}
+            renderItem={renderItem({ hideLikeButton, onPressLikeButton })}
+          />
+        </View>
       )}
       else={(
         <Center styles={{ flex: 1 }}>
@@ -76,13 +89,13 @@ export const EventsList: FC<EventsListProps> = ({
 
 
 interface IRenderItem extends Pick<EventsListProps, (
-  'hideLikeAndShareButtons' |
+  'hideLikeButton' |
   'onPressLikeButton'
 )> { }
-const renderItem = ({ hideLikeAndShareButtons, onPressLikeButton }: IRenderItem) => {
+const renderItem = ({ hideLikeButton, onPressLikeButton }: IRenderItem) => {
   const item = ({ item }: { item: ILikeableEvent }) => (
     <EventItem
-      hideLikeAndShareButtons={hideLikeAndShareButtons}
+      hideLikeButton={hideLikeButton}
       item={item}
       onPressLikeButton={onPressLikeButton}
     />
@@ -93,10 +106,10 @@ const renderItem = ({ hideLikeAndShareButtons, onPressLikeButton }: IRenderItem)
 
 interface ListItemProps {
   item: ILikeableEvent,
-  hideLikeAndShareButtons?: boolean,
+  hideLikeButton?: boolean,
   onPressLikeButton: (event: ILikeableEvent) => void,
 }
-const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, onPressLikeButton }) => {
+const EventItem: FC<ListItemProps> = ({ item, hideLikeButton = false, onPressLikeButton }) => {
   const { styles, theme } = useStyles(styleSheet);
   const [isTextExpanded, setIsTextExpanded] = useState(false);
   const doubleTapOnLikeButton = Gesture.Tap();
@@ -230,20 +243,25 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeAndShareButtons = false, o
         gap={theme.spacing.sp6}
         styles={styles.positionedButtons}
       >
-        <CircleButton
-          opacity={0.26}
-          size={theme.spacing.sp14}
-          light={false}
-          onPress={() => onPressLikeButton(item)}
-        >
-          <FontAwesome
-            name='heart'
-            size={theme.spacing.sp10}
-            style={{
-              color: item.isLiked ? theme.colors.red90 : theme.colors.white90
-            }}
-          />
-        </CircleButton>
+        <Condition
+          if={!hideLikeButton}
+          then={(
+            <CircleButton
+              opacity={0.26}
+              size={theme.spacing.sp14}
+              light={false}
+              onPress={() => onPressLikeButton(item)}
+            >
+              <FontAwesome
+                name='heart'
+                size={theme.spacing.sp10}
+                style={{
+                  color: item.isLiked ? theme.colors.red90 : theme.colors.white90
+                }}
+              />
+            </CircleButton>
+          )}
+        />
         <CircleButton
           opacity={0.26}
           size={theme.spacing.sp14}
