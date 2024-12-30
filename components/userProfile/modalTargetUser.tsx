@@ -14,10 +14,9 @@ import { GradientHeading } from '../text/gradientText';
 import { Center, VStack } from '../utils/stacks';
 import { tabBarHeight } from '../tabBar/tabBar';
 import { BlurView } from 'expo-blur';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { NewFriendsModal, useNewFriendsModal } from '../modal/newFriends/newFriends';
 import { useCometaStore } from '@/store/cometaStore';
-// import { SafeAreaView } from 'react-native-safe-area-context';
 import { Condition } from '../utils/ifElse';
 
 
@@ -91,25 +90,26 @@ export const ModalTargetUserProfile: FC = () => {
       onRequestClose={onToggle}
       style={{ position: 'relative', zIndex: 10, flex: 1 }}
     >
-      {/* <NewFriendsModal /> */}
+      <NewFriendsModal />
       <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView style={{ flex: 1, backgroundColor: theme.colors.white80 }}>
-          <View style={{ flex: 1, paddingHorizontal: theme.spacing.sp6, position: 'relative', }}>
+        <ScrollView style={{ flex: 1, backgroundColor: theme.colors.white80, position: 'relative' }}>
+          <TouchableOpacity
+            onPress={onToggle}
+            style={styles.closeButton}
+          >
+            <AntDesign
+              name="closecircle"
+              size={theme.spacing.sp10}
+              color={theme.colors.red100}
+            />
+          </TouchableOpacity>
+          <View style={{ flex: 1, paddingHorizontal: theme.spacing.sp6 }}>
             <Center styles={{ height: 60, paddingBottom: 10 }}>
               <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
                 {detailedProfile.data?.username || targetUser?.username}
               </GradientHeading>
             </Center>
-            <TouchableOpacity
-              onPress={onToggle}
-              style={styles.closeButton}
-            >
-              <AntDesign
-                name="closecircle"
-                size={theme.spacing.sp10}
-                color={theme.colors.red100}
-              />
-            </TouchableOpacity>
+
             <HeaderUserProfile
               isTargetUser={true}
               userProfile={detailedProfile.data || targetUser}
@@ -127,17 +127,39 @@ export const ModalTargetUserProfile: FC = () => {
               <Condition
                 if={matches.isSuccess}
                 then={(
-                  <FlatList
-                    scrollEnabled={true}
-                    nestedScrollEnabled={true}
-                    data={matchesEvents}
-                    pagingEnabled={true}
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
-                    onEndReachedThreshold={0.5}
-                    onEndReached={handleInfinteMatches}
-                    renderItem={renderItem}
-                  />
+                  <View style={{ position: 'relative' }}>
+                    <Condition
+                      if={true}
+                      then={(
+                        <BlurView intensity={100}
+                          style={{
+                            width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),
+                            height: UnistylesRuntime.screen.height * 0.25,
+                            position: 'absolute',
+                            zIndex: 100,
+                            left: theme.spacing.sp6,
+                            borderRadius: theme.spacing.sp7,
+                            overflow: 'hidden',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                          }}
+                        >
+                          <FontAwesome name="lock" size={theme.spacing.sp14} color={theme.colors.gray200} />
+                        </BlurView>
+                      )}
+                    />
+                    <FlatList
+                      scrollEnabled={true}
+                      nestedScrollEnabled={true}
+                      data={matchesEvents}
+                      pagingEnabled={true}
+                      horizontal={true}
+                      showsHorizontalScrollIndicator={false}
+                      onEndReachedThreshold={0.5}
+                      onEndReached={handleInfinteMatches}
+                      renderItem={renderItem}
+                    />
+                  </View>
                 )}
                 else={(
                   <View style={{ paddingHorizontal: theme.spacing.sp6 }}>
@@ -191,7 +213,6 @@ const styleSheet = createStyleSheet((theme) => ({
     position: 'absolute',
     top: -theme.spacing.sp4,
     right: 0
-    // backgroundColor: theme.colors.red100
   }
 }));
 

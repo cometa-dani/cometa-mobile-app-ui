@@ -29,7 +29,6 @@ import { IGetBasicUserProfile, IGetPaginatedUsersWhoLikedSameEvent, IGetTargetUs
 import { QueryKeys } from '@/queries/queryKeys';
 import { ErrorMessage } from '@/queries/errors/errorMessages';
 import { MutateFrienship } from '@/models/Friendship';
-import { useBootomSheetRef } from '@/components/userProfile/bottomSheetTargetUser';
 import { NewFriendsModal, useNewFriendsModal } from '@/components/modal/newFriends/newFriends';
 import { ModalTargetUserProfile, useModalTargetUser } from '@/components/userProfile/modalTargetUser';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
