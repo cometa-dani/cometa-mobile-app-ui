@@ -32,7 +32,6 @@ export const ModalTargetUserProfile: FC = () => {
   const { toggle, onToggle } = useModalTargetUser();
   const { onToggle: onToggleMatchedEvents } = useMacthedEvents();
 
-  // TODO: encapsulate in a component, too much rendering on infinite scroll
   const handleInfinteBucketList = () => {
     if (bucketList) {
       const { hasNextPage, isFetching } = bucketList;
@@ -92,6 +91,8 @@ export const ModalTargetUserProfile: FC = () => {
       animationType='slide'
       visible={toggle}
       onRequestClose={onToggle}
+      // statusBarTranslucent={true}
+      // presentationStyle='overFullScreen'
       style={{ position: 'relative', zIndex: 10, flex: 1 }}
     >
       <NewFriendsModal />

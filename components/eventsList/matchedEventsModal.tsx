@@ -14,6 +14,7 @@ import { HStack } from '../utils/stacks';
 import { Image } from 'expo-image';
 import { imageTransition } from '@/constants/vars';
 import { AntDesign } from '@expo/vector-icons';
+import { CircleButton } from '../button/circleButton';
 
 
 export const MatcheEventsModal: FC = () => {
@@ -38,6 +39,7 @@ export const MatcheEventsModal: FC = () => {
       animationType='slide'
       visible={toggle}
       onRequestClose={onToggle}
+      // statusBarTranslucent={true}
       style={{ position: 'relative', zIndex: 10, flex: 1 }}
     >
       <EventsList
@@ -48,16 +50,15 @@ export const MatcheEventsModal: FC = () => {
         onPressLikeButton={(props) => console.log('clicked', props)}
         header={() => (
           <HStack $x='center' $y='center' styles={styles.avatarContainer}>
-            <TouchableOpacity
-              onPress={() => onToggle()}
-              style={styles.closeButton}
-            >
-              <AntDesign
-                name="closecircle"
-                size={theme.spacing.sp10}
-                color={theme.colors.red100}
-              />
-            </TouchableOpacity>
+            <View style={styles.closeButton}>
+              <CircleButton onPress={() => onToggle()}>
+                <AntDesign
+                  name="close"
+                  size={theme.spacing.sp8}
+                  color={theme.colors.white100}
+                />
+              </CircleButton>
+            </View>
             <View style={styles.avatar}>
               <Image
                 style={styles.img}
