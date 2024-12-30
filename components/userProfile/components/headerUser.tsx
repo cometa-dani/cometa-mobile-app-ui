@@ -29,7 +29,6 @@ export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = fals
         if={isTargetUser}
         then={(
           <Button
-            isInsideBottomSheet={true}
             variant='primary'
             onPress={() => onPresss && onPresss()}
           >

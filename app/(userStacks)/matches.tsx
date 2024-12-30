@@ -6,7 +6,7 @@ import {
 } from '@/queries/currentUser/friendshipHooks';
 import { FC, ReactNode, useEffect, useState } from 'react';
 import { SafeAreaView, TouchableOpacity, View, } from 'react-native';
-import { Stack, useGlobalSearchParams } from 'expo-router';
+import { router, Stack, useGlobalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { GradientHeading } from '@/components/text/gradientText';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
@@ -141,7 +141,7 @@ export default function MatchedEventsScreen(): ReactNode {
   const { onToggle: onToggleModalNewFriend } = useNewFriendsModal();
   // const [toggleModal, setToggleModal] = useState(false);
   // const bottomSheetRef = useRef<BottomSheetMethods>(null);
-  const { toggle: toggleModalTargetUser, onToggle: onToggleModalTargetUser } = useModalTargetUser();
+  // const { toggle: toggleModalTargetUser, onToggle: onToggleModalTargetUser } = useModalTargetUser();
 
   /**
   *
@@ -307,13 +307,13 @@ export default function MatchedEventsScreen(): ReactNode {
 
   return (
     <>
-      <Condition
+      {/* <Condition
         if={!toggleModalTargetUser}
         then={
-          <NewFriendsModal />
         }
-      />
-      <ModalTargetUserProfile />
+      /> */}
+      <NewFriendsModal />
+      {/* <ModalTargetUserProfile /> */}
 
       <Stack.Screen
         options={{
@@ -512,7 +512,8 @@ export default function MatchedEventsScreen(): ReactNode {
                             <TouchableOpacity
                               onPress={() => {
                                 setTargetUser(user as IGetTargetUser);
-                                onToggleModalTargetUser();
+                                // onToggleModalTargetUser();
+                                router.push('/(userStacks)/targetUser');
                               }}
                               style={{
                                 flex: 1, flexDirection: 'row',
