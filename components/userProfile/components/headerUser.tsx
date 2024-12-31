@@ -12,6 +12,7 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
 import { Condition } from '@/components/utils/ifElse';
 import { Button } from '@/components/button/button';
+import { ParallaxCarousel } from '@/components/carousel/parallaxCarousel';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -24,7 +25,7 @@ export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = fals
   const { theme, styles } = useStyles(styleSheet);
   return (
     <VStack gap={theme.spacing.sp6}>
-      <Carousel photos={userProfile?.photos ?? []} />
+      <ParallaxCarousel photos={userProfile?.photos ?? []} />
       <Condition
         if={isTargetUser}
         then={(

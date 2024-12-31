@@ -15,7 +15,7 @@ import { VStack } from '../utils/stacks';
 import { tabBarHeight } from '../tabBar/tabBar';
 import { BlurView } from 'expo-blur';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
-import { NewFriendsModal, useNewFriendsModal } from '../modal/newFriends/newFriends';
+import { NewFriendsModal } from '../modal/newFriends/newFriends';
 import { useCometaStore } from '@/store/cometaStore';
 import { Condition } from '../utils/ifElse';
 import { Stack, useRouter } from 'expo-router';
@@ -28,7 +28,7 @@ export const ModalTargetUserProfile: FC = () => {
   const bucketList = useInfiniteQueryGetTargetUserBucketList(targetUser?.id);
   const detailedProfile = useQueryGetTargetUserPeopleProfile(targetUser?.uid ?? '');
   const matches = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUser?.uid ?? '');
-  const { onToggle: onToggleNewFriendsModal } = useNewFriendsModal();
+  const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
 
   const handleInfinteBucketList = () => {
     if (bucketList) {
@@ -86,6 +86,10 @@ export const ModalTargetUserProfile: FC = () => {
 
   return (
     <>
+      <NewFriendsModal
+        toggle={showNewFriendsModal}
+        onToggle={() => setShowNewFriendsModal(false)}
+      />
       <Stack.Screen
         options={{
           headerShown: true,
@@ -115,7 +119,6 @@ export const ModalTargetUserProfile: FC = () => {
         }}
       />
       <ScrollView style={{ flex: 1, backgroundColor: theme.colors.white80, position: 'relative' }}>
-        <NewFriendsModal />
         <View style={{
           flex: 1,
           paddingHorizontal: theme.spacing.sp6,
@@ -127,14 +130,14 @@ export const ModalTargetUserProfile: FC = () => {
               <HeaderUserProfile
                 isTargetUser={true}
                 userProfile={targetUser}
-                onPresss={onToggleNewFriendsModal}
+                onPresss={() => setShowNewFriendsModal(true)}
               />
             )}
             else={(
               <HeaderUserProfile
                 isTargetUser={true}
                 userProfile={detailedProfile.data}
-                onPresss={onToggleNewFriendsModal}
+                onPresss={() => setShowNewFriendsModal(true)}
               />
             )}
           />
@@ -238,12 +241,12 @@ const styleSheet = createStyleSheet((theme) => ({
 }));
 
 
-type DefaultBottomSheetProps = {
-  toggle: boolean
-  onToggle: () => void
-};
+// type DefaultBottomSheetProps = {
+//   toggle: boolean
+//   onToggle: () => void
+// };
 
-export const useModalTargetUser = create<DefaultBottomSheetProps>((set, get) => ({
-  toggle: false,
-  onToggle: () => set({ toggle: !get().toggle })
-}));
+// export const useModalTargetUser = create<DefaultBottomSheetProps>((set, get) => ({
+//   toggle: false,
+//   onToggle: () => set({ toggle: !get().toggle })
+// }));

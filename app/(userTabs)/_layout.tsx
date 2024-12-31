@@ -61,6 +61,10 @@ export default function TabLayout(): ReactNode {
           options={{
             tabBarLabel: 'Home',
             headerTransparent: true,
+            headerShadowVisible: false,
+            headerStyle: {
+              elevation: 0,
+            },
             headerLeft: () => (
               <CircleButton onPress={() => router.push('/(userStacks)/search')}>
                 <Ionicons

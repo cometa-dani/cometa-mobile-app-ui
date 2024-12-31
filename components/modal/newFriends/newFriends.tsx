@@ -8,12 +8,14 @@ import { Image } from 'expo-image';
 import { FC } from 'react';
 import { Modal, Pressable, TouchableOpacity, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import { create } from 'zustand';
 
 
-export const NewFriendsModal: FC = () => {
+interface IProps {
+  toggle: boolean;
+  onToggle: () => void
+}
+export const NewFriendsModal: FC<IProps> = ({ onToggle, toggle }) => {
   const { styles, theme } = useStyles(stylesheet);
-  const { toggle, onToggle } = useNewFriendsModal();
   const targetUser = useCometaStore(state => state.targetUser);
   const currentUser = useCometaStore(state => state.userProfile);
   const currentEvent = useCometaStore(state => state.likedEvent);
@@ -23,7 +25,7 @@ export const NewFriendsModal: FC = () => {
       statusBarTranslucent={true}
       visible={toggle}
       animationType='fade'
-      style={{ zIndex: 10_000 }}
+      style={{ zIndex: 1_000 }}
       onRequestClose={onToggle}
     >
       <Pressable style={styles.backdrop}>
@@ -151,7 +153,6 @@ const stylesheet = createStyleSheet((theme, runtime) => ({
   },
   modal: {
     position: 'relative',
-    width: '100%',
     backgroundColor: theme.colors.blue100,
     padding: theme.spacing.sp10,
     borderRadius: theme.radius.md,
@@ -161,15 +162,4 @@ const stylesheet = createStyleSheet((theme, runtime) => ({
     width: 48,
     aspectRatio: 1
   }
-}));
-
-
-type NewFriendsSlice = {
-  toggle: boolean;
-  onToggle: () => void;
-};
-
-export const useNewFriendsModal = create<NewFriendsSlice>((set, get) => ({
-  toggle: false,
-  onToggle: () => set({ toggle: !get().toggle }),
 }));
