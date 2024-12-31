@@ -11,13 +11,17 @@ import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { useCometaStore } from '@/store/cometaStore';
 import { Stack, useRouter } from 'expo-router';
 import { EventItem, EventItemSkeleton, IBucketListItem } from '@/components/userProfile/components/eventItem';
-import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
+import { NewFriendsModal, useModalNewFriends } from '@/components/modal/newFriends/newFriends';
 import { GradientHeading } from '@/components/text/gradientText';
 import { Condition } from '@/components/utils/ifElse';
 import { HeaderUserProfile } from '@/components/userProfile/components/headerUser';
 import { VStack } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
+import { Button } from '@/components/button/button';
+import { BaseButton } from 'react-native-gesture-handler';
+import { TextView } from '@/components/text/text';
+import { SystemBars } from 'react-native-edge-to-edge';
 
 
 export default function ModalTargetUserProfile() {
@@ -27,7 +31,8 @@ export default function ModalTargetUserProfile() {
   const bucketList = useInfiniteQueryGetTargetUserBucketList(targetUser?.id);
   const detailedProfile = useQueryGetTargetUserPeopleProfile(targetUser?.uid ?? '');
   const matches = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUser?.uid ?? '');
-  const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
+  // const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
+  const { onToggle: setShowNewFriendsModal } = useModalNewFriends();
 
   const handleInfinteBucketList = () => {
     if (bucketList) {
@@ -85,10 +90,7 @@ export default function ModalTargetUserProfile() {
 
   return (
     <>
-      <NewFriendsModal
-        toggle={showNewFriendsModal}
-        onToggle={() => setShowNewFriendsModal(false)}
-      />
+
       <Stack.Screen
         options={{
           headerShown: true,
@@ -123,23 +125,21 @@ export default function ModalTargetUserProfile() {
           paddingHorizontal: theme.spacing.sp6,
           paddingTop: theme.spacing.sp7
         }}>
+
           <HeaderUserProfile
-            isTargetUser={true}
+            // isTargetUser={true}
             userProfile={detailedProfile.data || targetUser}
-            onPresss={() => setShowNewFriendsModal(true)}
+          // onPresss={() => setShowNewFriendsModal(true)}
           />
-          {/* <Condition
-            if={!detailedProfile.isSuccess}
-            then={(
-            )}
-            else={(
-              <HeaderUserProfile
-                isTargetUser={true}
-                userProfile={detailedProfile.data}
-                onPresss={() => setShowNewFriendsModal(true)}
-              />
-            )}
-          /> */}
+          <BaseButton
+            // variant='primary'
+            onPress={() => setTimeout(() => setShowNewFriendsModal(), 400)}
+          >
+            <TextView>
+              FOLLOW
+            </TextView>
+          </BaseButton>
+          <NewFriendsModal />
         </View>
         <VStack gap={theme.spacing.sp6} styles={{ flex: 1, marginTop: theme.spacing.sp6 }}>
           <VStack>
@@ -225,6 +225,11 @@ export default function ModalTargetUserProfile() {
           <View style={{ height: tabBarHeight * 2 }} />
         </VStack>
       </ScrollView>
+
+      {/* <NewFriendsModal
+        toggle={showNewFriendsModal}
+        onToggle={() => setShowNewFriendsModal(false)}
+      /> */}
     </>
   );
 }

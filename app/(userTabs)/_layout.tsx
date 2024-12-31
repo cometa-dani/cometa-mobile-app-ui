@@ -1,4 +1,5 @@
 import { CircleButton } from '@/components/button/circleButton';
+import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
 import { TabBar } from '@/components/tabBar/tabBar';
 import { GradientHeading } from '@/components/text/gradientText';
 import { BottomSheetTargetUserProfile } from '@/components/userProfile/bottomSheetTargetUser';
@@ -27,7 +28,6 @@ export default function TabLayout(): ReactNode {
   }
   return (
     <>
-
       <Tabs
         screenOptions={{
           animation: 'shift',

@@ -1,4 +1,3 @@
-import { Carousel } from '@/components/carousel/carousel';
 import { ExpandableText } from '@/components/text/expandableText';
 import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
@@ -26,7 +25,7 @@ export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = fals
   return (
     <VStack gap={theme.spacing.sp6}>
       <ParallaxCarousel photos={userProfile?.photos ?? []} />
-      <Condition
+      {/* <Condition
         if={isTargetUser}
         then={(
           <Button
@@ -36,7 +35,15 @@ export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = fals
             FOLLOW
           </Button>
         )}
-      />
+      /> */}
+      {/* {isTargetUser && (
+        <Button
+          variant='primary'
+          onPress={() => onPresss && onPresss()}
+        >
+          FOLLOW
+        </Button>
+      )} */}
       <VStack styles={styles.container} gap={theme.spacing.sp1} >
         <Heading size='s7'>
           {userProfile?.name}, {userProfile?.birthday && calAge(new Date(userProfile?.birthday))}
