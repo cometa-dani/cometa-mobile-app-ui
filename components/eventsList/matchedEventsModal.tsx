@@ -3,7 +3,7 @@ import { Modal, TouchableOpacity, View } from 'react-native';
 import { create } from 'zustand';
 import { EventsList } from './eventsList';
 import { useInfiniteQueryGetSameMatchedEventsByTwoUsers } from '@/queries/targetUser/eventHooks';
-import { InfiniteData, QueryClient, UseMutationResult, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, QueryClient, UseMutationResult } from '@tanstack/react-query';
 import { useCometaStore } from '@/store/cometaStore';
 import { useMutationLikeOrDislikeEvent } from '@/queries/currentUser/likeEventHooks';
 import { CreateEventLike, IGetLatestPaginatedEvents, ILikeableEvent } from '@/models/Event';
@@ -13,17 +13,13 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { HStack } from '../utils/stacks';
 import { Image } from 'expo-image';
 import { imageTransition } from '@/constants/vars';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { CircleButton } from '../button/circleButton';
-import { useRouter } from 'expo-router';
+import { useGlobalSearchParams, useRouter } from 'expo-router';
 
-interface IMatcheEventsModalProps {
-  toggle: boolean
-  onToggle: () => void
-}
 
 export const MatcheEventsModal: FC = () => {
-  const queryClient = useQueryClient();
+  const { index = 0 } = useGlobalSearchParams<{ index: string }>();
   const router = useRouter();
   const { theme, styles } = useStyles(stylesheet);
   const targetUser = useCometaStore(state => state.targetUser);
@@ -38,20 +34,14 @@ export const MatcheEventsModal: FC = () => {
   const mutateEventLike = useMutationLikeOrDislikeEvent() as UseMutationResult<CreateEventLike>;
   const evenstData = data?.pages.flatMap(page => page.items) || [];
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
+
   return (
-    // <Modal
-    //   animationType='slide'
-    //   visible={toggle}
-    //   onRequestClose={onToggle}
-    //   statusBarTranslucent={true}
-    //   style={{ position: 'relative', zIndex: 10, flex: 1 }}
-    // >
     <EventsList
+      initialScrollIndex={+index}
       items={evenstData}
       isFetched={isFetched}
       onInfiniteScroll={handleInfiniteFetch}
       hideLikeButton={true}
-      onPressLikeButton={(props) => console.log('clicked', props)}
       header={() => (
         <HStack $x='center' $y='center' styles={styles.avatarContainer}>
           <View style={styles.closeButton}>
@@ -71,6 +61,11 @@ export const MatcheEventsModal: FC = () => {
               source={{ uri: currentUser?.photos?.at(0)?.url }}
               placeholder={{ thumbhash: currentUser?.photos?.at(0)?.placeholder }}
             />
+            <FontAwesome
+              name='heart'
+              size={theme.spacing.sp9}
+              style={styles.heart}
+            />
           </View>
           <View style={styles.avatar}>
             <Image
@@ -80,11 +75,15 @@ export const MatcheEventsModal: FC = () => {
               source={{ uri: targetUser?.photos?.at(0)?.url }}
               placeholder={{ thumbhash: targetUser?.photos?.at(0)?.placeholder }}
             />
+            <FontAwesome
+              name='heart'
+              size={theme.spacing.sp9}
+              style={styles.heart}
+            />
           </View>
         </HStack>
       )}
     />
-    // </Modal>
   );
 };
 
@@ -106,12 +105,20 @@ const stylesheet = createStyleSheet((theme, runtime) => ({
     aspectRatio: 1,
     borderColor: theme.colors.white90,
     borderRadius: 99_9999,
-    overflow: 'hidden',
     borderWidth: 2,
     height: 70,
+    position: 'relative',
+  },
+  heart: {
+    color: theme.colors.red90,
+    position: 'absolute',
+    bottom: -8,
+    right: -2,
+    zIndex: 1000,
   },
   img: {
     width: '100%',
+    borderRadius: 99_9999,
     height: '100%',
   },
   closeButton: {

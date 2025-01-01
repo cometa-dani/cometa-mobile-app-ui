@@ -98,6 +98,7 @@ export const lightTheme = {
     sp6: 16,
     sp7: 18,
     sp8: 20,
+    sp9: 22,
     sp10: 24,
     sp11: 28,
     sp12: 32,

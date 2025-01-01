@@ -70,11 +70,10 @@ export default function TargetUserProfileScreen() {
       )) || []
   );
 
-  const renderMatchedItem = useCallback(({ item }: { item: IBucketListItem }) => (
+  const renderMatchedItem = useCallback(({ item, index }: { item: IBucketListItem, index: number }) => (
     <Pressable
       key={item?.id}
-      onPress={() => router.push('/(userStacks)/matchedEvents')}
-      // onPress={() => setShowMatchedEventsModal(true)}
+      onPress={() => router.push(`/(userStacks)/matchedEvents?index=${index}`)}
       style={{
         position: 'relative',
         width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),
@@ -87,7 +86,6 @@ export default function TargetUserProfileScreen() {
   const renderBucketItem = useCallback(({ item }: { item: IBucketListItem }) => (
     <Pressable
       key={item?.id}
-      // onPress={() => router.push('/(userStacks)/macthedEvents')}
       style={{
         position: 'relative',
         width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),

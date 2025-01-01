@@ -25,7 +25,7 @@ interface EventsListProps {
   hideLikeButton?: boolean,
   header?: () => ReactNode
   initialScrollIndex?: number,
-  onPressLikeButton: (event: ILikeableEvent) => void
+  onPressLikeButton?: (event: ILikeableEvent) => void
 }
 export const EventsList: FC<EventsListProps> = ({
   onInfiniteScroll,
@@ -37,15 +37,6 @@ export const EventsList: FC<EventsListProps> = ({
   initialScrollIndex = 0
 }) => {
   const { theme } = useStyles();
-  const listRef = useRef<FlashList<ILikeableEvent>>(null);
-  // useEffect(() => {
-  //   if (!isLoading) {
-  //     listRef.current?.scrollToIndex({
-  //       index: initialScrollIndex,
-  //       animated: false
-  //     });
-  //   }
-  // }, [initialScrollIndex, isLoading]);
   return (
     <Condition
       if={isFetched}
@@ -53,14 +44,12 @@ export const EventsList: FC<EventsListProps> = ({
         <View style={{ flex: 1, position: 'relative' }}>
           {header && (
             <SafeAreaView
-              // edges={{ top: 'maximum' }}
               style={{ position: 'absolute', left: 0, zIndex: 100 }}
             >
               {header()}
             </SafeAreaView>
           )}
           <FlashList
-            ref={listRef}
             showsVerticalScrollIndicator={false}
             estimatedItemSize={UnistylesRuntime.screen.height}
             // refreshControl={}  // pull to refresh feaature
@@ -92,7 +81,7 @@ interface IRenderItem extends Pick<EventsListProps, (
   'hideLikeButton' |
   'onPressLikeButton'
 )> { }
-const renderItem = ({ hideLikeButton, onPressLikeButton }: IRenderItem) => {
+const renderItem = ({ hideLikeButton, onPressLikeButton = () => { } }: IRenderItem) => {
   const item = ({ item }: { item: ILikeableEvent }) => (
     <EventItem
       hideLikeButton={hideLikeButton}
@@ -177,7 +166,10 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeButton = false, onPressLik
       <ScrollView
         nestedScrollEnabled={true}
         showsVerticalScrollIndicator={false}
-        style={styles.eventInfoContainer}
+        style={[
+          styles.eventInfoContainer,
+          { bottom: (hideLikeButton ? 0 : tabBarHeight) + UnistylesRuntime.insets.bottom + 16 }
+        ]}
         contentContainerStyle={{ gap: theme.spacing.sp4 }}
       >
         <Pressable onPress={() => setIsTextExpanded(prev => !prev)}>
@@ -241,7 +233,10 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeButton = false, onPressLik
 
       <VStack
         gap={theme.spacing.sp6}
-        styles={styles.positionedButtons}
+        styles={[
+          styles.positionedButtons,
+          { bottom: (hideLikeButton ? 0 : tabBarHeight) + UnistylesRuntime.insets.bottom + 50 }
+        ]}
       >
         <Condition
           if={!hideLikeButton}
@@ -304,7 +299,6 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeButton = false, onPressLik
 
 const styleSheet = createStyleSheet((theme, runtime) => ({
   eventInfoContainer: {
-    bottom: tabBarHeight + runtime.insets.bottom + 16,
     gap: theme.spacing.sp4,
     left: theme.spacing.sp6,
     position: 'absolute',
@@ -319,7 +313,6 @@ const styleSheet = createStyleSheet((theme, runtime) => ({
   },
   positionedButtons: {
     position: 'absolute',
-    bottom: tabBarHeight + runtime.insets.bottom + 50,
     zIndex: 100,
     right: theme.spacing.sp6
   },
