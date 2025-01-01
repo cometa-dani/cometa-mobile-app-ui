@@ -1,6 +1,6 @@
 import { FC, ReactNode, useRef, useState } from 'react';
 import { ILikeableEvent, } from '../../models/Event';
-import { Pressable, View, Text, ActivityIndicator, ScrollView, SafeAreaView } from 'react-native';
+import { Pressable, View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { ImageBackground } from 'expo-image';
 import { ForEach } from '../utils/ForEach';
@@ -15,7 +15,7 @@ import { tabBarHeight } from '../tabBar/tabBar';
 import * as WebBrowser from 'expo-web-browser';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { imageTransition } from '@/constants/vars';
-// import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 interface EventsListProps {

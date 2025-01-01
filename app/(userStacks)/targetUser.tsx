@@ -70,10 +70,24 @@ export default function TargetUserProfileScreen() {
       )) || []
   );
 
-  const renderItem = useCallback(({ item }: { item: IBucketListItem }) => (
+  const renderMatchedItem = useCallback(({ item }: { item: IBucketListItem }) => (
     <Pressable
       key={item?.id}
-      onPress={() => router.push('/(userStacks)/macthedEvents')}
+      onPress={() => router.push('/(userStacks)/matchedEvents')}
+      // onPress={() => setShowMatchedEventsModal(true)}
+      style={{
+        position: 'relative',
+        width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),
+        flex: 1,
+        marginHorizontal: theme.spacing.sp6
+      }}>
+      <EventItem item={item} />
+    </Pressable>
+  ), []);
+  const renderBucketItem = useCallback(({ item }: { item: IBucketListItem }) => (
+    <Pressable
+      key={item?.id}
+      // onPress={() => router.push('/(userStacks)/macthedEvents')}
       style={{
         position: 'relative',
         width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),
@@ -177,7 +191,7 @@ export default function TargetUserProfileScreen() {
                   showsHorizontalScrollIndicator={false}
                   onEndReachedThreshold={0.5}
                   onEndReached={handleInfinteMatches}
-                  renderItem={renderItem}
+                  renderItem={renderMatchedItem}
                 />
               </View>
             )}
@@ -208,7 +222,7 @@ export default function TargetUserProfileScreen() {
                   pagingEnabled={true}
                   onEndReachedThreshold={0.5}
                   onEndReached={handleInfinteBucketList}
-                  renderItem={renderItem}
+                  renderItem={renderBucketItem}
                 />
               )}
               else={(

@@ -95,7 +95,7 @@ const initialTab = 1;
 export default function MatchedEventsScreen(): ReactNode {
   const queryClient = useQueryClient();
   const { styles, theme } = useStyles(styleSheet);
-  const { eventId } = useGlobalSearchParams<{ eventId: string }>();
+  const { eventId = '' } = useGlobalSearchParams<{ eventId: string }>();
   // tabs
   const selectedLikedEvent = useCometaStore(state => state.likedEvent);
   const [isFirstItemVisible, setIsFirstItemVisible] = useState(true);

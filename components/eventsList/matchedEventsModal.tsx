@@ -15,15 +15,19 @@ import { Image } from 'expo-image';
 import { imageTransition } from '@/constants/vars';
 import { AntDesign } from '@expo/vector-icons';
 import { CircleButton } from '../button/circleButton';
+import { useRouter } from 'expo-router';
 
+interface IMatcheEventsModalProps {
+  toggle: boolean
+  onToggle: () => void
+}
 
 export const MatcheEventsModal: FC = () => {
-  const { toggle, onToggle } = useMacthedEvents();
   const queryClient = useQueryClient();
+  const router = useRouter();
   const { theme, styles } = useStyles(stylesheet);
   const targetUser = useCometaStore(state => state.targetUser);
   const currentUser = useCometaStore(state => state.userProfile);
-  // const searchQuery = useCometaStore(state => state.searchQuery);
   const {
     data,
     isFetched,
@@ -35,52 +39,52 @@ export const MatcheEventsModal: FC = () => {
   const evenstData = data?.pages.flatMap(page => page.items) || [];
   const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
   return (
-    <Modal
-      animationType='slide'
-      visible={toggle}
-      onRequestClose={onToggle}
-      // statusBarTranslucent={true}
-      style={{ position: 'relative', zIndex: 10, flex: 1 }}
-    >
-      <EventsList
-        items={evenstData}
-        isFetched={isFetched}
-        onInfiniteScroll={handleInfiniteFetch}
-        hideLikeButton={true}
-        onPressLikeButton={(props) => console.log('clicked', props)}
-        header={() => (
-          <HStack $x='center' $y='center' styles={styles.avatarContainer}>
-            <View style={styles.closeButton}>
-              <CircleButton onPress={() => onToggle()}>
-                <AntDesign
-                  name="close"
-                  size={theme.spacing.sp8}
-                  color={theme.colors.white100}
-                />
-              </CircleButton>
-            </View>
-            <View style={styles.avatar}>
-              <Image
-                style={styles.img}
-                contentFit='cover'
-                transition={imageTransition}
-                source={{ uri: currentUser?.photos?.at(0)?.url }}
-                placeholder={{ thumbhash: currentUser?.photos?.at(0)?.placeholder }}
+    // <Modal
+    //   animationType='slide'
+    //   visible={toggle}
+    //   onRequestClose={onToggle}
+    //   statusBarTranslucent={true}
+    //   style={{ position: 'relative', zIndex: 10, flex: 1 }}
+    // >
+    <EventsList
+      items={evenstData}
+      isFetched={isFetched}
+      onInfiniteScroll={handleInfiniteFetch}
+      hideLikeButton={true}
+      onPressLikeButton={(props) => console.log('clicked', props)}
+      header={() => (
+        <HStack $x='center' $y='center' styles={styles.avatarContainer}>
+          <View style={styles.closeButton}>
+            <CircleButton onPress={() => router.back()}>
+              <AntDesign
+                name="close"
+                size={theme.spacing.sp8}
+                color={theme.colors.white100}
               />
-            </View>
-            <View style={styles.avatar}>
-              <Image
-                style={styles.img}
-                contentFit='cover'
-                transition={imageTransition}
-                source={{ uri: targetUser?.photos?.at(0)?.url }}
-                placeholder={{ thumbhash: targetUser?.photos?.at(0)?.placeholder }}
-              />
-            </View>
-          </HStack>
-        )}
-      />
-    </Modal>
+            </CircleButton>
+          </View>
+          <View style={styles.avatar}>
+            <Image
+              style={styles.img}
+              contentFit='cover'
+              transition={imageTransition}
+              source={{ uri: currentUser?.photos?.at(0)?.url }}
+              placeholder={{ thumbhash: currentUser?.photos?.at(0)?.placeholder }}
+            />
+          </View>
+          <View style={styles.avatar}>
+            <Image
+              style={styles.img}
+              contentFit='cover'
+              transition={imageTransition}
+              source={{ uri: targetUser?.photos?.at(0)?.url }}
+              placeholder={{ thumbhash: targetUser?.photos?.at(0)?.placeholder }}
+            />
+          </View>
+        </HStack>
+      )}
+    />
+    // </Modal>
   );
 };
 
@@ -159,15 +163,15 @@ const stylesheet = createStyleSheet((theme, runtime) => ({
 }));
 
 
-type ModalSlice = {
-  toggle: boolean
-  onToggle: () => void
-};
+// type ModalSlice = {
+//   toggle: boolean
+//   onToggle: () => void
+// };
 
-export const useMacthedEvents = create<ModalSlice>((set, get) => ({
-  toggle: false,
-  onToggle: () => set({ toggle: !get().toggle })
-}));
+// export const useMacthedEvents = create<ModalSlice>((set, get) => ({
+//   toggle: false,
+//   onToggle: () => set({ toggle: !get().toggle })
+// }));
 
 
 const handleLikeButton = (
