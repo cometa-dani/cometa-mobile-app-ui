@@ -4,7 +4,7 @@ import {
 } from '@/queries/targetUser/eventHooks';
 import { useCallback, useState } from 'react';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
-import { FlatList, TouchableOpacity, View, ScrollView, Pressable, Modal } from 'react-native';
+import { FlatList, TouchableOpacity, View, Pressable, Modal } from 'react-native';
 import { useQueryGetTargetUserPeopleProfile } from '@/queries/targetUser/userProfileHooks';
 import { BlurView } from 'expo-blur';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
@@ -19,7 +19,7 @@ import { VStack } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { Button } from '@/components/button/button';
-import { BaseButton } from 'react-native-gesture-handler';
+import { BaseButton, ScrollView } from 'react-native-gesture-handler';
 import { TextView } from '@/components/text/text';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -124,72 +124,71 @@ export default function ModalTargetUserProfile() {
           ),
         }}
       />
+      <ScrollView>
+        <View style={{ position: 'relative', paddingHorizontal: theme.spacing.sp6, paddingTop: theme.spacing.sp7 }}>
+          <HeaderUserProfile
+            isTargetUser={true}
+            userProfile={detailedProfile.data || targetUser}
+            onPresss={() => setShowNewFriendsModal(true)}
+          />
+        </View>
 
-      <ScrollView style={{
-        flex: 1,
-        paddingHorizontal: theme.spacing.sp6,
-        paddingTop: theme.spacing.sp7,
-      }}>
-        <HeaderUserProfile
-          isTargetUser={true}
-          userProfile={detailedProfile.data || targetUser}
-          onPresss={() => setShowNewFriendsModal(true)}
-        />
+        <VStack styles={{ marginTop: theme.spacing.sp6 }}>
+          <Heading
+            style={{
+              paddingHorizontal: theme.spacing.sp12,
+              paddingBottom: theme.spacing.sp1
+            }}
+            size='s6'
+          >
+            Matches
+          </Heading>
+          <Condition
+            if={matches.isSuccess}
+            then={(
+              <View style={{ position: 'relative' }}>
+                <Condition
+                  if={false}
+                  then={(
+                    <BlurView intensity={100}
+                      style={{
+                        width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),
+                        height: UnistylesRuntime.screen.height * 0.25,
+                        position: 'absolute',
+                        zIndex: 100,
+                        left: theme.spacing.sp6,
+                        borderRadius: theme.spacing.sp7,
+                        overflow: 'hidden',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <FontAwesome name="lock" size={theme.spacing.sp14} color={theme.colors.gray200} />
+                    </BlurView>
+                  )}
+                />
+                <FlatList
+                  scrollEnabled={true}
+                  nestedScrollEnabled={true}
+                  data={matchesEvents}
+                  pagingEnabled={true}
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                  onEndReachedThreshold={0.5}
+                  onEndReached={handleInfinteMatches}
+                  renderItem={renderItem}
+                />
+              </View>
+            )}
+            else={(
+              <View style={{ paddingHorizontal: theme.spacing.sp6 }}>
+                <EventItemSkeleton />
+              </View>
+            )}
+          />
+        </VStack>
 
-
-        {/* <VStack gap={theme.spacing.sp6} styles={{ flex: 1, marginTop: theme.spacing.sp6 }}>
-          <VStack>
-            <Heading
-              style={{ paddingHorizontal: theme.spacing.sp12, paddingBottom: theme.spacing.sp1 }}
-              size='s6'
-            >
-              Matches
-            </Heading>
-            <Condition
-              if={matches.isSuccess}
-              then={(
-                <View style={{ position: 'relative' }}>
-                  <Condition
-                    if={false}
-                    then={(
-                      <BlurView intensity={100}
-                        style={{
-                          width: (UnistylesRuntime.screen.width - (2 * theme.spacing.sp6)),
-                          height: UnistylesRuntime.screen.height * 0.25,
-                          position: 'absolute',
-                          zIndex: 100,
-                          left: theme.spacing.sp6,
-                          borderRadius: theme.spacing.sp7,
-                          overflow: 'hidden',
-                          justifyContent: 'center',
-                          alignItems: 'center'
-                        }}
-                      >
-                        <FontAwesome name="lock" size={theme.spacing.sp14} color={theme.colors.gray200} />
-                      </BlurView>
-                    )}
-                  />
-                  <FlatList
-                    scrollEnabled={true}
-                    nestedScrollEnabled={true}
-                    data={matchesEvents}
-                    pagingEnabled={true}
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
-                    onEndReachedThreshold={0.5}
-                    onEndReached={handleInfinteMatches}
-                    renderItem={renderItem}
-                  />
-                </View>
-              )}
-              else={(
-                <View style={{ paddingHorizontal: theme.spacing.sp6 }}>
-                  <EventItemSkeleton />
-                </View>
-              )}
-            />
-          </VStack>
-
+        <VStack gap={theme.spacing.sp6} styles={{ marginTop: theme.spacing.sp6 }}>
           <VStack>
             <Heading
               style={{ paddingHorizontal: theme.spacing.sp12, paddingBottom: theme.spacing.sp1 }}
@@ -218,13 +217,8 @@ export default function ModalTargetUserProfile() {
               )}
             />
           </VStack>
-          <View style={{ height: tabBarHeight * 2 }} />
-        </VStack> */}
-        {/* </ScrollView> */}
-        {/* <NewFriendsModal
-        toggle={showNewFriendsModal}
-        onToggle={() => setShowNewFriendsModal(false)}
-      /> */}
+        </VStack>
+        <View style={{ height: tabBarHeight * 3 }} />
       </ScrollView>
     </>
   );

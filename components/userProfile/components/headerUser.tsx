@@ -23,7 +23,7 @@ interface IProps {
 export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = false, onPresss }) => {
   const { theme, styles } = useStyles(styleSheet);
   return (
-    <VStack styles={{ flex: 1 }} gap={theme.spacing.sp6}>
+    <VStack gap={theme.spacing.sp6}>
       <Carousel photos={userProfile?.photos ?? []} />
 
       {isTargetUser && (
