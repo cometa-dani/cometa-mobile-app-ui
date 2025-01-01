@@ -4,7 +4,7 @@ import {
 } from '@/queries/targetUser/eventHooks';
 import { useCallback, useState } from 'react';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
-import { FlatList, TouchableOpacity, View, Pressable, Modal } from 'react-native';
+import { FlatList, TouchableOpacity, View, Pressable } from 'react-native';
 import { useQueryGetTargetUserPeopleProfile } from '@/queries/targetUser/userProfileHooks';
 import { BlurView } from 'expo-blur';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
@@ -14,26 +14,20 @@ import { EventItem, EventItemSkeleton, IBucketListItem } from '@/components/user
 import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
 import { GradientHeading } from '@/components/text/gradientText';
 import { Condition } from '@/components/utils/ifElse';
-import { HeaderUserProfile } from '@/components/userProfile/components/headerUser';
+import { HeaderUserProfile, HeaderSkeleton } from '@/components/userProfile/components/headerUser';
 import { VStack } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
-import { Button } from '@/components/button/button';
-import { BaseButton, ScrollView } from 'react-native-gesture-handler';
-import { TextView } from '@/components/text/text';
-import { SystemBars } from 'react-native-edge-to-edge';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
-export default function ModalTargetUserProfile() {
+export default function TargetUserProfileScreen() {
   const { theme, styles } = useStyles(styleSheet);
   const router = useRouter();
   const targetUser = useCometaStore(state => state.targetUser);
   const bucketList = useInfiniteQueryGetTargetUserBucketList(targetUser?.id);
   const detailedProfile = useQueryGetTargetUserPeopleProfile(targetUser?.uid ?? '');
   const matches = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUser?.uid ?? '');
-  // const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
-  // const { onToggle: setShowNewFriendsModal } = useModalNewFriends();
   const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
 
   const handleInfinteBucketList = () => {
@@ -126,10 +120,17 @@ export default function ModalTargetUserProfile() {
       />
       <ScrollView>
         <View style={{ position: 'relative', paddingHorizontal: theme.spacing.sp6, paddingTop: theme.spacing.sp7 }}>
-          <HeaderUserProfile
-            isTargetUser={true}
-            userProfile={detailedProfile.data || targetUser}
-            onPresss={() => setShowNewFriendsModal(true)}
+
+          <Condition
+            if={detailedProfile.isSuccess}
+            then={(
+              <HeaderUserProfile
+                isTargetUser={true}
+                userProfile={detailedProfile.data}
+                onPresss={() => setShowNewFriendsModal(true)}
+              />
+            )}
+            else={<HeaderSkeleton isTargetUser={true} />}
           />
         </View>
 
