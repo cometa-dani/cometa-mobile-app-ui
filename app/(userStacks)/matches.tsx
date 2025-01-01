@@ -29,9 +29,7 @@ import { IGetBasicUserProfile, IGetPaginatedUsersWhoLikedSameEvent, IGetTargetUs
 import { QueryKeys } from '@/queries/queryKeys';
 import { ErrorMessage } from '@/queries/errors/errorMessages';
 import { MutateFrienship } from '@/models/Friendship';
-import { NewFriendsModal, useModalNewFriends } from '@/components/modal/newFriends/newFriends';
-// import { ModalTargetUserProfile } from '@/components/userProfile/modalTargetUser';
-// import { set } from 'react-hook-form';
+import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -139,7 +137,8 @@ export default function MatchedEventsScreen(): ReactNode {
   // const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState<IGetTargetUser | undefined>(undefined);
   const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
   const setTargetUser = useCometaStore(state => state.setTargetUser);
-  const { onToggle: setShowNewFriendsModal } = useModalNewFriends();
+  const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
+  // const { onToggle: setShowNewFriendsModal } = useModalNewFriends();
   // const [toggleModal, setToggleModal] = useState(false);
   // const bottomSheetRef = useRef<BottomSheetMethods>(null);
   // const { toggle: toggleModalTargetUser, onToggle: onToggleModalTargetUser } = useModalTargetUser();
@@ -163,7 +162,7 @@ export default function MatchedEventsScreen(): ReactNode {
           {
             onSuccess: async () => {
               // onToggleModalNewFriend();
-              setShowNewFriendsModal();
+              setShowNewFriendsModal(true);
               // setToggleModal(true);
               // refetch on screen focus
               await Promise.all([
@@ -315,7 +314,10 @@ export default function MatchedEventsScreen(): ReactNode {
         }
       /> */}
       {/* <ModalTargetUserProfile /> */}
-
+      <NewFriendsModal
+        open={showNewFriendsModal}
+        onClose={() => setShowNewFriendsModal(false)}
+      />
       <Stack.Screen
         options={{
           headerShown: true,
@@ -547,9 +549,7 @@ export default function MatchedEventsScreen(): ReactNode {
                               style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
                               onPress={() => {
                                 setTargetUser(user as IGetTargetUser);
-                                setTimeout(() => {
-                                  setShowNewFriendsModal();
-                                }, 200);
+                                setShowNewFriendsModal(true);
                               }}
                               variant='primary'>
                               FOLLOW

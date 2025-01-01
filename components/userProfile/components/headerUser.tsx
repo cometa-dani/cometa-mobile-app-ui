@@ -11,7 +11,7 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
 import { Condition } from '@/components/utils/ifElse';
 import { Button } from '@/components/button/button';
-import { ParallaxCarousel } from '@/components/carousel/parallaxCarousel';
+import { Carousel } from '@/components/carousel/carousel';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -23,27 +23,17 @@ interface IProps {
 export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = false, onPresss }) => {
   const { theme, styles } = useStyles(styleSheet);
   return (
-    <VStack gap={theme.spacing.sp6}>
-      <ParallaxCarousel photos={userProfile?.photos ?? []} />
-      {/* <Condition
-        if={isTargetUser}
-        then={(
-          <Button
-            variant='primary'
-            onPress={() => onPresss && onPresss()}
-          >
-            FOLLOW
-          </Button>
-        )}
-      /> */}
-      {/* {isTargetUser && (
+    <VStack styles={{ flex: 1 }} gap={theme.spacing.sp6}>
+      <Carousel photos={userProfile?.photos ?? []} />
+
+      {isTargetUser && (
         <Button
           variant='primary'
           onPress={() => onPresss && onPresss()}
         >
           FOLLOW
         </Button>
-      )} */}
+      )}
       <VStack styles={styles.container} gap={theme.spacing.sp1} >
         <Heading size='s7'>
           {userProfile?.name}, {userProfile?.birthday && calAge(new Date(userProfile?.birthday))}
@@ -68,7 +58,7 @@ export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = fals
             </TextView>
           </HStack>
         </HStack>
-      </VStack >
+      </VStack>
 
       <View style={styles.container}>
         <Heading size='s6'>

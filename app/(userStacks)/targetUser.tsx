@@ -4,14 +4,14 @@ import {
 } from '@/queries/targetUser/eventHooks';
 import { useCallback, useState } from 'react';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
-import { FlatList, TouchableOpacity, View, ScrollView, Pressable } from 'react-native';
+import { FlatList, TouchableOpacity, View, ScrollView, Pressable, Modal } from 'react-native';
 import { useQueryGetTargetUserPeopleProfile } from '@/queries/targetUser/userProfileHooks';
 import { BlurView } from 'expo-blur';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { useCometaStore } from '@/store/cometaStore';
 import { Stack, useRouter } from 'expo-router';
 import { EventItem, EventItemSkeleton, IBucketListItem } from '@/components/userProfile/components/eventItem';
-import { NewFriendsModal, useModalNewFriends } from '@/components/modal/newFriends/newFriends';
+import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
 import { GradientHeading } from '@/components/text/gradientText';
 import { Condition } from '@/components/utils/ifElse';
 import { HeaderUserProfile } from '@/components/userProfile/components/headerUser';
@@ -22,6 +22,7 @@ import { Button } from '@/components/button/button';
 import { BaseButton } from 'react-native-gesture-handler';
 import { TextView } from '@/components/text/text';
 import { SystemBars } from 'react-native-edge-to-edge';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function ModalTargetUserProfile() {
@@ -32,7 +33,8 @@ export default function ModalTargetUserProfile() {
   const detailedProfile = useQueryGetTargetUserPeopleProfile(targetUser?.uid ?? '');
   const matches = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUser?.uid ?? '');
   // const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
-  const { onToggle: setShowNewFriendsModal } = useModalNewFriends();
+  // const { onToggle: setShowNewFriendsModal } = useModalNewFriends();
+  const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
 
   const handleInfinteBucketList = () => {
     if (bucketList) {
@@ -90,7 +92,10 @@ export default function ModalTargetUserProfile() {
 
   return (
     <>
-
+      <NewFriendsModal
+        open={showNewFriendsModal}
+        onClose={() => setShowNewFriendsModal(false)}
+      />
       <Stack.Screen
         options={{
           headerShown: true,
@@ -119,29 +124,20 @@ export default function ModalTargetUserProfile() {
           ),
         }}
       />
-      <ScrollView style={{ flex: 1, backgroundColor: theme.colors.white80, position: 'relative' }}>
-        <View style={{
-          flex: 1,
-          paddingHorizontal: theme.spacing.sp6,
-          paddingTop: theme.spacing.sp7
-        }}>
 
-          <HeaderUserProfile
-            // isTargetUser={true}
-            userProfile={detailedProfile.data || targetUser}
-          // onPresss={() => setShowNewFriendsModal(true)}
-          />
-          <BaseButton
-            // variant='primary'
-            onPress={() => setTimeout(() => setShowNewFriendsModal(), 400)}
-          >
-            <TextView>
-              FOLLOW
-            </TextView>
-          </BaseButton>
-          <NewFriendsModal />
-        </View>
-        <VStack gap={theme.spacing.sp6} styles={{ flex: 1, marginTop: theme.spacing.sp6 }}>
+      <ScrollView style={{
+        flex: 1,
+        paddingHorizontal: theme.spacing.sp6,
+        paddingTop: theme.spacing.sp7,
+      }}>
+        <HeaderUserProfile
+          isTargetUser={true}
+          userProfile={detailedProfile.data || targetUser}
+          onPresss={() => setShowNewFriendsModal(true)}
+        />
+
+
+        {/* <VStack gap={theme.spacing.sp6} styles={{ flex: 1, marginTop: theme.spacing.sp6 }}>
           <VStack>
             <Heading
               style={{ paddingHorizontal: theme.spacing.sp12, paddingBottom: theme.spacing.sp1 }}
@@ -223,13 +219,13 @@ export default function ModalTargetUserProfile() {
             />
           </VStack>
           <View style={{ height: tabBarHeight * 2 }} />
-        </VStack>
-      </ScrollView>
-
-      {/* <NewFriendsModal
+        </VStack> */}
+        {/* </ScrollView> */}
+        {/* <NewFriendsModal
         toggle={showNewFriendsModal}
         onToggle={() => setShowNewFriendsModal(false)}
       /> */}
+      </ScrollView>
     </>
   );
 }
@@ -243,14 +239,3 @@ const styleSheet = createStyleSheet((theme) => ({
     right: 0
   }
 }));
-
-
-// type DefaultBottomSheetProps = {
-//   toggle: boolean
-//   onToggle: () => void
-// };
-
-// export const useModalTargetUser = create<DefaultBottomSheetProps>((set, get) => ({
-//   toggle: false,
-//   onToggle: () => set({ toggle: !get().toggle })
-// }));

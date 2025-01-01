@@ -20,13 +20,19 @@ export const ParallaxCarousel: FC<ICarouselProps> = ({ photos }) => {
     <View style={{
       position: 'relative',
       borderRadius: theme.spacing.sp7,
-      overflow: 'hidden'
+      // overflow: 'hidden'
     }}>
       <Carousel
         ref={ref}
         loop={photos.length > 1 ? true : false}
-        height={UnistylesRuntime.screen.height * 0.3}
+        // height={UnistylesRuntime.screen.height * 0.3}
+        // width={UnistylesRuntime.screen.width}
+        // height={UnistylesRuntime.screen.height * 0.3}
         width={UnistylesRuntime.screen.width}
+        style={{
+          width: UnistylesRuntime.screen.width,
+          height: UnistylesRuntime.screen.height * 0.3
+        }}
         data={photos}
         modeConfig={{
           parallaxAdjacentItemScale: 0.9,

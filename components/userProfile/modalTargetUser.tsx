@@ -87,8 +87,8 @@ export const ModalTargetUserProfile: FC = () => {
   return (
     <>
       <NewFriendsModal
-        toggle={showNewFriendsModal}
-        onToggle={() => setShowNewFriendsModal(false)}
+        open={showNewFriendsModal}
+        onClose={() => setShowNewFriendsModal(false)}
       />
       <Stack.Screen
         options={{
