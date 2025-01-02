@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   useInfiniteQueryGetNewestFriends,
   useMutationAcceptFriendshipInvitation,
   useMutationDeleteFriendshipInvitation,
   useMutationSentFriendshipInvitation
 } from '@/queries/currentUser/friendshipHooks';
-import { FC, ReactNode, useCallback, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 import { SafeAreaView, TouchableOpacity, View, } from 'react-native';
 import { router, Stack, useGlobalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
@@ -16,7 +15,7 @@ import PagerView, { usePagerView } from 'react-native-pager-view';
 import { Center, HStack, VStack } from '@/components/utils/stacks';
 import { useCometaStore } from '@/store/cometaStore';
 import { Button } from '@/components/button/button';
-import Animated, { FadeOut, interpolate, LinearTransition, useAnimatedRef, useAnimatedStyle, useScrollViewOffset, useSharedValue } from 'react-native-reanimated';
+import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import { imageTransition } from '@/constants/vars';
 import { Badge } from '@/components/button/badge';
@@ -31,7 +30,6 @@ import { QueryKeys } from '@/queries/queryKeys';
 import { ErrorMessage } from '@/queries/errors/errorMessages';
 import { MutateFrienship } from '@/models/Friendship';
 import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
-import { tabBarHeight } from '@/components/tabBar/tabBar';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -140,11 +138,6 @@ export default function MatchedEventsScreen(): ReactNode {
   const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
   const setTargetUser = useCometaStore(state => state.setTargetUser);
   const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
-  // const [scrollOffset, setScrollOffset] = useState(0);
-  const scrollOffset = useSharedValue(0);
-
-  // const animatedRef = useAnimatedRef<Animated.ScrollView>();
-  // const offset = useScrollViewOffset(animatedRef);
   // const { onToggle: setShowNewFriendsModal } = useModalNewFriends();
   // const [toggleModal, setToggleModal] = useState(false);
   // const bottomSheetRef = useRef<BottomSheetMethods>(null);
@@ -313,70 +306,14 @@ export default function MatchedEventsScreen(): ReactNode {
     );
   };
 
-  // 1. Create an animated scroll handler for the FlashList
-  const handleScroll = useCallback((event: any) => {
-    'worklet';
-    scrollOffset.value = event.nativeEvent.contentOffset.y;
-  }, []);
-
-
-  // Inside MatchedEventsScreen component, update the imageAnimatedStyle:
-  const imageAnimatedStyle = useAnimatedStyle(() => {
-    const scaleY = interpolate(
-      scrollOffset.value,
-      [-100, 0, SCROLL_DISTANCE],
-      [1.2, 1, 0.8],
-      'clamp'
-    );
-
-    const scaleX = interpolate(
-      scrollOffset.value,
-      [-100, 0],
-      [1.2, 1],
-      'clamp'
-    );
-
-    // Make the image move more slowly by reducing the translation distance
-    const translateY = interpolate(
-      scrollOffset.value,
-      [0, SCROLL_DISTANCE],
-      [0, -SCROLL_DISTANCE * 0.5], // Changed from 0.75 to 0.5 to move slower
-      'clamp'
-    );
-
-    const opacity = interpolate(
-      scrollOffset.value,
-      [0, SCROLL_DISTANCE * 0.8],
-      [1, 0],
-      'clamp'
-    );
-
-    return {
-      transform: [
-        { scaleX },
-        { scaleY },
-        { translateY }
-      ],
-      opacity
-    };
-  }, [scrollOffset]);
-  const pagerViewAnimatedStyle = useAnimatedStyle(() => {
-    // Calculate additional height for PagerView as image disappears
-    const extraHeight = interpolate(
-      scrollOffset.value,
-      [0, SCROLL_DISTANCE],
-      [0, INITIAL_HEADER_HEIGHT],
-      'clamp'
-    );
-
-    return {
-      flex: 1,
-      marginTop: -extraHeight // This will make the PagerView move up and expand
-    };
-  }, [scrollOffset]);
-
   return (
     <>
+      {/* <Condition
+        if={!toggleModalTargetUser}
+        then={
+        }
+      /> */}
+      {/* <ModalTargetUserProfile /> */}
       <NewFriendsModal
         open={showNewFriendsModal}
         onClose={() => setShowNewFriendsModal(false)}
@@ -406,40 +343,42 @@ export default function MatchedEventsScreen(): ReactNode {
           ),
         }}
       />
+
       <SafeAreaView style={{
         flex: 1,
         gap: showImage ? theme.spacing.sp4 : 0,
         backgroundColor: theme.colors.white80
       }}>
-        <>
-          <Animated.View style={[{
-            padding: theme.spacing.sp6,
-            paddingBottom: 0,
-            position: 'relative',
-            // height: showImage ? INITIAL_HEADER_HEIGHT : 0,
-            overflow: 'hidden'
-          }, imageAnimatedStyle]}>
-            <Animated.Image
-              // transition={imageTransition}
-              // contentFit='cover'
-              style={[styles.imgHeader, imageAnimatedStyle]}
-              source={{ uri: selectedLikedEvent.photos.at(0)?.url, }}
-            />
-            <Badge>
-              {selectedLikedEvent?.location?.name}
-            </Badge>
+        {showImage &&
+          <Animated.View
+            // entering={ZoomIn.withInitialValues({ transform: [{ scale: 0 }] }).duration(390)}
+            exiting={FadeOut.duration(390)}
+          >
+            <View style={{ padding: theme.spacing.sp6, paddingBottom: 0, position: 'relative' }}>
+              <Image
+                transition={imageTransition}
+                contentFit='cover'
+                style={styles.imgHeader}
+                source={{ uri: selectedLikedEvent.photos.at(0)?.url, }}
+              />
+              <Badge>
+                {selectedLikedEvent?.location?.name}
+              </Badge>
+            </View>
           </Animated.View>
-
-        </>
-        <Animated.View style={[{ flex: 1 }, pagerViewAnimatedStyle]}>
+        }
+        <Animated.View
+          style={{ flex: 1 }}
+          layout={LinearTransition.duration(450)}
+        >
           <View
             style={{
               flexDirection: 'row',
               gap: theme.spacing.sp4,
               padding: theme.spacing.sp2,
-              paddingHorizontal: theme.spacing.sp2,
-              marginHorizontal: theme.spacing.sp6,
-              borderRadius: 20,
+              paddingHorizontal: showImage ? theme.spacing.sp2 : theme.spacing.sp6,
+              marginHorizontal: showImage ? theme.spacing.sp6 : 0,
+              borderRadius: showImage ? 20 : 0,
               backgroundColor: theme.colors.white60
             }}
           >
@@ -460,7 +399,7 @@ export default function MatchedEventsScreen(): ReactNode {
           </View>
           <PagerView
             ref={ref}
-            style={{ height: '100%', width: '100%', flex: 1 }}
+            style={{ height: '100%', width: '100%' }}
             initialPage={initialTab}
             onPageScroll={(e) => {
               setStep(e.nativeEvent.position);
@@ -486,59 +425,14 @@ export default function MatchedEventsScreen(): ReactNode {
                         nestedScrollEnabled={true}
                         data={newFriendsData}
                         estimatedItemSize={60}
-                        // onScroll={(event) => {
-                        //   const scrollOffset = event.nativeEvent.contentOffset.y;
-                        //   console.log(scrollOffset);
-                        // }}
-                        // ListHeaderComponent={() => (
-                        //   <>
-                        //     <View style={{ padding: theme.spacing.sp6, paddingBottom: 0, position: 'relative' }}>
-                        //       <Image
-                        //         transition={imageTransition}
-                        //         contentFit='cover'
-                        //         style={styles.imgHeader}
-                        //         source={{ uri: selectedLikedEvent.photos.at(0)?.url, }}
-                        //       />
-                        //       <Badge>
-                        //         {selectedLikedEvent?.location?.name}
-                        //       </Badge>
-                        //     </View>
-                        //     <View
-                        //       style={{
-                        //         flexDirection: 'row',
-                        //         gap: theme.spacing.sp4,
-                        //         padding: theme.spacing.sp2,
-                        //         paddingHorizontal: theme.spacing.sp2,
-                        //         marginHorizontal: theme.spacing.sp6,
-                        //         borderRadius: 20,
-                        //         backgroundColor: theme.colors.white60
-                        //       }}
-                        //     >
-                        //       <Button
-                        //         style={{ flex: 1 }}
-                        //         onPress={() => setPage(0)}
-                        //         variant={step === 1 ? 'disabled' : 'primary'}
-                        //       >
-                        //         New Friends
-                        //       </Button>
-                        //       <Button
-                        //         style={{ flex: 1 }}
-                        //         onPress={() => setPage(1)}
-                        //         variant={step === 1 ? 'primary' : 'disabled'}
-                        //       >
-                        //         New People
-                        //       </Button>
-                        //     </View>
-                        //   </>
-                        // )}
-                        ListFooterComponentStyle={{ height: tabBarHeight * 2 }}
+                        ListFooterComponentStyle={{ height: UnistylesRuntime.screen.height * 0.45 }}
                         contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
                         ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
-                        // onViewableItemsChanged={({ viewableItems }) => {
-                        //   const firstItem = viewableItems[0];
-                        //   const isVisible = firstItem?.index === 0;
-                        //   setIsFirstItemVisible(isVisible);
-                        // }}
+                        onViewableItemsChanged={({ viewableItems }) => {
+                          const firstItem = viewableItems[0];
+                          const isVisible = firstItem?.index === 0;
+                          setIsFirstItemVisible(isVisible);
+                        }}
                         onEndReachedThreshold={0.5}
                         onEndReached={handleNewFriendsInfiniteScroll}
                         renderItem={({ item: { friend } }) => (
@@ -599,69 +493,19 @@ export default function MatchedEventsScreen(): ReactNode {
                     )}
                     else={(
                       <FlashList
-                        // bounces={false}
                         nestedScrollEnabled={true}
-                        ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
+                        ListFooterComponentStyle={{ height: UnistylesRuntime.screen.height * 0.45 }}
                         contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
                         ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
-                        // onViewableItemsChanged={({ viewableItems }) => {
-                        //   const firstItem = viewableItems[0];
-                        //   const isVisible = firstItem?.index === 0;
-                        //   setIsFirstItemVisible(isVisible);
-                        // }}
-                        // overScrollMode="never"
-                        scrollEventThrottle={16}
-                        onScroll={handleScroll}
+                        onViewableItemsChanged={({ viewableItems }) => {
+                          const firstItem = viewableItems[0];
+                          const isVisible = firstItem?.index === 0;
+                          setIsFirstItemVisible(isVisible);
+                        }}
                         data={newPeopleData}
                         estimatedItemSize={60}
                         onEndReachedThreshold={0.5}
-                        // overScrollMode="never"
                         onEndReached={handleNewPeopleInfiniteScroll}
-                        // removeClippedSubviews={true}
-                        // Add these props for better performance
-                        // maxToRenderPerBatch={10}
-                        // windowSize={5}
-                        // ListHeaderComponent={() => (
-                        //   <>
-                        //     <View style={{ padding: theme.spacing.sp6, paddingBottom: 0, position: 'relative' }}>
-                        //       <Image
-                        //         transition={imageTransition}
-                        //         contentFit='cover'
-                        //         style={styles.imgHeader}
-                        //         source={{ uri: selectedLikedEvent.photos.at(0)?.url, }}
-                        //       />
-                        //       <Badge>
-                        //         {selectedLikedEvent?.location?.name}
-                        //       </Badge>
-                        //     </View>
-                        //     <View
-                        //       style={{
-                        //         flexDirection: 'row',
-                        //         gap: theme.spacing.sp4,
-                        //         padding: theme.spacing.sp2,
-                        //         paddingHorizontal: theme.spacing.sp2,
-                        //         marginHorizontal: theme.spacing.sp6,
-                        //         borderRadius: 20,
-                        //         backgroundColor: theme.colors.white60
-                        //       }}
-                        //     >
-                        //       <Button
-                        //         style={{ flex: 1 }}
-                        //         onPress={() => setPage(0)}
-                        //         variant={step === 1 ? 'disabled' : 'primary'}
-                        //       >
-                        //         New Friends
-                        //       </Button>
-                        //       <Button
-                        //         style={{ flex: 1 }}
-                        //         onPress={() => setPage(1)}
-                        //         variant={step === 1 ? 'primary' : 'disabled'}
-                        //       >
-                        //         New People
-                        //       </Button>
-                        //     </View>
-                        //   </>
-                        // )}
                         renderItem={({ item: { user } }) => (
                           <HStack
                             $y='center'
@@ -725,14 +569,11 @@ export default function MatchedEventsScreen(): ReactNode {
   );
 }
 
-const SCROLL_DISTANCE = 200;
-const IMG_HEIGHT = 300;
-const INITIAL_HEADER_HEIGHT = IMG_HEIGHT + 32;
 
 const styleSheet = createStyleSheet((theme, runtime) => ({
   imgHeader: {
     width: '100%',
-    height: IMG_HEIGHT,
+    height: runtime.screen.height * 0.3,
     borderRadius: theme.spacing.sp7
   },
   imgAvatar: {
