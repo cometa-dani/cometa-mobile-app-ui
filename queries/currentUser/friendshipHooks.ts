@@ -1,9 +1,12 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import friendshipService from '../../services/friendshipService';
 import { Friendship, MutateFrienship } from '../../models/Friendship';
 import { QueryKeys } from '../queryKeys';
 import { TypedAxiosError } from '../errors/typedError';
 import { IPaginated } from '@/models/utils/Paginated';
+import { IGetPaginatedUsersWhoLikedSameEvent } from '@/models/User';
+import { useCometaStore } from '@/store/cometaStore';
+import { ErrorMessage } from '../errors/errorMessages';
 
 
 export const useInfiniteQueryGetNewestFriends = () => {
@@ -80,21 +83,94 @@ export const useQueryGetFriendshipByTargetUserID = (targetUserUUID: string) => {
 };
 
 
-type FriendshipInvitationArgs = {
-  targetUserId: number;
-};
-
 export const useMutationSentFriendshipInvitation = () => {
+  const queryClient = useQueryClient();
+  const selectedLikedEvent = useCometaStore(state => state.likedEvent);
+  const acceptInvitation = useMutationAcceptFriendshipInvitation();
   return (
-    useMutation<MutateFrienship, TypedAxiosError, FriendshipInvitationArgs>({
-      mutationFn: async ({ targetUserId }: FriendshipInvitationArgs) => {
+    useMutation<MutateFrienship, TypedAxiosError, number>({
+      mutationFn: async (targetUserId: number) => {
         const res = await friendshipService.sentFriendShipInvitation(targetUserId);
-        if (res.status === 201 || res.status === 200) {
+        if (res.status === 201) {
           return res.data;
         }
         else {
           throw new Error('failed fech');
         }
+      },
+      onMutate: (targetUserId) => {
+        queryClient.setQueryData<InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>>(
+          [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, selectedLikedEvent?.id],
+          (oldData) => ({
+            pageParams: oldData?.pageParams,
+            pages:
+              oldData?.pages
+                .map((page) => ({
+                  ...page,
+                  items:
+                    page.items
+                      .map(event => event.userId === targetUserId ?
+                        ({
+                          ...event,
+                          user: {
+                            ...event.user,
+                            hasOutgoingFriendshipInvitation: true
+                            // hasIncommingFriendshipInvitation: true
+                          }
+                        })
+                        : event
+                      )
+                }))
+          }) as InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, selectedLikedEvent?.id]
+        });
+      },
+      onError: ({ response }, targetUserId) => {
+        if (response?.data.message === ErrorMessage.INVITATION_ALREADY_PENDING) {
+          // acceptPendingInvitation(targetUserAsReceiver);
+          acceptInvitation.mutate(targetUserId);
+        }
+      }
+    })
+  );
+};
+
+
+export const useMutationAcceptFriendshipInvitation = () => {
+  const queryClient = useQueryClient();
+  const selectedLikedEvent = useCometaStore(state => state.likedEvent);
+  const sentFriendship = useMutationSentFriendshipInvitation();
+  return (
+    useMutation<MutateFrienship, TypedAxiosError, number>({
+      mutationFn: async (targetUserID: number) => {
+        const res =
+          await friendshipService.updateFrienshipInvitationByID(targetUserID, 'ACCEPTED');
+        if (res.status === 200) {
+          return res.data;
+        }
+        else {
+          throw new Error('failed fech');
+        }
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, selectedLikedEvent?.id ?? ''] });
+      },
+      onError: ({ response }, targetUserId) => {
+        if (response?.data.message === ErrorMessage.INVITATION_DOES_NOT_EXIST) {
+          sentFriendship.mutate(targetUserId);
+        }
+      },
+      onMutate: (targetUserId) => {
+        queryClient.setQueryData<InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>>(
+          [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, selectedLikedEvent?.id],
+          (oldData) => ({
+            pageParams: oldData?.pageParams,
+            pages: oldData?.pages
+          }) as InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>);
       }
     })
   );
@@ -109,24 +185,6 @@ export const useMutationDeleteFriendshipInvitation = () => {
           await friendshipService.deleteFriendShipInvitationByQueryParams(targetUserID);
         if (res.status === 204) {
           return res.data ?? null;
-        }
-        else {
-          throw new Error('failed fech');
-        }
-      }
-    })
-  );
-};
-
-
-export const useMutationAcceptFriendshipInvitation = () => {
-  return (
-    useMutation<MutateFrienship, TypedAxiosError, number>({
-      mutationFn: async (targetUserID: number) => {
-        const res =
-          await friendshipService.updateFrienshipInvitationByID(targetUserID, 'ACCEPTED');
-        if (res.status === 200) {
-          return res.data;
         }
         else {
           throw new Error('failed fech');

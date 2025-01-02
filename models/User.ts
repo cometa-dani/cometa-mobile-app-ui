@@ -150,8 +150,8 @@ export interface IGetBasicUserProfile extends
     'occupation' |
     'educationLevel'
   )> {
-  hasOutgoingFriendship: boolean;
-  hasIncommingFriendship: boolean;
+  hasOutgoingFriendshipInvitation: boolean;
+  hasIncommingFriendshipInvitation: boolean;
 }
 
 export interface IGetPaginatedUsers extends
@@ -198,8 +198,8 @@ export interface IGetDetailedUserProfile {
 
 export interface IGetTargetUser extends IGetDetailedUserProfile {
   isFriend: boolean;
-  hasOutgoingFriendship: boolean;
-  hasIncommingFriendship: boolean
+  hasOutgoingFriendshipInvitation: boolean;
+  hasIncommingFriendshipInvitation: boolean
 }
 
 interface LikedEvent {

@@ -4,9 +4,9 @@ import {
   useMutationDeleteFriendshipInvitation,
   useMutationSentFriendshipInvitation
 } from '@/queries/currentUser/friendshipHooks';
-import { FC, ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode, useCallback, useEffect, useState } from 'react';
 import { SafeAreaView, TouchableOpacity, View, } from 'react-native';
-import { router, Stack, useGlobalSearchParams } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { GradientHeading } from '@/components/text/gradientText';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
@@ -24,11 +24,8 @@ import { Condition } from '@/components/utils/ifElse';
 import { EmptyMessage } from '@/components/empty/Empty';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
-import { InfiniteData, useQueryClient } from '@tanstack/react-query';
-import { IGetBasicUserProfile, IGetPaginatedUsersWhoLikedSameEvent, IGetTargetUser } from '@/models/User';
-import { QueryKeys } from '@/queries/queryKeys';
-import { ErrorMessage } from '@/queries/errors/errorMessages';
-import { MutateFrienship } from '@/models/Friendship';
+import { IGetBasicUserProfile, IGetTargetUser, IUsersWhoLikedSameEvent } from '@/models/User';
+import { Friendship } from '@/models/Friendship';
 import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
@@ -76,12 +73,18 @@ const SkeletonList: FC = () => {
               }}
               />
             </VStack>
-            <Button
-              style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-              onPress={() => { }}
-              variant='primary'>
-              FOLLOW
-            </Button>
+            <View style={{
+              width: 94,
+              backgroundColor: theme.colors.gray200,
+              borderRadius: theme.spacing.sp2
+            }}>
+              <Button
+                style={{ padding: 6, borderRadius: theme.spacing.sp2 }}
+                onPress={() => { }}
+                variant='primary'>
+                FOLLOW
+              </Button>
+            </View>
           </HStack>
         </MySkeleton>
       )}
@@ -89,18 +92,19 @@ const SkeletonList: FC = () => {
   );
 };
 
-
 const initialTab = 1;
 
+
 export default function MatchedEventsScreen(): ReactNode {
-  const queryClient = useQueryClient();
+  const router = useRouter();
   const { styles, theme } = useStyles(styleSheet);
-  const { eventId = '' } = useGlobalSearchParams<{ eventId: string }>();
+
   // tabs
   const selectedLikedEvent = useCometaStore(state => state.likedEvent);
   const [isFirstItemVisible, setIsFirstItemVisible] = useState(true);
   const { ref, setPage } = usePagerView();
   const [step, setStep] = useState(initialTab);
+
   // header image
   const [showImage, setShowImage] = useState(true);
   useEffect(() => {
@@ -110,13 +114,15 @@ export default function MatchedEventsScreen(): ReactNode {
       setShowImage(true);
     }
   }, [isFirstItemVisible]);
+
   // friends/new people
-  const newPeople = useInfiteQueryGetUsersWhoLikedSameEvent(+eventId);
+  const newPeople = useInfiteQueryGetUsersWhoLikedSameEvent(+selectedLikedEvent?.id);
   const newFriends = useInfiniteQueryGetNewestFriends();
-  const newPeopleData = newPeople.data?.pages.flatMap(page => page.items) ?? [];
-  const newFriendsData = newFriends.data?.pages.flatMap(page => page.items) ?? [];
+  const newPeopleData: IUsersWhoLikedSameEvent[] = newPeople.data?.pages.flatMap(page => page.items) ?? [];
+  const newFriendsData: Friendship[] = newFriends.data?.pages.flatMap(page => page.items) ?? [];
   useRefreshOnFocus(newPeople.refetch);
 
+  // infinite scroll
   const handleNewPeopleInfiniteScroll = (): void => {
     if (newPeople) {
       const { hasNextPage, isFetching, fetchNextPage } = newPeople;
@@ -131,193 +137,124 @@ export default function MatchedEventsScreen(): ReactNode {
   };
 
   // mutations
-  const mutationSentFriendship = useMutationSentFriendshipInvitation();
-  const mutationAcceptFriendship = useMutationAcceptFriendshipInvitation();
-  const mutationCancelFriendship = useMutationDeleteFriendshipInvitation();
-  // const [targetUserAsNewFriend, setTargetUserAsNewFriend] = useState<IGetTargetUser | undefined>(undefined);
-  const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
+  const sentFriendship = useMutationSentFriendshipInvitation();
+  const acceptFriendship = useMutationAcceptFriendshipInvitation();
+  const cancelFriendship = useMutationDeleteFriendshipInvitation();
+  // const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
   const setTargetUser = useCometaStore(state => state.setTargetUser);
   const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
-  // const { onToggle: setShowNewFriendsModal } = useModalNewFriends();
-  // const [toggleModal, setToggleModal] = useState(false);
-  // const bottomSheetRef = useRef<BottomSheetMethods>(null);
-  // const { toggle: toggleModalTargetUser, onToggle: onToggleModalTargetUser } = useModalTargetUser();
 
-  /**
-  *
-  * @description from a sender user, accepts friendship with status 'ACCEPTED'
-  */
-  const acceptPendingInvitation = async (targetUserAsSender: IGetTargetUser) => {
-    try {
-      // 1. set button to pending
-      if (!targetUserAsSender.hasOutgoingFriendship) {
-        pendingButton.handleOptimisticUpdate(targetUserAsSender.id);
-      }
-      // setTargetUserAsNewFriend(targetUserAsSender);
+  const renderNewFriend = useCallback(({ item: { friend } }: { item: { friend: IGetBasicUserProfile } }) => (
+    <HStack
+      $y='center'
+      gap={theme.spacing.sp4}
+      styles={{ paddingHorizontal: theme.spacing.sp6 }}
+    >
+      <Image
+        recyclingKey={friend.uid}
+        placeholder={{ thumbhash: friend.photos.at(0)?.placeholder }}
+        transition={imageTransition}
+        source={{ uri: friend.photos.at(0)?.url }}
+        style={styles.imgAvatar}
+      />
 
-      // 2. mutation
-      const newCreatedFrienship =
-        await mutationAcceptFriendship.mutateAsync(
-          targetUserAsSender.id,
-          {
-            onSuccess: async () => {
-              // onToggleModalNewFriend();
-              setShowNewFriendsModal(true);
-              // setToggleModal(true);
-              // refetch on screen focus
-              await Promise.all([
-                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, +eventId] }),
-                queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] })
-              ]);
-            },
-            onError: ({ response }) => {
-              if (response?.data.message === ErrorMessage.INVITATION_DOES_NOT_EXIST) {
-                sentFriendshipInvitation(targetUserAsSender);
-              }
-            }
-          }
-        ); // set status to 'ACCEPTED' and create chat uuid
-      if (!newCreatedFrienship) return;
+      <VStack
+        $y='center'
+        styles={{ flex: 1 }}
+      >
+        <TextView bold={true} ellipsis={true}>
+          {friend.name}
+        </TextView>
+        <TextView ellipsis={true}>
+          {friend.username}
+        </TextView>
+      </VStack>
 
-      setNewFriendShip(newCreatedFrienship);
-      // const messagePayload = {
-      //   createdAt: new Date().toString(),
-      //   user: {
-      //     _id: loggedInUserUuid,
-      //     avatar: loggedInUserProfile?.photos[0]?.url,
-      //     name: loggedInUserProfile?.username,
-      //     message: `${loggedInUserProfile?.username} is your new match!`,
-      //     isSeen: false
-      //   }
-      // };
-      // await
-      //   notificationService.sentNotificationToTargetUser(
-      //     messagePayload,
-      //     targetUserAsSender.uid, // to
-      //     loggedInUserUuid // from
-      //   )
-      //     .then()
-      //     .catch();
-    }
-    catch (error) {
-      return null;
-    }
-  };
+      <Button
+        style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
+        onPress={() => router.push(`/(userStacks)/chat/${friend?.id}`)}
+        variant='primary-alt'>
+        CHAT
+      </Button>
+    </HStack>
+  ), []);
 
+  const renderNewPeople = useCallback(({ item: { user } }: { item: { user: IGetBasicUserProfile } }) => {
+    const { hasOutgoingFriendshipInvitation, hasIncommingFriendshipInvitation } = user;
+    const targetUserId = user.id;
+    return (
+      <HStack
+        $y='center'
+        gap={theme.spacing.sp4}
+        styles={{ paddingHorizontal: theme.spacing.sp6 }}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            setTargetUser(user as IGetTargetUser);
+            router.push('/(userStacks)/targetUser');
+          }}
+          style={{
+            flex: 1, flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: theme.spacing.sp4
+          }}
+        >
+          <Image
+            recyclingKey={user?.uid}
+            transition={imageTransition}
+            source={{ uri: user.photos.at(0)?.url }}
+            placeholder={{ thumbhash: user?.photos.at(0)?.placeholder }}
+            style={styles.imgAvatar}
+          />
+          <VStack
+            $y='center'
+            styles={{ flex: 1 }}
+          >
+            <TextView bold={true} ellipsis={true}>
+              {user.name}
+            </TextView>
+            <TextView ellipsis={true}>
+              {user.username}
+            </TextView>
+          </VStack>
+        </TouchableOpacity>
 
-  const pendingButton = {
-    /**
-     *
-     * @description sets the button to pending optimistically
-     */
-    handleOptimisticUpdate: (userID: number) => {
-      queryClient.setQueryData<InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>>(
-        [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, eventId],
-        (oldData) => ({
-          pageParams: oldData?.pageParams,
-          pages:
-            oldData?.pages
-              .map((page) => ({
-                ...page,
-                items:
-                  page.items
-                    .map(event => event.userId === userID ?
-                      ({
-                        ...event,
-                        user: {
-                          ...event.user,
-                          hasIncommingFriendship: true
-                        }
-                      })
-                      : event
-                    )
-              }))
-
-        }) as InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>);
-    }
-  };
-
-  /**
-  *
-  * @description for a receiver user, sends a friendship invitation with status 'PENDING'
-  * @param {IGetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
-  */
-  const sentFriendshipInvitation = (targetUserAsReceiver: IGetTargetUser): void => {
-    // 1. set button to pending
-    pendingButton.handleOptimisticUpdate(targetUserAsReceiver.id);
-
-    // 2. mutation
-    mutationSentFriendship.mutateAsync(
-      { targetUserId: targetUserAsReceiver.id },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({
-            queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, eventId]
-          });
-        },
-        onError: ({ response }) => {
-          if (response?.data.message === ErrorMessage.INVITATION_ALREADY_PENDING) {
-            acceptPendingInvitation(targetUserAsReceiver);
-          }
-        }
-      }
-    )
-      .then(() => {
-        // const messagePayload = {
-        //   createdAt: new Date().toString(),
-        //   user: {
-        //     _id: loggedInUserUuid,
-        //     avatar: loggedInUserProfile?.photos[0]?.url,
-        //     name: loggedInUserProfile?.username,
-        //     message: `${loggedInUserProfile?.username} has followed you!`,
-        //     isSeen: false
-        //   }
-        // };
-        // notificationService.sentNotificationToTargetUser(
-        //   messagePayload,
-        //   targetUserAsReceiver.uid, // to
-        //   loggedInUserUuid   // from
-        // )
-        //   .then()
-        //   .catch();
-      })
-      .catch();
-  };
-
-  /**
-  *
-  * @description cancels a friendship invitation with status 'PENDING'
-  * @param {IGetBasicUserProfile} targetUserAsReceiver the receiver of the friendship invitation
-  */
-  const cancelFriendshipInvitation = (targetUserAsReceiver: IGetBasicUserProfile): void => {
-    mutationCancelFriendship.mutate(
-      targetUserAsReceiver.id,
-      {
-        onSuccess() {
-          // notificationService
-          //   .deleteNotification(targetUserAsReceiver.uid, loggedInUserUuid)
-          //   .then()
-          //   .catch();
-          // queryClient.invalidateQueries({
-          //   queryKey: [QueryKeys.GET_PAGINATED_USERS_WHO_LIKED_SAME_EVENT, +urlParams.eventId]
-          // });
-        }
-      }
+        {!hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
+          <Button
+            style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
+            onPress={() => sentFriendship.mutate(targetUserId)}
+            variant='primary'>
+            FOLLOW
+          </Button>
+        )}
+        {hasOutgoingFriendshipInvitation && !hasIncommingFriendshipInvitation && (
+          <Button
+            style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
+            onPress={() => acceptFriendship.mutate(targetUserId)}
+            variant='primary'>
+            FOLLOW
+          </Button>
+        )}
+        {hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
+          <Button
+            style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
+            onPress={() => cancelFriendship.mutate(targetUserId)}
+            variant='secondary'>
+            PENDING
+          </Button>
+        )}
+      </HStack>
     );
-  };
+  }, []);
 
   return (
     <>
-      {/* <Condition
-        if={!toggleModalTargetUser}
-        then={
-        }
-      /> */}
-      {/* <ModalTargetUserProfile /> */}
       <NewFriendsModal
         open={showNewFriendsModal}
         onClose={() => setShowNewFriendsModal(false)}
       />
+
       <Stack.Screen
         options={{
           headerShown: true,
@@ -435,40 +372,7 @@ export default function MatchedEventsScreen(): ReactNode {
                         }}
                         onEndReachedThreshold={0.5}
                         onEndReached={handleNewFriendsInfiniteScroll}
-                        renderItem={({ item: { friend } }) => (
-                          <HStack
-                            $y='center'
-                            gap={theme.spacing.sp4}
-                            styles={{ paddingHorizontal: theme.spacing.sp6 }}
-                          >
-                            <Image
-                              recyclingKey={friend.uid}
-                              placeholder={{ thumbhash: friend.photos.at(0)?.placeholder }}
-                              transition={imageTransition}
-                              source={{ uri: friend.photos.at(0)?.url }}
-                              style={styles.imgAvatar}
-                            />
-
-                            <VStack
-                              $y='center'
-                              styles={{ flex: 1 }}
-                            >
-                              <TextView bold={true} ellipsis={true}>
-                                {friend.name}
-                              </TextView>
-                              <TextView ellipsis={true}>
-                                {friend.username}
-                              </TextView>
-                            </VStack>
-
-                            <Button
-                              style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-                              onPress={() => { console.log('follow'); }}
-                              variant='primary-alt'>
-                              CHAT
-                            </Button>
-                          </HStack>
-                        )}
+                        renderItem={renderNewFriend}
                       />
                     )}
                   />
@@ -506,56 +410,7 @@ export default function MatchedEventsScreen(): ReactNode {
                         estimatedItemSize={60}
                         onEndReachedThreshold={0.5}
                         onEndReached={handleNewPeopleInfiniteScroll}
-                        renderItem={({ item: { user } }) => (
-                          <HStack
-                            $y='center'
-                            gap={theme.spacing.sp4}
-                            styles={{ paddingHorizontal: theme.spacing.sp6 }}
-                          >
-                            <TouchableOpacity
-                              onPress={() => {
-                                setTargetUser(user as IGetTargetUser);
-                                // onToggleModalTargetUser();
-                                router.push('/(userStacks)/targetUser');
-                              }}
-                              style={{
-                                flex: 1, flexDirection: 'row',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                gap: theme.spacing.sp4
-                              }}
-                            >
-                              <Image
-                                recyclingKey={user?.uid}
-                                transition={imageTransition}
-                                source={{ uri: user.photos.at(0)?.url }}
-                                placeholder={{ thumbhash: user?.photos.at(0)?.placeholder }}
-                                style={styles.imgAvatar}
-                              />
-                              <VStack
-                                $y='center'
-                                styles={{ flex: 1 }}
-                              >
-                                <TextView bold={true} ellipsis={true}>
-                                  {user.name}
-                                </TextView>
-                                <TextView ellipsis={true}>
-                                  {user.username}
-                                </TextView>
-                              </VStack>
-                            </TouchableOpacity>
-
-                            <Button
-                              style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-                              onPress={() => {
-                                setTargetUser(user as IGetTargetUser);
-                                setShowNewFriendsModal(true);
-                              }}
-                              variant='primary'>
-                              FOLLOW
-                            </Button>
-                          </HStack>
-                        )}
+                        renderItem={renderNewPeople}
                       />
                     )}
                   />

@@ -25,8 +25,8 @@ export default function TargetUserProfileScreen() {
   const { theme, styles } = useStyles(styleSheet);
   const router = useRouter();
   const targetUser = useCometaStore(state => state.targetUser);
-  const bucketList = useInfiniteQueryGetTargetUserBucketList(targetUser?.id);
   const detailedProfile = useQueryGetTargetUserPeopleProfile(targetUser?.uid ?? '');
+  const bucketList = useInfiniteQueryGetTargetUserBucketList(targetUser?.id);
   const matches = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUser?.uid ?? '');
   const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
 

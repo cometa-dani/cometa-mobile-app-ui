@@ -138,7 +138,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
   const acceptPendingInvitation = async (targetUserAsSender: IGetBasicUserProfile) => {
     try {
       // 1. set button to pending
-      if (!targetUserAsSender.hasOutgoingFriendship) {
+      if (!targetUserAsSender.hasOutgoingFriendshipInvitation) {
         pendingButton.handleOptimisticUpdate(targetUserAsSender.id);
       }
       setTargetUserAsNewFriend(targetUserAsSender);
@@ -212,7 +212,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
                         ...event,
                         user: {
                           ...event.user,
-                          hasIncommingFriendship: true
+                          hasIncommingFriendshipInvitation: true
                         }
                       })
                       : event
@@ -344,7 +344,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
                 showsVerticalScrollIndicator={true}
                 data={users}
                 renderItem={({ item: { user: targetUser } }) => {
-                  const { hasIncommingFriendship = false, hasOutgoingFriendship = false } = targetUser;
+                  const { hasIncommingFriendshipInvitation: hasIncommingFriendship = false, hasOutgoingFriendshipInvitation: hasOutgoingFriendship = false } = targetUser;
                   return (
                     <View key={targetUser.id} style={styles.user}>
                       <Pressable onPress={() => router.push(`/targetUserProfile/${targetUser.uid}?eventId=${urlParams.eventId}`)}>

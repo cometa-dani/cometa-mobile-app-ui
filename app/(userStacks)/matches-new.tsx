@@ -233,7 +233,7 @@ export default function MatchedEventsScreen(): ReactNode {
                         ...event,
                         user: {
                           ...event.user,
-                          hasIncommingFriendship: true
+                          hasIncommingFriendshipInvitation: true
                         }
                       })
                       : event
