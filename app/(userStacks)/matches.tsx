@@ -27,6 +27,7 @@ import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
 import { IGetBasicUserProfile, IGetTargetUser, IUsersWhoLikedSameEvent } from '@/models/User';
 import { Friendship } from '@/models/Friendship';
 import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
+import { ErrorMessage } from '@/queries/errors/errorMessages';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -140,9 +141,36 @@ export default function MatchedEventsScreen(): ReactNode {
   const sentFriendship = useMutationSentFriendshipInvitation();
   const acceptFriendship = useMutationAcceptFriendshipInvitation();
   const cancelFriendship = useMutationDeleteFriendshipInvitation();
-  // const [newFriendShip, setNewFriendShip] = useState<MutateFrienship | null>(null);
   const setTargetUser = useCometaStore(state => state.setTargetUser);
   const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
+
+  const handleSentFriendship = (targetUser: IGetBasicUserProfile) => {
+    sentFriendship.mutate(targetUser.id,
+      {
+        onError: ({ response }) => {
+          if (response?.data.message === ErrorMessage.INVITATION_ALREADY_PENDING) {
+            handleAcceptFriendship(targetUser);
+          }
+        }
+      }
+    );
+  };
+
+  const handleAcceptFriendship = (targetUser: IGetBasicUserProfile) => {
+    setTargetUser(targetUser as IGetTargetUser);
+    acceptFriendship.mutate(targetUser.id,
+      {
+        onSuccess: () => {
+          setShowNewFriendsModal(true);
+        },
+        onError: ({ response }) => {
+          if (response?.data.message === ErrorMessage.INVITATION_DOES_NOT_EXIST) {
+            handleSentFriendship(targetUser);
+          }
+        }
+      }
+    );
+  };
 
   const renderNewFriend = useCallback(({ item: { friend } }: { item: { friend: IGetBasicUserProfile } }) => (
     <HStack
@@ -179,9 +207,8 @@ export default function MatchedEventsScreen(): ReactNode {
     </HStack>
   ), []);
 
-  const renderNewPeople = useCallback(({ item: { user } }: { item: { user: IGetBasicUserProfile } }) => {
-    const { hasOutgoingFriendshipInvitation, hasIncommingFriendshipInvitation } = user;
-    const targetUserId = user.id;
+  const renderNewPeople = useCallback(({ item: { user: targetUser } }: { item: { user: IGetBasicUserProfile } }) => {
+    const { hasOutgoingFriendshipInvitation, hasIncommingFriendshipInvitation } = targetUser;
     return (
       <HStack
         $y='center'
@@ -190,7 +217,7 @@ export default function MatchedEventsScreen(): ReactNode {
       >
         <TouchableOpacity
           onPress={() => {
-            setTargetUser(user as IGetTargetUser);
+            setTargetUser(targetUser as IGetTargetUser);
             router.push('/(userStacks)/targetUser');
           }}
           style={{
@@ -201,10 +228,10 @@ export default function MatchedEventsScreen(): ReactNode {
           }}
         >
           <Image
-            recyclingKey={user?.uid}
+            recyclingKey={targetUser?.uid}
             transition={imageTransition}
-            source={{ uri: user.photos.at(0)?.url }}
-            placeholder={{ thumbhash: user?.photos.at(0)?.placeholder }}
+            source={{ uri: targetUser.photos.at(0)?.url }}
+            placeholder={{ thumbhash: targetUser?.photos.at(0)?.placeholder }}
             style={styles.imgAvatar}
           />
           <VStack
@@ -212,10 +239,10 @@ export default function MatchedEventsScreen(): ReactNode {
             styles={{ flex: 1 }}
           >
             <TextView bold={true} ellipsis={true}>
-              {user.name}
+              {targetUser.name}
             </TextView>
             <TextView ellipsis={true}>
-              {user.username}
+              {targetUser.username}
             </TextView>
           </VStack>
         </TouchableOpacity>
@@ -223,7 +250,7 @@ export default function MatchedEventsScreen(): ReactNode {
         {!hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
           <Button
             style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-            onPress={() => sentFriendship.mutate(targetUserId)}
+            onPress={() => handleSentFriendship(targetUser)}
             variant='primary'>
             FOLLOW
           </Button>
@@ -231,7 +258,7 @@ export default function MatchedEventsScreen(): ReactNode {
         {hasOutgoingFriendshipInvitation && !hasIncommingFriendshipInvitation && (
           <Button
             style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-            onPress={() => acceptFriendship.mutate(targetUserId)}
+            onPress={() => handleAcceptFriendship(targetUser)}
             variant='primary'>
             FOLLOW
           </Button>
@@ -239,7 +266,7 @@ export default function MatchedEventsScreen(): ReactNode {
         {hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
           <Button
             style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-            onPress={() => cancelFriendship.mutate(targetUserId)}
+            onPress={() => cancelFriendship.mutate(targetUser.id)}
             variant='secondary'>
             PENDING
           </Button>
