@@ -114,6 +114,7 @@ export default function TargetUserProfileScreen() {
   const acceptFriendship = useMutationAcceptFriendshipInvitation();
   const cancelFriendship = useMutationDeleteFriendshipInvitation();
   const setTargetUser = useCometaStore(state => state.setTargetUser);
+  const showPending = (sentFriendship.isPending || cancelFriendship.isPending || acceptFriendship.isPending);
 
   const handleSentFriendship = () => {
     if (!targetUser) return;
@@ -237,21 +238,24 @@ export default function TargetUserProfileScreen() {
                       <>
                         {!hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
                           <Button
-                            onPress={() => handleSentFriendship()}
+                            showLoading={showPending}
+                            onPress={() => !showPending && handleSentFriendship()}
                             variant='primary'>
                             Follow
                           </Button>
                         )}
                         {hasOutgoingFriendshipInvitation && !hasIncommingFriendshipInvitation && (
                           <Button
-                            onPress={() => handleAcceptFriendship()}
+                            showLoading={showPending}
+                            onPress={() => !showPending && handleAcceptFriendship()}
                             variant='primary'>
                             Follow
                           </Button>
                         )}
                         {hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
                           <Button
-                            onPress={() => cancelFriendship.mutate(targetUser?.id as number)}
+                            showLoading={showPending}
+                            onPress={() => !showPending && cancelFriendship.mutate(targetUser?.id as number)}
                             variant='gray'>
                             Pending
                           </Button>

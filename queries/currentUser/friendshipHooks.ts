@@ -201,6 +201,7 @@ export const useMutationAcceptFriendshipInvitation = () => {
 export const useMutationDeleteFriendshipInvitation = () => {
   const queryClient = useQueryClient();
   const targetUser = useCometaStore(state => state.targetUser);
+  const selectedLikedEvent = useCometaStore(state => state.likedEvent);
   return (
     useMutation({
       mutationFn: async (targetUserID: number) => {
@@ -222,6 +223,8 @@ export const useMutationDeleteFriendshipInvitation = () => {
             return {
               ...oldData,
               isFriend: false,
+              hasIncommingFriendshipInvitation: false,
+              hasOutgoingFriendshipInvitation: false,
             };
           });
         queryClient.setQueryData<InfiniteData<IGetLatestFriendships>>(
@@ -238,6 +241,33 @@ export const useMutationDeleteFriendshipInvitation = () => {
                   }))
             };
           });
+        queryClient.setQueryData<InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>>(
+          [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, selectedLikedEvent?.id],
+          (oldData) => {
+            if (!oldData) return;
+            return {
+              pageParams: oldData?.pageParams,
+              pages:
+                oldData?.pages
+                  .map((page) => ({
+                    ...page,
+                    items:
+                      page.items
+                        .map(event => event.userId === targetUserID ?
+                          ({
+                            ...event,
+                            user: {
+                              ...event.user,
+                              hasIncommingFriendshipInvitation: false,
+                              hasOutgoingFriendshipInvitation: false,
+                            }
+                          })
+                          : event
+                        )
+                  }))
+            };
+          }
+        );
       },
       onError: () => {
         Notifier.showNotification({

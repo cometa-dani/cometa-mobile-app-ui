@@ -148,6 +148,7 @@ export default function MatchedEventsScreen(): ReactNode {
   const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
 
   const handleSentFriendship = (targetUser: IGetBasicUserProfile) => {
+    setSelectedTargetUser(targetUser as IGetTargetUser);
     sentFriendship.mutate(targetUser.id,
       {
         onError: ({ response }) => {
@@ -198,6 +199,11 @@ export default function MatchedEventsScreen(): ReactNode {
     );
   };
 
+  const handleCancelFriendship = (targetUser: IGetBasicUserProfile) => {
+    setSelectedTargetUser(targetUser as IGetTargetUser);
+    cancelFriendship.mutate(targetUser.id);
+  };
+
   const renderNewFriend = useCallback(({ item: { friend } }: { item: { friend: IGetBasicUserProfile } }) => (
     <HStack
       $y='center'
@@ -240,7 +246,7 @@ export default function MatchedEventsScreen(): ReactNode {
       </TouchableOpacity>
 
       <Button
-        style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
+        style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 100 }}
         onPress={() => router.push(`/(userStacks)/chat/${friend?.id}`)}
         variant='gray-alt'>
         Chat
@@ -295,7 +301,7 @@ export default function MatchedEventsScreen(): ReactNode {
         {!hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
           <Button
             showLoading={showPending}
-            style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
+            style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 110 }}
             onPress={() => !showPending && handleSentFriendship(targetUser)}
             variant='primary'>
             Follow
@@ -304,7 +310,7 @@ export default function MatchedEventsScreen(): ReactNode {
         {hasOutgoingFriendshipInvitation && !hasIncommingFriendshipInvitation && (
           <Button
             showLoading={showPending}
-            style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
+            style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 110 }}
             onPress={() => !showPending && handleAcceptFriendship(targetUser)}
             variant='primary'>
             Follow
@@ -313,15 +319,15 @@ export default function MatchedEventsScreen(): ReactNode {
         {hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
           <Button
             showLoading={showPending}
-            style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-            onPress={() => !showPending && cancelFriendship.mutate(targetUser.id)}
+            style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 110 }}
+            onPress={() => !showPending && handleCancelFriendship(targetUser)}
             variant='gray'>
             Pending
           </Button>
         )}
       </HStack>
     );
-  }, [sentFriendship.isPending, cancelFriendship.isPending, acceptFriendship.isPending]);
+  }, [selectedTargetUser?.id, sentFriendship.isPending, cancelFriendship.isPending, acceptFriendship.isPending]);
 
   return (
     <>
