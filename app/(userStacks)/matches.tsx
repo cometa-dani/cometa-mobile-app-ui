@@ -239,7 +239,7 @@ export default function MatchedEventsScreen(): ReactNode {
         style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
         onPress={() => router.push(`/(userStacks)/chat/${friend?.id}`)}
         variant='gray-alt'>
-        CHAT
+        Chat
       </Button>
     </HStack>
   ), []);
@@ -289,7 +289,7 @@ export default function MatchedEventsScreen(): ReactNode {
             style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
             onPress={() => handleSentFriendship(targetUser)}
             variant='primary'>
-            FOLLOW
+            Follow
           </Button>
         )}
         {hasOutgoingFriendshipInvitation && !hasIncommingFriendshipInvitation && (
@@ -297,7 +297,7 @@ export default function MatchedEventsScreen(): ReactNode {
             style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
             onPress={() => handleAcceptFriendship(targetUser)}
             variant='primary'>
-            FOLLOW
+            Follow
           </Button>
         )}
         {hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
@@ -305,7 +305,7 @@ export default function MatchedEventsScreen(): ReactNode {
             style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
             onPress={() => cancelFriendship.mutate(targetUser.id)}
             variant='gray'>
-            PENDING
+            Pending
           </Button>
         )}
       </HStack>

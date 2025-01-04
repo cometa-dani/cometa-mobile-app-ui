@@ -17,7 +17,7 @@ import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../../../queries/queryKeys';
 import { IGetPaginatedLikedEventsBucketList } from '../../../models/LikedEvent';
 import { If } from '../../../legacy_components/utils';
-import { GetLatestFriendships, MutateFrienship } from '../../../models/Friendship';
+import { IGetLatestFriendships, MutateFrienship } from '../../../models/Friendship';
 import notificationService from '../../../services/notificationService';
 import { SkeletonLoaderList } from '../../../legacy_components/lodingSkeletons/LoadingSkeletonList';
 import { ErrorMessage } from '../../../queries/errors/errorMessages';
@@ -418,7 +418,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
 
 
 interface FriendsFlashListProps {
-  users: GetLatestFriendships['friendships'];
+  users: IGetLatestFriendships['friendships'];
   isFetching: boolean;
   isEmpty: boolean;
   onInfiniteScroll: () => void

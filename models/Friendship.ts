@@ -15,7 +15,7 @@ export interface Friendship {
 
 export type FriendShipStatus = 'PENDING' | 'ACCEPTED' | 'BLOCKED'
 
-export interface GetLatestFriendships extends IPaginated<Friendship> { }
+export interface IGetLatestFriendships extends IPaginated<Friendship> { }
 
 export type MutateFrienship = Pick<Friendship, (
   'id' |

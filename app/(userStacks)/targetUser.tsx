@@ -15,7 +15,7 @@ import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
 import { GradientHeading } from '@/components/text/gradientText';
 import { Condition } from '@/components/utils/ifElse';
 import { HeaderUserProfile, HeaderSkeleton } from '@/components/userProfile/components/headerUser';
-import { VStack } from '@/components/utils/stacks';
+import { HStack, VStack } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -24,6 +24,8 @@ import { useMutationDeleteFriendshipInvitation } from '@/queries/currentUser/fri
 import { useMutationAcceptFriendshipInvitation } from '@/queries/currentUser/friendshipHooks';
 import { useMutationSentFriendshipInvitation } from '@/queries/currentUser/friendshipHooks';
 import { ErrorMessage } from '@/queries/errors/errorMessages';
+import { ErrorToast } from '@/components/toastNotification/toastNotification';
+import { Notifier } from 'react-native-notifier';
 
 
 export default function TargetUserProfileScreen() {
@@ -112,14 +114,25 @@ export default function TargetUserProfileScreen() {
   const cancelFriendship = useMutationDeleteFriendshipInvitation();
   const setTargetUser = useCometaStore(state => state.setTargetUser);
 
-
   const handleSentFriendship = () => {
     if (!targetUser) return;
     sentFriendship.mutate(targetUser.id,
       {
         onError: ({ response }) => {
           if (response?.data.message === ErrorMessage.INVITATION_ALREADY_PENDING) {
+            Notifier.showNotification({
+              title: 'Error',
+              description: 'something went wrong, we will try again',
+              Component: ErrorToast,
+            });
             handleAcceptFriendship();
+          }
+          else {
+            Notifier.showNotification({
+              title: 'Error',
+              description: 'something went wrong, try again',
+              Component: ErrorToast,
+            });
           }
         }
       }
@@ -129,14 +142,25 @@ export default function TargetUserProfileScreen() {
   const handleAcceptFriendship = () => {
     if (!targetUser) return;
     setTargetUser(targetUser);
+    setShowNewFriendsModal(true);
     acceptFriendship.mutate(targetUser.id,
       {
-        onSuccess: () => {
-          setShowNewFriendsModal(true);
-        },
         onError: ({ response }) => {
+          setShowNewFriendsModal(false);
           if (response?.data.message === ErrorMessage.INVITATION_DOES_NOT_EXIST) {
+            Notifier.showNotification({
+              title: 'Error',
+              description: 'something went wrong, we will try again',
+              Component: ErrorToast,
+            });
             handleSentFriendship();
+          }
+          else {
+            Notifier.showNotification({
+              title: 'Error',
+              description: 'something went wrong, try again',
+              Component: ErrorToast,
+            });
           }
         }
       }
@@ -179,36 +203,56 @@ export default function TargetUserProfileScreen() {
       />
       <ScrollView>
         <View style={{ position: 'relative', paddingHorizontal: theme.spacing.sp6, paddingTop: theme.spacing.sp7 }}>
-
           <Condition
             if={detailedProfile.isSuccess}
             then={(
               <HeaderUserProfile
                 userProfile={detailedProfile.data}
                 buttonContainer={() => (
-                  <>
-                    {!hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
-                      <Button
-                        onPress={() => handleSentFriendship()}
-                        variant='primary'>
-                        FOLLOW
-                      </Button>
+                  <Condition
+                    if={detailedProfile.data?.isFriend}
+                    then={(
+                      <HStack gap={theme.spacing.sp2}>
+                        <Button
+                          style={{ flex: 1 / 2 }}
+                          onPress={() => cancelFriendship.mutate(targetUser?.id as number)}
+                          variant='primary-alt'>
+                          Following
+                        </Button>
+                        <Button
+                          style={{ flex: 1 / 2 }}
+                          onPress={() => router.push(`/(userStacks)/chat/${detailedProfile.data?.id}`)}
+                          variant='gray-alt'>
+                          Chat
+                        </Button>
+                      </HStack>
                     )}
-                    {hasOutgoingFriendshipInvitation && !hasIncommingFriendshipInvitation && (
-                      <Button
-                        onPress={() => handleAcceptFriendship()}
-                        variant='primary'>
-                        FOLLOW
-                      </Button>
+                    else={(
+                      <>
+                        {!hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
+                          <Button
+                            onPress={() => handleSentFriendship()}
+                            variant='primary'>
+                            Follow
+                          </Button>
+                        )}
+                        {hasOutgoingFriendshipInvitation && !hasIncommingFriendshipInvitation && (
+                          <Button
+                            onPress={() => handleAcceptFriendship()}
+                            variant='primary'>
+                            Follow
+                          </Button>
+                        )}
+                        {hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
+                          <Button
+                            onPress={() => cancelFriendship.mutate(targetUser?.id as number)}
+                            variant='gray'>
+                            Pending
+                          </Button>
+                        )}
+                      </>
                     )}
-                    {hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
-                      <Button
-                        onPress={() => cancelFriendship.mutate(targetUser?.id as number)}
-                        variant='gray'>
-                        PENDING
-                      </Button>
-                    )}
-                  </>
+                  />
                 )}
               />
             )}

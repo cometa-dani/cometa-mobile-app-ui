@@ -1,4 +1,4 @@
-import { GetFriendShipWithSenderAndReceiver, GetLatestFriendships, MutateFrienship } from '../models/Friendship';
+import { GetFriendShipWithSenderAndReceiver, IGetLatestFriendships, MutateFrienship } from '../models/Friendship';
 import { RestApiService } from './restService';
 import { FriendShipStatus } from '../models/Friendship';
 
@@ -10,14 +10,14 @@ class FrienshipService {
     const config = {
       params: { cursor, limit }
     };
-    return this.http.get<GetLatestFriendships>('/friendships', config);
+    return this.http.get<IGetLatestFriendships>('/friendships', config);
   }
 
   searchFriendsByName(friendUserName: string, cursor: number, limit: number) {
     const config = {
       params: { cursor, limit, friendUserName },
     };
-    return this.http.get<GetLatestFriendships>('/friendships/search', config);
+    return this.http.get<IGetLatestFriendships>('/friendships/search', config);
   }
 
   public getFriendShipByTargetUserID(targetUserUUID: string) {

@@ -1,10 +1,10 @@
 import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import friendshipService from '../../services/friendshipService';
-import { Friendship, MutateFrienship } from '../../models/Friendship';
+import { Friendship, IGetLatestFriendships, MutateFrienship } from '../../models/Friendship';
 import { QueryKeys } from '../queryKeys';
 import { TypedAxiosError } from '../errors/typedError';
 import { IPaginated } from '@/models/utils/Paginated';
-import { IGetPaginatedUsersWhoLikedSameEvent } from '@/models/User';
+import { IGetPaginatedUsersWhoLikedSameEvent, IGetTargetUser } from '@/models/User';
 import { useCometaStore } from '@/store/cometaStore';
 
 
@@ -85,6 +85,7 @@ export const useQueryGetFriendshipByTargetUserID = (targetUserUUID: string) => {
 export const useMutationSentFriendshipInvitation = () => {
   const queryClient = useQueryClient();
   const selectedLikedEvent = useCometaStore(state => state.likedEvent);
+  const targetUser = useCometaStore(state => state.targetUser);
   return (
     useMutation<MutateFrienship, TypedAxiosError, number>({
       mutationFn: async (targetUserId: number) => {
@@ -99,26 +100,40 @@ export const useMutationSentFriendshipInvitation = () => {
       onMutate: (targetUserId) => {
         queryClient.setQueryData<InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>>(
           [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, selectedLikedEvent?.id],
-          (oldData) => ({
-            pageParams: oldData?.pageParams,
-            pages:
-              oldData?.pages
-                .map((page) => ({
-                  ...page,
-                  items:
-                    page.items
-                      .map(event => event.userId === targetUserId ?
-                        ({
-                          ...event,
-                          user: {
-                            ...event.user,
-                            hasIncommingFriendshipInvitation: true,
-                          }
-                        })
-                        : event
-                      )
-                }))
-          }) as InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>);
+          (oldData) => {
+            if (!oldData) return;
+            return {
+              pageParams: oldData?.pageParams,
+              pages:
+                oldData?.pages
+                  .map((page) => ({
+                    ...page,
+                    items:
+                      page.items
+                        .map(event => event.userId === targetUserId ?
+                          ({
+                            ...event,
+                            user: {
+                              ...event.user,
+                              hasIncommingFriendshipInvitation: true,
+                            }
+                          })
+                          : event
+                        )
+                  }))
+            };
+          }
+        );
+        queryClient.setQueriesData<IGetTargetUser>({
+          queryKey: [QueryKeys.GET_TARGET_USER_PROFILE, targetUser?.uid]
+        },
+          (oldData) => {
+            if (!oldData) return;
+            return {
+              ...oldData,
+              hasIncommingFriendshipInvitation: true
+            };
+          });
       },
       onSuccess: () => {
         queryClient.invalidateQueries({
@@ -133,6 +148,7 @@ export const useMutationSentFriendshipInvitation = () => {
 export const useMutationAcceptFriendshipInvitation = () => {
   const queryClient = useQueryClient();
   const selectedLikedEvent = useCometaStore(state => state.likedEvent);
+  const targetUser = useCometaStore(state => state.targetUser);
   return (
     useMutation<MutateFrienship, TypedAxiosError, number>({
       mutationFn: async (targetUserID: number) => {
@@ -145,12 +161,35 @@ export const useMutationAcceptFriendshipInvitation = () => {
           throw new Error('failed fech');
         }
       },
+      onMutate: (targetUserID) => {
+        queryClient.setQueriesData<IGetTargetUser>({
+          queryKey: [QueryKeys.GET_TARGET_USER_PROFILE, targetUser?.uid]
+        },
+          (oldData) => {
+            if (!oldData) return;
+            return {
+              ...oldData,
+              isFriend: true,
+            };
+          });
+        queryClient.setQueryData<InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>>(
+          [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, selectedLikedEvent?.id],
+          (oldData) => {
+            if (!oldData) return;
+            return {
+              ...oldData,
+              items:
+                oldData?.pages
+                  .map((page) => ({
+                    ...page,
+                    items: page.items.filter(({ user }) => user.id !== targetUserID)
+                  }))
+            };
+          });
+      },
       onSuccess: async () => {
         try {
-          await Promise.all([
-            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] }),
-            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, selectedLikedEvent?.id] })
-          ]);
+          await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] });
         }
         catch (error) {
           return null;
@@ -163,7 +202,7 @@ export const useMutationAcceptFriendshipInvitation = () => {
 
 export const useMutationDeleteFriendshipInvitation = () => {
   const queryClient = useQueryClient();
-  const selectedLikedEvent = useCometaStore(state => state.likedEvent);
+  const targetUser = useCometaStore(state => state.targetUser);
   return (
     useMutation({
       mutationFn: async (targetUserID: number) => {
@@ -176,10 +215,31 @@ export const useMutationDeleteFriendshipInvitation = () => {
           throw new Error('failed fech');
         }
       },
-      onSuccess: async () => {
-        queryClient.invalidateQueries({
-          queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, selectedLikedEvent?.id]
-        });
+      onMutate: (targetUserID) => {
+        queryClient.setQueriesData<IGetTargetUser>({
+          queryKey: [QueryKeys.GET_TARGET_USER_PROFILE, targetUser?.uid]
+        },
+          (oldData) => {
+            if (!oldData) return;
+            return {
+              ...oldData,
+              isFriend: false,
+            };
+          });
+        queryClient.setQueryData<InfiniteData<IGetLatestFriendships>>(
+          [QueryKeys.GET_NEWEST_FRIENDS],
+          (oldData) => {
+            if (!oldData) return;
+            return {
+              ...oldData,
+              pages:
+                oldData?.pages
+                  .map((page) => ({
+                    ...page,
+                    items: page.items.filter(({ friend }) => friend.id !== targetUserID)
+                  }))
+            };
+          });
       }
     })
   );
