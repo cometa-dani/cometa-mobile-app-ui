@@ -136,11 +136,6 @@ export const useMutationSentFriendshipInvitation = () => {
               hasIncommingFriendshipInvitation: true
             };
           });
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, selectedLikedEvent?.id]
-        });
       }
     })
   );

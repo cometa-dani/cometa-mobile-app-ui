@@ -30,6 +30,7 @@ export const useQueryGetTargetUserPeopleProfile = (userUuid: string) => {
 export const useInfiteQueryGetUsersWhoLikedSameEvent = (eventId: number) => {
   return (
     useInfiniteQuery({
+      refetchOnWindowFocus: true,
       queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, eventId],
       initialPageParam: -1,
       enabled: !!eventId,
@@ -48,7 +49,7 @@ export const useInfiteQueryGetUsersWhoLikedSameEvent = (eventId: number) => {
         }
         return null;
       },
-      refetchInterval: 1_000 * 60 * 10  // 15 minutes
+      refetchInterval: 1_000 * 60 * 8  // 8 minutes
     })
   );
 };

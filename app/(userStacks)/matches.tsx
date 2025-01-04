@@ -201,7 +201,10 @@ export default function MatchedEventsScreen(): ReactNode {
     <HStack
       $y='center'
       gap={theme.spacing.sp4}
-      styles={{ paddingHorizontal: theme.spacing.sp6 }}
+      styles={{
+        paddingHorizontal: theme.spacing.sp6,
+        paddingBottom: theme.spacing.sp6
+      }}
     >
       <TouchableOpacity
         onPress={() => {
@@ -250,7 +253,10 @@ export default function MatchedEventsScreen(): ReactNode {
       <HStack
         $y='center'
         gap={theme.spacing.sp4}
-        styles={{ paddingHorizontal: theme.spacing.sp6 }}
+        styles={{
+          paddingHorizontal: theme.spacing.sp6,
+          paddingBottom: theme.spacing.sp6
+        }}
       >
         <TouchableOpacity
           onPress={() => {
@@ -429,7 +435,6 @@ export default function MatchedEventsScreen(): ReactNode {
                         estimatedItemSize={60}
                         ListFooterComponentStyle={{ height: UnistylesRuntime.screen.height * 0.45 }}
                         contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
-                        ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
                         onViewableItemsChanged={({ viewableItems }) => {
                           const firstItem = viewableItems[0];
                           const isVisible = firstItem?.index === 0;
@@ -465,7 +470,6 @@ export default function MatchedEventsScreen(): ReactNode {
                         nestedScrollEnabled={true}
                         ListFooterComponentStyle={{ height: UnistylesRuntime.screen.height * 0.45 }}
                         contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
-                        ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
                         onViewableItemsChanged={({ viewableItems }) => {
                           const firstItem = viewableItems[0];
                           const isVisible = firstItem?.index === 0;

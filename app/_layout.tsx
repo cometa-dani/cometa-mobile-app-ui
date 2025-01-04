@@ -19,7 +19,6 @@ import { onlineManager } from '@tanstack/react-query';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Subscription } from '@supabase/supabase-js';
-import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
 
 
 // Catch any errors thrown by the Layout component.
