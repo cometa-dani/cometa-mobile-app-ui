@@ -26,6 +26,7 @@ import { useMutationSentFriendshipInvitation } from '@/queries/currentUser/frien
 import { ErrorMessage } from '@/queries/errors/errorMessages';
 import { ErrorToast } from '@/components/toastNotification/toastNotification';
 import { Notifier } from 'react-native-notifier';
+import { UnFollowModal } from '@/components/modal/unFollow/unFollow';
 
 
 export default function TargetUserProfileScreen() {
@@ -40,7 +41,7 @@ export default function TargetUserProfileScreen() {
   const bucketList = useInfiniteQueryGetTargetUserBucketList(targetUser?.id);
   const matches = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUser?.uid ?? '');
   const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
-
+  const [showUnFollowModal, setShowUnFollowModal] = useState(false);
   const handleInfinteBucketList = () => {
     if (bucketList) {
       const { hasNextPage, isFetching } = bucketList;
@@ -173,6 +174,11 @@ export default function TargetUserProfileScreen() {
         open={showNewFriendsModal}
         onClose={() => setShowNewFriendsModal(false)}
       />
+      <UnFollowModal
+        open={showUnFollowModal}
+        onClose={() => setShowUnFollowModal(false)}
+        onUnFollow={() => cancelFriendship.mutate(targetUser?.id as number)}
+      />
       <Stack.Screen
         options={{
           headerShown: true,
@@ -215,7 +221,7 @@ export default function TargetUserProfileScreen() {
                       <HStack gap={theme.spacing.sp2}>
                         <Button
                           style={{ flex: 1 / 2 }}
-                          onPress={() => cancelFriendship.mutate(targetUser?.id as number)}
+                          onPress={() => setShowUnFollowModal(true)}
                           variant='primary-alt'>
                           Following
                         </Button>
