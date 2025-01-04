@@ -143,7 +143,8 @@ export default function MatchedEventsScreen(): ReactNode {
   const sentFriendship = useMutationSentFriendshipInvitation();
   const acceptFriendship = useMutationAcceptFriendshipInvitation();
   const cancelFriendship = useMutationDeleteFriendshipInvitation();
-  const setTargetUser = useCometaStore(state => state.setTargetUser);
+  const selectedTargetUser = useCometaStore(state => state.targetUser);
+  const setSelectedTargetUser = useCometaStore(state => state.setTargetUser);
   const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
 
   const handleSentFriendship = (targetUser: IGetBasicUserProfile) => {
@@ -171,7 +172,7 @@ export default function MatchedEventsScreen(): ReactNode {
   };
 
   const handleAcceptFriendship = (targetUser: IGetBasicUserProfile) => {
-    setTargetUser(targetUser as IGetTargetUser);
+    setSelectedTargetUser(targetUser as IGetTargetUser);
     setShowNewFriendsModal(true);
     acceptFriendship.mutate(targetUser.id,
       {
@@ -208,7 +209,7 @@ export default function MatchedEventsScreen(): ReactNode {
     >
       <TouchableOpacity
         onPress={() => {
-          setTargetUser(friend as IGetTargetUser);
+          setSelectedTargetUser(friend as IGetTargetUser);
           router.push('/(userStacks)/targetUser');
         }}
         style={{
@@ -249,6 +250,7 @@ export default function MatchedEventsScreen(): ReactNode {
 
   const renderNewPeople = useCallback(({ item: { user: targetUser } }: { item: { user: IGetBasicUserProfile } }) => {
     const { hasOutgoingFriendshipInvitation, hasIncommingFriendshipInvitation } = targetUser;
+    const showPending = (sentFriendship.isPending || cancelFriendship.isPending || acceptFriendship.isPending) && selectedTargetUser?.id === targetUser.id;
     return (
       <HStack
         $y='center'
@@ -260,7 +262,7 @@ export default function MatchedEventsScreen(): ReactNode {
       >
         <TouchableOpacity
           onPress={() => {
-            setTargetUser(targetUser as IGetTargetUser);
+            setSelectedTargetUser(targetUser as IGetTargetUser);
             router.push('/(userStacks)/targetUser');
           }}
           style={{
@@ -292,31 +294,34 @@ export default function MatchedEventsScreen(): ReactNode {
 
         {!hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
           <Button
+            showLoading={showPending}
             style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-            onPress={() => handleSentFriendship(targetUser)}
+            onPress={() => !showPending && handleSentFriendship(targetUser)}
             variant='primary'>
             Follow
           </Button>
         )}
         {hasOutgoingFriendshipInvitation && !hasIncommingFriendshipInvitation && (
           <Button
+            showLoading={showPending}
             style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-            onPress={() => handleAcceptFriendship(targetUser)}
+            onPress={() => !showPending && handleAcceptFriendship(targetUser)}
             variant='primary'>
             Follow
           </Button>
         )}
         {hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
           <Button
+            showLoading={showPending}
             style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
-            onPress={() => cancelFriendship.mutate(targetUser.id)}
+            onPress={() => !showPending && cancelFriendship.mutate(targetUser.id)}
             variant='gray'>
             Pending
           </Button>
         )}
       </HStack>
     );
-  }, []);
+  }, [sentFriendship.isPending, cancelFriendship.isPending, acceptFriendship.isPending]);
 
   return (
     <>

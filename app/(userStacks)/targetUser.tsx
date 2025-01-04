@@ -281,7 +281,7 @@ export default function TargetUserProfileScreen() {
             then={(
               <View style={{ position: 'relative' }}>
                 <Condition
-                  if={false}
+                  if={!detailedProfile.data?.isFriend}
                   then={(
                     <BlurView intensity={100}
                       style={{
@@ -296,7 +296,7 @@ export default function TargetUserProfileScreen() {
                         alignItems: 'center'
                       }}
                     >
-                      <FontAwesome name="lock" size={theme.spacing.sp14} color={theme.colors.gray200} />
+                      <FontAwesome name="lock" size={theme.spacing.sp14} color={theme.colors.gray100} />
                     </BlurView>
                   )}
                 />

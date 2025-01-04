@@ -259,28 +259,3 @@ export const useMutationDeleteFriendshipInvitation = () => {
     })
   );
 };
-
-
-// export const useMutationResetFrienshipInvitation = () => {
-//   const queryClient = useQueryClient();
-//   return (
-//     useMutation<MutateFrienship, TypedAxiosError, number>({
-//       mutationFn: async (targetUserID: number) => {
-//         const res =
-//           await friendshipService.updateFrienshipInvitationByID(targetUserID, 'PENDING');
-//         if (res.status === 200) {
-//           return res.data;
-//         }
-//         else {
-//           throw new Error('failed fech');
-//         }
-//       },
-//       onSuccess: async () => {
-//         await Promise.all([
-//           queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] }),
-//           queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT] })
-//         ]);
-//       }
-//     })
-//   );
-// };
