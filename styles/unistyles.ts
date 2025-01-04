@@ -69,6 +69,7 @@ export const lightTheme = {
     gray900: '#030303',
     black: '#000000',
 
+    slate400: '#c0c0c0',
     slate300: '#cbd5e1',
     slate200: '#e2e8f0',
     slate100: '#f1f5f9',

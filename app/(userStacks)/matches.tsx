@@ -28,6 +28,8 @@ import { IGetBasicUserProfile, IGetTargetUser, IUsersWhoLikedSameEvent } from '@
 import { Friendship } from '@/models/Friendship';
 import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
 import { ErrorMessage } from '@/queries/errors/errorMessages';
+import { Notifier } from 'react-native-notifier';
+import { ErrorToast } from '@/components/toastNotification/toastNotification';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -149,7 +151,19 @@ export default function MatchedEventsScreen(): ReactNode {
       {
         onError: ({ response }) => {
           if (response?.data.message === ErrorMessage.INVITATION_ALREADY_PENDING) {
+            Notifier.showNotification({
+              title: 'Error',
+              description: 'something went wrong, we will try again',
+              Component: ErrorToast,
+            });
             handleAcceptFriendship(targetUser);
+          }
+          else {
+            Notifier.showNotification({
+              title: 'Error',
+              description: 'something went wrong, try again',
+              Component: ErrorToast,
+            });
           }
         }
       }
@@ -158,14 +172,25 @@ export default function MatchedEventsScreen(): ReactNode {
 
   const handleAcceptFriendship = (targetUser: IGetBasicUserProfile) => {
     setTargetUser(targetUser as IGetTargetUser);
+    setShowNewFriendsModal(true);
     acceptFriendship.mutate(targetUser.id,
       {
-        onSuccess: () => {
-          setShowNewFriendsModal(true);
-        },
         onError: ({ response }) => {
+          setShowNewFriendsModal(false);
           if (response?.data.message === ErrorMessage.INVITATION_DOES_NOT_EXIST) {
+            Notifier.showNotification({
+              title: 'Error',
+              description: 'something went wrong, we will try again',
+              Component: ErrorToast,
+            });
             handleSentFriendship(targetUser);
+          }
+          else {
+            Notifier.showNotification({
+              title: 'Error',
+              description: 'something went wrong, try again',
+              Component: ErrorToast,
+            });
           }
         }
       }
@@ -178,30 +203,42 @@ export default function MatchedEventsScreen(): ReactNode {
       gap={theme.spacing.sp4}
       styles={{ paddingHorizontal: theme.spacing.sp6 }}
     >
-      <Image
-        recyclingKey={friend.uid}
-        placeholder={{ thumbhash: friend.photos.at(0)?.placeholder }}
-        transition={imageTransition}
-        source={{ uri: friend.photos.at(0)?.url }}
-        style={styles.imgAvatar}
-      />
-
-      <VStack
-        $y='center'
-        styles={{ flex: 1 }}
+      <TouchableOpacity
+        onPress={() => {
+          setTargetUser(friend as IGetTargetUser);
+          router.push('/(userStacks)/targetUser');
+        }}
+        style={{
+          flex: 1, flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: theme.spacing.sp4
+        }}
       >
-        <TextView bold={true} ellipsis={true}>
-          {friend.name}
-        </TextView>
-        <TextView ellipsis={true}>
-          {friend.username}
-        </TextView>
-      </VStack>
+        <Image
+          recyclingKey={friend?.uid}
+          transition={imageTransition}
+          source={{ uri: friend?.photos.at(0)?.url }}
+          placeholder={{ thumbhash: friend?.photos.at(0)?.placeholder }}
+          style={styles.imgAvatar}
+        />
+        <VStack
+          $y='center'
+          styles={{ flex: 1 }}
+        >
+          <TextView bold={true} ellipsis={true}>
+            {friend?.name}
+          </TextView>
+          <TextView ellipsis={true}>
+            {friend?.username}
+          </TextView>
+        </VStack>
+      </TouchableOpacity>
 
       <Button
         style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
         onPress={() => router.push(`/(userStacks)/chat/${friend?.id}`)}
-        variant='primary-alt'>
+        variant='gray-alt'>
         CHAT
       </Button>
     </HStack>
@@ -230,7 +267,7 @@ export default function MatchedEventsScreen(): ReactNode {
           <Image
             recyclingKey={targetUser?.uid}
             transition={imageTransition}
-            source={{ uri: targetUser.photos.at(0)?.url }}
+            source={{ uri: targetUser?.photos.at(0)?.url }}
             placeholder={{ thumbhash: targetUser?.photos.at(0)?.placeholder }}
             style={styles.imgAvatar}
           />
@@ -239,10 +276,10 @@ export default function MatchedEventsScreen(): ReactNode {
             styles={{ flex: 1 }}
           >
             <TextView bold={true} ellipsis={true}>
-              {targetUser.name}
+              {targetUser?.name}
             </TextView>
             <TextView ellipsis={true}>
-              {targetUser.username}
+              {targetUser?.username}
             </TextView>
           </VStack>
         </TouchableOpacity>
@@ -267,7 +304,7 @@ export default function MatchedEventsScreen(): ReactNode {
           <Button
             style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 94 }}
             onPress={() => cancelFriendship.mutate(targetUser.id)}
-            variant='secondary'>
+            variant='gray'>
             PENDING
           </Button>
         )}

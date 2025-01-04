@@ -204,7 +204,7 @@ export default function TargetUserProfileScreen() {
                     {hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
                       <Button
                         onPress={() => cancelFriendship.mutate(targetUser?.id as number)}
-                        variant='secondary'>
+                        variant='gray'>
                         PENDING
                       </Button>
                     )}

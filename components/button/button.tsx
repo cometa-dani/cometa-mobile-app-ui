@@ -9,7 +9,7 @@ import { Condition } from '../utils/ifElse';
 
 interface IButtonProps {
   children: ReactNode,
-  variant: 'primary' | 'primary-alt' | 'secondary' | 'secondary-alt' | 'disabled',
+  variant: 'primary' | 'primary-alt' | 'secondary' | 'secondary-alt' | 'disabled' | 'gray' | 'gray-alt',
   size?: 'sm' | 'md' | 'lg',
   onPress: (event: GestureResponderEvent) => void,
   isInsideBottomSheet?: boolean,
@@ -107,6 +107,12 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
         },
         'disabled': {
           color: theme.colors.gray900,
+        },
+        'gray': {
+          color: theme.colors.white100,
+        },
+        'gray-alt': {
+          color: theme.colors.gray300,
         }
       }
     }
@@ -158,6 +164,16 @@ export const buttonsStyleSheet = createStyleSheet((theme) => ({
         'disabled': {
           backgroundColor: pressed ? theme.colors.gray50 : theme.colors.gray100,
           borderColor: pressed ? theme.colors.gray100 : theme.colors.gray200,
+          shadowColor: theme.colors.gray100,
+        },
+        'gray': {
+          backgroundColor: pressed ? theme.colors.gray200 : theme.colors.slate400,
+          borderColor: pressed ? theme.colors.gray200 : theme.colors.slate400,
+          shadowColor: theme.colors.gray100,
+        },
+        'gray-alt': {
+          backgroundColor: pressed ? theme.colors.white90 : theme.colors.white100,
+          borderColor: pressed ? theme.colors.gray200 : theme.colors.gray300,
           shadowColor: theme.colors.gray100,
         }
       },
