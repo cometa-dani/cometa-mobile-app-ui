@@ -17,23 +17,15 @@ const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 interface IProps {
   userProfile?: IGetDetailedUserProfile,
-  isTargetUser?: boolean,
-  onPresss?: () => void
+  buttonContainer?: () => ReactNode,
 }
-export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = false, onPresss }) => {
+export const HeaderUserProfile: FC<IProps> = ({ userProfile, buttonContainer }) => {
   const { theme, styles } = useStyles(styleSheet);
   return (
     <VStack gap={theme.spacing.sp6}>
       <Carousel photos={userProfile?.photos ?? []} />
 
-      {isTargetUser && (
-        <Button
-          variant='primary'
-          onPress={() => onPresss && onPresss()}
-        >
-          FOLLOW
-        </Button>
-      )}
+      {buttonContainer && buttonContainer()}
       <VStack styles={styles.container} gap={theme.spacing.sp1} >
         <Heading size='s7'>
           {userProfile?.name}, {userProfile?.birthday && calAge(new Date(userProfile?.birthday))}
@@ -75,7 +67,7 @@ export const HeaderUserProfile: FC<IProps> = ({ userProfile, isTargetUser = fals
       </View>
 
       <Condition
-        if={!isTargetUser}
+        if={!buttonContainer}
         then={(
           <Heading size='s6' style={{
             paddingHorizontal: theme.spacing.sp6,

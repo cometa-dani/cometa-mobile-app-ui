@@ -19,6 +19,11 @@ import { VStack } from '@/components/utils/stacks';
 import { Heading } from '@/components/text/heading';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { ScrollView } from 'react-native-gesture-handler';
+import { Button } from '@/components/button/button';
+import { useMutationDeleteFriendshipInvitation } from '@/queries/currentUser/friendshipHooks';
+import { useMutationAcceptFriendshipInvitation } from '@/queries/currentUser/friendshipHooks';
+import { useMutationSentFriendshipInvitation } from '@/queries/currentUser/friendshipHooks';
+import { ErrorMessage } from '@/queries/errors/errorMessages';
 
 
 export default function TargetUserProfileScreen() {
@@ -26,6 +31,10 @@ export default function TargetUserProfileScreen() {
   const router = useRouter();
   const targetUser = useCometaStore(state => state.targetUser);
   const detailedProfile = useQueryGetTargetUserPeopleProfile(targetUser?.uid ?? '');
+  const {
+    hasIncommingFriendshipInvitation = false,
+    hasOutgoingFriendshipInvitation = false
+  } = detailedProfile.data ?? {};
   const bucketList = useInfiniteQueryGetTargetUserBucketList(targetUser?.id);
   const matches = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUser?.uid ?? '');
   const [showNewFriendsModal, setShowNewFriendsModal] = useState(false);
@@ -83,6 +92,7 @@ export default function TargetUserProfileScreen() {
       <EventItem item={item} />
     </Pressable>
   ), []);
+
   const renderBucketItem = useCallback(({ item }: { item: IBucketListItem }) => (
     <Pressable
       key={item?.id}
@@ -95,6 +105,43 @@ export default function TargetUserProfileScreen() {
       <EventItem item={item} />
     </Pressable>
   ), []);
+
+  // mutations
+  const sentFriendship = useMutationSentFriendshipInvitation();
+  const acceptFriendship = useMutationAcceptFriendshipInvitation();
+  const cancelFriendship = useMutationDeleteFriendshipInvitation();
+  const setTargetUser = useCometaStore(state => state.setTargetUser);
+
+
+  const handleSentFriendship = () => {
+    if (!targetUser) return;
+    sentFriendship.mutate(targetUser.id,
+      {
+        onError: ({ response }) => {
+          if (response?.data.message === ErrorMessage.INVITATION_ALREADY_PENDING) {
+            handleAcceptFriendship();
+          }
+        }
+      }
+    );
+  };
+
+  const handleAcceptFriendship = () => {
+    if (!targetUser) return;
+    setTargetUser(targetUser);
+    acceptFriendship.mutate(targetUser.id,
+      {
+        onSuccess: () => {
+          setShowNewFriendsModal(true);
+        },
+        onError: ({ response }) => {
+          if (response?.data.message === ErrorMessage.INVITATION_DOES_NOT_EXIST) {
+            handleSentFriendship();
+          }
+        }
+      }
+    );
+  };
 
   return (
     <>
@@ -137,9 +184,32 @@ export default function TargetUserProfileScreen() {
             if={detailedProfile.isSuccess}
             then={(
               <HeaderUserProfile
-                isTargetUser={true}
                 userProfile={detailedProfile.data}
-                onPresss={() => setShowNewFriendsModal(true)}
+                buttonContainer={() => (
+                  <>
+                    {!hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
+                      <Button
+                        onPress={() => handleSentFriendship()}
+                        variant='primary'>
+                        FOLLOW
+                      </Button>
+                    )}
+                    {hasOutgoingFriendshipInvitation && !hasIncommingFriendshipInvitation && (
+                      <Button
+                        onPress={() => handleAcceptFriendship()}
+                        variant='primary'>
+                        FOLLOW
+                      </Button>
+                    )}
+                    {hasIncommingFriendshipInvitation && !hasOutgoingFriendshipInvitation && (
+                      <Button
+                        onPress={() => cancelFriendship.mutate(targetUser?.id as number)}
+                        variant='secondary'>
+                        PENDING
+                      </Button>
+                    )}
+                  </>
+                )}
               />
             )}
             else={<HeaderSkeleton isTargetUser={true} />}

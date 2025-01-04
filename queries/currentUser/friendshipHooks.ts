@@ -137,7 +137,7 @@ export const useMutationAcceptFriendshipInvitation = () => {
     useMutation<MutateFrienship, TypedAxiosError, number>({
       mutationFn: async (targetUserID: number) => {
         const res =
-          await friendshipService.updateFrienshipInvitationByID(targetUserID, 'ACCEPTED');
+          await friendshipService.updateFriendshipByQueryParams(targetUserID, 'ACCEPTED');
         if (res.status === 200) {
           return res.data;
         }
@@ -149,7 +149,7 @@ export const useMutationAcceptFriendshipInvitation = () => {
         try {
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] }),
-            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, selectedLikedEvent?.id ?? ''] })
+            queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, selectedLikedEvent?.id] })
           ]);
         }
         catch (error) {

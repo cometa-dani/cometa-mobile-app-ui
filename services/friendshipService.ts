@@ -33,12 +33,8 @@ class FrienshipService {
     return this.http.delete(`/friendships?targetUserId=${receiverId}`);
   }
 
-  updateFrienshipInvitationByID(friendShipId: number, status: FriendShipStatus) {
-    return this.http.patch<MutateFrienship>(`/friendships/${friendShipId}`, { status });
-  }
-
   updateFriendshipByQueryParams(targetUserId: number, status: FriendShipStatus) {
-    return this.http.put<MutateFrienship>(`/friendships?targetUserId=${targetUserId}`, { status });
+    return this.http.patch<MutateFrienship>(`/friendships?targetUserId=${targetUserId}`, { status });
   }
 }
 
