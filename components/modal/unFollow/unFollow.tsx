@@ -37,7 +37,7 @@ export const UnFollowModal: FC<IProps> = ({ onClose, open, onUnFollow }) => {
             </TouchableOpacity>
           </HStack>
           <VStack
-            gap={theme.spacing.sp6}
+            gap={theme.spacing.sp11}
             styles={{ marginTop: theme.spacing.sp8 }}
           >
             <Center>

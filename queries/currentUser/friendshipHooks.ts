@@ -6,6 +6,8 @@ import { TypedAxiosError } from '../errors/typedError';
 import { IPaginated } from '@/models/utils/Paginated';
 import { IGetPaginatedUsersWhoLikedSameEvent, IGetTargetUser } from '@/models/User';
 import { useCometaStore } from '@/store/cometaStore';
+import { Notifier } from 'react-native-notifier';
+import { ErrorToast } from '@/components/toastNotification/toastNotification';
 
 
 export const useInfiniteQueryGetNewestFriends = () => {
@@ -238,6 +240,23 @@ export const useMutationDeleteFriendshipInvitation = () => {
                     ...page,
                     items: page.items.filter(({ friend }) => friend.id !== targetUserID)
                   }))
+            };
+          });
+      },
+      onError: () => {
+        Notifier.showNotification({
+          title: 'Error',
+          description: 'something went wrong, try again',
+          Component: ErrorToast,
+        });
+        queryClient.setQueriesData<IGetTargetUser>({
+          queryKey: [QueryKeys.GET_TARGET_USER_PROFILE, targetUser?.uid]
+        },
+          (oldData) => {
+            if (!oldData) return;
+            return {
+              ...oldData,
+              isFriend: true,
             };
           });
       }
