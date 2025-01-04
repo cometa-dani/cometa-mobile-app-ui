@@ -164,6 +164,21 @@ export const useMutationAcceptFriendshipInvitation = () => {
         }
       },
       onMutate: (targetUserID) => {
+        queryClient.setQueryData<InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>>(
+          [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, selectedLikedEvent?.id],
+          (oldData) => {
+            if (!oldData) return;
+            return {
+              pageParams: oldData?.pageParams,
+              pages: (
+                oldData?.pages
+                  .map((page) => ({
+                    ...page,
+                    items: page.items.filter(({ user }) => user.id !== targetUserID)
+                  }))
+              )
+            };
+          });
         queryClient.setQueriesData<IGetTargetUser>({
           queryKey: [QueryKeys.GET_TARGET_USER_PROFILE, targetUser?.uid]
         },
@@ -172,20 +187,6 @@ export const useMutationAcceptFriendshipInvitation = () => {
             return {
               ...oldData,
               isFriend: true,
-            };
-          });
-        queryClient.setQueryData<InfiniteData<IGetPaginatedUsersWhoLikedSameEvent>>(
-          [QueryKeys.GET_USERS_WHO_LIKED_SAME_EVENT, selectedLikedEvent?.id],
-          (oldData) => {
-            if (!oldData) return;
-            return {
-              ...oldData,
-              items:
-                oldData?.pages
-                  .map((page) => ({
-                    ...page,
-                    items: page.items.filter(({ user }) => user.id !== targetUserID)
-                  }))
             };
           });
       },

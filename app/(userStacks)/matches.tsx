@@ -345,11 +345,12 @@ export default function MatchedEventsScreen(): ReactNode {
         }}
       />
 
-      <SafeAreaView style={{
-        flex: 1,
-        gap: showImage ? theme.spacing.sp4 : 0,
-        backgroundColor: theme.colors.white80
-      }}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          gap: showImage ? theme.spacing.sp4 : 0,
+          backgroundColor: theme.colors.white80
+        }}>
         {showImage &&
           <Animated.View
             // entering={ZoomIn.withInitialValues({ transform: [{ scale: 0 }] }).duration(390)}
@@ -400,7 +401,7 @@ export default function MatchedEventsScreen(): ReactNode {
           </View>
           <PagerView
             ref={ref}
-            style={{ height: '100%', width: '100%' }}
+            style={{ height: '100%', width: '100%', flex: 1 }}
             initialPage={initialTab}
             onPageScroll={(e) => {
               setStep(e.nativeEvent.position);
