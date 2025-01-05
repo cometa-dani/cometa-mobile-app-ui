@@ -1,3 +1,4 @@
+import { IMessage } from 'react-native-gifted-chat';
 import { IGetBasicUserProfile } from './User';
 import { IPaginated } from './utils/Paginated';
 
@@ -8,9 +9,11 @@ export interface Friendship {
   updatedAt: string;
   senderId: number;
   receiverId: number;
-  chatuuid: string;
+  // chatuuid: string;
   status: FriendShipStatus;
-  friend: IGetBasicUserProfile
+  friend: IGetBasicUserProfile;
+  messages: IMessage[];
+  lastMessageAt: Date | string;
 }
 
 export type FriendShipStatus = 'PENDING' | 'ACCEPTED' | 'BLOCKED'
@@ -22,7 +25,7 @@ export type MutateFrienship = Pick<Friendship, (
   'senderId' |
   'receiverId' |
   'status' |
-  'chatuuid' |
+  // 'chatuuid' |
   'createdAt' |
   'updatedAt'
 )>

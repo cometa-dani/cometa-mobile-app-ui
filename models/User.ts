@@ -198,6 +198,7 @@ export interface IGetDetailedUserProfile {
 
 export interface IGetTargetUser extends IGetDetailedUserProfile {
   isFriend: boolean;
+  friendshipId?: number;
   hasOutgoingFriendshipInvitation: boolean;
   hasIncommingFriendshipInvitation: boolean
 }

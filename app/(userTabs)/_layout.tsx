@@ -1,8 +1,6 @@
 import { CircleButton } from '@/components/button/circleButton';
-import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
 import { TabBar } from '@/components/tabBar/tabBar';
 import { GradientHeading } from '@/components/text/gradientText';
-import { BottomSheetTargetUserProfile } from '@/components/userProfile/bottomSheetTargetUser';
 import { Condition } from '@/components/utils/ifElse';
 import { HStack } from '@/components/utils/stacks';
 import { usePrefetchBucketList } from '@/queries/currentUser/eventHooks';
@@ -19,7 +17,7 @@ export default function TabLayout(): ReactNode {
   usePrefetchBucketList();
   const { theme } = useStyles(stylesheet);
   const router = useRouter();
-  const notificationIsSeen = useCometaStore(state => state.notificationsList).at(0)?.user?.isSeen;
+  // const notificationIsSeen = useCometaStore(state => state.notificationsList).at(0)?.user?.isSeen;
   const session = useCometaStore(state => state.session);
   usePrefetchUserProfile(); // don't remove
 
@@ -88,7 +86,7 @@ export default function TabLayout(): ReactNode {
                 >
                   <>
                     <Condition
-                      if={notificationIsSeen === false}
+                      if={false}
                       then={(
                         <Indicator />
                       )}

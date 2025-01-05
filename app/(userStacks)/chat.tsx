@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
-import { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
+import { ReactNode, useCallback, useRef, useState } from 'react';
 import { Bubble, GiftedChat, IMessage, Avatar, Message } from 'react-native-gifted-chat';
-import { FlatList, StyleSheet, TouchableOpacity, View, RefreshControl, SafeAreaView } from 'react-native';
+import { FlatList, TouchableOpacity, View, RefreshControl, SafeAreaView } from 'react-native';
 // import { Text, View, useColors } from '../../../legacy_components/Themed';
-import { Stack, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import { Stack, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { Image as ImageWithPlaceholder } from 'expo-image';
 // import { useCometaStore } from '../../../store/cometaStore';
 // import { useQueryGetFriendshipByTargetUserID } from '../../../queries/currentUser/friendshipHooks';
@@ -15,38 +15,40 @@ import { Image as ImageWithPlaceholder } from 'expo-image';
 import { Entypo } from '@expo/vector-icons';
 import { TextView } from '@/components/text/text';
 import { useCometaStore } from '@/store/cometaStore';
-import { UserMessagesData } from '@/store/slices/messagesSlices';
-import { useQueryGetFriendshipByTargetUserID } from '@/queries/currentUser/friendshipHooks';
+// import { UserMessagesData } from '@/store/slices/messagesSlices';
+// import { useQueryGetFriendshipByTargetUserID } from '@/queries/currentUser/friendshipHooks';
 import { Condition } from '@/components/utils/ifElse';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { HStack } from '@/components/utils/stacks';
+import { useMessages } from '@/queries/chat/useMessages';
 // import { If } from '@/legacy_components/utils';
 // import { blue_100, gray_50 } from '../../../constants/colors';
 // import { If } from '../../../legacy_components/utils';
 
 
-type ChatWithFriendMessage = Map<string | number, UserMessagesData>
-const take = 20;
+// type ChatWithFriendMessage = Map<string | number, UserMessagesData>
+// const take = 20;
 
 export default function ChatWithFriendScreen(): ReactNode {
   // const { text } = useColors();
   // users ids
   const { theme, styles } = useStyles(styleSheet);
-  const targetUserUUID = useLocalSearchParams<{ friendUuid: string }>()['friendUuid']; // TODO: can be uuid
+  const { friendshipId } = useGlobalSearchParams<{ friendshipId: string }>();
   const targetUser = useCometaStore(state => state.targetUser);
   const currentUser = useCometaStore(state => state.userProfile);
-  // const loggedInUserUuid = useCometaStore(state => state.uid);
-  const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(targetUserUUID);
+  const { messages, sendMessage } = useMessages(+friendshipId);
+  // const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(friendUuid);
   // const sender = friendshipData?.sender;
   // const receiver = friendshipData?.receiver;
 
   // users profiles
   // const targetUser = sender?.uid === targetUserUUID ? sender : receiver;
   // const loggedInUser = sender?.uid !== targetUserUUID ? sender : receiver;
-  const [messages, setMessages] = useState<ChatWithFriendMessage>(new Map([]));
-  const messagesList = useMemo(() => [...messages.values()], [messages]);
+  // const [messages, setMessages] = useState<ChatWithFriendMessage>(new Map([]));
+  // const messagesList = useMemo(() => [...messages.values()], [messages]);
+
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [hasNoMoreMessagesToLoad, setHasNoMoreMessagesToLoad] = useState(false);
+  // const [hasNoMoreMessagesToLoad, setHasNoMoreMessagesToLoad] = useState(false);
   const chatRef = useRef<FlatList<IMessage> | null>(null);
 
 
@@ -60,7 +62,8 @@ export default function ChatWithFriendScreen(): ReactNode {
         user: {
           _id: currentUser?.id,
         }
-      } as UserMessagesData;
+      } as IMessage;
+      sendMessage(messagePayload);
       // if (friendshipData?.chatuuid && loggedInUser && targetUser) {
       //   setMessages(prevMap => {
       //     const prevMapCopy = new Map(prevMap);
@@ -78,49 +81,49 @@ export default function ChatWithFriendScreen(): ReactNode {
     catch {
       return null;
     }
-  }, [friendshipData?.chatuuid, targetUser]);
+  }, [currentUser?.id]);
 
 
   const handleRefreshControl = () => {
-    if (!isLoadingMore && !hasNoMoreMessagesToLoad) {
-      setIsLoadingMore(true);
-      const lastMessageKey = messagesList.at(0)?.messageUUID;
-      if (!lastMessageKey) {
-        setHasNoMoreMessagesToLoad(true);
-        setIsLoadingMore(false);
-        return;
-      }
-      // const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}/${loggedInUserUuid}`);
-      // const queryMessages = query(chatsRef, limitToLast(take), endBefore(null, lastMessageKey)); // max average number of messages
+    // if (!isLoadingMore && !hasNoMoreMessagesToLoad) {
+    //   setIsLoadingMore(true);
+    //   const lastMessageKey = messages.at(0)?._id;
+    //   if (!lastMessageKey) {
+    //     setHasNoMoreMessagesToLoad(true);
+    //     setIsLoadingMore(false);
+    //     return;
+    //   }
+    // const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}/${loggedInUserUuid}`);
+    // const queryMessages = query(chatsRef, limitToLast(take), endBefore(null, lastMessageKey)); // max average number of messages
 
-      // onValue(queryMessages, (snapshot) => {
-      //   const previousMessagesMap = new Map<string, UserMessagesData>([]);
+    // onValue(queryMessages, (snapshot) => {
+    //   const previousMessagesMap = new Map<string, UserMessagesData>([]);
 
-      //   snapshot.forEach(data => {
-      //     const newMessage = {
-      //       ...data?.val(),
-      //       messageUUID: data?.key ?? ''
-      //     } as UserMessagesData;
+    //   snapshot.forEach(data => {
+    //     const newMessage = {
+    //       ...data?.val(),
+    //       messageUUID: data?.key ?? ''
+    //     } as UserMessagesData;
 
-      //     previousMessagesMap.set(newMessage._id.toString(), newMessage);
-      //   });
+    //     previousMessagesMap.set(newMessage._id.toString(), newMessage);
+    //   });
 
-      //   if (previousMessagesMap.size < take) {
-      //     setHasNoMoreMessagesToLoad(true);
-      //   }
+    //   if (previousMessagesMap.size < take) {
+    //     setHasNoMoreMessagesToLoad(true);
+    //   }
 
-      //   setMessages(curr => new Map([
-      //     ...previousMessagesMap.entries(),  // adds previous messages to the beginning
-      //     ...curr.entries(),
-      //   ]));
+    //   setMessages(curr => new Map([
+    //     ...previousMessagesMap.entries(),  // adds previous messages to the beginning
+    //     ...curr.entries(),
+    //   ]));
 
-      //   setTimeout(() => {
-      //     setIsLoadingMore(false);
-      //   }, 200);
-      // },
-      //   { onlyOnce: true }
-      // );
-    }
+    //   setTimeout(() => {
+    //     setIsLoadingMore(false);
+    //   }, 200);
+    // },
+    //   { onlyOnce: true }
+    // );
+    // }
   };
 
 
@@ -149,7 +152,7 @@ export default function ChatWithFriendScreen(): ReactNode {
     //   }, 400);
     // }
 
-  }, [messagesList]));
+  }, [messages]));
 
 
   // listens for new added/updated messages in real-time DB
@@ -219,7 +222,7 @@ export default function ChatWithFriendScreen(): ReactNode {
       <SafeAreaView style={{ flex: 1 }}>
         {/* <View style={styles.container}> */}
         <GiftedChat
-          messages={messagesList}
+          messages={messages}
           onSend={(messages) => onSendMessage(messages)}
           showUserAvatar={true}
           user={{
@@ -296,7 +299,7 @@ export default function ChatWithFriendScreen(): ReactNode {
             const avatarProps = {
               ...props,
               currentMessage: {
-                // ...props.currentMessage,
+                ...props.currentMessage,
                 user: {
                   ...props.currentMessage?.user,
                   avatar: props.currentMessage?.user?._id === targetUser?.uid

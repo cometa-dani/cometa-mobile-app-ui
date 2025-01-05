@@ -204,7 +204,7 @@ export default function MatchedEventsScreen(): ReactNode {
     cancelFriendship.mutate(targetUser.id);
   };
 
-  const renderNewFriend = useCallback(({ item: { friend } }: { item: { friend: IGetBasicUserProfile } }) => (
+  const renderNewFriend = useCallback(({ item: { friend, id } }: { item: { friend: IGetBasicUserProfile, id: number } }) => (
     <HStack
       $y='center'
       gap={theme.spacing.sp4}
@@ -249,7 +249,7 @@ export default function MatchedEventsScreen(): ReactNode {
         style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 100 }}
         onPress={() => {
           setSelectedTargetUser(friend as IGetTargetUser);
-          router.push(`/(userStacks)/chat?friendUuid=${friend?.id}`);
+          router.push(`/(userStacks)/chat?friendUuid=${friend?.id}&friendshipId=${id}`);
         }}
         variant='gray-alt'>
         Chat

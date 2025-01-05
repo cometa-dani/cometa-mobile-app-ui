@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 export type Json =
   | string
   | number
@@ -34,36 +36,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      _ChatGroupMember: {
-        Row: {
-          A: number
-          B: number
-        }
-        Insert: {
-          A: number
-          B: number
-        }
-        Update: {
-          A?: number
-          B?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: '_ChatGroupMember_A_fkey'
-            columns: ['A']
-            isOneToOne: false
-            referencedRelation: 'ChatGroup'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: '_ChatGroupMember_B_fkey'
-            columns: ['B']
-            isOneToOne: false
-            referencedRelation: 'User'
-            referencedColumns: ['id']
-          },
-        ]
-      }
       _prisma_migrations: {
         Row: {
           applied_steps_count: number
@@ -96,44 +68,6 @@ export type Database = {
           started_at?: string
         }
         Relationships: []
-      }
-      ChatGroup: {
-        Row: {
-          admin_id: number
-          avatar_url: string | null
-          created_at: string
-          description: string | null
-          id: number
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          admin_id: number
-          avatar_url?: string | null
-          created_at?: string
-          description?: string | null
-          id?: number
-          name: string
-          updated_at: string
-        }
-        Update: {
-          admin_id?: number
-          avatar_url?: string | null
-          created_at?: string
-          description?: string | null
-          id?: number
-          name?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'ChatGroup_admin_id_fkey'
-            columns: ['admin_id']
-            isOneToOne: false
-            referencedRelation: 'User'
-            referencedColumns: ['id']
-          },
-        ]
       }
       Event: {
         Row: {
@@ -306,6 +240,8 @@ export type Database = {
         Row: {
           created_at: string
           id: number
+          last_message_at: string | null
+          messages: Json[] | null
           receiver_id: number
           sender_id: number
           status: Database['public']['Enums']['FriendshipStatus']
@@ -314,6 +250,8 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: number
+          last_message_at?: string | null
+          messages?: Json[] | null
           receiver_id: number
           sender_id: number
           status?: Database['public']['Enums']['FriendshipStatus']
@@ -322,6 +260,8 @@ export type Database = {
         Update: {
           created_at?: string
           id?: number
+          last_message_at?: string | null
+          messages?: Json[] | null
           receiver_id?: number
           sender_id?: number
           status?: Database['public']['Enums']['FriendshipStatus']
@@ -349,8 +289,10 @@ export type Database = {
           created_at: string
           description: string | null
           id: number
-          latitude: number
-          longitude: number
+          latitude: number | null
+          longitude: number | null
+          map_cid: string | null
+          map_url: string | null
           name: string
           organizationId: number | null
           updated_at: string
@@ -359,8 +301,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: number
-          latitude: number
-          longitude: number
+          latitude?: number | null
+          longitude?: number | null
+          map_cid?: string | null
+          map_url?: string | null
           name: string
           organizationId?: number | null
           updated_at: string
@@ -369,8 +313,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: number
-          latitude?: number
-          longitude?: number
+          latitude?: number | null
+          longitude?: number | null
+          map_cid?: string | null
+          map_url?: string | null
           name?: string
           organizationId?: number | null
           updated_at?: string
@@ -599,7 +545,7 @@ export type Database = {
         Row: {
           created_at: string
           id: number
-          order: number
+          order: number | null
           placeholder: string | null
           updated_at: string
           url: string | null
@@ -608,7 +554,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: number
-          order: number
+          order?: number | null
           placeholder?: string | null
           updated_at: string
           url?: string | null
@@ -617,7 +563,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: number
-          order?: number
+          order?: number | null
           placeholder?: string | null
           updated_at?: string
           url?: string | null
