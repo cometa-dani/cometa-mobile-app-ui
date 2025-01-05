@@ -228,7 +228,7 @@ export default function TargetUserProfileScreen() {
                         </Button>
                         <Button
                           style={{ flex: 1 / 2 }}
-                          onPress={() => router.push(`/(userStacks)/chat/${detailedProfile.data?.id}`)}
+                          onPress={() => router.push(`/(userStacks)/chat?friendUuid=${detailedProfile.data?.id}`)}
                           variant='gray-alt'>
                           Chat
                         </Button>

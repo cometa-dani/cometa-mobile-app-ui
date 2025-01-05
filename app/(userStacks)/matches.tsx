@@ -247,7 +247,10 @@ export default function MatchedEventsScreen(): ReactNode {
 
       <Button
         style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 100 }}
-        onPress={() => router.push(`/(userStacks)/chat/${friend?.id}`)}
+        onPress={() => {
+          setSelectedTargetUser(friend as IGetTargetUser);
+          router.push(`/(userStacks)/chat?friendUuid=${friend?.id}`);
+        }}
         variant='gray-alt'>
         Chat
       </Button>
