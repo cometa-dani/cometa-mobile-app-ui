@@ -5,6 +5,7 @@ import { QueryKeys } from '@/queries/queryKeys';
 import { useEffect } from 'react';
 import { Json } from '@/supabase/database.types';
 import { Friendship } from '@/models/Friendship';
+import chatService from '@/services/chatService';
 
 
 export const useMessages = (friendshipId: number) => {
@@ -15,14 +16,7 @@ export const useMessages = (friendshipId: number) => {
     persister: undefined,  // use mmvk storage
     enabled: !!friendshipId,
     queryKey: [QueryKeys.GET_FRIENDSHIP_MESSAGES, friendshipId],
-    queryFn: async () => {
-      const { data: friendship } = await supabase
-        .from('Friendship')
-        .select('messages')
-        .eq('id', friendshipId)
-        .single();
-      return (friendship?.messages || []) as unknown as IMessage[];
-    }
+    queryFn: () => chatService.getMessagesByFrienshipId(friendshipId)
   });
 
   // Send message mutation
@@ -52,11 +46,6 @@ export const useMessages = (friendshipId: number) => {
     onMutate: (message) => {
       queryClient.setQueryData([QueryKeys.GET_FRIENDSHIP_MESSAGES, friendshipId], [...messages, message]);
     }
-    // onSuccess: () => {
-    //   queryClient.invalidateQueries({
-    //     queryKey: [QueryKeys.GET_FRIENDSHIP_MESSAGES, friendshipId]
-    //   });
-    // }
   });
 
   // Subscribe to real-time updates

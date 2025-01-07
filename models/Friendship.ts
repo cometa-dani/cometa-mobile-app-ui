@@ -9,7 +9,6 @@ export interface Friendship {
   updatedAt: string;
   senderId: number;
   receiverId: number;
-  // chatuuid: string;
   status: FriendShipStatus;
   friend: IGetBasicUserProfile;
   messages: IMessage[];
@@ -25,7 +24,6 @@ export type MutateFrienship = Pick<Friendship, (
   'senderId' |
   'receiverId' |
   'status' |
-  // 'chatuuid' |
   'createdAt' |
   'updatedAt'
 )>
