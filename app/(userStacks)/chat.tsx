@@ -3,7 +3,8 @@ import { ReactNode, useCallback, useRef, useState } from 'react';
 import { Bubble, GiftedChat, IMessage, Avatar, Message, InputToolbar, Send } from 'react-native-gifted-chat';
 import { FlatList, TouchableOpacity, View, RefreshControl, Platform, KeyboardAvoidingView, TextInput } from 'react-native';
 // import { Text, View, useColors } from '../../../legacy_components/Themed';
-import { Stack, useFocusEffect, useGlobalSearchParams } from 'expo-router';
+import { Stack, Tabs, useFocusEffect, useGlobalSearchParams } from 'expo-router';
+import { HeaderBackButton } from '@react-navigation/elements';
 import { Image as ImageWithPlaceholder } from 'expo-image';
 // import { useCometaStore } from '../../../store/cometaStore';
 // import { useQueryGetFriendshipByTargetUserID } from '../../../queries/currentUser/friendshipHooks';
@@ -22,6 +23,7 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { HStack } from '@/components/utils/stacks';
 import { useMessages } from '@/queries/chat/useMessages';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { GradientHeading } from '@/components/text/gradientText';
 // import { SafeAreaView } from 'react-native-safe-area-context';
 // import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 // import { If } from '@/legacy_components/utils';
@@ -199,43 +201,61 @@ export default function ChatWithFriendScreen(): ReactNode {
   //   }, [friendshipData?.chatuuid])
   // );
 
-
   return (
     <>
       <Stack.Screen
         options={{
+          // animation: 'slide_from_bottom',
           headerShown: true,
-          headerTitleAlign: 'left',
-          headerTitle: () => {
+          header: (props) => {
             return (
-              <HStack $x='center' $y='center' styles={{ gap: theme.spacing.sp1, flex: 1 }}>
-                <ImageWithPlaceholder
-                  style={styles.avatarImg}
-                  source={{ uri: targetUser?.photos[0]?.url }}
-                  placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
-                />
-                <TextView style={styles.avatarName}>{targetUser?.name}</TextView>
-              </HStack>
+              <SafeAreaView
+                edges={{ bottom: 'off', top: 'additive' }}
+                style={{ backgroundColor: theme.colors.white90, borderBottomWidth: 1, borderBottomColor: theme.colors.gray100 }}
+              >
+                <View style={{ height: Platform.select({ ios: 46, android: 56 }), justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+                  <HeaderBackButton
+                    onPress={() => props?.navigation?.goBack()}
+                    style={{ position: 'absolute', alignSelf: 'center', left: Platform.select({ ios: 12, android: 0 }) }}
+                  />
+                  <HStack $x='center' $y='center' styles={{ gap: theme.spacing.sp1, flex: 1 }}>
+                    <ImageWithPlaceholder
+                      style={styles.avatarImg}
+                      source={{ uri: targetUser?.photos.at(0)?.url }}
+                      placeholder={{ thumbhash: targetUser?.photos.at(0)?.placeholder }}
+                    />
+                    <GradientHeading styles={[{ fontSize: theme.text.size.s5 }]}>
+                      {targetUser?.name}
+                    </GradientHeading>
+                    {/* <TextView style={styles.avatarName}>{targetUser?.name}</TextView> */}
+                  </HStack>
+                </View>
+              </SafeAreaView>
             );
           },
         }}
       />
-      <SafeAreaView edges={{ top: 'off', bottom: 'maximum' }} style={{ flex: 1, backgroundColor: theme.colors.white100 }}>
+      <SafeAreaView edges={{ top: 'off', bottom: 'additive' }} style={{ flex: 1, backgroundColor: theme.colors.white100 }}>
         <GiftedChat
           messages={messages}
           onSend={(messages) => onSendMessage(messages)}
           showUserAvatar={true}
+          // onLoadEarlier={() => {
+          //   console.log('fetching more earlier messages');
+          // }}
           user={{
             _id: currentUser?.id ?? '',
             name: currentUser?.username ?? '',
             avatar: currentUser?.photos[0]?.url ?? ''
           }}
           messagesContainerStyle={{
+            // flex: 1,
             backgroundColor: theme.colors.white100,
           }}
+          scrollToBottom={true}
           loadEarlier={true}
           isStatusBarTranslucentAndroid={true}
-          isCustomViewBottom={true}
+          // isCustomViewBottom={true}
           listViewProps={{
             refreshControl: (
               <RefreshControl
@@ -323,7 +343,7 @@ export default function ChatWithFriendScreen(): ReactNode {
                 paddingTop: 10,
                 marginLeft: 16,
                 marginRight: 16,
-                marginBottom: (Platform.OS === 'android' ? 60 : 0),
+                // marginBottom: (Platform.OS === 'android' ? 60 : 0),
                 borderColor: theme.colors.white100,
                 borderWidth: 0,
                 shadowColor: 'transparent',
