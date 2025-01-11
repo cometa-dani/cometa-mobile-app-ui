@@ -33,11 +33,26 @@ export const useLatestMessages = (limit = 20) => {
           table: 'Friendship',
           filter: `sender_id=eq.${currentUser.id}`
         },
-        (payload) => {
+        async (payload) => {
           console.log({ payload });
-          queryClient.setQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id], (oldData) => {
+          const oldData = queryClient.getQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id]);
+          const foundFriendship = oldData?.find(friendship => friendship.id === payload.new.id);
+          if (!foundFriendship) {
+            await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LATEST_MESSAGES, currentUser.id] });
+            return;
+          }
+          queryClient.setQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id], () => {
             if (!oldData) return [];
-            return oldData;
+            return oldData.map(friendship => {
+              if (friendship.id === payload.new.id) {
+                return {
+                  ...friendship,
+                  messages: payload.new.messages,
+                  lastMessage: payload.new.messages?.at(-1),
+                };
+              }
+              return friendship;
+            });
           });
         }
       )
@@ -54,16 +69,26 @@ export const useLatestMessages = (limit = 20) => {
           table: 'Friendship',
           filter: `receiver_id=eq.${currentUser.id}`
         },
-        (payload) => {
+        async (payload) => {
           console.log({ payload });
-          queryClient.setQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id], (oldData) => {
+          const oldData = queryClient.getQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id]);
+          const foundFriendship = oldData?.find(friendship => friendship.id === payload.new.id);
+          if (!foundFriendship) {
+            await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LATEST_MESSAGES, currentUser.id] });
+            return;
+          }
+          queryClient.setQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id], () => {
             if (!oldData) return [];
-            // const newMessage: ILastMessage = {
-            //   ...payload.new,
-            //   lastMessage: payload.new.messages?.at(-1),
-            //   friend: payload.new.receiverId === currentUser.id ?
-            // };
-            // return [...oldData, newMessage];
+            return oldData.map(friendship => {
+              if (friendship.id === payload.new.id) {
+                return {
+                  ...friendship,
+                  messages: payload.new.messages,
+                  lastMessage: payload.new.messages?.at(-1),
+                };
+              }
+              return friendship;
+            });
           });
         }
       )

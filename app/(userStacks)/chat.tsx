@@ -37,19 +37,6 @@ export default function ChatWithFriendScreen(): ReactNode {
         }
       } as IMessage;
       sendMessage(messagePayload);
-      // if (friendshipData?.chatuuid && loggedInUser && targetUser) {
-      //   setMessages(prevMap => {
-      //     const prevMapCopy = new Map(prevMap);
-      //     prevMapCopy.set(messagePayload._id.toString(), messagePayload);
-      //     return prevMapCopy;
-      //   });
-      //   await chatWithFriendService.writeMessage(
-      //     friendshipData.chatuuid,
-      //     { ...messagePayload, sent: true },
-      //     loggedInUser,
-      //     targetUser
-      //   );
-      // }
     }
     catch {
       return null;
