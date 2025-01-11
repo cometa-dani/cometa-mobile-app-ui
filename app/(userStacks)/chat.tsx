@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { ReactNode, useCallback, useRef, useState } from 'react';
-import { Bubble, GiftedChat, IMessage, Avatar, Message } from 'react-native-gifted-chat';
-import { FlatList, TouchableOpacity, View, RefreshControl, SafeAreaView } from 'react-native';
+import { Bubble, GiftedChat, IMessage, Avatar, Message, InputToolbar } from 'react-native-gifted-chat';
+import { FlatList, TouchableOpacity, View, RefreshControl, Platform, KeyboardAvoidingView, TextInput } from 'react-native';
 // import { Text, View, useColors } from '../../../legacy_components/Themed';
 import { Stack, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { Image as ImageWithPlaceholder } from 'expo-image';
@@ -12,7 +12,7 @@ import { Image as ImageWithPlaceholder } from 'expo-image';
 // import { limitToLast, query, ref, onValue, endBefore } from 'firebase/database';
 // import chatWithFriendService from '../../../services/chatWithFriendService';
 // import { UserMessagesData } from '../../../store/slices/messagesSlices';
-import { Entypo } from '@expo/vector-icons';
+import { Entypo, Feather, Ionicons } from '@expo/vector-icons';
 import { TextView } from '@/components/text/text';
 import { useCometaStore } from '@/store/cometaStore';
 // import { UserMessagesData } from '@/store/slices/messagesSlices';
@@ -21,6 +21,9 @@ import { Condition } from '@/components/utils/ifElse';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { HStack } from '@/components/utils/stacks';
 import { useMessages } from '@/queries/chat/useMessages';
+import { SafeAreaView } from 'react-native-safe-area-context';
+// import { SafeAreaView } from 'react-native-safe-area-context';
+// import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 // import { If } from '@/legacy_components/utils';
 // import { blue_100, gray_50 } from '../../../constants/colors';
 // import { If } from '../../../legacy_components/utils';
@@ -201,26 +204,23 @@ export default function ChatWithFriendScreen(): ReactNode {
     <>
       <Stack.Screen
         options={{
-          animation: 'slide_from_bottom',
           headerShown: true,
+          headerTitleAlign: 'left',
           headerTitle: () => {
             return (
-              <TouchableOpacity>
-                <HStack $y='center' $x='center' gap={theme.spacing.sp1}>
-                  <ImageWithPlaceholder
-                    style={styles.avatarImg}
-                    source={{ uri: targetUser?.photos[0]?.url }}
-                    placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
-                  />
-                  <TextView style={styles.avatarName}>{targetUser?.name}</TextView>
-                </HStack>
-              </TouchableOpacity>
+              <HStack $x='center' $y='center' styles={{ gap: theme.spacing.sp1, flex: 1 }}>
+                <ImageWithPlaceholder
+                  style={styles.avatarImg}
+                  source={{ uri: targetUser?.photos[0]?.url }}
+                  placeholder={{ thumbhash: targetUser?.photos[0]?.placeholder }}
+                />
+                <TextView style={styles.avatarName}>{targetUser?.name}</TextView>
+              </HStack>
             );
           },
         }}
       />
-      <SafeAreaView style={{ flex: 1 }}>
-        {/* <View style={styles.container}> */}
+      <SafeAreaView edges={{ top: 'off', bottom: 'maximum' }} style={{ flex: 1, backgroundColor: theme.colors.white100 }}>
         <GiftedChat
           messages={messages}
           onSend={(messages) => onSendMessage(messages)}
@@ -230,8 +230,12 @@ export default function ChatWithFriendScreen(): ReactNode {
             name: currentUser?.username ?? '',
             avatar: currentUser?.photos[0]?.url ?? ''
           }}
-          // loadEarlier={!hasNoMoreMessagesToLoad && !isLoadingMore}
+          loadEarlier={true}
+          isStatusBarTranslucentAndroid={true}
+          isCustomViewBottom={true}
           listViewProps={{
+            // contentContainerStyle: { flex: 1 },r
+            // style: { flex: 1 },
             refreshControl: (
               <RefreshControl
                 refreshing={isLoadingMore}
@@ -239,12 +243,12 @@ export default function ChatWithFriendScreen(): ReactNode {
               />
             )
           }}
-          messageContainerRef={isLoadingMore ? undefined : chatRef}
+          // messageContainerRef={isLoadingMore ? undefined : chatRef}
           alwaysShowSend={true}
           inverted={false}
-          renderFooter={() => (
-            <View style={{ height: 30 }} />
-          )}
+          // renderFooter={() => (
+          //   <View style={{ height: 30 }} />
+          // )}
           renderBubble={(props) => (
             <Bubble
               {...props}
@@ -257,13 +261,13 @@ export default function ChatWithFriendScreen(): ReactNode {
                       <Entypo
                         name="check"
                         size={13.6}
-                      // color={message.sent ? blue_100 : gray_50}
+                        color={theme.colors.blue100}
                       />
                       <Entypo
                         style={{ marginLeft: -6 }}
                         name="check"
                         size={13.6}
-                      // color={message.received ? blue_100 : gray_50}
+                        color={theme.colors.blue100}
                       />
                     </>
                   )}
@@ -271,21 +275,73 @@ export default function ChatWithFriendScreen(): ReactNode {
               )}
               key={props.currentMessage?._id}
               textStyle={{
-                // right: { color: text, fontFamily: 'Poppins' },
-                // left: { color: text, fontFamily: 'Poppins' }
+                right: { color: theme.colors.gray900, fontFamily: theme.text.fontRegular, fontSize: theme.text.size.s4 },
+                left: { color: theme.colors.gray900, fontFamily: theme.text.fontRegular, fontSize: theme.text.size.s4 }
               }}
               wrapperStyle={{
                 right: {
-                  backgroundColor: '#ead4fa',
-                  padding: 8,
+                  backgroundColor: '#B7EEFF',
+                  padding: 6,
                   borderRadius: 24,
                   marginRight: -10,
                   minWidth: '50%',
                   maxWidth: '85%',
                 },
                 left: {
-                  backgroundColor: '#f0f0f0', padding: 8, borderRadius: 24
+                  backgroundColor: theme.colors.white100, padding: 6, borderRadius: 24, borderColor: theme.colors.gray100, borderWidth: 1.4
                 }
+              }}
+            />
+          )}
+          renderInputToolbar={(_props) => (
+            <InputToolbar
+              // {...props}
+              // onPressActionButton={() => {
+              //   console.log('onPressActionButton');
+              // }}
+              renderSend={(props) => (
+                <TouchableOpacity
+                  style={{
+                    alignSelf: 'center',
+                    backgroundColor: theme.colors.red100,
+                    // padding: 9,
+                    borderRadius: 99_999,
+                    width: 46,
+                    height: 46,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                // onPress={() => console.log(props.sendButtonProps?.onPress)}
+                >
+                  <Feather name="send" size={22} color={theme.colors.white100} />
+                </TouchableOpacity>
+              )}
+              renderComposer={(props) => (
+                <TextInput
+                  {...props}
+                  style={{
+                    flex: 1,
+                    backgroundColor: theme.colors.slate75,
+                    padding: 16,
+                    borderRadius: 25,
+                    height: 50,
+                    marginRight: 16
+                  }}
+                  placeholder="Your message here..."
+                />
+              )}
+              containerStyle={{
+                marginLeft: 16,
+                marginRight: 16,
+                marginBottom: (Platform.OS === 'android' ? 60 : 0),
+                borderColor: theme.colors.white100,
+                borderWidth: 0,
+                shadowColor: 'transparent',
+                borderTopWidth: 0,
+                display: 'flex',
+                justifyContent: 'center',
+                borderRadius: 25,
+                overflow: 'hidden'
               }}
             />
           )}
@@ -317,7 +373,6 @@ export default function ChatWithFriendScreen(): ReactNode {
             );
           }}
         />
-        {/* </View> */}
       </SafeAreaView>
     </>
   );

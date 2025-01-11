@@ -67,7 +67,7 @@ const ChatList: FC = () => {
                 contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
                 ListFooterComponentStyle={{ height: tabBarHeight * 2 }}
                 onEndReachedThreshold={0.5}
-                renderItem={renderBucketItem}
+                renderItem={renderChatItem}
               />
             )}
           />
@@ -79,17 +79,17 @@ const ChatList: FC = () => {
 };
 
 
-const renderBucketItem = ({ item }: { item: ILastMessage }) => {
+const renderChatItem = ({ item }: { item: ILastMessage }) => {
   return (
-    <BucketItem item={item} />
+    <ChatItem item={item} />
   );
 };
 
 
-interface BucketItemProps {
+interface IChatItemProps {
   item: ILastMessage,
 }
-const BucketItem: FC<BucketItemProps> = ({ item: { friend, id, lastMessage } }) => {
+const ChatItem: FC<IChatItemProps> = ({ item: { friend, id, lastMessage } }) => {
   const { styles, theme } = useStyles(styleSheet);
   const router = useRouter();
   const setTargetUser = useCometaStore(state => state.setTargetUser);
@@ -100,7 +100,6 @@ const BucketItem: FC<BucketItemProps> = ({ item: { friend, id, lastMessage } }) 
           <RectButton
             onPress={() => {
               swipeable?.close();
-              // onDeleteEventLike(item.event.id);
             }}
             style={styles.deleteButton}
           >
@@ -141,7 +140,7 @@ const BucketItem: FC<BucketItemProps> = ({ item: { friend, id, lastMessage } }) 
             >
               {friend?.name}
             </TextView>
-            <TextView
+            {/* <TextView
               numberOfLines={1}
               ellipsis={true}
               style={{
@@ -150,7 +149,7 @@ const BucketItem: FC<BucketItemProps> = ({ item: { friend, id, lastMessage } }) 
               }}
             >
               {friend?.username}
-            </TextView>
+            </TextView> */}
             <TextView
               numberOfLines={1}
               ellipsis={true}
