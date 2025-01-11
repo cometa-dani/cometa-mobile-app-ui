@@ -1,68 +1,36 @@
 /* eslint-disable react/prop-types */
-import { ReactNode, useCallback, useRef, useState } from 'react';
-import { Bubble, GiftedChat, IMessage, Avatar, Message, InputToolbar, Send } from 'react-native-gifted-chat';
-import { FlatList, TouchableOpacity, View, RefreshControl, Platform, KeyboardAvoidingView, TextInput } from 'react-native';
-// import { Text, View, useColors } from '../../../legacy_components/Themed';
-import { Stack, Tabs, useFocusEffect, useGlobalSearchParams } from 'expo-router';
+import { ReactNode, useCallback, useState } from 'react';
+import { AvatarProps, Bubble, BubbleProps, GiftedChat, IMessage, InputToolbar, InputToolbarProps, Send } from 'react-native-gifted-chat';
+import { View, RefreshControl, Platform, TextInput } from 'react-native';
+import { Stack, useGlobalSearchParams } from 'expo-router';
 import { HeaderBackButton } from '@react-navigation/elements';
-import { Image as ImageWithPlaceholder } from 'expo-image';
-// import { useCometaStore } from '../../../store/cometaStore';
-// import { useQueryGetFriendshipByTargetUserID } from '../../../queries/currentUser/friendshipHooks';
-// firebase
-// import { realtimeDB } from '../../../config/firebase/firebase';
-// import { limitToLast, query, ref, onValue, endBefore } from 'firebase/database';
-// import chatWithFriendService from '../../../services/chatWithFriendService';
-// import { UserMessagesData } from '../../../store/slices/messagesSlices';
-import { Entypo, Feather, Ionicons } from '@expo/vector-icons';
-import { TextView } from '@/components/text/text';
+import { Image } from 'expo-image';
+import { Entypo, Feather } from '@expo/vector-icons';
 import { useCometaStore } from '@/store/cometaStore';
-// import { UserMessagesData } from '@/store/slices/messagesSlices';
-// import { useQueryGetFriendshipByTargetUserID } from '@/queries/currentUser/friendshipHooks';
 import { Condition } from '@/components/utils/ifElse';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { HStack } from '@/components/utils/stacks';
 import { useMessages } from '@/queries/chat/useMessages';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GradientHeading } from '@/components/text/gradientText';
-// import { SafeAreaView } from 'react-native-safe-area-context';
-// import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-// import { If } from '@/legacy_components/utils';
-// import { blue_100, gray_50 } from '../../../constants/colors';
-// import { If } from '../../../legacy_components/utils';
-
 
 // type ChatWithFriendMessage = Map<string | number, UserMessagesData>
 // const take = 20;
 
 export default function ChatWithFriendScreen(): ReactNode {
-  // const { text } = useColors();
-  // users ids
   const { theme, styles } = useStyles(styleSheet);
   const { friendshipId } = useGlobalSearchParams<{ friendshipId: string }>();
   const targetUser = useCometaStore(state => state.targetUser);
   const currentUser = useCometaStore(state => state.userProfile);
   const { messages, sendMessage } = useMessages(+friendshipId);
-  // const { data: friendshipData } = useQueryGetFriendshipByTargetUserID(friendUuid);
-  // const sender = friendshipData?.sender;
-  // const receiver = friendshipData?.receiver;
-
-  // users profiles
-  // const targetUser = sender?.uid === targetUserUUID ? sender : receiver;
-  // const loggedInUser = sender?.uid !== targetUserUUID ? sender : receiver;
-  // const [messages, setMessages] = useState<ChatWithFriendMessage>(new Map([]));
-  // const messagesList = useMemo(() => [...messages.values()], [messages]);
-
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  // const [hasNoMoreMessagesToLoad, setHasNoMoreMessagesToLoad] = useState(false);
-  const chatRef = useRef<FlatList<IMessage> | null>(null);
-
+  const [isLoadingMore] = useState(false);
 
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
     try {
       const senderMessage = messages[0];
       const messagePayload = {
         ...senderMessage,
-        sent: false,
+        sent: true,
         received: false,
         user: {
           _id: currentUser?.id,
@@ -88,118 +56,112 @@ export default function ChatWithFriendScreen(): ReactNode {
     }
   }, [currentUser?.id]);
 
-
-  const handleRefreshControl = () => {
-    // if (!isLoadingMore && !hasNoMoreMessagesToLoad) {
-    //   setIsLoadingMore(true);
-    //   const lastMessageKey = messages.at(0)?._id;
-    //   if (!lastMessageKey) {
-    //     setHasNoMoreMessagesToLoad(true);
-    //     setIsLoadingMore(false);
-    //     return;
-    //   }
-    // const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}/${loggedInUserUuid}`);
-    // const queryMessages = query(chatsRef, limitToLast(take), endBefore(null, lastMessageKey)); // max average number of messages
-
-    // onValue(queryMessages, (snapshot) => {
-    //   const previousMessagesMap = new Map<string, UserMessagesData>([]);
-
-    //   snapshot.forEach(data => {
-    //     const newMessage = {
-    //       ...data?.val(),
-    //       messageUUID: data?.key ?? ''
-    //     } as UserMessagesData;
-
-    //     previousMessagesMap.set(newMessage._id.toString(), newMessage);
-    //   });
-
-    //   if (previousMessagesMap.size < take) {
-    //     setHasNoMoreMessagesToLoad(true);
-    //   }
-
-    //   setMessages(curr => new Map([
-    //     ...previousMessagesMap.entries(),  // adds previous messages to the beginning
-    //     ...curr.entries(),
-    //   ]));
-
-    //   setTimeout(() => {
-    //     setIsLoadingMore(false);
-    //   }, 200);
-    // },
-    //   { onlyOnce: true }
-    // );
-    // }
-  };
-
+  const handleRefreshControl = () => { };
 
   // when the user has an unviewed new message
-  useFocusEffect(useCallback(() => {
-    // if (messagesList.length) {
-    //   const lastMessage = messagesList.at(-1);
-    //   if (
-    //     loggedInUserUuid !== lastMessage?.user?._id
-    //     && lastMessage
-    //     && !lastMessage?.received
-    //     && friendshipData?.chatuuid
-    //     && targetUser
-    //   ) {
-    //     chatWithFriendService.setMessageAsViewed(
-    //       friendshipData?.chatuuid,
-    //       loggedInUserUuid,
-    //       targetUser,
-    //       lastMessage,
-    //       messagesList.filter(message => !message.received) ?? []
-    //     );
-    //   }
+  // useFocusEffect(useCallback(() => {
+  // if (messagesList.length) {
+  //   const lastMessage = messagesList.at(-1);
+  //   if (
+  //     loggedInUserUuid !== lastMessage?.user?._id
+  //     && lastMessage
+  //     && !lastMessage?.received
+  //     && friendshipData?.chatuuid
+  //     && targetUser
+  //   ) {
+  //     chatWithFriendService.setMessageAsViewed(
+  //       friendshipData?.chatuuid,
+  //       loggedInUserUuid,
+  //       targetUser,
+  //       lastMessage,
+  //       messagesList.filter(message => !message.received) ?? []
+  //     );
+  //   }
+  // }
+  // }, [messages]));
 
-    //   setTimeout(() => {
-    //     chatRef.current?.scrollToEnd({ animated: true });
-    //   }, 400);
-    // }
+  const renderAvatar = useCallback((props: AvatarProps<IMessage>) => {
+    const { currentMessage } = props;
+    const { user } = currentMessage;
+    const { _id } = user;
+    const isCurrentUser = _id === currentUser?.id;
+    const source = (
+      isCurrentUser ?
+        currentUser?.photos.at(0)?.url : targetUser?.photos.at(0)?.url
+    );
+    const placeholder = (
+      isCurrentUser ?
+        currentUser?.photos.at(0)?.placeholder : targetUser?.photos.at(0)?.placeholder
+    );
+    return (
+      <Image
+        style={styles.avatarImg}
+        source={{ uri: source }}
+        placeholder={{ thumbhash: placeholder }}
+      />
+    );
+  }, [currentUser?.id, targetUser?.id]);
 
-  }, [messages]));
+  const renderBubbleMessage = useCallback((props: BubbleProps<IMessage>) => {
+    return (
+      <Bubble
+        {...props}
+        user={props.user}
+        renderTicks={(message) => (
+          <Condition
+            if={message.user._id == currentUser?.id}
+            then={(
+              <>
+                <Entypo
+                  name="check"
+                  size={13.6}
+                  color={theme.colors.white100} // TODO: when message is received=true, change the color to blue100
+                />
+                <Entypo
+                  style={{ marginLeft: -6 }}
+                  name="check"
+                  size={13.6}
+                  color={theme.colors.white100} // TODO: when message is received=true, change the color to blue100
+                />
+              </>
+            )}
+          />
+        )}
+        key={props.currentMessage?._id}
+        textStyle={{
+          right: styles.bubleTextStyleRight,
+          left: styles.bubleTextStyleLeft
+        }}
+        wrapperStyle={{
+          right: styles.bubleWrapperStyleRight,
+          left: styles.bubleWrapperStyleLeft
+        }}
+      />
+    );
+  }, []);  // TODO:  when message is received=true, change the bubble color to blue100
 
-
-  // listens for new added/updated messages in real-time DB
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     if (friendshipData?.chatuuid && !messages.size) {
-  //       const chatsRef = ref(realtimeDB, `chats/${friendshipData?.chatuuid}/${loggedInUserUuid}`);
-  //       const queryMessages = query(chatsRef, limitToLast(take));
-
-  //       const unsubscribeOnDelete = onValue(ref(realtimeDB, `chats/${friendshipData?.chatuuid}`), (snapshot) => {
-  //         if (!snapshot.exists()) {
-  //           if (router.canGoBack()) {
-  //             router.back();  // closes the chat if it doesn't exist (when two users are no longer friends)
-  //           }
-  //         }
-  //       });
-
-  //       const unsubscribeOnChange = onValue(queryMessages, (snapshot) => {
-  //         const newMessagesMap = new Map<string, UserMessagesData>([]);
-
-  //         snapshot.forEach(data => {
-  //           const newMessage = {
-  //             ...data?.val(),
-  //             messageUUID: data?.key ?? ''
-  //           } as UserMessagesData;
-
-  //           newMessagesMap.set(newMessage._id.toString(), newMessage);
-  //         });
-
-  //         setMessages(prev => new Map([
-  //           ...prev.entries(),
-  //           ...newMessagesMap.entries() // adds new messages to the end
-  //         ]));
-  //       });
-
-  //       return () => {
-  //         unsubscribeOnChange();
-  //         unsubscribeOnDelete();
-  //       };
-  //     }
-  //   }, [friendshipData?.chatuuid])
-  // );
+  const renderInputToolbar = useCallback((_props: InputToolbarProps<IMessage>) => {
+    return (
+      <InputToolbar
+        {..._props}
+        renderSend={(props) => (
+          <Send {...props} containerStyle={styles.inputToolbarSendContainer}>
+            <Feather name="send" size={22} color={theme.colors.white100} />
+          </Send>
+        )}
+        renderComposer={(props) => (
+          <TextInput
+            {...props}
+            onChangeText={props.onTextChanged}
+            value={props.text}
+            style={styles.inputToolbarComposer}
+            placeholder="Your message here..."
+          />
+        )}
+        containerStyle={styles.inputToolbarContainer}
+      />
+    );
+  }, []);
 
   return (
     <>
@@ -210,23 +172,22 @@ export default function ChatWithFriendScreen(): ReactNode {
             return (
               <SafeAreaView
                 edges={{ bottom: 'off', top: 'additive' }}
-                style={{ backgroundColor: theme.colors.white90, borderBottomWidth: 1, borderBottomColor: theme.colors.gray100 }}
+                style={styles.headerSafeAreaView}
               >
-                <View style={{ height: Platform.select({ ios: 46, android: 60 }), justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+                <View style={styles.headerView}>
                   <HeaderBackButton
                     onPress={() => props?.navigation?.goBack()}
-                    style={{ position: 'absolute', alignSelf: 'center', left: Platform.select({ ios: 12, android: 0 }) }}
+                    style={styles.headerBackButton}
                   />
                   <HStack $x='center' $y='center' styles={{ gap: theme.spacing.sp1, flex: 1 }}>
-                    <ImageWithPlaceholder
-                      style={styles.avatarImg}
+                    <Image
+                      style={styles.headerImg}
                       source={{ uri: targetUser?.photos.at(0)?.url }}
                       placeholder={{ thumbhash: targetUser?.photos.at(0)?.placeholder }}
                     />
                     <GradientHeading styles={[{ fontSize: theme.text.size.s6 }]}>
                       {targetUser?.name}
                     </GradientHeading>
-                    {/* <TextView style={styles.avatarName}>{targetUser?.name}</TextView> */}
                   </HStack>
                 </View>
               </SafeAreaView>
@@ -234,27 +195,23 @@ export default function ChatWithFriendScreen(): ReactNode {
           },
         }}
       />
-      <SafeAreaView edges={{ top: 'off', bottom: 'additive' }} style={{ flex: 1, backgroundColor: theme.colors.white100 }}>
+      <SafeAreaView
+        edges={{ top: 'off', bottom: 'additive' }}
+        style={{ flex: 1, backgroundColor: theme.colors.white100 }}
+      >
         <GiftedChat
           messages={messages}
           onSend={(messages) => onSendMessage(messages)}
           showUserAvatar={true}
-          // onLoadEarlier={() => {
-          //   console.log('fetching more earlier messages');
-          // }}
+          // onLoadEarlier={() => {}}   // for loading more messages
           user={{
             _id: currentUser?.id ?? '',
             name: currentUser?.username ?? '',
             avatar: currentUser?.photos[0]?.url ?? ''
           }}
-          messagesContainerStyle={{
-            // flex: 1,
-            backgroundColor: theme.colors.white100,
-          }}
           scrollToBottom={true}
           loadEarlier={true}
           isStatusBarTranslucentAndroid={true}
-          // isCustomViewBottom={true}
           listViewProps={{
             refreshControl: (
               <RefreshControl
@@ -265,101 +222,10 @@ export default function ChatWithFriendScreen(): ReactNode {
           }}
           alwaysShowSend={true}
           inverted={false}
-          renderBubble={(props) => (
-            <Bubble
-              {...props}
-              user={props.user}
-              renderTicks={(message) => (
-                <Condition
-                  if={message.user._id === currentUser?.id}
-                  then={(
-                    <>
-                      <Entypo
-                        name="check"
-                        size={13.6}
-                        color={theme.colors.blue100}
-                      />
-                      <Entypo
-                        style={{ marginLeft: -6 }}
-                        name="check"
-                        size={13.6}
-                        color={theme.colors.blue100}
-                      />
-                    </>
-                  )}
-                />
-              )}
-              key={props.currentMessage?._id}
-              textStyle={{
-                right: { color: theme.colors.gray900, fontFamily: theme.text.fontRegular, fontSize: theme.text.size.s4 },
-                left: { color: theme.colors.gray900, fontFamily: theme.text.fontRegular, fontSize: theme.text.size.s4 }
-              }}
-              wrapperStyle={{
-                right: {
-                  backgroundColor: '#B7EEFF',
-                  padding: 3,
-                  borderRadius: 18,
-                  minWidth: '50%',
-                  maxWidth: '85%',
-                },
-                left: {
-                  backgroundColor: theme.colors.white100,
-                  padding: 3,
-                  borderRadius: 18,
-                  borderColor: theme.colors.gray100,
-                  borderWidth: 1.4
-                }
-              }}
-            />
-          )}
           bottomOffset={-10}
-          renderInputToolbar={(_props) => (
-            <InputToolbar
-              {..._props}
-              renderSend={(props) => (
-                <Send {...props} containerStyle={{ backgroundColor: theme.colors.red100, borderRadius: 99_999, width: 46, height: 46, justifyContent: 'center', alignItems: 'center' }}>
-                  <Feather name="send" size={22} color={theme.colors.white100} />
-                </Send>
-              )}
-              renderComposer={(props) => (
-                <TextInput
-                  {...props}
-                  onChangeText={props.onTextChanged}
-                  value={props.text}
-                  style={{
-                    flex: 1,
-                    fontFamily: theme.text.fontRegular,
-                    fontSize: theme.text.size.s4,
-                    backgroundColor: theme.colors.slate75,
-                    paddingHorizontal: 20,
-                    borderRadius: 25,
-                    height: 50,
-                    marginRight: 16
-                  }}
-                  placeholder="Your message here..."
-                />
-              )}
-              containerStyle={{
-                paddingTop: 10,
-                marginLeft: 16,
-                marginRight: 16,
-                borderWidth: 0,
-                shadowColor: 'transparent',
-                borderTopWidth: 0,
-                display: 'flex',
-                justifyContent: 'center',
-                borderRadius: 25,
-                overflow: 'hidden'
-              }}
-            />
-          )}
-          renderAvatar={(props) => (
-            <ImageWithPlaceholder
-              style={styles.avatarImg}
-              source={{ uri: props.currentMessage?.user?._id !== currentUser?.id ? currentUser?.photos[0]?.url : targetUser?.photos[0]?.url }}
-              placeholder={{ thumbhash: props.currentMessage?.user?._id !== currentUser?.id ? currentUser?.photos[0]?.placeholder : targetUser?.photos[0]?.placeholder }}
-            />
-          )}
+          renderBubble={renderBubbleMessage}
+          renderInputToolbar={renderInputToolbar}
+          renderAvatar={renderAvatar}
         />
       </SafeAreaView>
     </>
@@ -368,6 +234,81 @@ export default function ChatWithFriendScreen(): ReactNode {
 
 
 const styleSheet = createStyleSheet((theme) => ({
+  headerSafeAreaView: {
+    backgroundColor: theme.colors.white90,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.gray100
+  },
+  headerView: {
+    height: Platform.select({ ios: 46, android: 60 }),
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative'
+  },
+  headerBackButton: {
+    position: 'absolute',
+    alignSelf: 'center',
+    left: Platform.select({ ios: 12, android: 0 })
+  },
+  headerImg: {
+    aspectRatio: 1,
+    borderRadius: 99_999,
+    height: 36,
+    width: 36
+  },
+  bubleTextStyleLeft: {
+    color: theme.colors.gray500,
+    fontFamily: theme.text.fontRegular,
+    fontSize: theme.text.size.s4
+  },
+  bubleTextStyleRight: {
+    color: theme.colors.gray500,
+    fontFamily: theme.text.fontRegular,
+    fontSize: theme.text.size.s4
+  },
+  bubleWrapperStyleRight: {
+    backgroundColor: '#B7EEFF',
+    padding: 3,
+    borderRadius: 18,
+    minWidth: '50%',
+    maxWidth: '85%'
+  },
+  bubleWrapperStyleLeft: {
+    backgroundColor: theme.colors.white100,
+    padding: 3,
+    borderRadius: 18,
+    borderColor: theme.colors.gray100,
+    borderWidth: 1.4
+  },
+  inputToolbarSendContainer: {
+    backgroundColor: theme.colors.red100,
+    borderRadius: 99_999,
+    width: 46,
+    height: 46,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  inputToolbarComposer: {
+    flex: 1,
+    fontFamily: theme.text.fontRegular,
+    fontSize: theme.text.size.s4,
+    backgroundColor: theme.colors.slate75,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    height: 50,
+    marginRight: 16
+  },
+  inputToolbarContainer: {
+    paddingTop: 10,
+    marginLeft: 16,
+    marginRight: 16,
+    borderWidth: 0,
+    shadowColor: 'transparent',
+    borderTopWidth: 0,
+    display: 'flex',
+    justifyContent: 'center',
+    borderRadius: 25,
+  },
   avatarImg: {
     aspectRatio: 1,
     borderRadius: 99_999,

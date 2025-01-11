@@ -54,8 +54,8 @@ const ChatList: FC = () => {
             then={(
               <Center styles={{ flex: 1, padding: 34, paddingTop: 0 }}>
                 <EmptyMessage
-                  title='Oops! Looks like your bucket list is empty'
-                  subtitle='Head back to the homepage and add some exciting events!'
+                  title='Oops! Looks like your chat list is empty'
+                  subtitle='Head back to the bucketlist and meet new friends!'
                 />
               </Center>
             )}
@@ -64,7 +64,7 @@ const ChatList: FC = () => {
                 data={data}
                 showsVerticalScrollIndicator={true}
                 estimatedItemSize={112}
-                contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
+                contentContainerStyle={{ paddingBottom: theme.spacing.sp6, paddingTop: theme.spacing.sp4 }}
                 ListFooterComponentStyle={{ height: tabBarHeight * 2 }}
                 onEndReachedThreshold={0.5}
                 renderItem={renderChatItem}
@@ -89,10 +89,17 @@ const renderChatItem = ({ item }: { item: ILastMessage }) => {
 interface IChatItemProps {
   item: ILastMessage,
 }
-const ChatItem: FC<IChatItemProps> = ({ item: { friend, id, lastMessage } }) => {
+const ChatItem: FC<IChatItemProps> = ({ item: { friend, id, lastMessage, messages } }) => {
   const { styles, theme } = useStyles(styleSheet);
   const router = useRouter();
   const setTargetUser = useCometaStore(state => state.setTargetUser);
+  const currentUser = useCometaStore(state => state.userProfile);
+  const newMessages = (
+    messages
+      ?.filter(message => message.user._id !== currentUser?.id)
+      .filter(message => message.sent) // TODO: Check if the message is sent or received
+      .length || 0
+  );
   return (
     <Swipeable
       renderRightActions={
@@ -116,7 +123,10 @@ const ChatItem: FC<IChatItemProps> = ({ item: { friend, id, lastMessage } }) => 
         style={{
           backgroundColor: theme.colors.white80,
           paddingHorizontal: theme.spacing.sp6,
-          gap: theme.spacing.sp2
+          gap: theme.spacing.sp2,
+          paddingVertical: theme.spacing.sp2,
+          borderBottomWidth: 1,
+          borderBottomColor: theme.colors.gray100
         }}
         onPress={() => {
           setTargetUser(friend as IGetTargetUser);
@@ -129,7 +139,7 @@ const ChatItem: FC<IChatItemProps> = ({ item: { friend, id, lastMessage } }) => 
             placeholder={{ thumbhash: friend?.photos?.at(0)?.placeholder || '' }}
             style={styles.img}
           />
-          <VStack $y='center' gap={theme.spacing.sp1} styles={{ flex: 1 }}>
+          <VStack $y='center' styles={{ flex: 1 }}>
             <TextView
               numberOfLines={1}
               ellipsis={true}
@@ -140,7 +150,7 @@ const ChatItem: FC<IChatItemProps> = ({ item: { friend, id, lastMessage } }) => 
             >
               {friend?.name}
             </TextView>
-            {/* <TextView
+            <TextView
               numberOfLines={1}
               ellipsis={true}
               style={{
@@ -148,18 +158,48 @@ const ChatItem: FC<IChatItemProps> = ({ item: { friend, id, lastMessage } }) => 
                 color: theme.colors.gray400
               }}
             >
-              {friend?.username}
-            </TextView> */}
-            <TextView
-              numberOfLines={1}
-              ellipsis={true}
-              style={{ fontSize: 13.6 }}
-            >
               {lastMessage?.text}
             </TextView>
           </VStack>
-        </HStack>
 
+          <Condition
+            if={newMessages}
+            then={(
+              <VStack $y='center' $x='center'>
+                <TextView
+                  numberOfLines={1}
+                  ellipsis={true}
+                  style={{
+                    fontSize: 13.6,
+                    color: theme.colors.gray400
+                  }}
+                >
+                  {format(lastMessage?.createdAt)}
+                </TextView>
+                <View style={{
+                  backgroundColor: theme.colors.blue100,
+                  borderRadius: 99_999,
+                  width: 22,
+                  height: 22,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <TextView
+                    numberOfLines={1}
+                    ellipsis={true}
+                    style={{
+                      fontSize: 13.6,
+                      color: theme.colors.white100,
+                      fontFamily: theme.text.fontSemibold
+                    }}
+                  >
+                    {newMessages}
+                  </TextView>
+                </View>
+              </VStack>
+            )}
+          />
+        </HStack>
       </TouchableOpacity>
     </Swipeable>
   );
@@ -249,3 +289,13 @@ const styleSheet = createStyleSheet((theme) => ({
     width: 58,
   }
 }));
+
+
+function format(date: number | Date | undefined): string {
+  return (
+    new Date(date || Date.now()).toLocaleTimeString(
+      'en-US',
+      { hour: 'numeric', minute: 'numeric' }
+    )
+  );
+}
