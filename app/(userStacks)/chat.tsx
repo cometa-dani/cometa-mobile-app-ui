@@ -230,14 +230,13 @@ export default function ChatWithFriendScreen(): ReactNode {
             name: currentUser?.username ?? '',
             avatar: currentUser?.photos[0]?.url ?? ''
           }}
+          messagesContainerStyle={{
+            backgroundColor: theme.colors.white100,
+          }}
           loadEarlier={true}
           isStatusBarTranslucentAndroid={true}
           isCustomViewBottom={true}
-          renderFooter={() => (
-            <View style={{ height: 40 }} />
-          )}
           listViewProps={{
-            // contentContainerStyle: { flex: 1 },
             refreshControl: (
               <RefreshControl
                 refreshing={isLoadingMore}
@@ -281,7 +280,6 @@ export default function ChatWithFriendScreen(): ReactNode {
                   backgroundColor: '#B7EEFF',
                   padding: 3,
                   borderRadius: 18,
-                  marginRight: -10,
                   minWidth: '50%',
                   maxWidth: '85%',
                 },
@@ -322,6 +320,7 @@ export default function ChatWithFriendScreen(): ReactNode {
                 />
               )}
               containerStyle={{
+                paddingTop: 10,
                 marginLeft: 16,
                 marginRight: 16,
                 marginBottom: (Platform.OS === 'android' ? 60 : 0),
@@ -336,30 +335,13 @@ export default function ChatWithFriendScreen(): ReactNode {
               }}
             />
           )}
-          renderAvatar={(props) => {
-            if (!targetUser?.uid || !currentUser?.id) {
-              return null;
-            }
-            const avatarProps = {
-              ...props,
-              currentMessage: {
-                ...props.currentMessage,
-                user: {
-                  ...props.currentMessage?.user,
-                  avatar: props.currentMessage?.user?._id === targetUser?.uid
-                    ? targetUser?.photos[0]?.url
-                    : currentUser?.photos[0]?.url
-                }
-              } as IMessage,
-            };
-            return (
-              <Avatar
-                position='right'
-                key={props.currentMessage?._id ?? -1}
-                currentMessage={avatarProps.currentMessage}
-              />
-            );
-          }}
+          renderAvatar={(props) => (
+            <ImageWithPlaceholder
+              style={styles.avatarImg}
+              source={{ uri: props.currentMessage?.user?._id !== currentUser?.id ? currentUser?.photos[0]?.url : targetUser?.photos[0]?.url }}
+              placeholder={{ thumbhash: props.currentMessage?.user?._id !== currentUser?.id ? currentUser?.photos[0]?.placeholder : targetUser?.photos[0]?.placeholder }}
+            />
+          )}
         />
       </SafeAreaView>
     </>
@@ -371,7 +353,8 @@ const styleSheet = createStyleSheet((theme) => ({
   avatarImg: {
     aspectRatio: 1,
     borderRadius: 99_999,
-    height: 30
+    height: 30,
+    width: 30
   },
   avatarName: {
     marginBottom: -2,
