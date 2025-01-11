@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { ReactNode, useCallback, useRef, useState } from 'react';
-import { Bubble, GiftedChat, IMessage, Avatar, Message, InputToolbar } from 'react-native-gifted-chat';
+import { Bubble, GiftedChat, IMessage, Avatar, Message, InputToolbar, Send } from 'react-native-gifted-chat';
 import { FlatList, TouchableOpacity, View, RefreshControl, Platform, KeyboardAvoidingView, TextInput } from 'react-native';
 // import { Text, View, useColors } from '../../../legacy_components/Themed';
 import { Stack, useFocusEffect, useGlobalSearchParams } from 'expo-router';
@@ -223,6 +223,7 @@ export default function ChatWithFriendScreen(): ReactNode {
       <SafeAreaView edges={{ top: 'off', bottom: 'maximum' }} style={{ flex: 1, backgroundColor: theme.colors.white100 }}>
         <GiftedChat
           messages={messages}
+
           onSend={(messages) => onSendMessage(messages)}
           showUserAvatar={true}
           user={{
@@ -295,42 +296,43 @@ export default function ChatWithFriendScreen(): ReactNode {
           )}
           renderInputToolbar={(_props) => (
             <InputToolbar
-              // {...props}
+              {..._props}
               // onPressActionButton={() => {
               //   console.log('onPressActionButton');
               // }}
+              // renderActions={(props) => (
+              //   props.
+              //   <HStack $x='center' $y='center' styles={{ gap: theme.spacing.sp1 }}>
+              //     <TouchableOpacity>
+              //       <Feather name="camera" size={22} color={theme.colors.white100} />
+              //     </TouchableOpacity>
+              //   </HStack>
+              // )}
               renderSend={(props) => (
-                <TouchableOpacity
-                  style={{
-                    alignSelf: 'center',
-                    backgroundColor: theme.colors.red100,
-                    // padding: 9,
-                    borderRadius: 99_999,
-                    width: 46,
-                    height: 46,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                // onPress={() => console.log(props.sendButtonProps?.onPress)}
-                >
+                <Send {...props} containerStyle={{ backgroundColor: theme.colors.red100, borderRadius: 99_999, width: 46, height: 46, justifyContent: 'center', alignItems: 'center' }}>
                   <Feather name="send" size={22} color={theme.colors.white100} />
-                </TouchableOpacity>
+                </Send>
               )}
-              renderComposer={(props) => (
-                <TextInput
-                  {...props}
-                  style={{
-                    flex: 1,
-                    backgroundColor: theme.colors.slate75,
-                    padding: 16,
-                    borderRadius: 25,
-                    height: 50,
-                    marginRight: 16
-                  }}
-                  placeholder="Your message here..."
-                />
-              )}
+              // renderComposer={(props) => (
+              //   <TextInput
+              //     {...props}
+              //     style={{
+              //       flex: 1,
+              //       backgroundColor: theme.colors.slate75,
+              //       padding: 16,
+              //       borderRadius: 25,
+              //       height: 50,
+              //       marginRight: 16
+              //     }}
+              //     placeholder="Your message here..."
+              //   />
+              // )}
+
+              // primaryStyle={{
+              //   backgroundColor: theme.colors.red100,
+              // }}
               containerStyle={{
+                // backgroundColor: theme.colors.blue100,
                 marginLeft: 16,
                 marginRight: 16,
                 marginBottom: (Platform.OS === 'android' ? 60 : 0),
@@ -345,9 +347,9 @@ export default function ChatWithFriendScreen(): ReactNode {
               }}
             />
           )}
-          renderMessage={(props) => (
-            <Message  {...props} />
-          )}
+          // renderMessage={(props) => (
+          //   <Message  {...props} />
+          // )}
           renderAvatar={(props) => {
             if (!targetUser?.uid || !currentUser?.id) {
               return null;
