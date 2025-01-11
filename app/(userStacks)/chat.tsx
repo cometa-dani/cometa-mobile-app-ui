@@ -205,7 +205,6 @@ export default function ChatWithFriendScreen(): ReactNode {
     <>
       <Stack.Screen
         options={{
-          // animation: 'slide_from_bottom',
           headerShown: true,
           header: (props) => {
             return (
@@ -213,7 +212,7 @@ export default function ChatWithFriendScreen(): ReactNode {
                 edges={{ bottom: 'off', top: 'additive' }}
                 style={{ backgroundColor: theme.colors.white90, borderBottomWidth: 1, borderBottomColor: theme.colors.gray100 }}
               >
-                <View style={{ height: Platform.select({ ios: 46, android: 56 }), justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+                <View style={{ height: Platform.select({ ios: 46, android: 60 }), justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
                   <HeaderBackButton
                     onPress={() => props?.navigation?.goBack()}
                     style={{ position: 'absolute', alignSelf: 'center', left: Platform.select({ ios: 12, android: 0 }) }}
@@ -224,7 +223,7 @@ export default function ChatWithFriendScreen(): ReactNode {
                       source={{ uri: targetUser?.photos.at(0)?.url }}
                       placeholder={{ thumbhash: targetUser?.photos.at(0)?.placeholder }}
                     />
-                    <GradientHeading styles={[{ fontSize: theme.text.size.s5 }]}>
+                    <GradientHeading styles={[{ fontSize: theme.text.size.s6 }]}>
                       {targetUser?.name}
                     </GradientHeading>
                     {/* <TextView style={styles.avatarName}>{targetUser?.name}</TextView> */}
@@ -313,6 +312,7 @@ export default function ChatWithFriendScreen(): ReactNode {
               }}
             />
           )}
+          bottomOffset={-10}
           renderInputToolbar={(_props) => (
             <InputToolbar
               {..._props}
@@ -343,8 +343,6 @@ export default function ChatWithFriendScreen(): ReactNode {
                 paddingTop: 10,
                 marginLeft: 16,
                 marginRight: 16,
-                // marginBottom: (Platform.OS === 'android' ? 60 : 0),
-                borderColor: theme.colors.white100,
                 borderWidth: 0,
                 shadowColor: 'transparent',
                 borderTopWidth: 0,
