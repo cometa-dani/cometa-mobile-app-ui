@@ -223,7 +223,6 @@ export default function ChatWithFriendScreen(): ReactNode {
       <SafeAreaView edges={{ top: 'off', bottom: 'maximum' }} style={{ flex: 1, backgroundColor: theme.colors.white100 }}>
         <GiftedChat
           messages={messages}
-
           onSend={(messages) => onSendMessage(messages)}
           showUserAvatar={true}
           user={{
@@ -234,9 +233,11 @@ export default function ChatWithFriendScreen(): ReactNode {
           loadEarlier={true}
           isStatusBarTranslucentAndroid={true}
           isCustomViewBottom={true}
+          renderFooter={() => (
+            <View style={{ height: 40 }} />
+          )}
           listViewProps={{
-            // contentContainerStyle: { flex: 1 },r
-            // style: { flex: 1 },
+            // contentContainerStyle: { flex: 1 },
             refreshControl: (
               <RefreshControl
                 refreshing={isLoadingMore}
@@ -244,12 +245,8 @@ export default function ChatWithFriendScreen(): ReactNode {
               />
             )
           }}
-          // messageContainerRef={isLoadingMore ? undefined : chatRef}
           alwaysShowSend={true}
           inverted={false}
-          // renderFooter={() => (
-          //   <View style={{ height: 30 }} />
-          // )}
           renderBubble={(props) => (
             <Bubble
               {...props}
@@ -282,14 +279,18 @@ export default function ChatWithFriendScreen(): ReactNode {
               wrapperStyle={{
                 right: {
                   backgroundColor: '#B7EEFF',
-                  padding: 6,
-                  borderRadius: 24,
+                  padding: 3,
+                  borderRadius: 18,
                   marginRight: -10,
                   minWidth: '50%',
                   maxWidth: '85%',
                 },
                 left: {
-                  backgroundColor: theme.colors.white100, padding: 6, borderRadius: 24, borderColor: theme.colors.gray100, borderWidth: 1.4
+                  backgroundColor: theme.colors.white100,
+                  padding: 3,
+                  borderRadius: 18,
+                  borderColor: theme.colors.gray100,
+                  borderWidth: 1.4
                 }
               }}
             />
@@ -297,42 +298,30 @@ export default function ChatWithFriendScreen(): ReactNode {
           renderInputToolbar={(_props) => (
             <InputToolbar
               {..._props}
-              // onPressActionButton={() => {
-              //   console.log('onPressActionButton');
-              // }}
-              // renderActions={(props) => (
-              //   props.
-              //   <HStack $x='center' $y='center' styles={{ gap: theme.spacing.sp1 }}>
-              //     <TouchableOpacity>
-              //       <Feather name="camera" size={22} color={theme.colors.white100} />
-              //     </TouchableOpacity>
-              //   </HStack>
-              // )}
               renderSend={(props) => (
                 <Send {...props} containerStyle={{ backgroundColor: theme.colors.red100, borderRadius: 99_999, width: 46, height: 46, justifyContent: 'center', alignItems: 'center' }}>
                   <Feather name="send" size={22} color={theme.colors.white100} />
                 </Send>
               )}
-              // renderComposer={(props) => (
-              //   <TextInput
-              //     {...props}
-              //     style={{
-              //       flex: 1,
-              //       backgroundColor: theme.colors.slate75,
-              //       padding: 16,
-              //       borderRadius: 25,
-              //       height: 50,
-              //       marginRight: 16
-              //     }}
-              //     placeholder="Your message here..."
-              //   />
-              // )}
-
-              // primaryStyle={{
-              //   backgroundColor: theme.colors.red100,
-              // }}
+              renderComposer={(props) => (
+                <TextInput
+                  {...props}
+                  onChangeText={props.onTextChanged}
+                  value={props.text}
+                  style={{
+                    flex: 1,
+                    fontFamily: theme.text.fontRegular,
+                    fontSize: theme.text.size.s4,
+                    backgroundColor: theme.colors.slate75,
+                    paddingHorizontal: 20,
+                    borderRadius: 25,
+                    height: 50,
+                    marginRight: 16
+                  }}
+                  placeholder="Your message here..."
+                />
+              )}
               containerStyle={{
-                // backgroundColor: theme.colors.blue100,
                 marginLeft: 16,
                 marginRight: 16,
                 marginBottom: (Platform.OS === 'android' ? 60 : 0),
@@ -347,9 +336,6 @@ export default function ChatWithFriendScreen(): ReactNode {
               }}
             />
           )}
-          // renderMessage={(props) => (
-          //   <Message  {...props} />
-          // )}
           renderAvatar={(props) => {
             if (!targetUser?.uid || !currentUser?.id) {
               return null;
