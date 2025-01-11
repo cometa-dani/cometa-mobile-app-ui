@@ -1,4 +1,4 @@
-import { GetFriendShipWithSenderAndReceiver, IGetLatestFriendships, MutateFrienship } from '../models/Friendship';
+import { IGetFriendship, IGetLatestFriendships, MutateFrienship } from '../models/Friendship';
 import { RestApiService } from './restService';
 import { FriendShipStatus } from '../models/Friendship';
 
@@ -21,7 +21,7 @@ class FrienshipService {
   }
 
   public getFriendShipByTargetUserID(targetUserUUID: string) {
-    return this.http.get<GetFriendShipWithSenderAndReceiver>(`/friendships/${targetUserUUID}`);
+    return this.http.get<IGetFriendship>(`/friendships/${targetUserUUID}`);
   }
 
   sentFriendShipInvitation(targerUserID: number) {

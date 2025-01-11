@@ -3,7 +3,7 @@ import { IGetBasicUserProfile } from './User';
 import { IPaginated } from './utils/Paginated';
 
 
-export interface Friendship {
+export interface IFriendship {
   id: number;
   createdAt: string;
   updatedAt: string;
@@ -17,9 +17,9 @@ export interface Friendship {
 
 export type FriendShipStatus = 'PENDING' | 'ACCEPTED' | 'BLOCKED'
 
-export interface IGetLatestFriendships extends IPaginated<Friendship> { }
+export interface IGetLatestFriendships extends IPaginated<IFriendship> { }
 
-export type MutateFrienship = Pick<Friendship, (
+export type MutateFrienship = Pick<IFriendship, (
   'id' |
   'senderId' |
   'receiverId' |
@@ -28,7 +28,13 @@ export type MutateFrienship = Pick<Friendship, (
   'updatedAt'
 )>
 
-export interface GetFriendShipWithSenderAndReceiver extends Omit<Friendship, 'friend'> {
+export interface IGetFriendship extends Omit<IFriendship, 'friend'> {
   sender: IGetBasicUserProfile;
   receiver: IGetBasicUserProfile;
+}
+
+export interface ILastMessage extends IFriendship {
+  sender: IGetBasicUserProfile;
+  receiver: IGetBasicUserProfile;
+  lastMessage?: IMessage;
 }

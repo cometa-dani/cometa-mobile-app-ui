@@ -1,6 +1,6 @@
 import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import friendshipService from '../../services/friendshipService';
-import { Friendship, IGetLatestFriendships, MutateFrienship } from '../../models/Friendship';
+import { IFriendship, IGetLatestFriendships, MutateFrienship } from '../../models/Friendship';
 import { QueryKeys } from '../queryKeys';
 import { TypedAxiosError } from '../errors/typedError';
 import { IPaginated } from '@/models/utils/Paginated';
@@ -15,7 +15,7 @@ export const useInfiniteQueryGetNewestFriends = () => {
     useInfiniteQuery({
       queryKey: [QueryKeys.GET_NEWEST_FRIENDS],
       initialPageParam: -1,
-      queryFn: async ({ pageParam }): Promise<IPaginated<Friendship>> => {
+      queryFn: async ({ pageParam }): Promise<IPaginated<IFriendship>> => {
         const res = await friendshipService.getAllLatest(pageParam, 5);
         if (res.status == 200) {
           return res.data;

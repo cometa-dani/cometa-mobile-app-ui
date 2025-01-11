@@ -36,7 +36,7 @@ export default function TargetUserProfileScreen() {
   const detailedProfile = useQueryGetTargetUserPeopleProfile(targetUser?.uid ?? '');
   const {
     hasIncommingFriendshipInvitation = false,
-    hasOutgoingFriendshipInvitation = false
+    hasOutgoingFriendshipInvitation = false,
   } = detailedProfile.data ?? {};
   const bucketList = useInfiniteQueryGetTargetUserBucketList(targetUser?.id);
   const matches = useInfiniteQueryGetSameMatchedEventsByTwoUsers(targetUser?.uid ?? '');

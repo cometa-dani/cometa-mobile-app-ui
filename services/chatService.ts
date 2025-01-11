@@ -1,25 +1,21 @@
-import { Friendship } from '@/models/Friendship';
-import { IGetBasicUserProfile } from '@/models/User';
+import { IFriendship, ILastMessage } from '@/models/Friendship';
 import { supabase } from '@/supabase/config';
 import { IMessage } from 'react-native-gifted-chat';
 
 
-export interface ILatestMessages extends Omit<Friendship, 'friend'> {
-  sender: IGetBasicUserProfile;
-  receiver: IGetBasicUserProfile;
-}
-
 class ChatService {
-  async getMessagesByFrienshipId(friendshipId: number) {
-    const { data: friendship } = await supabase
-      .from('Friendship')
-      .select('messages')
-      .eq('id', friendshipId)
-      .single();
-    return (friendship?.messages || []) as unknown as IMessage[];
+  public async getMessagesByFrienshipId(friendshipId: number): Promise<IMessage[]> {
+    const { data: friendship } = (
+      await supabase
+        .from('Friendship')
+        .select('messages')
+        .eq('id', friendshipId)
+        .single<IFriendship>()
+    );
+    return (friendship?.messages || []);
   }
 
-  async getLatestMessagesByUserId(userId: number, limit = 20) {
+  public async getLatestMessagesByUserId(userId: number, limit = 20): Promise<ILastMessage[]> {
     const { data, error } = await supabase
       .from('Friendship')
       .select(`
@@ -59,13 +55,13 @@ class ChatService {
       .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
       .order('last_message_at', { ascending: false })
       .limit(limit)
-      .returns<ILatestMessages[]>();
+      .returns<ILastMessage[]>();
 
     if (error) throw error;
 
-    return data.map(friendship => ({
+    return data.map<ILastMessage>(friendship => ({
       ...friendship,
-      otherUser: {
+      friend: {
         ...(friendship.senderId === userId
           ? friendship.receiver
           : friendship.sender),
@@ -73,7 +69,7 @@ class ChatService {
           ? friendship.receiver.photos
           : friendship.sender.photos
       },
-      lastMessage: friendship.messages?.at(-1) ?? null
+      lastMessage: friendship.messages?.at(-1)
     }));
   }
 }

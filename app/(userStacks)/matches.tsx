@@ -25,7 +25,7 @@ import { EmptyMessage } from '@/components/empty/Empty';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
 import { IGetBasicUserProfile, IGetTargetUser, IUsersWhoLikedSameEvent } from '@/models/User';
-import { Friendship } from '@/models/Friendship';
+import { IFriendship } from '@/models/Friendship';
 import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
 import { ErrorMessage } from '@/queries/errors/errorMessages';
 import { Notifier } from 'react-native-notifier';
@@ -122,7 +122,7 @@ export default function MatchedEventsScreen(): ReactNode {
   const newPeople = useInfiteQueryGetUsersWhoLikedSameEvent(+selectedLikedEvent?.id);
   const newFriends = useInfiniteQueryGetNewestFriends();
   const newPeopleData: IUsersWhoLikedSameEvent[] = newPeople.data?.pages.flatMap(page => page.items) ?? [];
-  const newFriendsData: Friendship[] = newFriends.data?.pages.flatMap(page => page.items) ?? [];
+  const newFriendsData: IFriendship[] = newFriends.data?.pages.flatMap(page => page.items) ?? [];
   useRefreshOnFocus(newPeople.refetch);
 
   // infinite scroll
@@ -249,7 +249,7 @@ export default function MatchedEventsScreen(): ReactNode {
         style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 100 }}
         onPress={() => {
           setSelectedTargetUser(friend as IGetTargetUser);
-          router.push(`/(userStacks)/chat?friendUuid=${friend?.id}&friendshipId=${id}`);
+          router.push(`/(userStacks)/chat?friendshipId=${id}`);
         }}
         variant='gray-alt'>
         Chat

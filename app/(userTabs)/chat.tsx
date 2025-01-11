@@ -15,7 +15,9 @@ import { FontAwesome } from '@expo/vector-icons';
 import { TextView } from '@/components/text/text';
 import { FC, ReactNode } from 'react';
 import { useLatestMessages } from '@/queries/chat/useLatestMessages';
-import { ILatestMessages } from '@/services/chatService';
+import { ILastMessage } from '@/models/Friendship';
+import { useCometaStore } from '@/store/cometaStore';
+import { IGetTargetUser } from '@/models/User';
 
 
 export default function ChatScreen() {
@@ -77,7 +79,7 @@ const ChatList: FC = () => {
 };
 
 
-const renderBucketItem = ({ item }: { item: ILatestMessages }) => {
+const renderBucketItem = ({ item }: { item: ILastMessage }) => {
   return (
     <BucketItem item={item} />
   );
@@ -85,12 +87,12 @@ const renderBucketItem = ({ item }: { item: ILatestMessages }) => {
 
 
 interface BucketItemProps {
-  item: ILatestMessages,
+  item: ILastMessage,
 }
-const BucketItem: FC<BucketItemProps> = ({ item }) => {
+const BucketItem: FC<BucketItemProps> = ({ item: { friend, id, lastMessage } }) => {
   const { styles, theme } = useStyles(styleSheet);
   const router = useRouter();
-
+  const setTargetUser = useCometaStore(state => state.setTargetUser);
   return (
     <Swipeable
       renderRightActions={
@@ -118,35 +120,43 @@ const BucketItem: FC<BucketItemProps> = ({ item }) => {
           gap: theme.spacing.sp2
         }}
         onPress={() => {
-          // router.push(`/(userStacks)/matches?eventId=${item.event.id}`);
+          setTargetUser(friend as IGetTargetUser);
+          router.push(`/(userStacks)/chat?friendshipId=${id}`);
         }}
       >
         <HStack gap={theme.spacing.sp4}>
           <Image
-            source={{ uri: item?.sender.photos?.at(0)?.url || '' }}
-            placeholder={{ thumbhash: item?.sender.photos?.at(0)?.placeholder || '' }}
+            source={{ uri: friend?.photos?.at(0)?.url || '' }}
+            placeholder={{ thumbhash: friend?.photos?.at(0)?.placeholder || '' }}
             style={styles.img}
           />
-          <VStack $y='center' gap={theme.spacing.sp2} styles={{ flex: 1 }}>
+          <VStack $y='center' gap={theme.spacing.sp1} styles={{ flex: 1 }}>
             <TextView
-              numberOfLines={2}
+              numberOfLines={1}
               ellipsis={true}
               style={{
                 fontSize: 14,
                 fontFamily: theme.text.fontSemibold
               }}
             >
-              {item?.sender.name}
+              {friend?.name}
             </TextView>
             <TextView
-              numberOfLines={2}
+              numberOfLines={1}
               ellipsis={true}
               style={{
                 fontSize: 13.6,
                 color: theme.colors.gray400
               }}
             >
-              {item?.sender.username}
+              {friend?.username}
+            </TextView>
+            <TextView
+              numberOfLines={1}
+              ellipsis={true}
+              style={{ fontSize: 13.6 }}
+            >
+              {lastMessage?.text}
             </TextView>
           </VStack>
         </HStack>

@@ -4,7 +4,7 @@ import { supabase } from '@/supabase/config';
 import { QueryKeys } from '@/queries/queryKeys';
 import { useEffect } from 'react';
 import { Json } from '@/supabase/database.types';
-import { Friendship } from '@/models/Friendship';
+import { IFriendship } from '@/models/Friendship';
 import chatService from '@/services/chatService';
 
 
@@ -52,7 +52,7 @@ export const useMessages = (friendshipId: number) => {
   useEffect(() => {
     const channel = supabase
       .channel(`Friendship:${friendshipId}`)
-      .on<Friendship>(
+      .on<IFriendship>(
         'postgres_changes',
         {
           event: 'UPDATE',

@@ -1,16 +1,15 @@
 import { useCometaStore } from '@/store/cometaStore';
 import { supabase } from '@/supabase/config';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Notifier } from 'react-native-notifier';
 import { QueryKeys } from '../queryKeys';
 import chatService from '@/services/chatService';
 import { useEffect } from 'react';
-import { Friendship } from '@/models/Friendship';
+import { IFriendship, ILastMessage } from '@/models/Friendship';
 
 
 export const useLatestMessages = (limit = 20) => {
-  const currentUser = useCometaStore(state => state.userProfile);
   const queryClient = useQueryClient();
+  const currentUser = useCometaStore(state => state.userProfile);
 
   // Fetch initial messages
   const query = useQuery({
@@ -23,40 +22,56 @@ export const useLatestMessages = (limit = 20) => {
   useEffect(() => {
     if (!currentUser?.id) return;
 
-    const channel = supabase
-      .channel('friendship_messages')
-      .on<Friendship>(
+    // Subscribe to friendships where user is sender
+    const senderChannel = supabase
+      .channel('friendship_messages_as_sender')
+      .on<IFriendship>(
         'postgres_changes',
         {
           event: 'UPDATE',
           schema: 'public',
           table: 'Friendship',
-          filter: `or(sender_id=eq.${currentUser.id},receiver_id=eq.${currentUser.id})`
+          filter: `sender_id=eq.${currentUser.id}`
         },
-        async (payload) => {
-          // Refresh the messages query when updates occur
-          console.log('payload', payload);
-          // await queryClient.invalidateQueries({
-          //   queryKey: [QueryKeys.GET_LATEST_MESSAGES, currentUser.id]
-          // });
-          // // Optional: Show notification for new message
-          // if (payload.new.messages?.length > (payload?.old?.messages?.length || 0)) {
-          //   const newMessage = payload.new.messages.at(-1);
-          //   if (newMessage?.user._id !== currentUser.id) {
-          //     // Show notification for new message
-          //     Notifier.showNotification({
-          //       title: 'New Message',
-          //       description: newMessage?.text || '',
-          //       // ... other notification options
-          //     });
-          //   }
-          // }
+        (payload) => {
+          console.log({ payload });
+          queryClient.setQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id], (oldData) => {
+            if (!oldData) return [];
+            return oldData;
+          });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to friendships where user is receiver
+    const receiverChannel = supabase
+      .channel('friendship_messages_as_receiver')
+      .on<IFriendship>(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'Friendship',
+          filter: `receiver_id=eq.${currentUser.id}`
+        },
+        (payload) => {
+          console.log({ payload });
+          queryClient.setQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id], (oldData) => {
+            if (!oldData) return [];
+            // const newMessage: ILastMessage = {
+            //   ...payload.new,
+            //   lastMessage: payload.new.messages?.at(-1),
+            //   friend: payload.new.receiverId === currentUser.id ?
+            // };
+            // return [...oldData, newMessage];
+          });
         }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(senderChannel);
+      supabase.removeChannel(receiverChannel);
     };
   }, [currentUser?.id]);
 
