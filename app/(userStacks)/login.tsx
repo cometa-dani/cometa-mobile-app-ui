@@ -1,5 +1,5 @@
 import { SystemBars } from 'react-native-edge-to-edge';
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FieldText } from '@/components/input/textField';
 import { testIds } from '@/components/onboarding/user/steps/components/testIds';
@@ -17,6 +17,7 @@ import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotificati
 import { useState } from 'react';
 import { AuthError } from '@supabase/supabase-js';
 import { AxiosError } from 'axios';
+import { Platform } from 'react-native';
 
 
 type IFormValues = Pick<IUserOnboarding, (
@@ -63,7 +64,7 @@ export default function LoginScreen() {
         description: 'you are logged in',
         Component: SucessToast
       });
-      router.replace('/(userTabs)/');
+      router.canDismiss() && router.dismissTo('/(userTabs)/');
     }
     catch (error) {
       let errorMessage = 'try again';
@@ -88,25 +89,13 @@ export default function LoginScreen() {
     <>
       <SystemBars style='auto' />
 
-      <Stack.Screen
-        options={{
-          headerTitle: '',
-          headerShown: true,
-          animation: 'slide_from_bottom',
-          contentStyle: {
-            backgroundColor: theme.colors.white100
-          }
-        }}
-      />
-
       <FormProvider {...formProps}>
         <KeyboardAwareScrollView
           showsVerticalScrollIndicator={false}
           bottomOffset={theme.spacing.sp10}
           bounces={false}
-          style={{ flex: 1 }}
           contentContainerStyle={{
-            paddingTop: theme.spacing.sp24,
+            paddingTop: Platform.select({ ios: theme.spacing.sp18, android: theme.spacing.sp32 }),
             paddingHorizontal: theme.spacing.sp10,
             paddingBottom: theme.spacing.sp14,
             gap: theme.spacing.sp7,

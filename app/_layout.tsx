@@ -144,6 +144,23 @@ function Root(): ReactNode {
                       headerStyle: { backgroundColor: 'transparent' },
                     }}
                   />
+                  <Stack.Screen
+                    name='(userStacks)/login'
+                    options={{
+                      headerTitle: '',
+                      headerShown: true,
+                      presentation: 'formSheet',
+                      headerLargeTitle: false,
+                      sheetAllowedDetents: [0.7, 1],
+                      sheetElevation: 10,
+                      sheetExpandsWhenScrolledToEdge: true,
+                      sheetCornerRadius: 20,
+                      sheetGrabberVisible: true,
+                      contentStyle: {
+                        backgroundColor: theme.colors.white100
+                      }
+                    }}
+                  />
                   <Stack.Screen name='(userTabs)' options={{ animation: 'fade' }} />
                   <Stack.Screen name='(companyTabs)' options={{ animation: 'fade' }} />
                 </Stack>
