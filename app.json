@@ -59,13 +59,30 @@
           "photosPermission": "Cometa accesses your photos to let you share them with your friends."
         }
       ],
+      "react-native-edge-to-edge",
       [
-        "expo-av",
+        "expo-video",
         {
-          "microphonePermission": "Allow Cometa to access your microphone."
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
         }
       ],
-      "react-native-edge-to-edge"
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": true,
+          "useSQLCipher": true,
+          "android": {
+            "enableFTS": false,
+            "useSQLCipher": false
+          },
+          "ios": {
+            "customBuildFlags": [
+              "-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"
+            ]
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

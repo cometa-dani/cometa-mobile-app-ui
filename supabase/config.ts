@@ -1,14 +1,14 @@
 import { AppState } from 'react-native';
 import 'react-native-url-polyfill/auto';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 import { supabaseAnonimousKey, supabaseUrl } from '@/constants/vars';
 import { Database } from './database.types';
+import Storage from 'expo-sqlite/kv-store';
 
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonimousKey, {
   auth: {
-    storage: AsyncStorage,
+    storage: Storage,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
