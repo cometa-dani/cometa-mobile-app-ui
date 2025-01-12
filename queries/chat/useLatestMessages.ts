@@ -5,6 +5,7 @@ import { QueryKeys } from '../queryKeys';
 import chatService from '@/services/chatService';
 import { useEffect } from 'react';
 import { IFriendship, ILastMessage } from '@/models/Friendship';
+import { RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
 
 
 export const useLatestMessages = (limit = 20) => {
@@ -22,6 +23,33 @@ export const useLatestMessages = (limit = 20) => {
   useEffect(() => {
     if (!currentUser?.id) return;
 
+    const handleSubscription = async (payload: RealtimePostgresUpdatePayload<IFriendship>) => {
+      console.log({ payload });
+      const oldData = queryClient.getQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id]);
+      const foundFriendship = oldData?.find(friendship => friendship.id === payload.new.id);
+      try {
+        if (!foundFriendship) {
+          await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LATEST_MESSAGES, currentUser.id] });
+          return;
+        }
+      } catch (error) {
+        return null;
+      }
+      queryClient.setQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id], () => {
+        if (!oldData) return [];
+        return oldData.map(friendship => {
+          if (friendship.id === payload.new.id) {
+            return {
+              ...friendship,
+              messages: payload.new.messages,
+              lastMessage: payload.new.messages?.at(-1),
+            };
+          }
+          return friendship;
+        });
+      });
+    };
+
     // Subscribe to friendships where user is sender
     const senderChannel = supabase
       .channel('friendship_messages_as_sender')
@@ -33,28 +61,7 @@ export const useLatestMessages = (limit = 20) => {
           table: 'Friendship',
           filter: `sender_id=eq.${currentUser.id}`
         },
-        async (payload) => {
-          console.log({ payload });
-          const oldData = queryClient.getQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id]);
-          const foundFriendship = oldData?.find(friendship => friendship.id === payload.new.id);
-          if (!foundFriendship) {
-            await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LATEST_MESSAGES, currentUser.id] });
-            return;
-          }
-          queryClient.setQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id], () => {
-            if (!oldData) return [];
-            return oldData.map(friendship => {
-              if (friendship.id === payload.new.id) {
-                return {
-                  ...friendship,
-                  messages: payload.new.messages,
-                  lastMessage: payload.new.messages?.at(-1),
-                };
-              }
-              return friendship;
-            });
-          });
-        }
+        handleSubscription
       )
       .subscribe();
 
@@ -69,28 +76,7 @@ export const useLatestMessages = (limit = 20) => {
           table: 'Friendship',
           filter: `receiver_id=eq.${currentUser.id}`
         },
-        async (payload) => {
-          console.log({ payload });
-          const oldData = queryClient.getQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id]);
-          const foundFriendship = oldData?.find(friendship => friendship.id === payload.new.id);
-          if (!foundFriendship) {
-            await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_LATEST_MESSAGES, currentUser.id] });
-            return;
-          }
-          queryClient.setQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id], () => {
-            if (!oldData) return [];
-            return oldData.map(friendship => {
-              if (friendship.id === payload.new.id) {
-                return {
-                  ...friendship,
-                  messages: payload.new.messages,
-                  lastMessage: payload.new.messages?.at(-1),
-                };
-              }
-              return friendship;
-            });
-          });
-        }
+        handleSubscription
       )
       .subscribe();
 

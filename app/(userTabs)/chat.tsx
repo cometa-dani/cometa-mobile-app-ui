@@ -18,6 +18,7 @@ import { useLatestMessages } from '@/queries/chat/useLatestMessages';
 import { ILastMessage } from '@/models/Friendship';
 import { useCometaStore } from '@/store/cometaStore';
 import { IGetTargetUser } from '@/models/User';
+import { IMessage } from 'react-native-gifted-chat';
 
 
 export default function ChatScreen() {
@@ -96,8 +97,8 @@ const ChatItem: FC<IChatItemProps> = ({ item: { friend, id, lastMessage, message
   const currentUser = useCometaStore(state => state.userProfile);
   const newMessages = (
     messages
-      ?.filter(message => message.user._id !== currentUser?.id)
-      .filter(message => message.sent) // TODO: Check if the message is sent or received
+      ?.filter(exludeMessages(currentUser?.id))  // Filter out messages that belong to the target user
+      .filter(isNewMessage)
       .length || 0
   );
   return (
@@ -205,6 +206,25 @@ const ChatItem: FC<IChatItemProps> = ({ item: { friend, id, lastMessage, message
   );
 };
 
+
+const isNewMessage = (message: IMessage) => message.sent && !message.received;
+
+
+function exludeMessages(userId?: number) {
+  return (message: IMessage) => message.user._id !== userId;
+}
+
+
+function format(date: number | Date | undefined): string {
+  return (
+    new Date(date || Date.now()).toLocaleTimeString(
+      'en-US',
+      { hour: 'numeric', minute: 'numeric' }
+    )
+  );
+}
+
+
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -289,13 +309,3 @@ const styleSheet = createStyleSheet((theme) => ({
     width: 58,
   }
 }));
-
-
-function format(date: number | Date | undefined): string {
-  return (
-    new Date(date || Date.now()).toLocaleTimeString(
-      'en-US',
-      { hour: 'numeric', minute: 'numeric' }
-    )
-  );
-}
