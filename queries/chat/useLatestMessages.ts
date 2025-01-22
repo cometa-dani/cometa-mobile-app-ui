@@ -22,9 +22,7 @@ export const useLatestMessages = (limit = 20) => {
   // Subscribe to real-time updates
   useEffect(() => {
     if (!currentUser?.id) return;
-
     const handleSubscription = async (payload: RealtimePostgresUpdatePayload<IFriendship>) => {
-      console.log({ payload });
       const oldData = queryClient.getQueryData<ILastMessage[]>([QueryKeys.GET_LATEST_MESSAGES, currentUser.id]);
       const foundFriendship = oldData?.find(friendship => friendship.id === payload.new.id);
       try {
@@ -48,6 +46,12 @@ export const useLatestMessages = (limit = 20) => {
           return friendship;
         });
       });
+
+      // Update the messages for the specific friendship
+      queryClient.setQueryData(
+        [QueryKeys.GET_FRIENDSHIP_MESSAGES, foundFriendship.id],
+        payload.new.messages || []
+      );
     };
 
     // Subscribe to friendships where user is sender

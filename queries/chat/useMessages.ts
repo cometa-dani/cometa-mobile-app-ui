@@ -8,7 +8,7 @@ import { IFriendship } from '@/models/Friendship';
 import chatService from '@/services/chatService';
 import { useCometaStore } from '@/store/cometaStore';
 
-const MAX_RECENT_MESSAGES = 49;
+const MAX_RECENT_MESSAGES = 79;
 
 
 export const useMessages = (friendshipId: number) => {
@@ -26,29 +26,40 @@ export const useMessages = (friendshipId: number) => {
   // Send message mutation
   const { mutate: sendMessage } = useMutation({
     mutationFn: async (newMessage: IMessage) => {
-      const allMessages = (
-        queryClient.getQueryData<IMessage[]>([QueryKeys.GET_FRIENDSHIP_MESSAGES, friendshipId]) || []
-      );
-      const latestMessages = allMessages.slice(-MAX_RECENT_MESSAGES); // remove the latest MAX_RECENT_MESSAGES
-
+      const latestMessages = messages.slice(-MAX_RECENT_MESSAGES); // remove the latest MAX_RECENT_MESSAGES
       const { data, error } = await supabase
         .from('Friendship')
         .update({
-          messages: [...latestMessages, newMessage] as unknown as Json[], // 50 latest messages in total
+          messages: [...latestMessages, newMessage] as unknown as Json[], // 80 latest messages in total
           last_message_at: new Date().toISOString()
         })
         .eq('id', friendshipId)
         .select()
         .single();
-
       if (error) throw error;
       return data;
-    },
-    onMutate: (message) => {
-      queryClient.setQueryData([QueryKeys.GET_FRIENDSHIP_MESSAGES, friendshipId], (oldData: IMessage[]) => {
-        if (!oldData) return [message];
-        return [...oldData, message];
-      });
+    }
+  });
+
+  const { mutate: setRecievedMessage } = useMutation({
+    mutationFn: async () => {
+      const hasNewMessages: boolean = messages.some(message => !message.received && message.user._id !== currentUser?.id);
+      if (!hasNewMessages) return;
+      const { data, error } = await supabase
+        .from('Friendship')
+        .update({
+          messages: (
+            messages.map(message => (
+              message.user._id == currentUser?.id ?
+                message : ({ ...message, received: true })
+            ))
+          ) as unknown as Json[]
+        })
+        .eq('id', friendshipId)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
     }
   });
 
@@ -65,16 +76,9 @@ export const useMessages = (friendshipId: number) => {
           filter: `id=eq.${friendshipId}`
         },
         (payload) => {
-          const lastMessage = payload.new?.messages?.at(-1);
-          if (!lastMessage) return;
-          if (lastMessage.user._id === currentUser?.id) return;
-
           queryClient.setQueryData(
             [QueryKeys.GET_FRIENDSHIP_MESSAGES, friendshipId],
-            (oldData: IMessage[]) => {
-              if (!oldData) return payload.new.messages;
-              return [...oldData, lastMessage];
-            }
+            payload.new.messages || []
           );
         }
       )
@@ -87,6 +91,7 @@ export const useMessages = (friendshipId: number) => {
 
   return {
     messages,
-    sendMessage
+    sendMessage,
+    setRecievedMessage
   };
 };

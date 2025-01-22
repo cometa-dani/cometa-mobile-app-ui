@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { ReactNode, useCallback, useState } from 'react';
 import { AvatarProps, Bubble, BubbleProps, GiftedChat, IMessage, InputToolbar, InputToolbarProps, Send } from 'react-native-gifted-chat';
-import { View, RefreshControl, Platform, TextInput } from 'react-native';
+import { View, RefreshControl, Platform, TextInput, ViewToken } from 'react-native';
 import { Stack, useGlobalSearchParams } from 'expo-router';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { Image } from 'expo-image';
@@ -22,7 +22,7 @@ export default function ChatWithFriendScreen(): ReactNode {
   const { friendshipId } = useGlobalSearchParams<{ friendshipId: string }>();
   const targetUser = useCometaStore(state => state.targetUser);
   const currentUser = useCometaStore(state => state.userProfile);
-  const { messages, sendMessage } = useMessages(+friendshipId);
+  const { messages, sendMessage, setRecievedMessage } = useMessages(+friendshipId);
   const [isLoadingMore] = useState(false);
 
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
@@ -44,28 +44,6 @@ export default function ChatWithFriendScreen(): ReactNode {
   }, [currentUser?.id]);
 
   const handleRefreshControl = () => { };
-
-  // when the user has an unviewed new message
-  // useFocusEffect(useCallback(() => {
-  // if (messagesList.length) {
-  //   const lastMessage = messagesList.at(-1);
-  //   if (
-  //     loggedInUserUuid !== lastMessage?.user?._id
-  //     && lastMessage
-  //     && !lastMessage?.received
-  //     && friendshipData?.chatuuid
-  //     && targetUser
-  //   ) {
-  //     chatWithFriendService.setMessageAsViewed(
-  //       friendshipData?.chatuuid,
-  //       loggedInUserUuid,
-  //       targetUser,
-  //       lastMessage,
-  //       messagesList.filter(message => !message.received) ?? []
-  //     );
-  //   }
-  // }
-  // }, [messages]));
 
   const renderAvatar = useCallback((props: AvatarProps<IMessage>) => {
     const { currentMessage } = props;
@@ -94,27 +72,30 @@ export default function ChatWithFriendScreen(): ReactNode {
       <Bubble
         {...props}
         user={props.user}
-        renderTicks={(message) => (
-          <Condition
-            if={message.user._id == currentUser?.id}
-            then={(
-              <>
-                <Entypo
-                  name="check"
-                  size={13.6}
-                  color={theme.colors.white100} // TODO: when message is received=true, change the color to blue100
-                />
-                <Entypo
-                  style={{ marginLeft: -6 }}
-                  name="check"
-                  size={13.6}
-                  color={theme.colors.white100} // TODO: when message is received=true, change the color to blue100
-                />
-              </>
-            )}
-          />
-        )}
-        key={props.currentMessage?._id}
+        renderTicks={(message) => {
+          const { user, received } = message as IMessage;
+          return (
+            <Condition
+              if={user._id == currentUser?.id}
+              then={(
+                <>
+                  <Entypo
+                    name="check"
+                    size={13.6}
+                    color={received ? theme.colors.blue100 : theme.colors.white100}
+                  />
+                  <Entypo
+                    style={{ marginLeft: -6 }}
+                    name="check"
+                    size={13.6}
+                    color={received ? theme.colors.blue100 : theme.colors.white100}
+                  />
+                </>
+              )}
+            />
+          );
+        }}
+        // key={props.currentMessage?._id}
         textStyle={{
           right: styles.bubleTextStyleRight,
           left: styles.bubleTextStyleLeft
@@ -200,6 +181,12 @@ export default function ChatWithFriendScreen(): ReactNode {
           loadEarlier={true}
           isStatusBarTranslucentAndroid={true}
           listViewProps={{
+            onViewableItemsChanged: ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+              const lastMessage = viewableItems.at(-1);
+              if (lastMessage?.isViewable) {
+                setRecievedMessage();
+              }
+            },
             refreshControl: (
               <RefreshControl
                 refreshing={isLoadingMore}
