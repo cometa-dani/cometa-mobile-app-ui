@@ -11,7 +11,7 @@ import { FlashList } from '@shopify/flash-list';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { Image } from 'expo-image';
 import { RectButton } from 'react-native-gesture-handler';
-import { FontAwesome } from '@expo/vector-icons';
+import { Entypo, FontAwesome } from '@expo/vector-icons';
 import { TextView } from '@/components/text/text';
 import { FC, ReactNode } from 'react';
 import { useLatestMessages } from '@/queries/chat/useLatestMessages';
@@ -163,20 +163,20 @@ const ChatItem: FC<IChatItemProps> = ({ item: { friend, id, lastMessage, message
             </TextView>
           </VStack>
 
-          <Condition
-            if={newMessages}
-            then={(
-              <VStack $y='center' $x='center'>
-                <TextView
-                  numberOfLines={1}
-                  ellipsis={true}
-                  style={{
-                    fontSize: 13.6,
-                    color: theme.colors.gray400
-                  }}
-                >
-                  {format(lastMessage?.createdAt)}
-                </TextView>
+          <VStack $y='center' $x='center'>
+            <TextView
+              numberOfLines={1}
+              ellipsis={true}
+              style={{
+                fontSize: 13.6,
+                color: theme.colors.gray400
+              }}
+            >
+              {format(lastMessage?.createdAt)}
+            </TextView>
+            <Condition
+              if={newMessages}
+              then={(
                 <View style={{
                   backgroundColor: theme.colors.blue100,
                   borderRadius: 99_999,
@@ -197,9 +197,24 @@ const ChatItem: FC<IChatItemProps> = ({ item: { friend, id, lastMessage, message
                     {newMessages}
                   </TextView>
                 </View>
-              </VStack>
-            )}
-          />
+              )}
+              else={(
+                <HStack>
+                  <Entypo
+                    name="check"
+                    size={14}
+                    color={lastMessage?.received ? theme.colors.blue100 : theme.colors.gray200}
+                  />
+                  <Entypo
+                    style={{ marginLeft: -6 }}
+                    name="check"
+                    size={14}
+                    color={lastMessage?.received ? theme.colors.blue100 : theme.colors.gray200}
+                  />
+                </HStack>
+              )}
+            />
+          </VStack>
         </HStack>
       </TouchableOpacity>
     </Swipeable>
