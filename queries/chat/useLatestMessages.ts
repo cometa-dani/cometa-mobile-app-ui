@@ -7,10 +7,12 @@ import { useEffect } from 'react';
 import { IFriendship, ILastMessage } from '@/models/Friendship';
 import { RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
 
+const counter = 0;
 
 export const useLatestMessages = (limit = 20) => {
   const queryClient = useQueryClient();
   const currentUser = useCometaStore(state => state.userProfile);
+  const setNewMessages = useCometaStore(state => state.setNewMessages);
 
   // Fetch initial messages
   const query = useQuery({
@@ -18,6 +20,23 @@ export const useLatestMessages = (limit = 20) => {
     enabled: !!currentUser?.id,
     queryFn: () => chatService.getLatestMessagesByUserId(currentUser?.id as number, limit)
   });
+
+  useEffect(() => {
+    if (!query.data) return;
+    const totalMessages = (
+      query.data.reduce((acc, friendship) => acc + (
+        friendship.messages
+          ?.reduce((acc, message) => acc + (
+            !message.received && message.user._id !== currentUser?.id ? 1 : 0
+          ),
+            counter
+          )
+      ),
+        counter
+      )
+    );
+    setNewMessages(totalMessages);
+  }, [query.data]);
 
   // Subscribe to real-time updates
   useEffect(() => {

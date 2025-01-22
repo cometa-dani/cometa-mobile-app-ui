@@ -1,4 +1,5 @@
 import { CircleButton } from '@/components/button/circleButton';
+import { Indicator } from '@/components/indicator/indicator';
 import { TabBar } from '@/components/tabBar/tabBar';
 import { GradientHeading } from '@/components/text/gradientText';
 import { Condition } from '@/components/utils/ifElse';
@@ -10,15 +11,16 @@ import { FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icon
 import { Redirect, Tabs, useRouter } from 'expo-router';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
-import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import { useStyles } from 'react-native-unistyles';
 
 
 export default function TabLayout(): ReactNode {
   usePrefetchBucketList();
-  const { theme } = useStyles(stylesheet);
+  const { theme } = useStyles();
   const router = useRouter();
   // const notificationIsSeen = useCometaStore(state => state.notificationsList).at(0)?.user?.isSeen;
   const session = useCometaStore(state => state.session);
+  const newMessages = useCometaStore(state => state.newMessages);
   usePrefetchUserProfile(); // don't remove
 
   if (!session?.user) {
@@ -125,7 +127,13 @@ export default function TabLayout(): ReactNode {
               </GradientHeading>
             ),
             tabBarIcon: ({ color }) => (
-              <Ionicons name="chatbubbles-outline" size={26} color={color} />
+              <View style={{ position: 'relative' }}>
+                <Condition
+                  if={newMessages}
+                  then={<Indicator />}
+                />
+                <Ionicons name="chatbubbles-outline" size={26} color={color} />
+              </View>
             )
           }}
           name="chat"
@@ -157,22 +165,3 @@ export default function TabLayout(): ReactNode {
     </>
   );
 }
-
-
-const Indicator = () => {
-  const { styles } = useStyles(stylesheet);
-  return (
-    <View style={styles.notificationIndicator} />
-  );
-};
-
-const stylesheet = createStyleSheet((theme) => ({
-  notificationIndicator: {
-    borderRadius: 50,
-    width: 8,
-    height: 8,
-    backgroundColor: theme.colors.red100,
-    position: 'absolute',
-    top: -2
-  }
-}));

@@ -13,12 +13,18 @@ export type AuthSlice = {
   isAuthenticated: boolean,
   setIsAuthenticated: (isAuthenticated: boolean) => void,
   setUserProfile: (user: IGetDetailedUserProfile) => void,
-  userProfile?: IGetDetailedUserProfile
+  userProfile?: IGetDetailedUserProfile,
+  newMessages: number
+  setNewMessages: (newMessages: number) => void
 }
 
 
 export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
   isLoaded: false,
+  newMessages: 0,
+  setNewMessages: (newMessages: number) => {
+    set({ newMessages });
+  },
   setIsLoaded: (isLoading: boolean) => {
     set({ isLoaded: isLoading });
   },
