@@ -41,7 +41,7 @@ export const useMessages = (friendshipId: number) => {
     }
   });
 
-  const { mutate: setRecievedMessage } = useMutation({
+  const { mutate: setReceivedMessage } = useMutation({
     mutationFn: async () => {
       const hasNewMessages: boolean = messages.some(message => !message.received && message.user._id !== currentUser?.id);
       if (!hasNewMessages) return;
@@ -92,6 +92,6 @@ export const useMessages = (friendshipId: number) => {
   return {
     messages,
     sendMessage,
-    setRecievedMessage
+    setReceivedMessage
   };
 };

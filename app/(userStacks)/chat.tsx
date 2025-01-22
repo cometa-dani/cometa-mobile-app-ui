@@ -22,7 +22,7 @@ export default function ChatWithFriendScreen(): ReactNode {
   const { friendshipId } = useGlobalSearchParams<{ friendshipId: string }>();
   const targetUser = useCometaStore(state => state.targetUser);
   const currentUser = useCometaStore(state => state.userProfile);
-  const { messages, sendMessage, setRecievedMessage } = useMessages(+friendshipId);
+  const { messages, sendMessage, setReceivedMessage } = useMessages(+friendshipId);
   const [isLoadingMore] = useState(false);
 
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
@@ -184,7 +184,7 @@ export default function ChatWithFriendScreen(): ReactNode {
             onViewableItemsChanged: ({ viewableItems }: { viewableItems: ViewToken[] }) => {
               const lastMessage = viewableItems.at(-1);
               if (lastMessage?.isViewable) {
-                setRecievedMessage();
+                setReceivedMessage();
               }
             },
             refreshControl: (
