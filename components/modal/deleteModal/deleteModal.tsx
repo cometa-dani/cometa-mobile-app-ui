@@ -10,9 +10,11 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 interface IProps {
   open: boolean;
   onClose: () => void,
-  onUnFollow: () => void
+  onAccept: () => void
+  title: string
+  btnText: string
 }
-export const UnFollowModal: FC<IProps> = ({ onClose, open, onUnFollow }) => {
+export const DeleteModal: FC<IProps> = ({ onClose, open, onAccept, title, btnText }) => {
   const { styles, theme } = useStyles(stylesheet);
   return (
     <Modal
@@ -42,7 +44,7 @@ export const UnFollowModal: FC<IProps> = ({ onClose, open, onUnFollow }) => {
           >
             <Center>
               <Heading size='s7'>
-                Are you sure you want to unfollow this profile?
+                {title}
               </Heading>
             </Center>
 
@@ -56,10 +58,10 @@ export const UnFollowModal: FC<IProps> = ({ onClose, open, onUnFollow }) => {
               </Button>
               <Button
                 style={{ flex: 1 / 2 }}
-                onPress={onUnFollow}
+                onPress={onAccept}
                 variant='primary'
               >
-                Unfollow
+                {btnText}
               </Button>
             </HStack>
           </VStack>

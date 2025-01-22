@@ -73,7 +73,7 @@ export default function ChatWithFriendScreen(): ReactNode {
         {...props}
         user={props.user}
         renderTicks={(message) => {
-          const { user, received } = message as IMessage;
+          const { user, received, sent } = message as IMessage;
           return (
             <Condition
               if={user._id == currentUser?.id}
@@ -82,7 +82,7 @@ export default function ChatWithFriendScreen(): ReactNode {
                   <Entypo
                     name="check"
                     size={13.6}
-                    color={received ? theme.colors.blue100 : theme.colors.white100}
+                    color={sent ? theme.colors.blue100 : theme.colors.white100}
                   />
                   <Entypo
                     style={{ marginLeft: -6 }}

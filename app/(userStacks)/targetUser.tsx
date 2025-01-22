@@ -26,7 +26,7 @@ import { useMutationSentFriendshipInvitation } from '@/queries/currentUser/frien
 import { ErrorMessage } from '@/queries/errors/errorMessages';
 import { ErrorToast } from '@/components/toastNotification/toastNotification';
 import { Notifier } from 'react-native-notifier';
-import { UnFollowModal } from '@/components/modal/unFollow/unFollow';
+import { DeleteModal } from '@/components/modal/deleteModal/deleteModal';
 
 
 export default function TargetUserProfileScreen() {
@@ -175,10 +175,12 @@ export default function TargetUserProfileScreen() {
         open={showNewFriendsModal}
         onClose={() => setShowNewFriendsModal(false)}
       />
-      <UnFollowModal
+      <DeleteModal
+        title='Are you sure you want to unfollow this profile?'
+        btnText='Unfollow'
         open={showUnFollowModal}
         onClose={() => setShowUnFollowModal(false)}
-        onUnFollow={() => cancelFriendship.mutate(targetUser?.id as number)}
+        onAccept={() => cancelFriendship.mutate(targetUser?.id as number)}
       />
       <Stack.Screen
         options={{

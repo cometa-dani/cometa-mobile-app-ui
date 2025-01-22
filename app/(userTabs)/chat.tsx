@@ -47,6 +47,13 @@ const ChatList: FC = () => {
   const { data = [], isFetched, isPending } = useLatestMessages();
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      {/* <DeleteModal
+              title='Are you sure you want to unfollow this profile?'
+              btnText='Unfollow'
+              open={showUnFollowModal}
+              onClose={() => setShowUnFollowModal(false)}
+              onAccept={() => cancelFriendship.mutate(targetUser?.id as number)}
+            /> */}
       <Condition
         if={isFetched && !isPending}
         then={
@@ -103,20 +110,22 @@ const ChatItem: FC<IChatItemProps> = ({ item: { friend, id, lastMessage, message
   );
   return (
     <Swipeable
+      enabled={false}
       renderRightActions={
         (_a, _b, swipeable) => (
-          <RectButton
-            onPress={() => {
-              swipeable?.close();
-            }}
-            style={styles.deleteButton}
-          >
-            <FontAwesome
-              name='trash-o'
-              size={22}
-              color={theme.colors.red100}
-            />
-          </RectButton>
+          null
+          // <RectButton
+          //   onPress={() => {
+          //     swipeable?.close();
+          //   }}
+          //   style={styles.deleteButton}
+          // >
+          //   <FontAwesome
+          //     name='trash-o'
+          //     size={22}
+          //     color={theme.colors.red100}
+          //   />
+          // </RectButton>
         )
       }
     >
@@ -203,7 +212,7 @@ const ChatItem: FC<IChatItemProps> = ({ item: { friend, id, lastMessage, message
                   <Entypo
                     name="check"
                     size={14}
-                    color={lastMessage?.received ? theme.colors.blue100 : theme.colors.gray200}
+                    color={lastMessage?.sent ? theme.colors.blue100 : theme.colors.gray200}
                   />
                   <Entypo
                     style={{ marginLeft: -6 }}
