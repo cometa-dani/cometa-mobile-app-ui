@@ -14,8 +14,6 @@ import { useMessages } from '@/queries/chat/useMessages';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GradientHeading } from '@/components/text/gradientText';
 
-// type ChatWithFriendMessage = Map<string | number, UserMessagesData>
-// const take = 20;
 
 export default function ChatWithFriendScreen(): ReactNode {
   const { theme, styles } = useStyles(styleSheet);

@@ -79,15 +79,9 @@ const SkeletonList: FC = () => {
             <View style={{
               width: 94,
               backgroundColor: theme.colors.gray200,
-              borderRadius: theme.spacing.sp2
-            }}>
-              <Button
-                style={{ padding: 6, borderRadius: theme.spacing.sp2 }}
-                onPress={() => { }}
-                variant='primary'>
-                FOLLOW
-              </Button>
-            </View>
+              borderRadius: theme.spacing.sp2,
+              height: 34,
+            }} />
           </HStack>
         </MySkeleton>
       )}

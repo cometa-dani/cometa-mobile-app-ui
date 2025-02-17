@@ -157,7 +157,7 @@ export default function MatchedEventsScreen(): ReactNode {
   const acceptPendingInvitation = async (targetUserAsSender: IGetTargetUser) => {
     try {
       // 1. set button to pending
-      if (!targetUserAsSender.hasOutgoingFriendship) {
+      if (!targetUserAsSender?.hasOutgoingFriendshipInvitation) {
         pendingButton.handleOptimisticUpdate(targetUserAsSender.id);
       }
       // setTargetUserAsNewFriend(targetUserAsSender);
@@ -255,7 +255,8 @@ export default function MatchedEventsScreen(): ReactNode {
 
     // 2. mutation
     mutationSentFriendship.mutateAsync(
-      { targetUserId: targetUserAsReceiver.id },
+      // { targetUserId: targetUserAsReceiver?.id },
+      targetUserAsReceiver?.id,
       {
         onSuccess: () => {
           queryClient.invalidateQueries({

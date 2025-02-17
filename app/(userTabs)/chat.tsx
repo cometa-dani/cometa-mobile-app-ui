@@ -1,5 +1,6 @@
 import { TouchableOpacity, View, SafeAreaView } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
+// import { HeaderSearchBarRef } from '@react-navigation/elements';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { Tabs, useRouter } from 'expo-router';
@@ -10,33 +11,67 @@ import { Center, HStack, VStack } from '@/components/utils/stacks';
 import { FlashList } from '@shopify/flash-list';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { Image } from 'expo-image';
-import { RectButton } from 'react-native-gesture-handler';
-import { Entypo, FontAwesome } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 import { TextView } from '@/components/text/text';
-import { FC, ReactNode } from 'react';
+import { FC, ReactNode, useState } from 'react';
 import { useLatestMessages } from '@/queries/chat/useLatestMessages';
-import { ILastMessage } from '@/models/Friendship';
+import { IFriendship, ILastMessage } from '@/models/Friendship';
 import { useCometaStore } from '@/store/cometaStore';
 import { IGetTargetUser } from '@/models/User';
 import { IMessage } from 'react-native-gifted-chat';
+import { useInfiniteQuerySearchFriendsByUserName } from '@/queries/currentUser/friendshipHooks';
+import { useDebouncedState } from '@/hooks/useDebouncedState';
+import { Button } from '@/components/button/button';
+import { imageTransition } from '@/constants/vars';
 
 
 export default function ChatScreen() {
+  const [debouncedTextInput, setDebouncedTextInput] = useDebouncedState('');
+  const {
+    data: searchedFriendsData,
+    isFetched,
+    isPending,
+    hasNextPage,
+    isFetching,
+    fetchNextPage
+  } = useInfiniteQuerySearchFriendsByUserName(debouncedTextInput);
+  const searchFriends = searchedFriendsData?.pages.flatMap((page) => page.items) ?? [];
+  const handleInfiniteScroll = () => !isFetching && hasNextPage && fetchNextPage();
+  const [isFocused, setIsFocused] = useState(false);
+
   return (
     <>
       <SystemBars style='dark' />
       <Tabs.Screen
         options={{
           headerSearchBarOptions: {
+            onChangeText: (e) => {
+              setDebouncedTextInput(e.nativeEvent.text);
+            },
             autoFocus: false,
             placeholder: 'search',
             inputType: 'text',
-            onFocus: () => { },
-            onBlur: () => { },
+            onFocus: () => setIsFocused(true),
+            onBlur: () => setIsFocused(false),
           },
         }}
       />
-      <ChatList />
+      <SafeAreaView style={{ flex: 1 }}>
+        <Condition
+          if={isFocused && debouncedTextInput}
+          then={(
+            <FriendsList
+              friendships={searchFriends}
+              isFetched={isFetched}
+              isPending={isPending}
+              onEndReached={handleInfiniteScroll}
+            />
+          )}
+          else={
+            <ChatList />
+          }
+        />
+      </SafeAreaView>
     </>
   );
 }
@@ -46,43 +81,34 @@ const ChatList: FC = () => {
   const { theme } = useStyles();
   const { data = [], isFetched, isPending } = useLatestMessages();
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      {/* <DeleteModal
-              title='Are you sure you want to unfollow this profile?'
-              btnText='Unfollow'
-              open={showUnFollowModal}
-              onClose={() => setShowUnFollowModal(false)}
-              onAccept={() => cancelFriendship.mutate(targetUser?.id as number)}
-            /> */}
-      <Condition
-        if={isFetched && !isPending}
-        then={
-          <Condition
-            if={!data?.length}
-            then={(
-              <Center styles={{ flex: 1, padding: 34, paddingTop: 0 }}>
-                <EmptyMessage
-                  title='Oops! Looks like your chat list is empty'
-                  subtitle='Head back to the bucketlist and meet new friends!'
-                />
-              </Center>
-            )}
-            else={(
-              <FlashList
-                data={data}
-                showsVerticalScrollIndicator={true}
-                estimatedItemSize={112}
-                contentContainerStyle={{ paddingBottom: theme.spacing.sp6, paddingTop: theme.spacing.sp4 }}
-                ListFooterComponentStyle={{ height: tabBarHeight * 2 }}
-                onEndReachedThreshold={0.5}
-                renderItem={renderChatItem}
+    <Condition
+      if={isFetched && !isPending}
+      then={
+        <Condition
+          if={!data?.length}
+          then={(
+            <Center styles={{ flex: 1, padding: 34, paddingTop: 0 }}>
+              <EmptyMessage
+                title='Oops! Looks like your chat list is empty'
+                subtitle='Head back to the bucketlist and meet new friends!'
               />
-            )}
-          />
-        }
-        else={(<SkeletonList />)}
-      />
-    </SafeAreaView>
+            </Center>
+          )}
+          else={(
+            <FlashList
+              data={data}
+              showsVerticalScrollIndicator={true}
+              estimatedItemSize={112}
+              contentContainerStyle={{ paddingBottom: theme.spacing.sp6, paddingTop: theme.spacing.sp4 }}
+              ListFooterComponentStyle={{ height: tabBarHeight * 2 }}
+              onEndReachedThreshold={0.5}
+              renderItem={renderChatItem}
+            />
+          )}
+        />
+      }
+      else={(<SkeletonList />)}
+    />
   );
 };
 
@@ -231,6 +257,109 @@ const ChatItem: FC<IChatItemProps> = ({ item: { friend, id, lastMessage, message
 };
 
 
+interface IFriendsListProps {
+  friendships: IFriendship[],
+  onEndReached: () => void,
+  isPending: boolean,
+  isFetched: boolean,
+}
+
+const FriendsList: FC<IFriendsListProps> = ({ friendships, isFetched, isPending, onEndReached }) => {
+  const { theme } = useStyles();
+  return (
+    <Condition
+      if={isFetched && !isPending}
+      then={
+        <Condition
+          if={!friendships?.length}
+          then={(
+            <Center styles={{ flex: 1, padding: 34, paddingTop: 0 }}>
+              <EmptyMessage
+                title='Oops! Looks like your chat list is empty'
+                subtitle='Head back to the bucketlist and meet new friends!'
+              />
+            </Center>
+          )}
+          else={(
+            <FlashList
+              data={friendships}
+              showsVerticalScrollIndicator={true}
+              estimatedItemSize={112}
+              contentContainerStyle={{ paddingBottom: theme.spacing.sp6, paddingTop: theme.spacing.sp4 }}
+              ListFooterComponentStyle={{ height: tabBarHeight * 2 }}
+              onEndReachedThreshold={0.5}
+              onEndReached={onEndReached}
+              renderItem={({ item }) => (
+                <FriendItem friendship={item} />
+              )}
+            />
+          )}
+        />
+      }
+      else={(<SkeletonList />)}
+    />
+  );
+};
+
+
+interface IFrienItemProsp {
+  friendship: IFriendship
+}
+const FriendItem: FC<IFrienItemProsp> = ({ friendship }) => {
+  const { friend, id } = friendship;
+  const { theme, styles } = useStyles(styleSheet);
+  const setTargetUser = useCometaStore(state => state.setTargetUser);
+  const router = useRouter();
+  return (
+    <HStack
+      $y='center'
+      gap={theme.spacing.sp4}
+      styles={{
+        paddingHorizontal: theme.spacing.sp6,
+        paddingBottom: theme.spacing.sp6
+      }}
+    >
+      <TouchableOpacity
+        style={{
+          flex: 1, flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: theme.spacing.sp4
+        }}
+      >
+        <Image
+          recyclingKey={friend?.uid}
+          transition={imageTransition}
+          source={{ uri: friend?.photos.at(0)?.url }}
+          placeholder={{ thumbhash: friend?.photos.at(0)?.placeholder }}
+          style={styles.imgAvatar}
+        />
+        <VStack
+          $y='center'
+          styles={{ flex: 1 }}
+        >
+          <TextView bold={true} ellipsis={true}>
+            {friend?.name}
+          </TextView>
+          <TextView ellipsis={true}>
+            {friend?.username}
+          </TextView>
+        </VStack>
+      </TouchableOpacity>
+
+      <Button
+        style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 100 }}
+        onPress={() => {
+          setTargetUser(friend as IGetTargetUser);
+          router.push(`/(userStacks)/chat?friendshipId=${id}`);
+        }}
+        variant='gray-alt'>
+        Chat
+      </Button>
+    </HStack>
+  );
+};
+
 const isNewMessage = (message: IMessage) => message.sent && !message.received;
 
 
@@ -251,54 +380,56 @@ function format(date: number | Date | undefined): string {
 
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
-
 const SkeletonList: FC = () => {
   const { theme, styles } = useStyles(styleSheet);
   return (
     <FlashList
-      data={[1, 2, 3, 4, 5, 6]}
-      estimatedItemSize={112}
+      data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}
+      estimatedItemSize={60}
       showsVerticalScrollIndicator={false}
       alwaysBounceVertical={false}
       contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
-      ListFooterComponentStyle={{ height: tabBarHeight * 2 }}
+      ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
       renderItem={() => (
         <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
-          <TouchableOpacity
-            style={{
-              paddingHorizontal: theme.spacing.sp6,
-              gap: theme.spacing.sp2
-            }}
+          <HStack
+            $y='center'
+            gap={theme.spacing.sp4}
+            styles={{ paddingHorizontal: theme.spacing.sp6 }}
           >
-            <HStack gap={theme.spacing.sp4}>
-              <View
-                style={[styles.img, { backgroundColor: theme.colors.gray200 }]}
+            <View style={[
+              styles.imgAvatar,
+              { backgroundColor: theme.colors.gray200 }
+            ]} />
+            <VStack
+              $y='center'
+              gap={theme.spacing.sp1}
+              styles={{ flex: 1 }}
+            >
+              <View style={{
+                backgroundColor: theme.colors.gray200,
+                height: 16,
+                width: '60%',
+                flexDirection: 'row',
+                borderRadius: 10
+              }}
               />
-              <VStack $y='center' gap={theme.spacing.sp2} styles={{ flex: 1 }}>
-                <View style={{
-                  backgroundColor: theme.colors.gray200,
-                  height: 16,
-                  width: '60%',
-                  flexDirection: 'row',
-                  borderRadius: 10
-                }} />
-                <View style={{
-                  backgroundColor: theme.colors.gray200,
-                  height: 16,
-                  width: '100%',
-                  flexDirection: 'row',
-                  borderRadius: 10
-                }} />
-                <View style={{
-                  backgroundColor: theme.colors.gray200,
-                  height: 16,
-                  width: '100%',
-                  flexDirection: 'row',
-                  borderRadius: 10
-                }} />
-              </VStack>
-            </HStack>
-          </TouchableOpacity>
+              <View style={{
+                backgroundColor: theme.colors.gray200,
+                height: 16,
+                width: '80%',
+                flexDirection: 'row',
+                borderRadius: 10
+              }}
+              />
+            </VStack>
+            <View style={{
+              width: 94,
+              backgroundColor: theme.colors.gray200,
+              borderRadius: theme.spacing.sp2,
+              height: 34,
+            }} />
+          </HStack>
         </MySkeleton>
       )}
     />
@@ -331,5 +462,8 @@ const styleSheet = createStyleSheet((theme) => ({
     borderRadius: 99_999,
     height: 58,
     width: 58,
+  },
+  imgAvatar: {
+    width: 60, height: 60, borderRadius: 99_999
   }
 }));

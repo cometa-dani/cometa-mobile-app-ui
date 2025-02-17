@@ -43,7 +43,10 @@ export const useMessages = (friendshipId: number) => {
 
   const { mutate: setReceivedMessage } = useMutation({
     mutationFn: async () => {
-      const hasNewMessages: boolean = messages.some(message => !message.received && message.user._id !== currentUser?.id);
+      const hasNewMessages: boolean = (
+        messages
+          .some(message => !message.received && message.user._id !== currentUser?.id)
+      );
       if (!hasNewMessages) return;
       const { data, error } = await supabase
         .from('Friendship')
