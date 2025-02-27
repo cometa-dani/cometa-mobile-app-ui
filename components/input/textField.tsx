@@ -1,4 +1,3 @@
-import { IUserOnboarding } from '@/models/User';
 import { FC, useState } from 'react';
 import { HStack, VStack } from '../utils/stacks';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
@@ -14,17 +13,17 @@ import { Condition } from '../utils/ifElse';
 interface IFieldTextProps {
   testId?: string,
   label: string,
-  name: keyof IUserOnboarding,
+  name: string,
   placeholder?: string,
   keyboardType?: KeyboardTypeOptions,
   secureTextEntry?: boolean,
-  iconName: React.ComponentProps<typeof FontAwesome>['name'],
+  iconName?: React.ComponentProps<typeof FontAwesome>['name'],
   defaultErrMessage?: string,
   multiline?: boolean,
   editable?: boolean,
   isDateTimePicker?: boolean,
   isInsideBottomSheet?: boolean,
-  onShowSelector?: () => void,
+  onShowSelector?: () => void
 }
 
 export const FieldText: FC<IFieldTextProps> = ({
@@ -71,16 +70,18 @@ export const FieldText: FC<IFieldTextProps> = ({
         );
         const Input = (
           <View style={[styles.fieldContainer, { borderColor: inputStyle }]}>
-            <View style={styles.iconContainer}>
-              <FontAwesome
-                name={iconName}
-                size={theme.icons.lg}
-                color={iconColor}
-              />
-            </View>
-
-            <View style={styles.divider} />
-
+            {iconName && (
+              <>
+                <View style={styles.iconContainer}>
+                  <FontAwesome
+                    name={iconName}
+                    size={theme.icons.lg}
+                    color={iconColor}
+                  />
+                </View>
+                <View style={styles.divider} />
+              </>
+            )}
             <VStack styles={{ flex: 1 }}>
               <View style={styles.fieldLabel}>
                 <Text style={styles.fieldTextLabel}>
@@ -149,22 +150,24 @@ export const FieldText: FC<IFieldTextProps> = ({
                 />
               )}
             />
-            <HStack
-              $y='center'
-              gap={theme.spacing.sp1}
-              styles={{
-                paddingLeft: theme.spacing.sp8
-              }}
-            >
-              <AntDesign
-                name={errorMessage ? 'exclamationcircleo' : 'checkcircleo'}
-                size={theme.icons.xs}
-                color={iconColor}
-              />
-              <Text style={styles.fieldTextMessage(Boolean(errorMessage), isFocused)}>
-                {errorMessage || defaultErrMessage}
-              </Text>
-            </HStack>
+            {iconName && (
+              <HStack
+                $y='center'
+                gap={theme.spacing.sp1}
+                styles={{
+                  paddingLeft: theme.spacing.sp8
+                }}
+              >
+                <AntDesign
+                  name={errorMessage ? 'exclamationcircleo' : 'checkcircleo'}
+                  size={theme.icons.xs}
+                  color={iconColor}
+                />
+                <Text style={styles.fieldTextMessage(Boolean(errorMessage), isFocused)}>
+                  {errorMessage || defaultErrMessage}
+                </Text>
+              </HStack>
+            )}
           </VStack>
         );
       }}

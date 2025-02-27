@@ -1,6 +1,5 @@
 import { TouchableOpacity, View, SafeAreaView } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
-// import { HeaderSearchBarRef } from '@react-navigation/elements';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { Tabs, useRouter } from 'expo-router';

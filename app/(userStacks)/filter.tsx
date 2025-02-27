@@ -1,62 +1,43 @@
-import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
-import { FlashList } from '@shopify/flash-list';
-import { FC, ReactNode, useCallback, useRef, useState } from 'react';
-import { FontAwesome } from '@expo/vector-icons';
-// import { useInfiniteQueryGetPaginatedCities } from '../../../queries/currentUser/editProfileHooks';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Stack } from 'expo-router';
+import { FC, ReactNode } from 'react';
 import { TextView } from '@/components/text/text';
-import { Heading } from '@/components/text/heading';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-// import { Condition } from '../../utils/ifElse';
-// import { Center, HStack, VStack } from '../../utils/stacks';
-// import { ICityKind, useSelectCityByName } from './hook';
-import { ICityDatum } from '@/models/Cities';
-import { SearchField } from '@/components/input/searchField';
 import { EventCategory } from '@/models/Event';
 import { useCometaStore } from '@/store/cometaStore';
-import { tabBarHeight } from '@/components/tabBar/tabBar';
 import Checkbox from 'expo-checkbox';
+import { FormProvider, useForm } from 'react-hook-form';
+import { SelectField } from '@/components/input/selectField';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
+import { FieldText } from '@/components/input/textField';
+import Slider from '@react-native-community/slider';
 
 
-// const placeholders: ICityKind = {
-//   homeTown: 'Select your Home Town...',
-//   currentLocation: 'Select your Current Location...'
-// };
+export type IFormValues = {
+  date: string;
+  location: string;
+  distance: number;
+}
+
+export const validationSchema = Yup.object<IFormValues>().shape({
+  date: Yup.string().required('Date is required'),
+  location: Yup.string().required('Location is required'),
+  distance: Yup.number().required('Distance is required'),
+});
+
+export const defaultValues: IFormValues = {
+  date: '',
+  location: '',
+  distance: 5,
+};
 
 export default function FilterScreen(): ReactNode {
-  const router = useRouter();
-  // const { setSelectedCity, cityKind } = useSelectCityByName();
-  const { styles: cityStyles, theme } = useStyles(styleSheet);
-  const [searchValue, setSearchValue] = useState('');
-  const inputRef = useRef<TextInput>(null);
-  // const {
-  //   data,
-  //   isFetching,
-  //   fetchNextPage,
-  //   hasNextPage,
-  //   isFetched
-  // } = useInfiniteQueryGetPaginatedCities(searchValue);
-  // const handleInfiniteFetch = () => !isFetching && hasNextPage && fetchNextPage();
-  // const citiesData = data?.pages.flatMap(page => page.items) ?? [];
-
-  // const renderItem = useCallback(({ item }: { item: ICityDatum }) => (
-  //   <TouchableOpacity
-  //     style={cityStyles.city}
-  //     onPress={() => {
-  //       setSelectedCity({ [cityKind]: item.city });
-  //       router.back();
-  //     }}
-  //   >
-  //     <VStack>
-  //       <HStack $y='center' gap={theme.spacing.sp2}>
-  //         <TextView ellipsis={true} style={{ maxWidth: 160 }}>{item.city}</TextView>
-  //         <FontAwesome name='flag-o' size={20} />
-  //       </HStack>
-  //       <Heading ellipsis={true} style={{ maxWidth: 180 }} size='s4'>{item.country}</Heading>
-  //     </VStack>
-  //     <TextView ellipsis={true} style={{ maxWidth: 100 }}>{item.country}</TextView>
-  //   </TouchableOpacity>
-  // ), [setSelectedCity]);
+  const { theme } = useStyles(styleSheet);
+  const formProps = useForm({
+    defaultValues,
+    resolver: yupResolver<IFormValues>(validationSchema),
+  });
   const storedSearchFilters = useCometaStore(state => state.searchFilters);
   const setStoredSearchFilters = useCometaStore(state => state.AddOrDeleteSearchFilter);
 
@@ -80,42 +61,66 @@ export default function FilterScreen(): ReactNode {
     EventCategory.BRUNCH,
   ];
 
-  const renderItem = useCallback(({ item }: { item: EventCategory }) => {
-    return (
-      <Item
-        title={item}
-        isChecked={storedSearchFilters[item] !== undefined}
-        onSelectOption={setStoredSearchFilters}
-      />
-    );
-  }, []);
-
   return (
     <>
       <Stack.Screen
         options={{
           headerShown: true,
           headerBackTitle: '',
-          headerTitle: () => (
-            <SearchField
-              ref={inputRef}
-              placeholder={''}
-              onSearch={setSearchValue}
-            />
-          )
+          headerTitle: 'Filter'
         }}
       />
-      <FlashList
-        estimatedItemSize={theme.spacing.sp20}
-        data={filterOptions}
-        // onEndReached={handleInfiniteFetch}
-        // onEndReachedThreshold={0.5}
-        disableAutoLayout={true}
-        contentContainerStyle={{ padding: theme.spacing.sp8 }}
-        ListFooterComponentStyle={{ height: tabBarHeight * 3 }} // 280px height
-        keyExtractor={item => item.toString()}
-        renderItem={renderItem}
-      />
+      <ScrollView style={{
+        paddingVertical: theme.spacing.sp4,
+        paddingHorizontal: theme.spacing.sp8,
+        backgroundColor: theme.colors.white100,
+      }}>
+        <FormProvider  {...formProps}>
+          <View style={{ flex: 1, flexWrap: 'wrap', flexDirection: 'row' }}>
+            {filterOptions.map((item, index) => (
+              <Item
+                key={index}
+                title={item}
+                isChecked={storedSearchFilters[item] !== undefined}
+                onSelectOption={setStoredSearchFilters}
+              />
+            ))}
+          </View>
+
+          <View style={{ gap: theme.spacing.sp6, marginTop: theme.spacing.sp4 }}>
+            <SelectField
+              disabled={true}
+              initialValue='qatar'
+              options={[
+                { label: 'Qatar', value: 'qatar' },
+                // { label: 'French', value: 'fr' },
+              ]}
+            />
+            <View>
+              <TextView style={{ fontSize: theme.text.size.s4 }}>
+                Distance
+              </TextView>
+              <Slider
+                disabled={true}
+                style={{ width: 'auto', height: 40 }}
+                value={30}
+                minimumValue={0}
+                maximumValue={100}
+                minimumTrackTintColor={theme.colors.blue100}
+                maximumTrackTintColor={theme.colors.gray200}
+              />
+            </View>
+            <FieldText
+              isDateTimePicker={true}
+              label='Date'
+              name='date'
+              placeholder='Enter your date'
+              editable={false}
+              defaultErrMessage={'Birthday is required'}
+            />
+          </View>
+        </FormProvider>
+      </ScrollView>
     </>
   );
 }
@@ -135,15 +140,14 @@ const styleSheet = createStyleSheet((theme) => ({
   option: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 20,
+    gap: theme.spacing.sp4,
     height: 50,
-    paddingHorizontal: 24,
-    width: '100%',
+    width: '50%',
   },
   titleContainer: {
     alignItems: 'center',
     gap: 8
-  },
+  }
 }));
 
 
