@@ -1,5 +1,5 @@
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { FC, ReactNode } from 'react';
 import { TextView } from '@/components/text/text';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
@@ -12,27 +12,50 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { FieldText } from '@/components/input/textField';
 import Slider from '@react-native-community/slider';
+import { Button } from '@/components/button/button';
+import { tabBarHeight } from '@/components/tabBar/tabBar';
 
 
-export type IFormValues = {
-  date: string;
-  location: string;
-  distance: number;
+const filterOptions = [
+  EventCategory.EDUCATIONAL,
+  EventCategory.CULTURAL,
+  EventCategory.SPORTS,
+  EventCategory.PARTY,
+  EventCategory.CINEMA,
+  EventCategory.SHOWS,
+  EventCategory.GALLERY,
+  EventCategory.PARK,
+  EventCategory.EXHIBITION,
+  EventCategory.MUSEUM,
+  EventCategory.THEATRE,
+  EventCategory.FESTIVAL,
+  EventCategory.CAFE,
+  EventCategory.CLUB,
+  EventCategory.RESTAURANT,
+  EventCategory.CONCERT,
+  EventCategory.BRUNCH,
+];
+
+type IFormValues = {
+  date?: string;
+  location?: string;
+  distance?: number;
 }
 
-export const validationSchema = Yup.object<IFormValues>().shape({
-  date: Yup.string().required('Date is required'),
-  location: Yup.string().required('Location is required'),
-  distance: Yup.number().required('Distance is required'),
+const validationSchema = Yup.object<IFormValues>().shape({
+  date: Yup.string().optional(),
+  location: Yup.string().optional(),
+  distance: Yup.number().optional(),
 });
 
-export const defaultValues: IFormValues = {
+const defaultValues: IFormValues = {
   date: '',
   location: '',
   distance: 5,
 };
 
 export default function FilterScreen(): ReactNode {
+  const router = useRouter();
   const { theme } = useStyles(styleSheet);
   const formProps = useForm({
     defaultValues,
@@ -40,26 +63,6 @@ export default function FilterScreen(): ReactNode {
   });
   const storedSearchFilters = useCometaStore(state => state.searchFilters);
   const setStoredSearchFilters = useCometaStore(state => state.AddOrDeleteSearchFilter);
-
-  const filterOptions = [
-    EventCategory.EDUCATIONAL,
-    EventCategory.CULTURAL,
-    EventCategory.SPORTS,
-    EventCategory.PARTY,
-    EventCategory.CINEMA,
-    EventCategory.SHOWS,
-    EventCategory.GALLERY,
-    EventCategory.PARK,
-    EventCategory.EXHIBITION,
-    EventCategory.MUSEUM,
-    EventCategory.THEATRE,
-    EventCategory.FESTIVAL,
-    EventCategory.CAFE,
-    EventCategory.CLUB,
-    EventCategory.RESTAURANT,
-    EventCategory.CONCERT,
-    EventCategory.BRUNCH,
-  ];
 
   return (
     <>
@@ -81,7 +84,7 @@ export default function FilterScreen(): ReactNode {
               <Item
                 key={index}
                 title={item}
-                isChecked={storedSearchFilters[item] !== undefined}
+                isChecked={!!storedSearchFilters[item]}
                 onSelectOption={setStoredSearchFilters}
               />
             ))}
@@ -118,6 +121,16 @@ export default function FilterScreen(): ReactNode {
               editable={false}
               defaultErrMessage={'Birthday is required'}
             />
+            <Button
+              style={{
+                marginTop: theme.spacing.sp10,
+                marginBottom: tabBarHeight * 3
+              }}
+              variant='primary'
+              onPress={formProps.handleSubmit(() => router.back())}
+            >
+              Apply
+            </Button>
           </View>
         </FormProvider>
       </ScrollView>
