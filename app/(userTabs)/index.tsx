@@ -18,7 +18,7 @@ export default function HomeScreen(): ReactNode {
     isFetched,
     fetchNextPage,
     hasNextPage,
-    isFetching
+    isFetching,
   } = useInfiniteQueryGetEventsHomeScreen(searchQuery);
   const mutateEventLike = useMutationLikeOrDislikeEvent() as UseMutationResult<CreateEventLike>;
   const evenstData = data?.pages.flatMap(page => page.items) || [];

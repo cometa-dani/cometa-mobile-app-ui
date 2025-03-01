@@ -1,5 +1,5 @@
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import { FC, ReactNode } from 'react';
 import { TextView } from '@/components/text/text';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
@@ -14,6 +14,9 @@ import { FieldText } from '@/components/input/textField';
 import Slider from '@react-native-community/slider';
 import { Button } from '@/components/button/button';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
+import { useInfiniteQueryGetEventsHomeScreen } from '@/queries/currentUser/eventHooks';
+import { Notifier } from 'react-native-notifier';
+import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
 
 
 const filterOptions = [
@@ -55,14 +58,40 @@ const defaultValues: IFormValues = {
 };
 
 export default function FilterScreen(): ReactNode {
-  const router = useRouter();
   const { theme } = useStyles(styleSheet);
   const formProps = useForm({
     defaultValues,
     resolver: yupResolver<IFormValues>(validationSchema),
   });
+  const searchQuery = useCometaStore(state => state.searchQuery);
   const storedSearchFilters = useCometaStore(state => state.searchFilters);
   const setStoredSearchFilters = useCometaStore(state => state.AddOrDeleteSearchFilter);
+  const { refetch } = useInfiniteQueryGetEventsHomeScreen(searchQuery);
+
+  const handleSubmit = async (values: IFormValues) => {
+    Notifier.showNotification({
+      duration: 0,
+      title: 'Saving...',
+      description: 'your profile is being saved',
+      Component: InfoToast,
+    });
+    try {
+      await refetch();
+      Notifier.hideNotification();
+      Notifier.showNotification({
+        title: 'Done',
+        description: 'your profile was saved successfully',
+        Component: SucessToast,
+      });
+    } catch (error) {
+      Notifier.hideNotification();
+      Notifier.showNotification({
+        title: 'Error',
+        description: 'something went wrong, try again',
+        Component: ErrorToast,
+      });
+    }
+  };
 
   return (
     <>
@@ -127,7 +156,7 @@ export default function FilterScreen(): ReactNode {
                 marginBottom: tabBarHeight * 3
               }}
               variant='primary'
-              onPress={formProps.handleSubmit(() => router.back())}
+              onPress={formProps.handleSubmit(handleSubmit)}
             >
               Apply
             </Button>
