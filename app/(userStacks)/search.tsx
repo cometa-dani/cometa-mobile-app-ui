@@ -1,5 +1,5 @@
-import { FC, ReactNode } from 'react';
-import { StyleSheet, View, SafeAreaView } from 'react-native';
+import { FC, ReactNode, useCallback } from 'react';
+import { View, SafeAreaView } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { RectButton, } from 'react-native-gesture-handler';
 import { useInfiniteQuerySearchUsers } from '../../queries/search/useInfiniteQuerySearchUsers';
@@ -13,19 +13,39 @@ import { AvatarSkeletonList } from '@/components/skeleton/avatarSkeleton';
 import { useCometaStore } from '@/store/cometaStore';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { useDebouncedState } from '@/hooks/useDebouncedState';
+import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import { VStack } from '@/components/utils/stacks';
 
 
 export default function SearchScreen(): ReactNode {
   const setSelectedTargetUser = useCometaStore(state => state.setTargetUser);
   const [searchUsers, setSearchUsers] = useDebouncedState('');
-  const usersSearch = useInfiniteQuerySearchUsers(searchUsers ?? '@');
-  const usersData = usersSearch.data?.pages.flatMap(page => page.items) || [];
+  const {
+    data,
+    isLoading,
+    hasNextPage,
+    fetchNextPage
+  } = useInfiniteQuerySearchUsers(searchUsers || '@');
+  const usersData = data?.pages.flatMap(page => page.items) || [];
 
   const handleUserInfiniteScroll = () => {
-    if (!usersSearch.isLoading && usersSearch.hasNextPage) {
-      usersSearch.fetchNextPage();
+    if (!isLoading && hasNextPage) {
+      fetchNextPage();
     }
   };
+
+  const renderItem = useCallback(({ item }: IUserItem) => {
+    return (
+      <UserItem
+        key={item.id}
+        user={item}
+        onPress={() => {
+          setSelectedTargetUser(item as IGetTargetUser);
+          router.replace('/(userStacks)/targetUser');
+        }}
+      />
+    );
+  }, []);
 
   return (
     <>
@@ -34,15 +54,19 @@ export default function SearchScreen(): ReactNode {
           headerTitle: 'Search',
           headerTitleAlign: 'center',
           headerSearchBarOptions: {
+            onChangeText: (e) => {
+              setSearchUsers(e.nativeEvent.text || '@');
+            },
             autoFocus: true,
-            placeholder: 'Search for events',
+            placeholder: 'search',
+            inputType: 'text',
           },
         }}
       />
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, height: '100%' }}>
           <Condition
-            if={usersSearch.isLoading}
+            if={isLoading}
             then={(<AvatarSkeletonList items={11} />)}
             else={(
               <FlashList
@@ -50,22 +74,11 @@ export default function SearchScreen(): ReactNode {
                 showsVerticalScrollIndicator={true}
                 onEndReached={handleUserInfiniteScroll}
                 onEndReachedThreshold={0.5}
-                estimatedItemSize={44}
+                estimatedItemSize={60}
                 data={usersData}
                 keyExtractor={item => item.id.toString()}
                 ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
-                renderItem={({ item: user }) => {
-                  return (
-                    <UserItem
-                      key={user.id}
-                      user={user}
-                      onPress={() => {
-                        setSelectedTargetUser(user as IGetTargetUser);
-                        router.replace('/(userStacks)/targetUser');
-                      }}
-                    />
-                  );
-                }}
+                renderItem={renderItem}
               />
             )}
           />
@@ -76,11 +89,16 @@ export default function SearchScreen(): ReactNode {
 }
 
 
+interface IUserItem {
+  item: Omit<IGetBasicUserProfile, 'outgoingFriendships' | 'incomingFriendships'>
+}
+
 interface UserItem {
   user: IGetBasicUserProfile,
   onPress: () => void;
 }
 const UserItem: FC<UserItem> = ({ user, onPress }) => {
+  const { styles } = useStyles(styleSheet);
   return (
     <RectButton
       style={styles.eventItem}
@@ -94,24 +112,30 @@ const UserItem: FC<UserItem> = ({ user, onPress }) => {
         }}
       />
 
-      <TextView
-        ellipsis={true}
-        style={{ flex: 1 }}
+      <VStack
+        $y='center'
+        styles={{ flex: 1 }}
       >
-        {user.username}
-      </TextView>
+        <TextView bold={true} ellipsis={true}>
+          {user?.name}
+        </TextView>
+        <TextView ellipsis={true}>
+          {user?.username}
+        </TextView>
+      </VStack>
     </RectButton>
   );
 };
 
-const styles = StyleSheet.create({
+
+const styleSheet = createStyleSheet((theme) => ({
   eventItem: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 20,
+    gap: theme.spacing.sp4,
     height: 64,
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     width: '100%'
   }
-});
+}));
