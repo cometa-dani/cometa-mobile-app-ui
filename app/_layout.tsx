@@ -177,6 +177,22 @@ function Root(): ReactNode {
                       }
                     }}
                   />
+                  <Stack.Screen
+                    name='(userStacks)/notifications'
+                    options={{
+                      headerShown: true,
+                      presentation: 'formSheet',
+                      headerLargeTitle: false,
+                      sheetAllowedDetents: [0.75, 1],
+                      sheetElevation: 10,
+                      sheetExpandsWhenScrolledToEdge: true,
+                      sheetCornerRadius: 20,
+                      sheetGrabberVisible: true,
+                      contentStyle: {
+                        backgroundColor: theme.colors.white100
+                      }
+                    }}
+                  />
                   <Stack.Screen name='(userTabs)' options={{ animation: 'fade' }} />
                   <Stack.Screen name='(companyTabs)' options={{ animation: 'fade' }} />
                 </Stack>

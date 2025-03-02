@@ -18,6 +18,7 @@ import { VStack } from '@/components/utils/stacks';
 
 
 export default function SearchScreen(): ReactNode {
+  const { theme } = useStyles(styleSheet);
   const setSelectedTargetUser = useCometaStore(state => state.setTargetUser);
   const [searchUsers, setSearchUsers] = useDebouncedState('');
   const {
@@ -71,7 +72,7 @@ export default function SearchScreen(): ReactNode {
             else={(
               <FlashList
                 contentInset={{ bottom: tabBarHeight * 2 }}
-                showsVerticalScrollIndicator={true}
+                contentContainerStyle={{ paddingTop: theme.spacing.sp4 }}
                 onEndReached={handleUserInfiniteScroll}
                 onEndReachedThreshold={0.5}
                 estimatedItemSize={60}
@@ -135,7 +136,7 @@ const styleSheet = createStyleSheet((theme) => ({
     gap: theme.spacing.sp4,
     height: 64,
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: theme.spacing.sp6,
     width: '100%'
   }
 }));

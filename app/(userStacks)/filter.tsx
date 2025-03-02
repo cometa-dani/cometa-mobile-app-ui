@@ -1,4 +1,4 @@
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { Stack } from 'expo-router';
 import { FC, ReactNode } from 'react';
 import { TextView } from '@/components/text/text';
@@ -103,7 +103,7 @@ export default function FilterScreen(): ReactNode {
         }}
       />
       <ScrollView style={{
-        paddingVertical: theme.spacing.sp4,
+        paddingVertical: theme.spacing.sp6,
         paddingHorizontal: theme.spacing.sp8,
         backgroundColor: theme.colors.white100,
       }}>
@@ -119,7 +119,7 @@ export default function FilterScreen(): ReactNode {
             ))}
           </View>
 
-          <View style={{ gap: theme.spacing.sp6, marginTop: theme.spacing.sp4 }}>
+          <View style={{ gap: theme.spacing.sp8, marginTop: theme.spacing.sp8 }}>
             <SelectField
               disabled={true}
               initialValue='qatar'
@@ -152,7 +152,7 @@ export default function FilterScreen(): ReactNode {
             />
             <Button
               style={{
-                marginTop: theme.spacing.sp10,
+                marginTop: theme.spacing.sp11,
                 marginBottom: tabBarHeight * 3
               }}
               variant='primary'
@@ -178,12 +178,13 @@ const styleSheet = createStyleSheet((theme) => ({
   },
   checkbox: {
     borderRadius: 5,
+    pointerEvents: 'none',
   },
   option: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: theme.spacing.sp4,
-    height: 50,
+    gap: theme.spacing.sp2,
+    paddingVertical: theme.spacing.sp2,
     width: '50%',
   },
   titleContainer: {
@@ -212,9 +213,9 @@ const Item: FC<ItemProps> = ({ title, isChecked, onSelectOption }) => {
         color={isChecked ? theme.colors.red100 : undefined}
       />
       <View style={styles.titleContainer}>
-        <Text>
+        <TextView>
           {title}
-        </Text>
+        </TextView>
       </View>
     </TouchableOpacity>
   );
