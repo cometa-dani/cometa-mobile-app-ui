@@ -4,7 +4,7 @@ import {
   useMutationDeleteFriendshipInvitation,
   useMutationSentFriendshipInvitation
 } from '@/queries/currentUser/friendshipHooks';
-import { FC, ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { SafeAreaView, TouchableOpacity, View, } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
@@ -23,71 +23,14 @@ import { useInfiteQueryGetUsersWhoLikedSameEvent } from '@/queries/targetUser/us
 import { Condition } from '@/components/utils/ifElse';
 import { EmptyMessage } from '@/components/empty/Empty';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
-import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
 import { IGetBasicUserProfile, IGetTargetUser, IUsersWhoLikedSameEvent } from '@/models/User';
 import { IFriendship } from '@/models/Friendship';
 import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
 import { ErrorMessage } from '@/queries/errors/errorMessages';
 import { Notifier } from 'react-native-notifier';
 import { ErrorToast } from '@/components/toastNotification/toastNotification';
-const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
+import { AvatarSkeletonList } from '@/components/skeleton/avatarSkeleton';
 
-
-const SkeletonList: FC = () => {
-  const { theme, styles } = useStyles(styleSheet);
-  return (
-    <FlashList
-      data={[1, 2, 3, 4, 5, 6, 7]}
-      estimatedItemSize={60}
-      showsVerticalScrollIndicator={false}
-      alwaysBounceVertical={false}
-      contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
-      ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
-      renderItem={() => (
-        <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
-          <HStack
-            $y='center'
-            gap={theme.spacing.sp4}
-            styles={{ paddingHorizontal: theme.spacing.sp6 }}
-          >
-            <View style={[
-              styles.imgAvatar,
-              { backgroundColor: theme.colors.gray200 }
-            ]} />
-            <VStack
-              $y='center'
-              gap={theme.spacing.sp1}
-              styles={{ flex: 1 }}
-            >
-              <View style={{
-                backgroundColor: theme.colors.gray200,
-                height: 16,
-                width: '60%',
-                flexDirection: 'row',
-                borderRadius: 10
-              }}
-              />
-              <View style={{
-                backgroundColor: theme.colors.gray200,
-                height: 16,
-                width: '80%',
-                flexDirection: 'row',
-                borderRadius: 10
-              }}
-              />
-            </VStack>
-            <View style={{
-              width: 94,
-              backgroundColor: theme.colors.gray200,
-              borderRadius: theme.spacing.sp2,
-              height: 34,
-            }} />
-          </HStack>
-        </MySkeleton>
-      )}
-    />
-  );
-};
 
 const initialTab = 1;
 
@@ -424,7 +367,7 @@ export default function MatchedEventsScreen(): ReactNode {
             <View key={0} style={{ flex: 1 }}>
               <Condition
                 if={!newFriends.isSuccess}
-                then={<SkeletonList />}
+                then={<AvatarSkeletonList />}
                 else={(
                   <Condition
                     if={!newFriendsData?.length}
@@ -461,7 +404,7 @@ export default function MatchedEventsScreen(): ReactNode {
             <View key={1} style={{ flex: 1 }}>
               <Condition
                 if={!newPeople.isSuccess}
-                then={<SkeletonList />}
+                then={<AvatarSkeletonList />}
                 else={(
                   <Condition
                     if={!newPeopleData?.length}

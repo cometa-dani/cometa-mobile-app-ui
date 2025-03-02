@@ -4,7 +4,6 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { Tabs, useRouter } from 'expo-router';
 import { EmptyMessage } from '@/components/empty/Empty';
-import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
 import { Condition } from '@/components/utils/ifElse';
 import { Center, HStack, VStack } from '@/components/utils/stacks';
 import { FlashList } from '@shopify/flash-list';
@@ -12,7 +11,7 @@ import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { Image } from 'expo-image';
 import { Entypo } from '@expo/vector-icons';
 import { TextView } from '@/components/text/text';
-import { FC, ReactNode, useState } from 'react';
+import { FC, useState } from 'react';
 import { useLatestMessages } from '@/queries/chat/useLatestMessages';
 import { IFriendship, ILastMessage } from '@/models/Friendship';
 import { useCometaStore } from '@/store/cometaStore';
@@ -22,6 +21,7 @@ import { useInfiniteQuerySearchFriendsByUserName } from '@/queries/currentUser/f
 import { useDebouncedState } from '@/hooks/useDebouncedState';
 import { Button } from '@/components/button/button';
 import { imageTransition } from '@/constants/vars';
+import { AvatarSkeletonList } from '@/components/skeleton/avatarSkeleton';
 
 
 export default function ChatScreen() {
@@ -33,7 +33,7 @@ export default function ChatScreen() {
     hasNextPage,
     isFetching,
     fetchNextPage
-  } = useInfiniteQuerySearchFriendsByUserName(debouncedTextInput);
+  } = useInfiniteQuerySearchFriendsByUserName(debouncedTextInput || '@');
   const searchFriends = searchedFriendsData?.pages.flatMap((page) => page.items) ?? [];
   const handleInfiniteScroll = () => !isFetching && hasNextPage && fetchNextPage();
   const [isFocused, setIsFocused] = useState(false);
@@ -45,9 +45,9 @@ export default function ChatScreen() {
         options={{
           headerSearchBarOptions: {
             onChangeText: (e) => {
-              setDebouncedTextInput(e.nativeEvent.text);
+              setDebouncedTextInput(e.nativeEvent.text || '@');
             },
-            autoFocus: false,
+            autoFocus: true,
             placeholder: 'search',
             inputType: 'text',
             onFocus: () => setIsFocused(true),
@@ -57,7 +57,7 @@ export default function ChatScreen() {
       />
       <SafeAreaView style={{ flex: 1 }}>
         <Condition
-          if={isFocused && debouncedTextInput}
+          if={isFocused && searchFriends.length}
           then={(
             <FriendsList
               friendships={searchFriends}
@@ -106,7 +106,7 @@ const ChatList: FC = () => {
           )}
         />
       }
-      else={(<SkeletonList />)}
+      else={(<AvatarSkeletonList items={11} />)}
     />
   );
 };
@@ -295,7 +295,7 @@ const FriendsList: FC<IFriendsListProps> = ({ friendships, isFetched, isPending,
           )}
         />
       }
-      else={(<SkeletonList />)}
+      else={(<AvatarSkeletonList items={11} />)}
     />
   );
 };
@@ -375,65 +375,6 @@ function format(date: number | Date | undefined): string {
     )
   );
 }
-
-
-const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
-
-const SkeletonList: FC = () => {
-  const { theme, styles } = useStyles(styleSheet);
-  return (
-    <FlashList
-      data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}
-      estimatedItemSize={60}
-      showsVerticalScrollIndicator={false}
-      alwaysBounceVertical={false}
-      contentContainerStyle={{ paddingVertical: theme.spacing.sp6 }}
-      ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
-      renderItem={() => (
-        <MySkeleton background={theme.colors.gray200} highlight={theme.colors.slate100}>
-          <HStack
-            $y='center'
-            gap={theme.spacing.sp4}
-            styles={{ paddingHorizontal: theme.spacing.sp6 }}
-          >
-            <View style={[
-              styles.imgAvatar,
-              { backgroundColor: theme.colors.gray200 }
-            ]} />
-            <VStack
-              $y='center'
-              gap={theme.spacing.sp1}
-              styles={{ flex: 1 }}
-            >
-              <View style={{
-                backgroundColor: theme.colors.gray200,
-                height: 16,
-                width: '60%',
-                flexDirection: 'row',
-                borderRadius: 10
-              }}
-              />
-              <View style={{
-                backgroundColor: theme.colors.gray200,
-                height: 16,
-                width: '80%',
-                flexDirection: 'row',
-                borderRadius: 10
-              }}
-              />
-            </VStack>
-            <View style={{
-              width: 94,
-              backgroundColor: theme.colors.gray200,
-              borderRadius: theme.spacing.sp2,
-              height: 34,
-            }} />
-          </HStack>
-        </MySkeleton>
-      )}
-    />
-  );
-};
 
 
 const styleSheet = createStyleSheet((theme) => ({

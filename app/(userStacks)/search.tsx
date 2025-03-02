@@ -1,96 +1,75 @@
-import React, { FC, ReactNode, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, SafeAreaView, View, ActivityIndicator } from 'react-native';
+import { FC, ReactNode } from 'react';
+import { StyleSheet, View, SafeAreaView } from 'react-native';
 import { Stack, router } from 'expo-router';
-// import { AppSearchInput } from '../../../legacy_components/textInput/AppSearchInput';
 import { RectButton, } from 'react-native-gesture-handler';
 import { useInfiniteQuerySearchUsers } from '../../queries/search/useInfiniteQuerySearchUsers';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import { defaultImgPlaceholder } from '../../constants/vars';
-import { IGetBasicUserProfile } from '../../models/User';
+import { IGetBasicUserProfile, IGetTargetUser } from '../../models/User';
 import { TextView } from '@/components/text/text';
 import { Condition } from '@/components/utils/ifElse';
-import { Center } from '@/components/utils/stacks';
-import { useStyles } from 'react-native-unistyles';
+import { AvatarSkeletonList } from '@/components/skeleton/avatarSkeleton';
+import { useCometaStore } from '@/store/cometaStore';
+import { tabBarHeight } from '@/components/tabBar/tabBar';
+import { useDebouncedState } from '@/hooks/useDebouncedState';
 
 
 export default function SearchScreen(): ReactNode {
-  const { theme } = useStyles();
-  const [searchUsers, setSearchUsers] = useState('');
-  // debounce search inputs
-  const [debouncedSearchUsers, setDebouncedSearchUsers] = useState('');
-  const usersSearch = useInfiniteQuerySearchUsers(debouncedSearchUsers ?? '@');
+  const setSelectedTargetUser = useCometaStore(state => state.setTargetUser);
+  const [searchUsers, setSearchUsers] = useDebouncedState('');
+  const usersSearch = useInfiniteQuerySearchUsers(searchUsers ?? '@');
+  const usersData = usersSearch.data?.pages.flatMap(page => page.items) || [];
 
-  useEffect(() => {
-    const timeOutId = setTimeout(() => {
-      if (searchUsers.length) {
-        setDebouncedSearchUsers(searchUsers);
-      }
-      else {
-        setDebouncedSearchUsers('@');
-      }
-    }, 1_400);
-    return () => clearTimeout(timeOutId);
-  }, [searchUsers]);
-
-
-  // search
-  const usersData = useMemo(() => (
-    usersSearch.data?.pages.flatMap(page => page.items) || []
-  ), [usersSearch.data?.pages]);
-
-  const handleUserInfiniteScroll = () => !usersSearch.isLoading && usersSearch.hasNextPage && usersSearch.fetchNextPage();
+  const handleUserInfiniteScroll = () => {
+    if (!usersSearch.isLoading && usersSearch.hasNextPage) {
+      usersSearch.fetchNextPage();
+    }
+  };
 
   return (
     <>
       <Stack.Screen
         options={{
-          headerShown: true,
           headerTitle: 'Search',
-          headerTitleAlign: 'center'
+          headerTitleAlign: 'center',
+          headerSearchBarOptions: {
+            autoFocus: true,
+            placeholder: 'Search for events',
+          },
         }}
       />
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.white80 }}>
-        <View style={{ padding: 20, paddingTop: 0, paddingBottom: 0 }}>
-          {/* <AppSearchInput
-            setValue={setSearchUsers}
-            value={searchUsers}
-            placeholder="Search new people..."
-          /> */}
-        </View>
-
-        <Condition
-          if={usersSearch.isLoading}
-          then={(
-            <Center styles={{ flex: 1 }}>
-              <ActivityIndicator
-                size="large"
-                style={{ marginTop: -theme.spacing.sp8 }}
-                color={theme.colors.red100}
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={{ flex: 1, height: '100%' }}>
+          <Condition
+            if={usersSearch.isLoading}
+            then={(<AvatarSkeletonList items={11} />)}
+            else={(
+              <FlashList
+                contentInset={{ bottom: tabBarHeight * 2 }}
+                showsVerticalScrollIndicator={true}
+                onEndReached={handleUserInfiniteScroll}
+                onEndReachedThreshold={0.5}
+                estimatedItemSize={44}
+                data={usersData}
+                keyExtractor={item => item.id.toString()}
+                ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
+                renderItem={({ item: user }) => {
+                  return (
+                    <UserItem
+                      key={user.id}
+                      user={user}
+                      onPress={() => {
+                        setSelectedTargetUser(user as IGetTargetUser);
+                        router.replace('/(userStacks)/targetUser');
+                      }}
+                    />
+                  );
+                }}
               />
-            </Center>
-          )}
-          else={(
-            <FlashList
-              showsVerticalScrollIndicator={true}
-              onEndReached={handleUserInfiniteScroll}
-              onEndReachedThreshold={0.5}
-              estimatedItemSize={54}
-              contentContainerStyle={{ paddingTop: 0 }}
-              data={usersData}
-              keyExtractor={item => item.id.toString()}
-              renderItem={({ item: user }) => {
-                return (
-                  <UserItem
-                    key={user.id}
-                    user={user}
-                    onPress={() => router.push(`/targetUserProfile/${user.uid}`)}
-                  />
-                );
-              }}
-            />
-          )}
-        />
+            )}
+          />
+        </View>
       </SafeAreaView>
     </>
   );
@@ -108,7 +87,7 @@ const UserItem: FC<UserItem> = ({ user, onPress }) => {
       onPress={() => onPress()}
     >
       <Image
-        style={{ width: 42, height: 42, borderRadius: 100 }}
+        style={{ width: 48, height: 48, borderRadius: 100 }}
         source={{
           thumbhash: user.photos[0]?.placeholder,
           uri: user.photos[0]?.url ?? defaultImgPlaceholder
@@ -117,13 +96,10 @@ const UserItem: FC<UserItem> = ({ user, onPress }) => {
 
       <TextView
         ellipsis={true}
-        style={{
-          flex: 1,
-        }}
+        style={{ flex: 1 }}
       >
         {user.username}
       </TextView>
-
     </RectButton>
   );
 };
