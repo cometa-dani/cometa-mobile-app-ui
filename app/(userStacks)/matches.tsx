@@ -141,58 +141,59 @@ export default function MatchedEventsScreen(): ReactNode {
     cancelFriendship.mutate(targetUser.id);
   };
 
-  const renderNewFriend = useCallback(({ item: { friend, id } }: { item: { friend: IGetBasicUserProfile, id: number } }) => (
-    <HStack
-      $y='center'
-      gap={theme.spacing.sp4}
-      styles={{
-        paddingHorizontal: theme.spacing.sp6,
-        paddingBottom: theme.spacing.sp6
-      }}
-    >
-      <TouchableOpacity
-        onPress={() => {
-          setSelectedTargetUser(friend as IGetTargetUser);
-          router.push('/(userStacks)/targetUser');
-        }}
-        style={{
-          flex: 1, flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: theme.spacing.sp4
+  const renderNewFriend = useCallback(
+    ({ item: { friend, id } }: { item: { friend: IGetBasicUserProfile, id: number } }) => (
+      <HStack
+        $y='center'
+        gap={theme.spacing.sp4}
+        styles={{
+          paddingHorizontal: theme.spacing.sp6,
+          paddingBottom: theme.spacing.sp6
         }}
       >
-        <Image
-          recyclingKey={friend?.uid}
-          transition={imageTransition}
-          source={{ uri: friend?.photos.at(0)?.url }}
-          placeholder={{ thumbhash: friend?.photos.at(0)?.placeholder }}
-          style={styles.imgAvatar}
-        />
-        <VStack
-          $y='center'
-          styles={{ flex: 1 }}
+        <TouchableOpacity
+          onPress={() => {
+            setSelectedTargetUser(friend as IGetTargetUser);
+            router.push('/(userStacks)/targetUser');
+          }}
+          style={{
+            flex: 1, flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: theme.spacing.sp4
+          }}
         >
-          <TextView bold={true} ellipsis={true}>
-            {friend?.name}
-          </TextView>
-          <TextView ellipsis={true}>
-            {friend?.username}
-          </TextView>
-        </VStack>
-      </TouchableOpacity>
+          <Image
+            recyclingKey={friend?.uid}
+            transition={imageTransition}
+            source={{ uri: friend?.photos.at(0)?.url }}
+            placeholder={{ thumbhash: friend?.photos.at(0)?.placeholder }}
+            style={styles.imgAvatar}
+          />
+          <VStack
+            $y='center'
+            styles={{ flex: 1 }}
+          >
+            <TextView bold={true} ellipsis={true}>
+              {friend?.name}
+            </TextView>
+            <TextView ellipsis={true}>
+              {friend?.username}
+            </TextView>
+          </VStack>
+        </TouchableOpacity>
 
-      <Button
-        style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 100 }}
-        onPress={() => {
-          setSelectedTargetUser(friend as IGetTargetUser);
-          router.push(`/(userStacks)/chat?friendshipId=${id}`);
-        }}
-        variant='gray-alt'>
-        Chat
-      </Button>
-    </HStack>
-  ), []);
+        <Button
+          style={{ padding: 6, borderRadius: theme.spacing.sp2, width: 100 }}
+          onPress={() => {
+            setSelectedTargetUser(friend as IGetTargetUser);
+            router.push(`/(userStacks)/chat?friendshipId=${id}`);
+          }}
+          variant='gray-alt'>
+          Chat
+        </Button>
+      </HStack>
+    ), []);
 
   const renderNewPeople = useCallback(({ item: { user: targetUser } }: { item: { user: IGetBasicUserProfile } }) => {
     const { hasOutgoingFriendshipInvitation, hasIncommingFriendshipInvitation } = targetUser;

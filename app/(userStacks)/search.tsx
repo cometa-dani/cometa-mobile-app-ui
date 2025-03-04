@@ -54,6 +54,7 @@ export default function SearchScreen(): ReactNode {
         options={{
           headerTitle: 'Search',
           headerTitleAlign: 'center',
+          headerShown: true,
           headerSearchBarOptions: {
             onChangeText: (e) => {
               setSearchUsers(e.nativeEvent.text || '@');
@@ -65,7 +66,7 @@ export default function SearchScreen(): ReactNode {
         }}
       />
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flex: 1, height: '100%' }}>
+        <View style={{ flex: 1 }}>
           <Condition
             if={isLoading}
             then={(<AvatarSkeletonList items={11} />)}
@@ -75,7 +76,7 @@ export default function SearchScreen(): ReactNode {
                 contentContainerStyle={{ paddingTop: theme.spacing.sp4 }}
                 onEndReached={handleUserInfiniteScroll}
                 onEndReachedThreshold={0.5}
-                estimatedItemSize={60}
+                estimatedItemSize={50}
                 data={usersData}
                 keyExtractor={item => item.id.toString()}
                 ListFooterComponentStyle={{ height: tabBarHeight * 3 }}

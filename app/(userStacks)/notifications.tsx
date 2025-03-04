@@ -1,5 +1,5 @@
-import { StyleSheet, SafeAreaView, View } from 'react-native';
-import { Stack, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { SafeAreaView, View } from 'react-native';
+import { Stack } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import { BaseButton, RectButton } from 'react-native-gesture-handler';
@@ -14,67 +14,75 @@ import { TextView } from '@/components/text/text';
 import { Condition } from '@/components/utils/ifElse';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { AvatarSkeletonList } from '@/components/skeleton/avatarSkeleton';
+import { useNotifications } from '@/queries/notification/useNotifications';
+import { tabBarHeight } from '@/components/tabBar/tabBar';
 
 
 export default function NotificationsScreen(): ReactNode {
-  const { theme } = useStyles(styleSheet);
-  // const loggedInUserUUID = useLocalSearchParams<{ uuid: string }>()['uuid'];
-  // const notificationsList = useCometaStore(state => state.notificationsList) ?? [];
-
-  // const handleDeleteNotification = (notification: INotificationData) => {
-  //   if (!notification?.chatUUID) return;
-  //   // notificationService.deleteNotification(loggedInUserUUID, notification.user._id);
-  // };
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const lastMessage = notificationsList.at(0);
-  //     if (!lastMessage || lastMessage?.user?.isSeen) return;
-  //     // notificationService.setNotificationAsSeen(loggedInUserUUID, lastMessage.user._id)
-  //     //   .then()
-  //     //   .catch();
-  //   }, [])
-  // );
-
+  const { theme, styles } = useStyles(styleSheet);
+  const { data, isLoading } = useNotifications();
+  console.log(data);
   return (
     <>
       <Stack.Screen
         options={{
+          headerShown: true,
           headerTitle: 'Notifications',
           headerTitleAlign: 'center'
         }}
       />
       <SafeAreaView style={{ flex: 1 }}>
-        <TextView>Hello</TextView>
-        <View style={{ flex: 1, height: '100%' }}>
-          {/* <Condition
-                    if={isLoading}
-                    then={(<AvatarSkeletonList items={11} />)}
-                    else={(
-                      <FlashList
-                        contentInset={{ bottom: tabBarHeight * 2 }}
-                        contentContainerStyle={{ paddingTop: theme.spacing.sp4 }}
-                        onEndReached={handleUserInfiniteScroll}
-                        onEndReachedThreshold={0.5}
-                        estimatedItemSize={60}
-                        data={usersData}
-                        keyExtractor={item => item.id.toString()}
-                        ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
-                        renderItem={renderItem}
+        <Condition
+          if={isLoading}
+          then={(<AvatarSkeletonList items={11} />)}
+          else={(
+            <FlashList
+              contentInset={{ bottom: tabBarHeight * 2 }}
+              contentContainerStyle={{ paddingTop: theme.spacing.sp4 }}
+              onEndReachedThreshold={0.5}
+              estimatedItemSize={40}
+              data={data}
+              keyExtractor={item => item.id.toString()}
+              ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
+              renderItem={({ item }) => (
+                <Swipeable
+                  // containerStyle={styles.container}
+                  renderRightActions={() => (
+                    <BaseButton
+                      onPress={() => console.log('delete')}
+                      style={styles.deleteButton}
+                    >
+                      <TextView>
+                        delete
+                      </TextView>
+                    </BaseButton>
+                  )}
+                >
+                  <View style={styles.container}>
+                    <View style={styles.imageContainer}>
+                      <Image
+                        source={{ uri: item.sender?.photos[0]?.url }}
+                        style={styles.image}
                       />
-                    )}
-                  /> */}
-        </View>
+                    </View>
+                    <View style={styles.titleContainer}>
+                      <TextView>{item?.status}</TextView>
+                    </View>
+                  </View>
+                </Swipeable>
+              )}
+            />
+          )}
+        />
       </SafeAreaView>
     </>
   );
 }
 
 
-const styleSheet = createStyleSheet(() => ({
+const styleSheet = createStyleSheet((theme) => ({
   container: {
     alignItems: 'center',
-    backgroundColor: 'white',
     flexDirection: 'row',
     gap: 16,
     paddingHorizontal: 24,

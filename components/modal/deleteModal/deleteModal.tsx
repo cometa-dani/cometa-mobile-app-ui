@@ -58,7 +58,10 @@ export const DeleteModal: FC<IProps> = ({ onClose, open, onAccept, title, btnTex
               </Button>
               <Button
                 style={{ flex: 1 / 2 }}
-                onPress={onAccept}
+                onPress={() => {
+                  onClose();
+                  onAccept();
+                }}
                 variant='primary'
               >
                 {btnText}
