@@ -90,6 +90,23 @@ export const useNotifications = (limit = 100) => {
             });
           });
         }
+      )
+      .on<IFriendship>(
+        'postgres_changes',
+        {
+          schema: 'public',
+          event: 'DELETE',
+          table: 'Friendship',
+          filter: `sender_id=eq.${currentUser.id}`
+        },
+        (payload) => {
+          console.log('DELETE', payload.new);
+          // queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
+          //   if (!oldData) return [];
+          //   // delete
+          //   return oldData.filter(friendship => friendship.id !== payload.new.id);
+          // });
+        }
       );
 
     return () => {

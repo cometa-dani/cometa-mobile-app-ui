@@ -16,6 +16,7 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { AvatarSkeletonList } from '@/components/skeleton/avatarSkeleton';
 import { useNotifications } from '@/queries/notification/useNotifications';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
+import { FontAwesome } from '@expo/vector-icons';
 
 
 export default function NotificationsScreen(): ReactNode {
@@ -31,7 +32,7 @@ export default function NotificationsScreen(): ReactNode {
           headerTitleAlign: 'center'
         }}
       />
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.white100 }}>
         <Condition
           if={isLoading}
           then={(<AvatarSkeletonList items={11} />)}
@@ -46,16 +47,19 @@ export default function NotificationsScreen(): ReactNode {
               ListFooterComponentStyle={{ height: tabBarHeight * 3 }}
               renderItem={({ item }) => (
                 <Swipeable
-                  // containerStyle={styles.container}
-                  renderRightActions={() => (
-                    <BaseButton
-                      onPress={() => console.log('delete')}
+                  renderRightActions={(_a, _b, swipeable) => (
+                    <RectButton
+                      onPress={() => {
+                        swipeable?.close();
+                      }}
                       style={styles.deleteButton}
                     >
-                      <TextView>
-                        delete
-                      </TextView>
-                    </BaseButton>
+                      <FontAwesome
+                        name='trash-o'
+                        size={22}
+                        color={theme.colors.red100}
+                      />
+                    </RectButton>
                   )}
                 >
                   <View style={styles.container}>
@@ -65,9 +69,10 @@ export default function NotificationsScreen(): ReactNode {
                         style={styles.image}
                       />
                     </View>
-                    <View style={styles.titleContainer}>
-                      <TextView>{item?.status}</TextView>
-                    </View>
+                    <TextView>
+                      <TextView bold={true}>{item?.sender.name}</TextView>
+                      <TextView> has {item?.status}</TextView>
+                    </TextView>
                   </View>
                 </Swipeable>
               )}
@@ -82,11 +87,16 @@ export default function NotificationsScreen(): ReactNode {
 
 const styleSheet = createStyleSheet((theme) => ({
   container: {
+    backgroundColor: theme.colors.white100,
+    flex: 1,
+    width: '100%',
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 16,
-    paddingHorizontal: 24,
-    paddingVertical: 14
+    paddingHorizontal: theme.spacing.sp6,
+    paddingVertical: theme.spacing.sp4,
+    gap: theme.spacing.sp7,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.gray50,
   },
   deleteButton: {
     borderRadius: 18,
@@ -102,9 +112,6 @@ const styleSheet = createStyleSheet((theme) => ({
     width: 46
   },
   titleContainer: {
-    alignItems: 'center',
-    flex: 1,
     justifyContent: 'center',
-    marginBottom: 24
   },
 }));
