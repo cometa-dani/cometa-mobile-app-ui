@@ -16,7 +16,12 @@ export const useNotifications = (limit = 100) => {
   const query = useQuery({
     queryKey: [QueryKeys.GET_NOTIFICATIONS, currentUser?.id],
     select(data) {
-      return data.filter(frindship => frindship.senderId !== currentUser?.id) || [];
+      return data.filter(friendship => (
+        friendship.receiverId === currentUser?.id && friendship.status === 'PENDING')
+        ||
+        (friendship.senderId === currentUser?.id) && friendship.status === 'ACCEPTED'
+      )
+        || [];
     },
     enabled: !!currentUser?.id,
     queryFn: () => notificationService.getLatestByUser(currentUser?.id as number, limit)
@@ -25,60 +30,9 @@ export const useNotifications = (limit = 100) => {
   // Subscribe to real-time updates
   useEffect(() => {
     if (!currentUser?.id) return;
-    // const handleSubscription = async (payload: RealtimePostgresChangesPayload<IFriendship>) => {
-    //   // const oldData = queryClient.getQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id]);
-    //   // const foundFriendship = oldData?.find(friendship => friendship.id === payload.new.id);
-    //   // try {
-    //   //   if (!foundFriendship) {
-    //   //     await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NOTIFICATIONS, currentUser.id] });
-    //   //     return;
-    //   //   }
-    //   // } catch (error) {
-    //   //   return null;
-    //   // }
 
-
-    //   // // Update the messages for the specific friendship
-    //   // queryClient.setQueryData(
-    //   //   [QueryKeys.GET_FRIENDSHIP_MESSAGES, foundFriendship.id],
-    //   //   payload.new.messages || []
-    //   // );
-
-    //   if (payload.eventType === 'UPDATE') {
-    //     console.log('UPDATE', payload.new);
-    //     queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
-    //       if (!oldData) return [];
-    //       // update
-    //       return oldData.map(friendship => {
-    //         if (friendship.id === payload.new.id) {
-    //           return payload.new as unknown as INotification;
-    //         }
-    //         return friendship;
-    //       });
-    //     });
-    //   }
-    //   if (payload.eventType === 'INSERT') {
-    //     console.log('INSERT', payload.new);
-    //     queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
-    //       if (!oldData) return [];
-    //       // insert
-    //       return [payload.new as unknown as INotification, ...oldData];
-    //     });
-    //   }
-    //   if (payload.eventType === 'DELETE') {
-    //     console.log('DELETE', payload.new);
-    //     // queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
-    //     //   if (!oldData) return [];
-    //     //   // delete
-    //     //   return oldData.filter(friendship => friendship.id !== payload.new.id);
-    //     // });
-    //   }
-    // };
-
-    // Subscribe to friendships where user is sender
-
-    const senderChannel = supabase
-      .channel('notifications')
+    const receiverChannel = supabase
+      .channel('notifications_receiver')
       .on<IFriendship>(
         'postgres_changes',
         {
@@ -92,27 +46,6 @@ export const useNotifications = (limit = 100) => {
             if (!oldData) return [];
             // insert
             return [payload.new as unknown as INotification, ...oldData];
-          });
-        }
-      )
-      .on<IFriendship>(
-        'postgres_changes',
-        {
-          schema: 'public',
-          event: 'UPDATE',
-          table: 'Friendship',
-          filter: `sender_id=eq.${currentUser.id}`
-        },
-        (payload) => {
-          queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
-            if (!oldData) return [];
-            // update
-            return oldData.map(friendship => {
-              if (friendship.id === payload.new.id) {
-                return payload.new as unknown as INotification;
-              }
-              return friendship;
-            });
           });
         }
       )
@@ -135,7 +68,32 @@ export const useNotifications = (limit = 100) => {
       )
       .subscribe();
 
+    const senderChannel = supabase
+      .channel('notifications_sender')
+      .on<IFriendship>(
+        'postgres_changes',
+        {
+          schema: 'public',
+          event: 'UPDATE',
+          table: 'Friendship',
+          filter: `sender_id=eq.${currentUser.id}`
+        },
+        (payload) => {
+          queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
+            if (!oldData) return [];
+            // update
+            return oldData.map(friendship => {
+              if (friendship.id === payload.new.id) {
+                return payload.new as unknown as INotification;
+              }
+              return friendship;
+            });
+          });
+        }
+      );
+
     return () => {
+      supabase.removeChannel(receiverChannel);
       supabase.removeChannel(senderChannel);
     };
   }, [currentUser?.id]);

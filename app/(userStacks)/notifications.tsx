@@ -21,7 +21,7 @@ import { tabBarHeight } from '@/components/tabBar/tabBar';
 export default function NotificationsScreen(): ReactNode {
   const { theme, styles } = useStyles(styleSheet);
   const { data, isLoading } = useNotifications();
-  console.log(data);
+  // console.log(data);
   return (
     <>
       <Stack.Screen
