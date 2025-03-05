@@ -2,14 +2,9 @@ import { SafeAreaView, View } from 'react-native';
 import { Stack } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
-import { BaseButton, RectButton } from 'react-native-gesture-handler';
-// import { FontAwesome } from '@expo/vector-icons';
-// import { gray_50, red_100 } from '../../../constants/colors';
-import { useCometaStore } from '../../store/cometaStore';
+import { RectButton } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-// import notificationService from '../../services/notificationService';
-// import { INotificationData } from '../../store/slices/notificationSlice';
-import { ReactNode, useCallback } from 'react';
+import { FC, ReactNode } from 'react';
 import { TextView } from '@/components/text/text';
 import { Condition } from '@/components/utils/ifElse';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
@@ -17,12 +12,14 @@ import { AvatarSkeletonList } from '@/components/skeleton/avatarSkeleton';
 import { useNotifications } from '@/queries/notification/useNotifications';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { FontAwesome } from '@expo/vector-icons';
+import { INotification } from '@/models/Notification';
+import { useCometaStore } from '@/store/cometaStore';
 
 
 export default function NotificationsScreen(): ReactNode {
   const { theme, styles } = useStyles(styleSheet);
   const { data, isLoading } = useNotifications();
-  // console.log(data);
+  const { userProfile } = useCometaStore();
   return (
     <>
       <Stack.Screen
@@ -62,18 +59,10 @@ export default function NotificationsScreen(): ReactNode {
                     </RectButton>
                   )}
                 >
-                  <View style={styles.container}>
-                    <View style={styles.imageContainer}>
-                      <Image
-                        source={{ uri: item.sender?.photos[0]?.url }}
-                        style={styles.image}
-                      />
-                    </View>
-                    <TextView>
-                      <TextView bold={true}>{item?.sender.name}</TextView>
-                      <TextView> has {item?.status}</TextView>
-                    </TextView>
-                  </View>
+                  <Message
+                    item={item}
+                    isCurrentUser={userProfile?.id === item.senderId}
+                  />
                 </Swipeable>
               )}
             />
@@ -85,16 +74,78 @@ export default function NotificationsScreen(): ReactNode {
 }
 
 
+interface MessageProps {
+  item: INotification;
+  isCurrentUser: boolean;
+}
+const Message: FC<MessageProps> = ({ item, isCurrentUser = false }) => {
+  const { styles } = useStyles(styleSheet);
+  const pending = 'wants to match with you!';
+  const newMatch = 'is your new match!';
+
+  if (item.status === 'PENDING') {
+    return (
+      <View style={styles.container}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: item.sender?.photos[0]?.url }}
+            style={styles.image}
+          />
+        </View>
+
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', flex: 1 }}>
+          <TextView bold={true}> {item?.sender.name} </TextView>
+          <TextView> {pending} </TextView>
+        </View>
+      </View>
+    );
+  }
+  if (item.status === 'ACCEPTED' && isCurrentUser) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: item.receiver?.photos[0]?.url }}
+            style={styles.image}
+          />
+        </View>
+
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', flex: 1 }}>
+          <TextView bold={true}> {item?.receiver.name} </TextView>
+          <TextView> {newMatch} </TextView>
+        </View>
+      </View>
+    );
+  }
+  if (item.status === 'ACCEPTED' && !isCurrentUser) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: item.sender?.photos[0]?.url }}
+            style={styles.image}
+          />
+        </View>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', flex: 1 }}>
+          <TextView> Your match request with </TextView>
+          <TextView bold={true}>{item?.sender.name}</TextView>
+          <TextView> was accepted! </TextView>
+        </View>
+      </View>
+    );
+  }
+};
+
+
 const styleSheet = createStyleSheet((theme) => ({
   container: {
     backgroundColor: theme.colors.white100,
     flex: 1,
-    width: '100%',
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: theme.spacing.sp6,
     paddingVertical: theme.spacing.sp4,
-    gap: theme.spacing.sp7,
+    gap: theme.spacing.sp4,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.gray50,
   },

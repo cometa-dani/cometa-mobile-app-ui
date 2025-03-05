@@ -19,7 +19,7 @@ export const useNotifications = (limit = 100) => {
       return data.filter(friendship => (
         friendship.receiverId === currentUser?.id && friendship.status === 'PENDING')
         ||
-        (friendship.senderId === currentUser?.id) && friendship.status === 'ACCEPTED'
+        friendship.status === 'ACCEPTED'
       )
         || [];
     },
