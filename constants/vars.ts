@@ -1,4 +1,4 @@
-export const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.1.3:3000/api/v1';
+export const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://4qkgc3d8fp.eu-west-3.awsapprunner.com/api/v1';
 export const nodeEnv = process.env.EXPO_NODE_ENV || 'development';
 
 // supabase
