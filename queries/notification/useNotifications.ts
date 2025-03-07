@@ -58,7 +58,7 @@ export const useNotifications = (limit = 100) => {
           filter: `receiver_id=eq.${currentUser.id}`
         },
         (payload) => {
-          console.log('DELETE', payload.new);
+          // console.log('DELETE', payload.new);
           // queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
           //   if (!oldData) return [];
           //   // delete
@@ -100,7 +100,7 @@ export const useNotifications = (limit = 100) => {
           filter: `sender_id=eq.${currentUser.id}`
         },
         (payload) => {
-          console.log('DELETE', payload.new);
+          // console.log('DELETE', payload.new);
           // queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
           //   if (!oldData) return [];
           //   // delete
