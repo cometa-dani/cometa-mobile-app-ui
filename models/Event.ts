@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 import { EventLike } from './EventLike';
-import { Location } from './Localization';
-import { Organization } from './Organization';
-import { Photo } from './Photo';
+import { ILocation } from './Localization';
+import { IOrganization } from './Organization';
+import { IPhoto } from './Photo';
+import { IPaginated } from './utils/Paginated';
 
 
 export enum EventCategory {
@@ -35,30 +36,12 @@ export type CreateEventLike =
 
 
 export interface MatchedEvents {
-  event: LikeableEvent
-  // Pick<LikableEvent, (
-  //   'id' |
-  //   'createdAt' |
-  //   'updatedAt' |
-  //   'date' |
-  //   'name' |
-  //   'description' |
-  //   'photos' |
-  //   'locationId' |
-  //   'organizationId' |
-  //   'categories'
-  // )>;
+  event: ILikeableEvent
 }
 
-export interface GetAllLatestEventsWithPagination {
-  events: LikeableEvent[];
-  totalEvents: number;
-  nextCursor: number;
-  hasNextCursor: boolean;
-  eventsPerPage: number;
-}
+export interface IGetLatestPaginatedEvents extends IPaginated<ILikeableEvent> { }
 
-export interface LikeableEvent {
+export interface ILikeableEvent {
   id: number;
   createdAt: string;
   updatedAt: string;
@@ -68,16 +51,24 @@ export interface LikeableEvent {
   categories: EventCategory[];
   locationId?: number;
   organizationId?: number;
-  organization?: Organization;
-  location?: Location;
+  organization?: IOrganization;
+  location?: ILocation;
 
-  photos: Array<Photo>; // 1 or 3
+  photos: Array<IPhoto>; // 1 or 3
   likes?: EventLike[]
-  _count: Count;
+  _count: ICount;
   isLiked: boolean;
 }
 
-export interface Count {
+export interface ICount {
   likes: number;
   shares: number
+}
+
+export interface IEvent extends Omit<ILikeableEvent, '_count' | 'isLiked'> { }
+
+export interface ILikedEvent {
+  id: number;
+  event: IEvent;
+  isLiked: boolean;
 }

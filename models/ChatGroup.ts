@@ -1,35 +1,21 @@
-// id        String @id @default (dbgenerated("gen_random_uuid()")) @db.Uuid // TODO:   Sintrg @id @default(uuid())
-//   createdAt DateTime @default (now()) @map("created_at")
-//   updatedAt DateTime @updatedAt @map("updated_at")
+import { IPhoto } from './Photo';
+import { IGetBasicUserProfile } from './User';
 
-import { Photo } from './Photo';
-import { GetBasicUserProfile } from './User';
-
-//   name             String
-//   description      String ?
-//   photo            ChatGroupPhoto ? @relation(fields: [chatGroupPhotoId], references: [id])
-//   chatGroupPhotoId Int ? @unique @map("chat_group_photo_id")
-//   // uuid             String          @unique // remove in the future for @id with uuid()
-//   members          User[]          @relation("ChatGroupMember")
-//   admin            User @relation("ChatGroupAdmin", fields: [adminId], references: [id])
-//   adminId          Int
-
-
-export interface ChatGroup {
+export interface IChatGroup {
   id: string;
   createdAt: Date;
   updatedAt: Date;
   name: string;
   description?: string;
-  photo?: Photo;
+  photo?: IPhoto;
   chatGroupPhotoId?: number;
   // members: GetBasicUserProfile[];
-  admin: GetBasicUserProfile;
+  admin: IGetBasicUserProfile;
   adminId: number;
 }
 
-export interface GetChatGroupById extends ChatGroup {
+export interface IGetChatGroupById extends IChatGroup {
   members: {
-    [key: string]: GetBasicUserProfile
+    [key: string]: IGetBasicUserProfile
   }
 }

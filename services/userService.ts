@@ -1,21 +1,26 @@
-import { GetBasicUserProfile, GetDetailedUserProfile, GetTargetUser, GetUsersWithPagination, LoggedUserClientState } from '../models/User';
 import { RestApiService } from './restService';
-import { ImagePickerAsset } from 'expo-image-picker';
 import FormData from 'form-data';
-import uuid from 'react-native-uuid';
-import { Photo } from '../models/Photo';
+import { AxiosInstance } from 'axios';
+import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid';
+import {
+  ICreateUser,
+  IGetBasicUserProfile,
+  IGetDetailedUserProfile,
+  IGetTargetUser,
+  IGetPaginatedUsers,
+  IUserOnboarding,
+  IUpdateUser
+} from '../models/User';
+import { Platform } from 'react-native';
+import * as Crypto from 'expo-crypto';
 
 
-type CreateUser = Pick<LoggedUserClientState, (
-  'uid' |
-  'email' |
-  'username' |
-  'name' |
-  'birthday'
-)>
+class UsersService {
+  private http: AxiosInstance;
 
-
-class UsersService extends RestApiService {
+  constructor() {
+    this.http = RestApiService.getInstance().http;
+  }
 
   /**
    * TODO:
@@ -23,121 +28,104 @@ class UsersService extends RestApiService {
    * @param userFields  can be either the loggedInUser or the targetUser
    * @returns
    */
-  public findUniqueByQueryParams(userFields: Partial<LoggedUserClientState>) {
-    return this.http.get<GetBasicUserProfile>('/users', { params: userFields });
+  public findUniqueByQueryParams(userFields: Partial<IUserOnboarding>) {
+    return this.http.get<IGetBasicUserProfile>('/users', { params: userFields });
   }
 
-
-  public searchByUsernameWithPagination(username: string, cursor: number, limit = 10, loggedInUserAccessToken: string) {
-    const payload = { params: { username, limit, cursor }, headers: this.configAuthHeader(loggedInUserAccessToken).headers };
-    return this.http.get<GetUsersWithPagination>('/users/search', payload);
+  public searchByUsernameWithPagination(username: string, cursor: number, limit = 10) {
+    const payload = { params: { username, limit, cursor } };
+    return this.http.get<IGetPaginatedUsers>('/users/search', payload);
   }
 
-
-  public create(payload: CreateUser) {
-    return this.http.post<GetBasicUserProfile>('/users', payload);
+  public create(payload: ICreateUser) {
+    return this.http.post<IGetBasicUserProfile>('/users', payload);
   }
 
+  public updateById(loggedInUserID: number, payload: Partial<IUpdateUser>) {
+    return this.http.patch<IGetBasicUserProfile>(`/users/${loggedInUserID}`, payload);
+  }
 
   /**
    *
-   * @param {string} userUuid can be either the loggedInUser or the targetUser
+   * @param {string} uuid can be either the loggedInUser or the targetUser
    * @param {string} loggedInUserAccessToken
    * @returns
    */
-  public getUserInfoByUidWithLikedEvents(userUuid: string) {
-    return this.http.get<GetDetailedUserProfile>(`/users/${userUuid}`);
+  public getCurentUserProfile(uuid: string) {
+    return this.http.get<IGetDetailedUserProfile>(`/users/${uuid}`);
   }
-
 
   /**
  *
- * @param {string} targetUser can be either the loggedInUser or the targetUser
+ * @param {string} uuid can be either the loggedInUser or the targetUser
  * @param {string} loggedInUserAccessToken
  * @returns
  */
-  public getTargetUserProfile(targetUser: string, loggedInUserAccessToken: string) {
-    return this.http.get<GetTargetUser>(`/users/${targetUser}/targets`, this.configAuthHeader(loggedInUserAccessToken));
+  public getTargetUserProfile(uuid: string) {
+    return this.http.get<IGetTargetUser>(`/users/${uuid}/targets`,);
   }
 
-
-  public updateById(loggedInUserID: number, payload: Partial<LoggedUserClientState>) {
-    let updatedPayload;
-
-    if (payload.languages?.length) {
-      updatedPayload = {
-        ...payload,
-        languages: (payload.languages as string[]).join(',')
-      };
-    }
-    else {
-      updatedPayload = payload;
-    }
-    return this.http.patch<GetBasicUserProfile>(`/users/${loggedInUserID}`, updatedPayload);
-  }
-
-
-  public delete(loggedInUserID: number) {
+  public deleteUserById(loggedInUserID: number) {
     return this.http.delete(`/users/${loggedInUserID}`);
   }
 
-
-  public uploadOrUpdateAvatarImgByLoggedInUserID(userID: number, pickedImgFile: ImagePickerAsset) {
+  public async uploadUserPhotos(userId: number, pickedAssets: IPhotoPlaceholder[]) {
     const formData = new FormData();
-    const fileExtension = pickedImgFile.uri.split('.').at(-1);
-    const headers = { 'Content-Type': 'multipart/form-data', };
-    const imgFile = {
-      uri: pickedImgFile.uri,
-      type: `${pickedImgFile.type}/${fileExtension}`,
-      name: uuid.v4(),
-    };
-    formData.append('file', imgFile);
-
-    return this.http.patch<GetBasicUserProfile>(`/users/${userID}/avatar`, formData, { headers });
-  }
-
-
-  public uploadManyPhotosByLoggedInUserId(loggedInUserID: number, pickedImgFiles: Pick<Photo, 'uuid' | 'url'>[]) {
-    const formData = new FormData();
-    const headers = { 'Content-Type': 'multipart/form-data', };
-
-    pickedImgFiles.forEach((pickedImgFile, index) => {
-      const fileExtension = pickedImgFile.url.split('.').at(-1);
-      const imgFile = ({
-        uri: pickedImgFile.url,
-        type: `image/${fileExtension}`,
-        name: pickedImgFile.uuid ?? uuid.v4(),
+    pickedAssets.forEach((pickedImgFile) => {
+      const uri = pickedImgFile.fromFileSystem?.uri ?? '';
+      const mimeType = pickedImgFile.fromFileSystem?.mimeType ?? '';
+      const fileExtension = uri.split('.').at(-1);
+      const filename = pickedImgFile.fromFileSystem?.fileName ?? '';
+      formData.append('files', {
+        uri: Platform.OS === 'android' ? uri : uri.replace('file://', ''),
+        name: filename || Crypto.randomUUID(),
+        type: mimeType || `image/${fileExtension}`,
       });
-      // Include the order in the field name
-      // formData.append(`files[${order}]`, imgFile);
-
-      formData.append(`files[${index}]`, imgFile);
     });
-    return this.http.post<GetBasicUserProfile>(`/users/${loggedInUserID}/photos`, formData, { headers });
+    return (
+      this.http.post<IGetBasicUserProfile>(`/users/${userId}/photos`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        transformRequest: () => {
+          return formData; // this is doing the trick
+        }
+      })
+    );
   }
 
-
-  public deletePhotoByUuid(loggedInUserID: number, photoUuid: string) {
-    return this.http.delete(`/users/${loggedInUserID}/photos/${photoUuid}`);
-  }
-
-
-  public updateManyPhotosByLoggedInUserId(loggedInUserID: number, pickedImgFiles: ImagePickerAsset[], imgsUuid: string[]) {
+  public updateUserPhoto(userId: number, pickedAsset: IPhotoPlaceholder) {
     const formData = new FormData();
-    const headers = { 'Content-Type': 'multipart/form-data', };
-
-    pickedImgFiles.forEach((pickedImgFile, i) => {
-      const fileExtension = pickedImgFile.uri.split('.').at(-1);
-      const imgFile = ({
-        uri: pickedImgFile.uri,
-        type: `${pickedImgFile.type}/${fileExtension}`,
-        name: imgsUuid[i],
-      });
-
-      formData.append('files', imgFile);
+    const uri = pickedAsset.fromFileSystem?.uri ?? '';
+    const mimeType = pickedAsset.fromFileSystem?.mimeType ?? '';
+    const fileExtension = uri.split('.').at(-1);
+    const filename = pickedAsset.fromFileSystem?.fileName ?? '';
+    formData.append('file', {
+      uri: Platform.OS === 'android' ? uri : uri.replace('file://', ''),
+      name: filename || Crypto.randomUUID(),
+      type: mimeType || `image/${fileExtension}`,
     });
+    return (
+      this.http.patch<IGetBasicUserProfile>(
+        `/users/${userId}/photos/${pickedAsset.fromBackend?.id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          transformRequest: () => {
+            return formData;
+          }
+        })
+    );
+  }
 
-    return this.http.post<GetBasicUserProfile>(`/users/${loggedInUserID}/photos`, formData, { headers });
+  public deletePhotoById(loggedInUserID: number, photoId: number | string) {
+    return this.http.delete(`/users/${loggedInUserID}/photos/${photoId}`);
+  }
+
+  public async getUserWhoLikedSameEventById(eventId: number, cursor: number, limit: number) {
+    return this.http.get('users/liked-same-event', { params: { eventId, cursor, limit } });
   }
 }
 

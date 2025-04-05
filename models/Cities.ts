@@ -1,11 +1,9 @@
-export interface GetCitiesWithPagination {
-  cities: CityDatum[];
-  totalCities: number;
-  nextCursor: number;
-  citiesPerPage: number;
-}
+import { IPaginated } from './utils/Paginated';
 
-export interface CityDatum {
+
+export interface IGetPaginatedCities extends IPaginated<ICityDatum> { }
+
+export interface ICityDatum {
   id: number;
   city: string;
   country?: string;

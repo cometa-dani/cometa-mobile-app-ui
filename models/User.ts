@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
-import { ImagePickerAsset } from 'expo-image-picker';
-import { EventCategory, LikeableEvent } from './Event';
-import { Friendship } from './Friendship';
-import { Photo } from './Photo';
+import { EventCategory, ILikeableEvent } from './Event';
+import { IPhoto } from './Photo';
+import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid';
+import { IPaginated } from './utils/Paginated';
 
 
 enum Gender {
@@ -84,9 +84,7 @@ enum Education {
   OTHER
 }
 
-// used in zustand store for global CLIENT STATE
-export interface LoggedUserClientState extends Pick<GetBasicUserProfile, (
-  'id' |
+export interface IUserOnboarding extends Pick<IGetBasicUserProfile, (|
   'uid' |
   'username' |
   'birthday' |
@@ -98,32 +96,41 @@ export interface LoggedUserClientState extends Pick<GetBasicUserProfile, (
   'homeTown' |
   'languages'
 )> {
+  photos: IPhotoPlaceholder[]
   password: string;
-  imageRef: ImagePickerAsset;
+  repassword: string;
 }
 
-export interface GetMatchedUsersWhoLikedEventWithPagination {
-  usersWhoLikedEvent: MatchedUsersWhoLikedEvent[];
-  nextCursor: number;
-  totalUsers: number;
-  hasNextCursor: boolean;
-  usersPerPage: number;
+export type ICreateUser = Pick<IGetBasicUserProfile, (
+  'uid' |
+  'email' |
+  'username' |
+  'name' |
+  'birthday'
+)>
+
+export interface IUpdateUser extends Partial<Omit<IGetDetailedUserProfile, (
+  'outgoingFriendships' | 'incomingFriendships' | 'likedEvents' | 'id' | 'languages'
+)>> {
+  languages?: string
 }
 
-export interface MatchedUsersWhoLikedEvent {
+export interface IGetPaginatedUsersWhoLikedSameEvent extends
+  IPaginated<IUsersWhoLikedSameEvent> { }
+
+export interface IUsersWhoLikedSameEvent {
   id: number;
   createdAt: string;
   updatedAt: string;
   eventId: number;
   userId: number;
-  user: GetBasicUserProfile;
+  user: IGetBasicUserProfile;
 }
 
-type Event = Pick<LikeableEvent, ('photos' | 'name')>
+type IEvent = Pick<ILikeableEvent, ('photos' | 'name')>
 
-
-export interface GetBasicUserProfile extends
-  Pick<GetDetailedUserProfile, (
+export interface IGetBasicUserProfile extends
+  Pick<IGetDetailedUserProfile, (
     'id' |
     'uid' |
     'photos' |
@@ -143,42 +150,36 @@ export interface GetBasicUserProfile extends
     'occupation' |
     'educationLevel'
   )> {
-  hasOutgoingFriendship: boolean;
-  hasIncommingFriendship: boolean;
+  hasOutgoingFriendshipInvitation: boolean;
+  hasIncommingFriendshipInvitation: boolean;
 }
 
+export interface IGetPaginatedUsers extends
+  IPaginated<Omit<IGetBasicUserProfile, 'outgoingFriendships' | 'incomingFriendships'>> { }
 
-export interface GetUsersWithPagination {
-  users: Omit<GetBasicUserProfile, 'outgoingFriendships' | 'incomingFriendships'>[];
-  nextCursor: number;
-  totalUsers: number;
-  usersPerPage: number;
-  hasNextCursor: boolean;
-}
-
-
-export interface GetDetailedUserProfile {
+export interface IGetDetailedUserProfile {
   id: number;
-  avatar?: string;
-  photos: Photo[];
-  maxNumPhotos: number;
+  uid: string;
+  photos: IPhoto[];
   username: string;
-  name: string
-  biography: string;
   email: string;
+  name: string
+  biography?: string;
   phone?: string;
-
+  birthday?: string;
+  occupation?: string;
   currentLocation?: string;
   homeTown?: string;
   languages?: string[];
+  likedEvents?: LikedEvent[];
+
   height?: number;
   weight?: number;
+  interests?: EventCategory[];
   favoriteSports?: string[];
   music?: string[];
-  lookingFor?: LookingFor;
-  occupation?: string;
-
   educationLevel?: Education;
+  lookingFor?: LookingFor;
   relationshipStatus?: RelationshipStatus;
   pets?: string[];
   smoking?: boolean;
@@ -191,22 +192,16 @@ export interface GetDetailedUserProfile {
   gender?: Gender
   diet?: Diet
   exerciseFrequency?: ExerciseFrequency
-  birthday?: Date;
-  interests?: EventCategory[];
-  activateNotifications: boolean;
-
-  uid: string;
-  likedEvents: LikedEvent[];
+  activateNotifications?: boolean;
   // sharedEvents: sharedEvent[];
 }
 
-
-export interface GetTargetUser extends GetDetailedUserProfile {
+export interface IGetTargetUser extends IGetDetailedUserProfile {
   isFriend: boolean;
-  hasOutgoingFriendship: boolean;
-  hasIncommingFriendship: boolean
+  friendshipId?: number;
+  hasOutgoingFriendshipInvitation: boolean;
+  hasIncommingFriendshipInvitation: boolean
 }
-
 
 interface LikedEvent {
   id: number;
@@ -214,5 +209,5 @@ interface LikedEvent {
   updatedAt: string;
   eventId: number;
   userId: number;
-  event: Event;
+  event: IEvent;
 }

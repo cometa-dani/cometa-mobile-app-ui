@@ -1,0 +1,87 @@
+appId: com.cometadaniexpo.cometaapp
+---
+
+# launch the app
+- launchApp:
+    appId: com.cometadaniexpo.cometaapp
+
+# -----------------------------------------------------------------------------
+# STEP 1
+# -----------------------------------------------------------------------------
+#  filling in the form "create user"
+- runScript: testIds.js
+- tapOn:
+    text: "Register"
+- tapOn:
+    text: "User Profile"
+
+- tapOn:
+    text: "Next"
+    waitToSettleTimeoutMs: 1000 # ms
+
+- tapOn:
+    id: ${output.fullname.id}
+- inputText: ${output.fullname.text}
+
+- tapOn:
+    id: ${output.username.id}
+- inputText: ${output.username.text}
+
+# - scrollUntilVisible:
+#     element:
+#       id: ${output.birthday.id} # or any other selector
+#     direction: DOWN # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
+#     visibilityPercentage: 100 # 0-100 (optional, default: 100) Percentage of element visible in viewport
+#     centerElement: true # true|false (optional, default: false)
+- tapOn:
+    id: ${output.birthday.id}
+- tapOn:
+    text: ${output.birthday.text}
+
+# - scrollUntilVisible:
+#     element:
+#       id: ${output.email.id} # or any other selector
+#     direction: DOWN # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
+#     visibilityPercentage: 100 # 0-100 (optional, default: 100) Percentage of element visible in viewport
+#     centerElement: true # true|false (optional, default: false)
+- tapOn:
+    id: ${output.email.id}
+- inputText: ${output.email.text}
+
+# - scrollUntilVisible:
+#     element:
+#       id: ${output.password.id} # or any other selector
+#     direction: DOWN # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
+#     visibilityPercentage: 100 # 0-100 (optional, default: 100) Percentage of element visible in viewport
+#     centerElement: true # true|false (optional, default: false)
+- tapOn:
+    id: ${output.password.id}
+- inputText: ${output.password.text}
+
+# - scrollUntilVisible:
+#     element:
+#       id: ${output.repeatPassword.id} # or any other selector
+#     direction: DOWN # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
+#     visibilityPercentage: 100 # 0-100 (optional, default: 100) Percentage of element visible in viewport
+#     centerElement: true # true|false (optional, default: false)
+- tapOn:
+    id: ${output.repeatPassword.id}
+- inputText: ${output.password.text}
+
+- tapOn:  # hides the keyboard by tapping on the "label"
+    text: "Password is required"
+    waitToSettleTimeoutMs: 3000 # ms
+- waitForAnimationToEnd:
+    timeout: 5000
+
+- tapOn:
+    text: "Next"
+    waitToSettleTimeoutMs: 1000 # ms
+
+
+# -----------------------------------------------------------------------------
+# STEP 2
+# -----------------------------------------------------------------------------
+- extendedWaitUntil:
+    visible: "Upload your Photos" # or any other selector
+    timeout: 10000      # Timeout in milliseconds

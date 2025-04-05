@@ -1,37 +1,40 @@
-import { GetBasicUserProfile } from './User';
+import { IMessage } from 'react-native-gifted-chat';
+import { IGetBasicUserProfile } from './User';
+import { IPaginated } from './utils/Paginated';
 
 
-export interface Friendship {
+export interface IFriendship {
   id: number;
   createdAt: string;
   updatedAt: string;
   senderId: number;
   receiverId: number;
-  chatuuid: string;
   status: FriendShipStatus;
-  friend: GetBasicUserProfile
+  friend: IGetBasicUserProfile;
+  messages: IMessage[];
+  lastMessageAt: Date | string;
 }
 
 export type FriendShipStatus = 'PENDING' | 'ACCEPTED' | 'BLOCKED'
 
-export interface GetLatestFriendships {
-  friendships: Friendship[];
-  totalFriendships: number;
-  nextCursor: number;
-  friendshipsPerPage: number;
-}
+export interface IGetLatestFriendships extends IPaginated<IFriendship> { }
 
-export type MutateFrienship = Pick<Friendship, (
+export type MutateFrienship = Pick<IFriendship, (
   'id' |
   'senderId' |
   'receiverId' |
   'status' |
-  'chatuuid' |
   'createdAt' |
   'updatedAt'
 )>
 
-export interface GetFriendShipWithSenderAndReceiver extends Omit<Friendship, 'friend'> {
-  sender: GetBasicUserProfile;
-  receiver: GetBasicUserProfile;
+export interface IGetFriendship extends Omit<IFriendship, 'friend'> {
+  sender: IGetBasicUserProfile;
+  receiver: IGetBasicUserProfile;
+}
+
+export interface ILastMessage extends IFriendship {
+  sender: IGetBasicUserProfile;
+  receiver: IGetBasicUserProfile;
+  lastMessage?: IMessage;
 }

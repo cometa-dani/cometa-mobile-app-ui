@@ -1,25 +1,40 @@
 import { create } from 'zustand';
-import { createOnboardingSlice, OnboardingSlice } from './slices/onBoarding';
-import { createUserSlice, UserSlice } from './slices/userSlice';
-import { createNewPeopleSlice, NewPeopleSlice } from './slices/newPeopleSlice';
-import { LatestMessagesSlice, createLatestMessagesSlice } from './slices/messagesSlices';
-import { createChatGroupSlice, ChatGroupSlice } from './slices/chatGroupSlice';
-import { createNotificationsSlice, NotificationsSlice } from './slices/notificationSlice';
+import { createOnboardingSlice, IOnboardingSlice } from './slices/onBoardingSlice';
+import { createAuthSlice, AuthSlice } from './slices/authSlice';
+// import { createNewPeopleSlice, NewPeopleSlice } from './slices/newPeopleSlice';
+// import { LatestMessagesSlice, createLatestMessagesSlice } from './slices/messagesSlices';
+// import { createChatGroupSlice, ChatGroupSlice } from './slices/chatGroupSlice';
+// import { createNotificationsSlice, NotificationsSlice } from './slices/notificationSlice';
 import { createSearchFiltersSlice, SearchFiltersSlice } from './slices/searchFiltersSlice';
 import { createSearchPlaceSlice, SearchPlaceSlice } from './slices/searchPlacesSlide';
+import { createMatchedEventSlice, MatchecEventSlice } from './slices/eventActionSheet';
+import { TargetUserSlice, createTargetUserSlice } from './slices/targetUserSlice';
 
 
-type StoreSlices = OnboardingSlice & UserSlice & NewPeopleSlice & LatestMessagesSlice & ChatGroupSlice & NotificationsSlice & SearchFiltersSlice & SearchPlaceSlice;
+type StoreSlices = (
+  IOnboardingSlice &
+  AuthSlice &
+  // NewPeopleSlice &
+  // LatestMessagesSlice &
+  // ChatGroupSlice &
+  // NotificationsSlice &
+  SearchFiltersSlice &
+  SearchPlaceSlice &
+  MatchecEventSlice &
+  TargetUserSlice
+);
 
 export const useCometaStore = create<StoreSlices>(
   (...args) => ({
     ...createOnboardingSlice(...args),
-    ...createUserSlice(...args),
-    ...createNewPeopleSlice(...args),
-    ...createLatestMessagesSlice(...args),
-    ...createChatGroupSlice(...args),
-    ...createNotificationsSlice(...args),
+    ...createAuthSlice(...args),
+    // ...createNewPeopleSlice(...args),
+    // ...createLatestMessagesSlice(...args),
+    // ...createChatGroupSlice(...args),
+    // ...createNotificationsSlice(...args),
     ...createSearchFiltersSlice(...args),
-    ...createSearchPlaceSlice(...args)
+    ...createSearchPlaceSlice(...args),
+    ...createMatchedEventSlice(...args),
+    ...createTargetUserSlice(...args)
   })
 );

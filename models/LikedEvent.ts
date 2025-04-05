@@ -1,8 +1,5 @@
-import { LikeableEvent } from './Event';
+import { ILikedEvent } from './Event';
+import { IPaginated } from './utils/Paginated';
 
-export interface GetLikedEventsForBucketListWithPagination {
-  events: LikeableEvent[];
-  totalEvents: number;
-  nextCursor: number;
-  eventsPerPage: number;
-}
+export interface IGetPaginatedLikedEventsBucketList
+  extends IPaginated<ILikedEvent> { }

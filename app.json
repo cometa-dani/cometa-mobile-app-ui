@@ -1,18 +1,14 @@
 {
   "expo": {
     "jsEngine": "hermes",
-    "name": "cometa-ui-app",
+    "newArchEnabled": true,
+    "name": "cometa",
     "slug": "cometa-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/favicons/android-icon-48x48.png",
     "scheme": "myapp",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/images/2.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -39,6 +35,14 @@
     "plugins": [
       "expo-router",
       [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#ffffff",
+          "image": "./assets/images/2.png",
+          "imageWidth": 360
+        }
+      ],
+      [
         "expo-font",
         {
           "fonts": [
@@ -55,10 +59,28 @@
           "photosPermission": "Cometa accesses your photos to let you share them with your friends."
         }
       ],
+      "react-native-edge-to-edge",
       [
-        "expo-av",
+        "expo-video",
         {
-          "microphonePermission": "Allow Cometa to access your microphone."
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
+        }
+      ],
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": true,
+          "useSQLCipher": true,
+          "android": {
+            "enableFTS": false,
+            "useSQLCipher": false
+          },
+          "ios": {
+            "customBuildFlags": [
+              "-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"
+            ]
+          }
         }
       ]
     ],
@@ -74,7 +96,6 @@
       }
     },
     "owner": "cometa-dani-expo",
-    "sdkVersion": "50.0.0"
-  },
-  "name": "cometa-ui-app"
+    "sdkVersion": "52.0.0"
+  }
 }

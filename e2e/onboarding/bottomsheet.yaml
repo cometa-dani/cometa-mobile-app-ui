@@ -1,0 +1,17 @@
+appId: com.cometadaniexpo.cometaapp
+---
+
+# launch the app
+- launchApp:
+    appId: com.cometadaniexpo.cometaapp
+
+# opening and closing bottomsheet
+- repeat:
+    times: 2
+    commands:
+    - tapOn:
+        text: "Register"
+    - tapOn:
+        text: "User Profile"
+    - swipe:
+        direction: down

@@ -1,4 +1,4 @@
-export interface Location {
+export interface ILocation {
   id: number;
   createdAt: string;
   updatedAt: string;
@@ -7,5 +7,6 @@ export interface Location {
   description: string;
   latitude: number;
   longitude: number;
+  mapUrl?: string;
   mediaUrls: string[];
 }

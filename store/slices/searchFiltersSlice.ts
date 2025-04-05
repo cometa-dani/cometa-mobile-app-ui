@@ -2,8 +2,9 @@ import { StateCreator } from 'zustand';
 import { EventCategory } from '../../models/Event';
 import { MMKV } from 'react-native-mmkv';
 
+
 const mmvkStorage = new MMKV({ id: 'mmvk.searchFilters' });
-// mmvkStorage.clearAll();
+
 export type SearchFiltersSlice = {
   searchFilters: Record<EventCategory, EventCategory | undefined>
   AddOrDeleteSearchFilter: (category: EventCategory) => void;
@@ -37,7 +38,6 @@ const localValues = storedSearchedKeys?.length ? JSON.parse(storedSearchedKeys) 
 export const createSearchFiltersSlice: StateCreator<SearchFiltersSlice> = (set) => {
   return {
     searchFilters: localValues,
-
     AddOrDeleteSearchFilter: (category) => {
       set((prev) => {
         if (prev.searchFilters[category]) {
@@ -56,7 +56,6 @@ export const createSearchFiltersSlice: StateCreator<SearchFiltersSlice> = (set) 
         }
       });
     },
-
     resetSearchFilters: () => {
       mmvkStorage.set('searchFilters', JSON.stringify({}));
       set({ searchFilters: initialValues });
