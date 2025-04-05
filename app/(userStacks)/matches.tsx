@@ -30,6 +30,7 @@ import { ErrorMessage } from '@/queries/errors/errorMessages';
 import { Notifier } from 'react-native-notifier';
 import { ErrorToast } from '@/components/toastNotification/toastNotification';
 import { AvatarSkeletonList } from '@/components/skeleton/avatarSkeleton';
+import * as WebBrowser from 'expo-web-browser';
 
 
 const initialTab = 1;
@@ -44,6 +45,11 @@ export default function MatchedEventsScreen(): ReactNode {
   const [isFirstItemVisible, setIsFirstItemVisible] = useState(true);
   const { ref, setPage } = usePagerView();
   const [step, setStep] = useState(initialTab);
+
+
+  const openLocationInBrowser = async () => {
+    await WebBrowser.openBrowserAsync(selectedLikedEvent.location?.mapUrl ?? '');
+  };
 
   // header image
   const [showImage, setShowImage] = useState(true);
@@ -321,9 +327,11 @@ export default function MatchedEventsScreen(): ReactNode {
                 style={styles.imgHeader}
                 source={{ uri: selectedLikedEvent.photos.at(0)?.url, }}
               />
-              <Badge>
-                {selectedLikedEvent?.location?.name}
-              </Badge>
+              <TouchableOpacity onPress={openLocationInBrowser}>
+                <Badge>
+                  {selectedLikedEvent?.location?.name}
+                </Badge>
+              </TouchableOpacity>
             </View>
           </Animated.View>
         }

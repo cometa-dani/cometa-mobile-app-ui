@@ -63,7 +63,7 @@ export default function TargetUserProfileScreen() {
             id: item?.event?.id,
             img: item?.event?.photos.at(0)?.url,
             placeholder: item?.event?.photos.at(0)?.placeholder,
-            location: item?.event?.location?.name,
+            location: item?.event?.location,
           })
         )
       )) || []
@@ -76,7 +76,7 @@ export default function TargetUserProfileScreen() {
             id: item?.photos[0]?.id,
             img: item?.photos[0]?.url,
             placeholder: item?.photos[0]?.placeholder,
-            location: item?.location?.name,
+            location: item?.location,
           })
         )
       )) || []

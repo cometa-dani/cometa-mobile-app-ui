@@ -16,27 +16,29 @@ const dummyBucketListItems = [
     id: 1,
     img: defaultImgPlaceholder,
     placeholder: 'thumbhash1',
-    location: 'New York City'
+    location: {
+      name: 'New York',
+    }
   },
   {
     id: 2,
     img: defaultImgPlaceholder,
     placeholder: 'thumbhash2',
-    location: 'Los Angeles'
+    location: { name: 'Los Angeles' }
   },
   {
     id: 3,
     img: defaultImgPlaceholder,
     placeholder: 'thumbhash3',
-    location: 'Chicago'
+    location: { name: 'Chicago' }
   },
   {
     id: 4,
     img: defaultImgPlaceholder,
     placeholder: 'thumbhash4',
-    location: 'Houston'
+    location: { name: 'Houston' }
   }
-];
+] as IBucketListItem[];
 
 interface IProps {
   bucketList?: InfiniteData<IGetPaginatedLikedEventsBucketList, unknown>,
@@ -61,7 +63,7 @@ export const UserProfile: FC<IProps> = ({
             id: item.event?.id,
             img: item.event?.photos.at(0)?.url,
             placeholder: item.event?.photos.at(0)?.placeholder,
-            location: item.event?.location?.name,
+            location: item.event?.location
           })
         )
       )) || []

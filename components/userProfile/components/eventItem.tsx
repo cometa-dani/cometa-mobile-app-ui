@@ -2,9 +2,11 @@ import { Badge } from '@/components/button/badge';
 import { imageTransition } from '@/constants/vars';
 import { Image } from 'expo-image';
 import { FC, ReactNode } from 'react';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import * as WebBrowser from 'expo-web-browser';
 import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
+import { ILocation } from '@/models/Localization';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -12,7 +14,7 @@ export type IBucketListItem = {
   id?: number;
   img?: string;
   placeholder?: string;
-  location?: string;
+  location?: ILocation;
 }
 
 interface IProps {
@@ -20,6 +22,11 @@ interface IProps {
 }
 export const EventItem: FC<IProps> = ({ item }) => {
   const { styles } = useStyles(stylesheet);
+
+  const openLocationInBrowser = async () => {
+    await WebBrowser.openBrowserAsync(item.location?.mapUrl ?? '');
+  };
+
   return (
     <View style={{ position: 'relative' }}>
       <Image
@@ -30,9 +37,11 @@ export const EventItem: FC<IProps> = ({ item }) => {
         contentFit='cover'
         transition={imageTransition}
       />
-      <Badge>
-        {item?.location}
-      </Badge>
+      <TouchableOpacity onPress={openLocationInBrowser}>
+        <Badge>
+          {item?.location?.name ?? ''}
+        </Badge>
+      </TouchableOpacity>
     </View>
   );
 };

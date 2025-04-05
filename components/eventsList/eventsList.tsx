@@ -1,4 +1,4 @@
-import { FC, ReactNode, useRef, useState } from 'react';
+import { FC, ReactNode, useState } from 'react';
 import { ILikeableEvent, } from '../../models/Event';
 import { Pressable, View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
@@ -107,7 +107,7 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeButton = false, onPressLik
     .numberOfTaps(2)
     .onEnd(() => onPressLikeButton(item));
 
-  const openBrowser = async () => {
+  const openLocationBrowser = async () => {
     await WebBrowser.openBrowserAsync(item.location?.mapUrl ?? '');
   };
 
@@ -272,7 +272,7 @@ const EventItem: FC<ListItemProps> = ({ item, hideLikeButton = false, onPressLik
           opacity={0.26}
           size={theme.spacing.sp14}
           light={false}
-          onPress={() => openBrowser()}
+          onPress={() => openLocationBrowser()}
         >
           <MaterialCommunityIcons
             name="map-marker-outline"

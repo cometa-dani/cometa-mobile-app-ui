@@ -24,6 +24,7 @@ import { useMutationLikeOrDislikeEvent } from '@/queries/currentUser/likeEventHo
 import { defaultImgPlaceholder } from '@/constants/vars';
 import { EmptyMessage } from '@/components/empty/Empty';
 import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
+import * as WebBrowser from 'expo-web-browser';
 
 
 export default function BucketListScreen() {
@@ -170,6 +171,10 @@ const BucketItem: FC<BucketItemProps> = ({ item, onDeleteEventLike }) => {
     </ForEach>
   ), []);
 
+  const openLocationInBrowser = async () => {
+    await WebBrowser.openBrowserAsync(item.event.location?.mapUrl ?? '');
+  };
+
   return (
     <Swipeable
       renderRightActions={
@@ -233,6 +238,7 @@ const BucketItem: FC<BucketItemProps> = ({ item, onDeleteEventLike }) => {
 
         <HStack gap={theme.spacing.sp2}>
           <TouchableOpacity
+            onPress={openLocationInBrowser}
             style={{
               backgroundColor: theme.colors.white60,
               paddingVertical: theme.spacing.sp1,
