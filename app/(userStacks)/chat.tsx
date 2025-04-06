@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 import { ReactNode, useCallback, useState } from 'react';
 import { AvatarProps, Bubble, BubbleProps, GiftedChat, IMessage, InputToolbar, InputToolbarProps, Send } from 'react-native-gifted-chat';
-import { View, RefreshControl, Platform, TextInput, ViewToken } from 'react-native';
-import { Stack, useGlobalSearchParams } from 'expo-router';
+import { View, RefreshControl, Platform, TextInput, ViewToken, TouchableOpacity } from 'react-native';
+import { Stack, useGlobalSearchParams, useNavigation } from 'expo-router';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { Image } from 'expo-image';
 import { Entypo, Feather } from '@expo/vector-icons';
@@ -13,10 +13,13 @@ import { HStack } from '@/components/utils/stacks';
 import { useMessages } from '@/queries/chat/useMessages';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GradientHeading } from '@/components/text/gradientText';
+import { useRouter } from 'expo-router';
 
 
 export default function ChatWithFriendScreen(): ReactNode {
   const { theme, styles } = useStyles(styleSheet);
+  const router = useRouter();
+  const navigation = useNavigation();
   const { friendshipId } = useGlobalSearchParams<{ friendshipId: string }>();
   const targetUser = useCometaStore(state => state.targetUser);
   const currentUser = useCometaStore(state => state.userProfile);
@@ -145,16 +148,25 @@ export default function ChatWithFriendScreen(): ReactNode {
                     onPress={() => props?.navigation?.goBack()}
                     style={styles.headerBackButton}
                   />
-                  <HStack $x='center' $y='center' styles={{ gap: theme.spacing.sp1, flex: 1 }}>
-                    <Image
-                      style={styles.headerImg}
-                      source={{ uri: targetUser?.photos.at(0)?.url }}
-                      placeholder={{ thumbhash: targetUser?.photos.at(0)?.placeholder }}
-                    />
-                    <GradientHeading styles={[{ fontSize: theme.text.size.s6 }]}>
-                      {targetUser?.name}
-                    </GradientHeading>
-                  </HStack>
+                  <TouchableOpacity onPress={() => {
+                    const state = navigation.getState();
+                    if (state?.routes.some(route => route.name === '(userStacks)/targetUser')) {
+                      router.dismiss();
+                      return;
+                    }
+                    router.push('/(userStacks)/targetUser');
+                  }}>
+                    <HStack $x='center' $y='center' styles={{ gap: theme.spacing.sp1, flex: 1 }}>
+                      <Image
+                        style={styles.headerImg}
+                        source={{ uri: targetUser?.photos.at(0)?.url }}
+                        placeholder={{ thumbhash: targetUser?.photos.at(0)?.placeholder }}
+                      />
+                      <GradientHeading styles={[{ fontSize: theme.text.size.s6 }]}>
+                        {targetUser?.name}
+                      </GradientHeading>
+                    </HStack>
+                  </TouchableOpacity>
                 </View>
               </SafeAreaView>
             );

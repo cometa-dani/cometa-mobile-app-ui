@@ -42,7 +42,7 @@ export default function SearchScreen(): ReactNode {
         user={item}
         onPress={() => {
           setSelectedTargetUser(item as IGetTargetUser);
-          router.replace('/(userStacks)/targetUser');
+          router.push('/(userStacks)/targetUser');
         }}
       />
     );

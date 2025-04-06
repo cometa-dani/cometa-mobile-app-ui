@@ -43,6 +43,7 @@ class NotificationService {
         sender:User!sender_id(
           id,
           name,
+          uid,
           username,
           photos:UserPhoto!user_id(
             id,
@@ -54,6 +55,7 @@ class NotificationService {
         receiver:User!receiver_id(
           id,
           name,
+          uid,
           username,
           photos:UserPhoto!user_id(
             id,

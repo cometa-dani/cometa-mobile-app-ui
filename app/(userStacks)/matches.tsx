@@ -355,7 +355,7 @@ export default function MatchedEventsScreen(): ReactNode {
               onPress={() => setPage(0)}
               variant={step === 1 ? 'disabled' : 'primary'}
             >
-              New Friends
+              Friends
             </Button>
             <Button
               style={{ flex: 1 }}

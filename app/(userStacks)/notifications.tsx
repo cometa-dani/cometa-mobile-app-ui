@@ -1,5 +1,5 @@
-import { SafeAreaView, View } from 'react-native';
-import { Stack } from 'expo-router';
+import { SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { Stack, useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import { RectButton } from 'react-native-gesture-handler';
@@ -82,56 +82,85 @@ const Message: FC<MessageProps> = ({ item, isCurrentUser = false }) => {
   const { styles } = useStyles(styleSheet);
   const pending = 'wants to match with you!';
   const newMatch = 'is your new match!';
+  const router = useRouter();
+  const setSelectedTargetUser = useCometaStore(state => state.setTargetUser);
 
   if (item.status === 'PENDING') {
     return (
-      <View style={styles.container}>
-        <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: item.sender?.photos[0]?.url }}
-            style={styles.image}
-          />
-        </View>
+      <TouchableOpacity onPress={() => {
+        setSelectedTargetUser({
+          ...item.sender,
+          friendshipId: item.id,
+          isFriend: false,
+        });
+        router.push('/(userStacks)/targetUser');
+      }}>
+        <View style={styles.container}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: item.sender?.photos[0]?.url }}
+              style={styles.image}
+            />
+          </View>
 
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', flex: 1 }}>
-          <TextView bold={true}> {item?.sender.name} </TextView>
-          <TextView> {pending} </TextView>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', flex: 1 }}>
+            <TextView bold={true}> {item?.sender.name} </TextView>
+            <TextView> {pending} </TextView>
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   }
   if (item.status === 'ACCEPTED' && isCurrentUser) {
     return (
-      <View style={styles.container}>
-        <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: item.receiver?.photos[0]?.url }}
-            style={styles.image}
-          />
-        </View>
+      <TouchableOpacity onPress={() => {
+        setSelectedTargetUser({
+          ...item.receiver,
+          friendshipId: item.id,
+          isFriend: true,
+        });
+        router.push('/(userStacks)/targetUser');
+      }}>
+        <View style={styles.container}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: item.receiver?.photos[0]?.url }}
+              style={styles.image}
+            />
+          </View>
 
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', flex: 1 }}>
-          <TextView bold={true}> {item?.receiver.name} </TextView>
-          <TextView> {newMatch} </TextView>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', flex: 1 }}>
+            <TextView bold={true}> {item?.receiver.name} </TextView>
+            <TextView> {newMatch} </TextView>
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   }
   if (item.status === 'ACCEPTED' && !isCurrentUser) {
     return (
-      <View style={styles.container}>
-        <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: item.sender?.photos[0]?.url }}
-            style={styles.image}
-          />
+      <TouchableOpacity onPress={() => {
+        setSelectedTargetUser({
+          ...item.sender,
+          friendshipId: item.id,
+          isFriend: true,
+        });
+        router.push('/(userStacks)/targetUser');
+      }}>
+        <View style={styles.container}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: item.sender?.photos[0]?.url }}
+              style={styles.image}
+            />
+          </View>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', flex: 1 }}>
+            <TextView> Your match request with </TextView>
+            <TextView bold={true}>{item?.sender.name}</TextView>
+            <TextView> was accepted! </TextView>
+          </View>
         </View>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', flex: 1 }}>
-          <TextView> Your match request with </TextView>
-          <TextView bold={true}>{item?.sender.name}</TextView>
-          <TextView> was accepted! </TextView>
-        </View>
-      </View>
+      </TouchableOpacity>
     );
   }
 };

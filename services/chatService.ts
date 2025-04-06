@@ -30,6 +30,7 @@ class ChatService {
       sender:User!sender_id(
         id,
         name,
+        uid,
         username,
         photos:UserPhoto!user_id(
           id,
@@ -41,6 +42,7 @@ class ChatService {
       receiver:User!receiver_id(
         id,
         name,
+        uid,
         username,
         photos:UserPhoto!user_id(
           id,

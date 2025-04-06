@@ -9,7 +9,7 @@ import { useQueryGetTargetUserPeopleProfile } from '@/queries/targetUser/userPro
 import { BlurView } from 'expo-blur';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { useCometaStore } from '@/store/cometaStore';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useNavigation, useRouter } from 'expo-router';
 import { EventItem, EventItemSkeleton, IBucketListItem } from '@/components/userProfile/components/eventItem';
 import { NewFriendsModal } from '@/components/modal/newFriends/newFriends';
 import { GradientHeading } from '@/components/text/gradientText';
@@ -32,6 +32,7 @@ import { DeleteModal } from '@/components/modal/deleteModal/deleteModal';
 export default function TargetUserProfileScreen() {
   const { theme, styles } = useStyles(styleSheet);
   const router = useRouter();
+  const navigation = useNavigation();
   const targetUser = useCometaStore(state => state.targetUser);
   const detailedProfile = useQueryGetTargetUserPeopleProfile(targetUser?.uid ?? '');
   const {
@@ -230,7 +231,15 @@ export default function TargetUserProfileScreen() {
                         </Button>
                         <Button
                           style={{ flex: 1 / 2 }}
-                          onPress={() => router.push(`/(userStacks)/chat?friendshipId=${detailedProfile.data?.friendshipId}`)}
+                          onPress={() => {
+                            const state = navigation.getState();
+                            const isChatScreenOnTheStack = state?.routes.some(route => route.name === '(userStacks)/chat');
+                            if (isChatScreenOnTheStack) {
+                              router.dismiss();
+                              return;
+                            }
+                            router.push(`/(userStacks)/chat?friendshipId=${detailedProfile.data?.friendshipId}`);
+                          }}
                           variant='gray-alt'>
                           Chat
                         </Button>
