@@ -17,7 +17,8 @@ export const useNotifications = (limit = 100) => {
     queryKey: [QueryKeys.GET_NOTIFICATIONS, currentUser?.id],
     select(data) {
       return data.filter(friendship => (
-        friendship.receiverId === currentUser?.id && friendship.status === 'PENDING')
+        (friendship.receiverId === currentUser?.id) && (friendship.status === 'PENDING')
+      )
         ||
         friendship.status === 'ACCEPTED'
       )
@@ -100,12 +101,7 @@ export const useNotifications = (limit = 100) => {
           filter: `sender_id=eq.${currentUser.id}`
         },
         (payload) => {
-          // console.log('DELETE', payload.new);
-          // queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
-          //   if (!oldData) return [];
-          //   // delete
-          //   return oldData.filter(friendship => friendship.id !== payload.new.id);
-          // });
+          query.refetch();
         }
       );
 

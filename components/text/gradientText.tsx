@@ -12,7 +12,7 @@ interface Props {
 export const GradientHeading: FC<Props> = ({ children, styles = {} }) => {
   return (
     <GradientText
-      style={[{ fontFamily: 'PoppinsSemibold', textAlign: 'center' }, styles]}
+      style={[{ fontFamily: 'PoppinsMedium', textAlign: 'center' }, styles]}
       colors={['#5ac8fa', '#449dd1', '#c2354a', '#EA385C']}
       direction="ltr"
     >

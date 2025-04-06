@@ -63,7 +63,6 @@ class NotificationService {
           )
         )
       `)
-      // .not('last_message_at', 'is', null)
       .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
       .order('updated_at', { ascending: false })
       .limit(limit)
