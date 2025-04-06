@@ -3,6 +3,7 @@ import { EventCategory, ILikeableEvent } from './Event';
 import { IPhoto } from './Photo';
 import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid';
 import { IPaginated } from './utils/Paginated';
+import { INotification } from './Notification';
 
 
 enum Gender {
@@ -194,6 +195,9 @@ export interface IGetDetailedUserProfile {
   exerciseFrequency?: ExerciseFrequency
   activateNotifications?: boolean;
   // sharedEvents: sharedEvent[];
+  incomingNotification?: INotification[]
+  outgoingNotification?: INotification[]
+  notifications?: INotification[]
 }
 
 export interface IGetTargetUser extends IGetDetailedUserProfile {

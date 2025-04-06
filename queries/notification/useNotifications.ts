@@ -3,7 +3,6 @@ import { supabase } from '@/supabase/config';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '../queryKeys';
 import { useEffect } from 'react';
-import { IFriendship } from '@/models/Friendship';
 import notificationService from '@/services/notificationService';
 import { INotification } from '@/models/Notification';
 
@@ -16,11 +15,11 @@ export const useNotifications = (limit = 100) => {
   const query = useQuery({
     queryKey: [QueryKeys.GET_NOTIFICATIONS, currentUser?.id],
     select(data) {
-      return data.filter(friendship => (
-        (friendship.receiverId === currentUser?.id) && (friendship.status === 'PENDING')
+      return data.filter(notification => (
+        (notification.receiverId === currentUser?.id) && (notification.message === 'PENDING')
       )
         ||
-        friendship.status === 'ACCEPTED'
+        notification.message === 'ACCEPTED'
       )
         || [];
     },
@@ -34,49 +33,42 @@ export const useNotifications = (limit = 100) => {
 
     const receiverChannel = supabase
       .channel('notifications_receiver')
-      .on<IFriendship>(
+      .on<INotification>(
         'postgres_changes',
         {
           schema: 'public',
           event: 'INSERT',
-          table: 'Friendship',
+          table: 'Notification',
           filter: `receiver_id=eq.${currentUser.id}`
         },
         (payload) => {
           queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
             if (!oldData) return [];
             // insert
-            return [payload.new as unknown as INotification, ...oldData];
+            return [payload.new, ...oldData];
           });
         }
       )
-      .on<IFriendship>(
+      .on<INotification>(
         'postgres_changes',
         {
           schema: 'public',
           event: 'DELETE',
-          table: 'Friendship',
+          table: 'Notification',
           filter: `receiver_id=eq.${currentUser.id}`
         },
-        (payload) => {
-          // console.log('DELETE', payload.new);
-          // queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
-          //   if (!oldData) return [];
-          //   // delete
-          //   return oldData.filter(friendship => friendship.id !== payload.new.id);
-          // });
-        }
+        () => query.refetch()
       )
       .subscribe();
 
     const senderChannel = supabase
       .channel('notifications_sender')
-      .on<IFriendship>(
+      .on<INotification>(
         'postgres_changes',
         {
           schema: 'public',
           event: 'UPDATE',
-          table: 'Friendship',
+          table: 'Notification',
           filter: `sender_id=eq.${currentUser.id}`
         },
         (payload) => {
@@ -85,25 +77,24 @@ export const useNotifications = (limit = 100) => {
             // update
             return oldData.map(friendship => {
               if (friendship.id === payload.new.id) {
-                return payload.new as unknown as INotification;
+                return payload.new;
               }
               return friendship;
             });
           });
         }
       )
-      .on<IFriendship>(
+      .on<INotification>(
         'postgres_changes',
         {
           schema: 'public',
           event: 'DELETE',
-          table: 'Friendship',
+          table: 'Notification',
           filter: `sender_id=eq.${currentUser.id}`
         },
-        (payload) => {
-          query.refetch();
-        }
-      );
+        () => query.refetch()
+      )
+      .subscribe();
 
     return () => {
       supabase.removeChannel(receiverChannel);

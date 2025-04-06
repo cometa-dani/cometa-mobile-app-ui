@@ -85,7 +85,7 @@ const Message: FC<MessageProps> = ({ item, isCurrentUser = false }) => {
   const router = useRouter();
   const setSelectedTargetUser = useCometaStore(state => state.setTargetUser);
 
-  if (item.status === 'PENDING') {
+  if (item.message === 'PENDING') {
     return (
       <TouchableOpacity onPress={() => {
         setSelectedTargetUser({
@@ -111,7 +111,7 @@ const Message: FC<MessageProps> = ({ item, isCurrentUser = false }) => {
       </TouchableOpacity>
     );
   }
-  if (item.status === 'ACCEPTED' && isCurrentUser) {
+  if (item.message === 'ACCEPTED' && isCurrentUser) {
     return (
       <TouchableOpacity onPress={() => {
         setSelectedTargetUser({
@@ -137,7 +137,7 @@ const Message: FC<MessageProps> = ({ item, isCurrentUser = false }) => {
       </TouchableOpacity>
     );
   }
-  if (item.status === 'ACCEPTED' && !isCurrentUser) {
+  if (item.message === 'ACCEPTED' && !isCurrentUser) {
     return (
       <TouchableOpacity onPress={() => {
         setSelectedTargetUser({

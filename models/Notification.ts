@@ -1,5 +1,17 @@
-import { ILastMessage } from './Friendship';
+import { IGetBasicUserProfile } from './User';
 
 
-export interface INotification extends
-  Omit<ILastMessage, ('messages' | 'lastMessage')> { }
+export interface INotification {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  sender: IGetBasicUserProfile;
+  senderId: number;
+  receiver: IGetBasicUserProfile;
+  receiverId: number;
+  message: string,
+  type: string,
+  read: boolean,
+  user: IGetBasicUserProfile,
+  userId: number
+}

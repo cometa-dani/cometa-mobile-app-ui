@@ -32,14 +32,16 @@ class NotificationService {
 
   async getLatestByUser(userId: number, limit: number): Promise<INotification[]> {
     const { data, error } = await supabase
-      .from('Friendship')
+      .from('Notification')
       .select(`
         id,
         "createdAt":created_at,
         "updatedAt":updated_at,
         "senderId":sender_id,
         "receiverId":receiver_id,
-        status,
+        "userId":user_id,
+        type,
+        message,
         sender:User!sender_id(
           id,
           name,
@@ -72,17 +74,18 @@ class NotificationService {
 
     if (error) throw error;
 
-    return data.map<INotification>(friendship => ({
-      ...friendship,
-      friend: {
-        ...(friendship.senderId === userId
-          ? friendship.receiver
-          : friendship.sender),
-        photos: friendship.senderId === userId
-          ? friendship.receiver.photos
-          : friendship.sender.photos
-      },
-    }));
+    return data;
+    // .map<INotification>(friendship => ({
+    //   ...friendship,
+    //   friend: {
+    //     ...(friendship.senderId === userId
+    //       ? friendship.receiver
+    //       : friendship.sender),
+    //     photos: friendship.senderId === userId
+    //       ? friendship.receiver.photos
+    //       : friendship.sender.photos
+    //   },
+    // }));
   }
 }
 

@@ -8,6 +8,7 @@ import { IGetPaginatedUsersWhoLikedSameEvent, IGetTargetUser } from '@/models/Us
 import { useCometaStore } from '@/store/cometaStore';
 import { Notifier } from 'react-native-notifier';
 import { ErrorToast } from '@/components/toastNotification/toastNotification';
+import { supabase } from '@/supabase/config';
 
 
 export const useInfiniteQueryGetNewestFriends = () => {
@@ -88,10 +89,25 @@ export const useMutationSentFriendshipInvitation = () => {
   const queryClient = useQueryClient();
   const selectedLikedEvent = useCometaStore(state => state.likedEvent);
   const targetUser = useCometaStore(state => state.targetUser);
+  const currentUser = useCometaStore(state => state.userProfile);
   return (
     useMutation<MutateFrienship, TypedAxiosError, number>({
       mutationFn: async (targetUserId: number) => {
+        const date = new Date().toISOString();
+        const message = {
+          created_at: date,
+          updated_at: date,
+          receiver_id: targetUserId,
+          sender_id: currentUser?.id as number,
+          type: 'FRIEND_REQUEST',
+          message: 'PENDING',
+          read: false,
+        };
         const res = await friendshipService.sentFriendShipInvitation(targetUserId);
+        await Promise.all([
+          await supabase.from('Notification').insert({ ...message, user_id: targetUserId }),
+          await supabase.from('Notification').insert({ ...message, user_id: currentUser?.id as number })
+        ]);
         if (res.status === 201) {
           return res.data;
         }
@@ -146,11 +162,16 @@ export const useMutationAcceptFriendshipInvitation = () => {
   const queryClient = useQueryClient();
   const selectedLikedEvent = useCometaStore(state => state.likedEvent);
   const targetUser = useCometaStore(state => state.targetUser);
+  const currentUser = useCometaStore(state => state.userProfile);
   return (
     useMutation<MutateFrienship, TypedAxiosError, number>({
       mutationFn: async (targetUserID: number) => {
         const res =
           await friendshipService.updateFriendshipByQueryParams(targetUserID, 'ACCEPTED');
+        await Promise.all([
+          supabase.from('Notification').update({ message: 'ACCEPTED' }).eq('receiver_id', currentUser?.id as number),
+          supabase.from('Notification').update({ message: 'ACCEPTED' }).eq('sender_id', targetUserID)
+        ]);
         if (res.status === 200) {
           return res.data;
         }
@@ -202,11 +223,16 @@ export const useMutationDeleteFriendshipInvitation = () => {
   const queryClient = useQueryClient();
   const targetUser = useCometaStore(state => state.targetUser);
   const selectedLikedEvent = useCometaStore(state => state.likedEvent);
+  const currentUser = useCometaStore(state => state.userProfile);
   return (
     useMutation({
       mutationFn: async (targetUserID: number) => {
         const res =
           await friendshipService.deleteFriendShipInvitationByQueryParams(targetUserID);
+        await Promise.all([
+          supabase.from('Notification').delete().eq('receiver_id', currentUser?.id as number),
+          supabase.from('Notification').delete().eq('sender_id', targetUserID)
+        ]);
         if (res.status === 204) {
           return res.data ?? null;
         }
