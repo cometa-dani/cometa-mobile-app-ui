@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
-import { ReactNode, useCallback, useState } from 'react';
+import { ReactNode, useCallback } from 'react';
 import { AvatarProps, Bubble, BubbleProps, GiftedChat, IMessage, InputToolbar, InputToolbarProps, Send } from 'react-native-gifted-chat';
-import { View, RefreshControl, Platform, TextInput, ViewToken, TouchableOpacity } from 'react-native';
+import { View, Platform, TextInput, ViewToken, TouchableOpacity } from 'react-native';
 import { Stack, useGlobalSearchParams, useNavigation } from 'expo-router';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { Image } from 'expo-image';
@@ -24,7 +24,6 @@ export default function ChatWithFriendScreen(): ReactNode {
   const targetUser = useCometaStore(state => state.targetUser);
   const currentUser = useCometaStore(state => state.userProfile);
   const { messages, sendMessage, setReceivedMessage } = useMessages(+friendshipId);
-  const [isLoadingMore] = useState(false);
 
   const onSendMessage = useCallback(async (messages: IMessage[] = []) => {
     try {
@@ -43,8 +42,6 @@ export default function ChatWithFriendScreen(): ReactNode {
       return null;
     }
   }, [currentUser?.id]);
-
-  const handleRefreshControl = () => { };
 
   const renderAvatar = useCallback((props: AvatarProps<IMessage>) => {
     const { currentMessage } = props;
@@ -181,7 +178,6 @@ export default function ChatWithFriendScreen(): ReactNode {
           messages={messages}
           onSend={(messages) => onSendMessage(messages)}
           showUserAvatar={true}
-          // onLoadEarlier={() => {}}   // for loading more messages
           user={{
             _id: currentUser?.id ?? '',
             name: currentUser?.username ?? '',
@@ -189,6 +185,7 @@ export default function ChatWithFriendScreen(): ReactNode {
           }}
           scrollToBottom={true}
           loadEarlier={true}
+          // onLoadEarlier={() => {}}   // for loading more messages
           isStatusBarTranslucentAndroid={true}
           listViewProps={{
             onViewableItemsChanged: ({ viewableItems }: { viewableItems: ViewToken[] }) => {
@@ -197,15 +194,9 @@ export default function ChatWithFriendScreen(): ReactNode {
                 setReceivedMessage();
               }
             },
-            refreshControl: (
-              <RefreshControl
-                refreshing={isLoadingMore}
-                onRefresh={handleRefreshControl}
-              />
-            )
           }}
           alwaysShowSend={true}
-          inverted={false}
+          inverted={true}
           bottomOffset={-10}
           renderBubble={renderBubbleMessage}
           renderInputToolbar={renderInputToolbar}

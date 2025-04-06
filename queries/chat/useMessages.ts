@@ -93,7 +93,7 @@ export const useMessages = (friendshipId: number) => {
   }, [friendshipId]);
 
   return {
-    messages,
+    messages: [...messages].sort((a, b) => new Date(b?.createdAt ?? '').getTime() - new Date(a?.createdAt ?? '').getTime()),
     sendMessage,
     setReceivedMessage
   };
