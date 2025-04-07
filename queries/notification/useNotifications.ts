@@ -15,31 +15,83 @@ export const useNotifications = (limit = 100) => {
   const query = useQuery({
     queryKey: [QueryKeys.GET_NOTIFICATIONS, currentUser?.id],
     select(data) {
-      return data.filter(notification => (
+      const filteredData = data.filter(notification => (
         (notification.receiverId === currentUser?.id) && (notification.message === 'PENDING')
       )
         ||
         notification.message === 'ACCEPTED'
       )
         || [];
+      return filteredData;
     },
     enabled: !!currentUser?.id,
-    queryFn: () => notificationService.getLatestByUser(currentUser?.id as number, limit)
+    queryFn: () => notificationService.getNotificationsByUser(currentUser?.id as number, limit)
   });
 
   // Subscribe to real-time updates
   useEffect(() => {
     if (!currentUser?.id) return;
 
-    const receiverChannel = supabase
-      .channel('notifications_receiver')
+    // const receiverChannel = supabase
+    //   .channel('notifications_receiver')
+    //   .on<INotification>(
+    //     'postgres_changes',
+    //     {
+    //       schema: 'public',
+    //       event: 'INSERT',
+    //       table: 'Notification',
+    //       filter: `receiver_id=eq.${currentUser.id}`
+    //     },
+    //     (payload) => {
+    //       queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
+    //         if (!oldData) return [];
+    //         // insert
+    //         return [payload.new, ...oldData];
+    //       });
+    //     }
+    //   )
+    //   // .on<INotification>(
+    //   //   'postgres_changes',
+    //   //   {
+    //   //     schema: 'public',
+    //   //     event: 'UPDATE',
+    //   //     table: 'Notification',
+    //   //     filter: `receiver_id=eq.${currentUser.id}`
+    //   //   },
+    //   //   (payload) => {
+    //   //     queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
+    //   //       if (!oldData) return [];
+    //   //       // update
+    //   //       return oldData.map(notification => {
+    //   //         if (notification.id === payload.new.id) {
+    //   //           return payload.new;
+    //   //         }
+    //   //         return notification;
+    //   //       });
+    //   //     });
+    //   //   }
+    //   // )
+    //   .on<INotification>(
+    //     'postgres_changes',
+    //     {
+    //       schema: 'public',
+    //       event: 'DELETE',
+    //       table: 'Notification',
+    //       filter: `receiver_id=eq.${currentUser.id}`
+    //     },
+    //     () => query.refetch()
+    //   )
+    //   .subscribe();
+
+    const notificationsChannel = supabase
+      .channel('notifications')
       .on<INotification>(
         'postgres_changes',
         {
           schema: 'public',
           event: 'INSERT',
           table: 'Notification',
-          filter: `receiver_id=eq.${currentUser.id}`
+          filter: `user_id=eq.${currentUser.id}`
         },
         (payload) => {
           queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
@@ -49,56 +101,42 @@ export const useNotifications = (limit = 100) => {
           });
         }
       )
+      // .on<INotification>(
+      //   'postgres_changes',
+      //   {
+      //     schema: 'public',
+      //     event: 'UPDATE',
+      //     table: 'Notification',
+      //     filter: `sender_id=eq.${currentUser.id}`
+      //   },
+      //   (payload) => {
+      //     queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
+      //       if (!oldData) return [];
+      //       // update
+      //       return oldData.map(notification => {
+      //         if (notification.id === payload.new.id) {
+      //           return payload.new;
+      //         }
+      //         return notification;
+      //       });
+      //     });
+      //   }
+      // )
       .on<INotification>(
         'postgres_changes',
         {
           schema: 'public',
           event: 'DELETE',
           table: 'Notification',
-          filter: `receiver_id=eq.${currentUser.id}`
-        },
-        () => query.refetch()
-      )
-      .subscribe();
-
-    const senderChannel = supabase
-      .channel('notifications_sender')
-      .on<INotification>(
-        'postgres_changes',
-        {
-          schema: 'public',
-          event: 'UPDATE',
-          table: 'Notification',
-          filter: `sender_id=eq.${currentUser.id}`
-        },
-        (payload) => {
-          queryClient.setQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser.id], (oldData) => {
-            if (!oldData) return [];
-            // update
-            return oldData.map(friendship => {
-              if (friendship.id === payload.new.id) {
-                return payload.new;
-              }
-              return friendship;
-            });
-          });
-        }
-      )
-      .on<INotification>(
-        'postgres_changes',
-        {
-          schema: 'public',
-          event: 'DELETE',
-          table: 'Notification',
-          filter: `sender_id=eq.${currentUser.id}`
+          filter: `user_id=eq.${currentUser.id}`
         },
         () => query.refetch()
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(receiverChannel);
-      supabase.removeChannel(senderChannel);
+      // supabase.removeChannel(receiverChannel);
+      supabase.removeChannel(notificationsChannel);
     };
   }, [currentUser?.id]);
 

@@ -13,11 +13,6 @@ class NotificationService {
     // return update(notificationRef, { isSeen: true });
   }
 
-  async deleteNotification(loggedInUserUUID: string, msgKey: string) {
-    // const notificationRef = ref(realtimeDB, `notifications/${loggedInUserUUID}/${msgKey}`);
-    // return set(notificationRef, null);
-  }
-
   async deleteLastNotification(loggedInUserUUID: string) {
     // const lastItem = query(ref(realtimeDB, `notifications/${loggedInUserUUID}`), limitToLast(1));
     // const { key } = await get(lastItem);
@@ -30,7 +25,79 @@ class NotificationService {
     // return set(notificationRef, null);
   }
 
-  async getLatestByUser(userId: number, limit: number): Promise<INotification[]> {
+  async sendFriendRequestNotification(targetUserId: number, currentUserId: number) {
+    const date = new Date().toISOString();
+    const message = {
+      created_at: date,
+      updated_at: date,
+      receiver_id: targetUserId,
+      sender_id: currentUserId,
+      type: 'FRIEND_REQUEST',
+      message: 'PENDING',
+      read: false,
+    };
+    const { data, error } = await supabase.from('Notification')
+      .insert([
+        { ...message, user_id: targetUserId },
+        { ...message, user_id: currentUserId },
+      ])
+      .select();
+    if (error) throw error;
+    return data;
+  }
+
+  async acceptFriendRequestNotification(targetUserId: number, currentUserId: number) {
+    const date = new Date().toISOString();
+    const message = {
+      created_at: date,
+      updated_at: date,
+      receiver_id: currentUserId,
+      sender_id: targetUserId,
+      type: 'FRIEND_REQUEST',
+      message: 'ACCEPTED',
+      read: false,
+    };
+    const { data, error } = await supabase.from('Notification')
+      .insert([
+        { ...message, user_id: targetUserId },
+        { ...message, user_id: currentUserId },
+      ])
+      .select();
+    if (error) throw error;
+    return data;
+  }
+
+  async deleteFriendRequestNotification(targetUserId: number, currentUserId: number) {
+    const { data, error } = await supabase
+      .from('Notification')
+      .delete()
+      .eq('sender_id', currentUserId)
+      .eq('receiver_id', targetUserId);
+
+    if (error) throw error;
+    return data;
+  }
+
+  async deleteNotificationById(notificationId: number) {
+    const { data, error } = await supabase.from('Notification')
+      .delete()
+      .eq('id', notificationId);
+    // .eq('user_id', userId);
+    if (error) throw error;
+    return data;
+  }
+
+  async setNotificationAsSeenByUser(userId: number, notificationId: number) {
+    const { data, error } = await supabase.from('Notification')
+      .update({ read: true })
+      .eq('id', notificationId)
+      .eq('user_id', userId)
+      .select();
+    if (error) throw error;
+    return data;
+  }
+
+  async getNotificationsByUser(userId: number, limit: number): Promise<INotification[]> {
     const { data, error } = await supabase
       .from('Notification')
       .select(`
@@ -41,6 +108,7 @@ class NotificationService {
         "receiverId":receiver_id,
         "userId":user_id,
         type,
+        read,
         message,
         sender:User!sender_id(
           id,
@@ -67,7 +135,8 @@ class NotificationService {
           )
         )
       `)
-      .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+      .eq('user_id', userId)
+      // .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
       .order('updated_at', { ascending: false })
       .limit(limit)
       .returns<INotification[]>();
@@ -75,17 +144,6 @@ class NotificationService {
     if (error) throw error;
 
     return data;
-    // .map<INotification>(friendship => ({
-    //   ...friendship,
-    //   friend: {
-    //     ...(friendship.senderId === userId
-    //       ? friendship.receiver
-    //       : friendship.sender),
-    //     photos: friendship.senderId === userId
-    //       ? friendship.receiver.photos
-    //       : friendship.sender.photos
-    //   },
-    // }));
   }
 }
 

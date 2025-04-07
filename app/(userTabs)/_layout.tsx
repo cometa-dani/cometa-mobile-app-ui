@@ -6,6 +6,7 @@ import { Condition } from '@/components/utils/ifElse';
 import { HStack } from '@/components/utils/stacks';
 import { usePrefetchBucketList } from '@/queries/currentUser/eventHooks';
 import { usePrefetchUserProfile } from '@/queries/currentUser/userHooks';
+import { useNotifications } from '@/queries/notification/useNotifications';
 import { useCometaStore } from '@/store/cometaStore';
 import { FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Redirect, Tabs, useRouter } from 'expo-router';
@@ -18,7 +19,7 @@ export default function TabLayout(): ReactNode {
   usePrefetchBucketList();
   const { theme } = useStyles();
   const router = useRouter();
-  // const notificationIsSeen = useCometaStore(state => state.notificationsList).at(0)?.user?.isSeen;
+  const { data: notifications, isSuccess } = useNotifications();
   const session = useCometaStore(state => state.session);
   const newMessages = useCometaStore(state => state.newMessages);
   usePrefetchUserProfile(); // don't remove
@@ -86,11 +87,11 @@ export default function TabLayout(): ReactNode {
                 <CircleButton
                   onPress={() => router.push('/(userStacks)/notifications')}
                 >
-                  <>
+                  <View style={{ position: 'relative' }}>
                     <Condition
-                      if={false}
+                      if={isSuccess && notifications?.at(0)?.read === false}
                       then={(
-                        <Indicator />
+                        <Indicator position={-2.8} />
                       )}
                     />
                     <Ionicons
@@ -98,7 +99,7 @@ export default function TabLayout(): ReactNode {
                       size={theme.spacing.sp8}
                       color={theme.colors.white100}
                     />
-                  </>
+                  </View>
                 </CircleButton>
                 <CircleButton
                   onPress={() => router.push('/(userStacks)/filter')}

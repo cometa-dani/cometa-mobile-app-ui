@@ -282,7 +282,7 @@ const MeetNewPeopleFlashList: FC<FlashListProps> = ({ isEmpty, isFetching, users
       {
         onSuccess() {
           notificationService
-            .deleteNotification(targetUserAsReceiver.uid, loggedInUserUuid)
+            .deleteNotificationById(targetUserAsReceiver.uid, loggedInUserUuid)
             .then()
             .catch();
           queryClient.invalidateQueries({

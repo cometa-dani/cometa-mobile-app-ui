@@ -20,7 +20,7 @@ export default function NotificationsScreen(): JSX.Element {
 
   const handleDeleteNotification = (notification: INotificationData) => {
     if (!notification?.chatUUID) return;
-    notificationService.deleteNotification(loggedInUserUUID, notification.user._id);
+    notificationService.deleteNotificationById(loggedInUserUUID, notification.user._id);
   };
 
   useFocusEffect(
@@ -100,30 +100,14 @@ export default function NotificationsScreen(): JSX.Element {
 
 const styles = StyleSheet.create({
 
-  titleContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24
-  },
-
   container: {
+    alignItems: 'center',
     backgroundColor: 'white',
     flexDirection: 'row',
-    alignItems: 'center',
+    gap: 16,
     paddingHorizontal: 24,
-    paddingVertical: 14,
-    gap: 16
+    paddingVertical: 14
   },
-
-  imageContainer: {
-    width: 46,
-    height: 46,
-    borderRadius: 25,
-    overflow: 'hidden'
-  },
-
-  image: { width: 50, height: 50 },
 
   deleteButton: {
     backgroundColor: gray_50,
@@ -131,5 +115,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 20,
     padding: 20,
+  },
+
+  image: { height: 50, width: 50 },
+
+  imageContainer: {
+    borderRadius: 25,
+    height: 46,
+    overflow: 'hidden',
+    width: 46
+  },
+
+  titleContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    marginBottom: 24
   },
 });

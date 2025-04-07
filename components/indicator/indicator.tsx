@@ -2,11 +2,13 @@ import { FC } from 'react';
 import { View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
-
-export const Indicator: FC = () => {
+interface IndicatorProps {
+  position?: number
+}
+export const Indicator: FC<IndicatorProps> = ({ position }) => {
   const { styles } = useStyles(stylesheet);
   return (
-    <View style={styles.notificationIndicator} />
+    <View style={[styles.notificationIndicator, { left: position }]} />
   );
 };
 

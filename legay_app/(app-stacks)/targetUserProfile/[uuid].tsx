@@ -243,7 +243,7 @@ export default function TargerUserProfileScreen(): JSX.Element {
     mutationDeleteFriendship.mutate(targetUserAsReceiver.id, {
       onSuccess() {
         notificationService
-          .deleteNotification(targetUserAsReceiver.uid, loggedInUserUuid)
+          .deleteNotificationById(targetUserAsReceiver.uid, loggedInUserUuid)
           .then()
           .catch();
         if (urlParams.eventId) {

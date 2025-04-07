@@ -3,6 +3,7 @@ import { StateCreator } from 'zustand';
 import { RestApiService } from '../../services/restService';
 import { Session } from '@supabase/supabase-js';
 import { IGetDetailedUserProfile } from '@/models/User';
+import { INotification } from '@/models/Notification';
 
 
 export type AuthSlice = {
@@ -14,8 +15,10 @@ export type AuthSlice = {
   setIsAuthenticated: (isAuthenticated: boolean) => void,
   setUserProfile: (user: IGetDetailedUserProfile) => void,
   userProfile?: IGetDetailedUserProfile,
-  newMessages: number
-  setNewMessages: (newMessages: number) => void
+  newMessages: number,
+  setNewMessages: (newMessages: number) => void,
+  // newNotifications: INotification[],
+  // setNewNotifications: (notifications: INotification[]) => void,
 }
 
 
@@ -25,6 +28,10 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
   setNewMessages: (newMessages: number) => {
     set({ newMessages });
   },
+  // newNotifications: [],
+  // setNewNotifications: (newNotifications: INotification[]) => {
+  //   set({ newNotifications });
+  // },
   setIsLoaded: (isLoading: boolean) => {
     set({ isLoaded: isLoading });
   },
