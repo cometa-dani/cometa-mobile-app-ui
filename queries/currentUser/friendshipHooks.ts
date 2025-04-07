@@ -94,7 +94,6 @@ export const useMutationSentFriendshipInvitation = () => {
     useMutation<MutateFrienship, TypedAxiosError, number>({
       mutationFn: async (targetUserId: number) => {
         const res = await friendshipService.sentFriendShipInvitation(targetUserId);
-        await notificationService.sendFriendRequestNotification(targetUserId, currentUser?.id as number);
         if (res.status === 201) {
           return res.data;
         }
@@ -139,7 +138,16 @@ export const useMutationSentFriendshipInvitation = () => {
               hasIncommingFriendshipInvitation: true
             };
           });
-      }
+      },
+      onSuccess: async (_, targetUserId) => {
+        try {
+          if (!currentUser?.id) return;
+          await notificationService.sendFriendRequestNotification(targetUserId, currentUser?.id);
+        }
+        catch {
+          return null;
+        }
+      },
     })
   );
 };
@@ -155,7 +163,6 @@ export const useMutationAcceptFriendshipInvitation = () => {
       mutationFn: async (targetUserID: number) => {
         const res =
           await friendshipService.updateFriendshipByQueryParams(targetUserID, 'ACCEPTED');
-        await notificationService.acceptFriendRequestNotification(targetUserID, currentUser?.id as number);
         if (res.status === 200) {
           return res.data;
         }
@@ -191,11 +198,13 @@ export const useMutationAcceptFriendshipInvitation = () => {
           }
         );
       },
-      onSuccess: async () => {
+      onSuccess: async (_, targetUserID) => {
         try {
           await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_NEWEST_FRIENDS] });
+          if (!currentUser?.id) return;
+          await notificationService.acceptFriendRequestNotification(targetUserID, currentUser?.id);
         }
-        catch (error) {
+        catch {
           return null;
         }
       },
@@ -206,15 +215,14 @@ export const useMutationAcceptFriendshipInvitation = () => {
 
 export const useMutationDeleteFriendshipInvitation = () => {
   const queryClient = useQueryClient();
-  const targetUser = useCometaStore(state => state.targetUser);
   const selectedLikedEvent = useCometaStore(state => state.likedEvent);
+  const targetUser = useCometaStore(state => state.targetUser);
   const currentUser = useCometaStore(state => state.userProfile);
   return (
     useMutation({
       mutationFn: async (targetUserID: number) => {
         const res =
           await friendshipService.deleteFriendShipInvitationByQueryParams(targetUserID);
-        await notificationService.deleteFriendRequestNotification(targetUserID, currentUser?.id as number);
         if (res.status === 204) {
           return res.data ?? null;
         }
@@ -276,6 +284,14 @@ export const useMutationDeleteFriendshipInvitation = () => {
             };
           }
         );
+      },
+      onSuccess: async (_, targetUserID) => {
+        try {
+          if (!currentUser?.id) return;
+          await notificationService.deleteFriendRequestNotification(targetUserID, currentUser?.id);
+        } catch {
+          return null;
+        }
       },
       onError: () => {
         Notifier.showNotification({

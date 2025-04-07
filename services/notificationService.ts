@@ -87,11 +87,11 @@ class NotificationService {
     return data;
   }
 
-  async setNotificationAsSeenByUser(userId: number, notificationId: number) {
+  async setNotificationAsSeenById(notificationId: number) {
     const { data, error } = await supabase.from('Notification')
       .update({ read: true })
       .eq('id', notificationId)
-      .eq('user_id', userId)
+      // .eq('user_id', userId)
       .select();
     if (error) throw error;
     return data;
@@ -136,7 +136,6 @@ class NotificationService {
         )
       `)
       .eq('user_id', userId)
-      // .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
       .order('updated_at', { ascending: false })
       .limit(limit)
       .returns<INotification[]>();
