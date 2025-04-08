@@ -1,10 +1,10 @@
 import { SafeAreaView, TouchableOpacity, View } from 'react-native';
-import { Stack, useFocusEffect, useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import { RectButton } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import { FC, ReactNode, useCallback } from 'react';
+import { FC, ReactNode } from 'react';
 import { TextView } from '@/components/text/text';
 import { Condition } from '@/components/utils/ifElse';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
@@ -25,18 +25,18 @@ export default function NotificationsScreen(): ReactNode {
   const queryClient = useQueryClient();
   const notifications = queryClient.getQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser?.id]);
 
-  useFocusEffect(
-    useCallback(() => {
-      const lastNotification = notifications?.at(0);
-      if (lastNotification?.read) return;
-      if (currentUser?.id && lastNotification?.id) {
-        // notificationService
-        // .setNotificationAsSeenByUser(currentUser?.id, lastNotification?.id)
-        // .then(() => setNewNotifications(false))
-        // .catch();
-      }
-    }, [notifications?.length]),
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const lastNotification = notifications?.at(0);
+  //     if (lastNotification?.read) return;
+  //     if (currentUser?.id && lastNotification?.id) {
+  //       // notificationService
+  //       // .setNotificationAsSeenByUser(currentUser?.id, lastNotification?.id)
+  //       // .then(() => setNewNotifications(false))
+  //       // .catch();
+  //     }
+  //   }, [notifications?.length]),
+  // );
 
   return (
     <>

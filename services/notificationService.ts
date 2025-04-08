@@ -42,6 +42,7 @@ class NotificationService {
         { ...message, user_id: currentUserId },
       ])
       .select();
+
     if (error) throw error;
     return data;
   }
@@ -57,12 +58,18 @@ class NotificationService {
       message: 'ACCEPTED',
       read: false,
     };
+    await supabase
+      .from('Notification')
+      .delete()
+      .eq('sender_id', targetUserId)
+      .eq('receiver_id', currentUserId);
     const { data, error } = await supabase.from('Notification')
       .insert([
         { ...message, user_id: targetUserId },
         { ...message, user_id: currentUserId },
       ])
       .select();
+
     if (error) throw error;
     return data;
   }
@@ -82,7 +89,7 @@ class NotificationService {
     const { data, error } = await supabase.from('Notification')
       .delete()
       .eq('id', notificationId);
-    // .eq('user_id', userId);
+
     if (error) throw error;
     return data;
   }
@@ -91,8 +98,8 @@ class NotificationService {
     const { data, error } = await supabase.from('Notification')
       .update({ read: true })
       .eq('id', notificationId)
-      // .eq('user_id', userId)
       .select();
+
     if (error) throw error;
     return data;
   }
@@ -141,7 +148,6 @@ class NotificationService {
       .returns<INotification[]>();
 
     if (error) throw error;
-
     return data;
   }
 }
