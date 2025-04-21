@@ -101,6 +101,7 @@ export const useNotifications = (limit = 100) => {
           });
         }
       )
+      // .subscribe()
       // .on<INotification>(
       //   'postgres_changes',
       //   {

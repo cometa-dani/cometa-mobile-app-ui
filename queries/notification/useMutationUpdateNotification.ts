@@ -31,7 +31,7 @@ export const useMutationNotificationAsRead = () => {
   });
 };
 
-export const useMutationDeleteNotification = () => {
+export const useMutationDeleteNotificationById = () => {
   const queryClient = useQueryClient();
   const currentUser = useCometaStore(state => state.userProfile);
   return useMutation({

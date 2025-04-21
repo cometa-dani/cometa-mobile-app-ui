@@ -17,6 +17,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '@/queries/queryKeys';
 import { Center } from '@/components/utils/stacks';
 import { EmptyMessage } from '@/components/empty/Empty';
+import { useMutationDeleteNotificationById } from '@/queries/notification/useMutationUpdateNotification';
 
 
 export default function NotificationsScreen(): ReactNode {
@@ -24,6 +25,7 @@ export default function NotificationsScreen(): ReactNode {
   const currentUser = useCometaStore(state => state.userProfile);
   const queryClient = useQueryClient();
   const notifications = queryClient.getQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser?.id]);
+  const deleteNotification = useMutationDeleteNotificationById();
 
   // useFocusEffect(
   //   useCallback(() => {
@@ -77,6 +79,9 @@ export default function NotificationsScreen(): ReactNode {
                         <RectButton
                           onPress={() => {
                             swipeable?.close();
+                            setTimeout(() => {
+                              deleteNotification.mutate(item.id);
+                            }, 500);
                           }}
                           style={styles.deleteButton}
                         >
@@ -116,7 +121,7 @@ const Message: FC<MessageProps> = ({ item, isCurrentUser = false }) => {
   const router = useRouter();
   const setSelectedTargetUser = useCometaStore(state => state.setTargetUser);
 
-  if (item.message === 'PENDING') {
+  if (item.message === 'PENDING' && !isCurrentUser) {
     return (
       <TouchableOpacity onPress={() => {
         setSelectedTargetUser({
@@ -135,7 +140,7 @@ const Message: FC<MessageProps> = ({ item, isCurrentUser = false }) => {
           </View>
 
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', flex: 1 }}>
-            <TextView bold={true}> {item?.sender.name} </TextView>
+            <TextView bold={true}> {item?.sender?.name} </TextView>
             <TextView> {pending} </TextView>
           </View>
         </View>
@@ -161,7 +166,7 @@ const Message: FC<MessageProps> = ({ item, isCurrentUser = false }) => {
           </View>
 
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', flex: 1 }}>
-            <TextView bold={true}> {item?.receiver.name} </TextView>
+            <TextView bold={true}> {item?.receiver?.name} </TextView>
             <TextView> {newMatch} </TextView>
           </View>
         </View>
@@ -187,7 +192,7 @@ const Message: FC<MessageProps> = ({ item, isCurrentUser = false }) => {
           </View>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', flex: 1 }}>
             <TextView> Your match request with </TextView>
-            <TextView bold={true}>{item?.sender.name}</TextView>
+            <TextView bold={true}>{item?.sender?.name}</TextView>
             <TextView> was accepted! </TextView>
           </View>
         </View>
