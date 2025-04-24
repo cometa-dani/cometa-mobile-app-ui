@@ -2,12 +2,12 @@ import { Text, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
-export default function ChatScreen() {
+export default function PostsScreen() {
   const { styles } = useStyles(stylesheet);
   return (
     <>
       <View style={styles.container}>
-        <Text>Chat</Text>
+        <Text>Posts</Text>
       </View>
     </>
   );

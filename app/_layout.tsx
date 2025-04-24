@@ -78,11 +78,14 @@ export default function RootLayout() {
   useEffect(() => {
     let subscription: Subscription;
     (async () => {
+      // 1. check if session is already persisted
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setSession(session);
         setSessionIsLoaded(true);
+        return;
       }
+      // 2. if not, subscribe to auth changes
       const { data: { subscription: subs } } = supabase.auth.onAuthStateChange((_event, session) => {
         if (!isSessionLoaded) {
           setSessionIsLoaded(true);
@@ -107,10 +110,11 @@ export default function RootLayout() {
     }
   }, [isFontLoaded, isSessionLoaded]);
 
+  // root layout will appear while the splash screen is being hidden.
   if (!isSessionLoaded) {
     return null;
   }
-  return <Root />; // too  many re-renders
+  return <Root />;
 }
 
 

@@ -7,7 +7,7 @@ export default function HomeScreen() {
   return (
     <>
       <View style={styles.container}>
-        <Text>Lets go!</Text>
+        <Text>Dashboard</Text>
       </View>
     </>
   );

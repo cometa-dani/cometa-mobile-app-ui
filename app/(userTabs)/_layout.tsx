@@ -15,13 +15,13 @@ import { View } from 'react-native';
 import { useStyles } from 'react-native-unistyles';
 
 
-export default function TabLayout(): ReactNode {
-  usePrefetchBucketList();
+export default function UserTabLayout(): ReactNode {
   const { theme } = useStyles();
   const router = useRouter();
   const { data: notifications, isSuccess } = useNotifications();
   const session = useCometaStore(state => state.session);
   const newMessages = useCometaStore(state => state.newMessages);
+  usePrefetchBucketList();
   usePrefetchUserProfile(); // don't remove
 
   if (!session?.user) {
@@ -35,9 +35,7 @@ export default function TabLayout(): ReactNode {
           headerTitleAlign: 'center',
           headerShown: true,
           sceneStyle: { backgroundColor: theme.colors.white80 },
-          headerStyle: {
-            elevation: 1,
-          },
+          headerStyle: { elevation: 1 },
           tabBarInactiveTintColor: theme.colors.gray400,
           tabBarActiveTintColor: theme.colors.red100,
           tabBarHideOnKeyboard: true,

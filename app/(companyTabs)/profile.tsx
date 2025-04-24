@@ -2,12 +2,12 @@ import { Text, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
-export default function UserProfileScreen() {
+export default function ProfileScreen() {
   const { styles } = useStyles(stylesheet);
   return (
     <>
       <View style={styles.container}>
-        <Text>User profile</Text>
+        <Text>Company profile</Text>
       </View>
     </>
   );
