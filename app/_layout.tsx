@@ -82,6 +82,7 @@ export default function RootLayout() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setSession(session);
+        console.log({ session });
         setSessionIsLoaded(true);
       }
       // 2. if not, subscribe to auth changes

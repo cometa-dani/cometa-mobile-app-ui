@@ -33,6 +33,7 @@ export default function WelcomeScreen() {
   };
 
   const openCompanyProfileModal = (): void => {
+    setUserProfileModalVisible();
     router.push('/(companyStacks)/onboarding');
   };
 
@@ -101,7 +102,7 @@ export default function WelcomeScreen() {
                 android: UnistylesRuntime.statusBar.height * 2.5
               })
             }}>
-              <GradientHeading styles={{ fontSize: theme.text.size.s14 }}>
+              <GradientHeading styles={{ fontSize: theme.text.size.s12 }}>
                 cometa
               </GradientHeading>
             </View>

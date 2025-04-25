@@ -54,7 +54,7 @@ export default function UserProfileScreen() {
               if={!isUserProfileSuccess}
               then={<UserNameSkeleton />}
               else={
-                <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
+                <GradientHeading styles={[{ fontSize: theme.text.size.s7 }]}>
                   {userProfile?.username}
                 </GradientHeading>
               }

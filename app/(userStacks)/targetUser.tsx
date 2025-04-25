@@ -205,7 +205,7 @@ export default function TargetUserProfileScreen() {
           },
           headerTitleAlign: 'center',
           headerTitle: () => (
-            <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
+            <GradientHeading styles={[{ fontSize: theme.text.size.s7 }]}>
               {detailedProfile.data?.username || targetUser?.username}
             </GradientHeading>
           ),

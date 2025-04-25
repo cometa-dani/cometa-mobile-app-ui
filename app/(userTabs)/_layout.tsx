@@ -74,7 +74,7 @@ export default function UserTabLayout(): ReactNode {
               </CircleButton>
             ),
             headerTitle: () => (
-              <GradientHeading styles={[{ fontSize: theme.text.size.s9 }]}>
+              <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
                 cometa
               </GradientHeading>
             ),
@@ -121,7 +121,7 @@ export default function UserTabLayout(): ReactNode {
           options={{
             tabBarLabel: 'Chat',
             headerTitle: () => (
-              <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
+              <GradientHeading styles={[{ fontSize: theme.text.size.s7 }]}>
                 chat
               </GradientHeading>
             ),
@@ -141,7 +141,7 @@ export default function UserTabLayout(): ReactNode {
           options={{
             tabBarLabel: 'Bucketlist',
             headerTitle: () => (
-              <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
+              <GradientHeading styles={[{ fontSize: theme.text.size.s7 }]}>
                 bucketlist
               </GradientHeading>
             ),
