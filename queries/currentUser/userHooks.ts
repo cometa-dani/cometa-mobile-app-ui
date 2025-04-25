@@ -4,7 +4,7 @@ import { IGetBasicUserProfile, IGetDetailedUserProfile, ICreateUser, IUpdateUser
 import { IPhoto } from '../../models/Photo';
 import { QueryKeys } from '../queryKeys';
 import { useCometaStore } from '../../store/cometaStore';
-import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid';
+import { IPhotoPlaceholder } from '@/components/onboarding/photosGrid/photoGrid';
 import { useEffect } from 'react';
 
 

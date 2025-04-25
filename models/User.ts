@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { EventCategory, ILikeableEvent } from './Event';
 import { IPhoto } from './Photo';
-import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid';
+import { IPhotoPlaceholder } from '@/components/onboarding/photosGrid/photoGrid';
 import { IPaginated } from './utils/Paginated';
 import { INotification } from './Notification';
 

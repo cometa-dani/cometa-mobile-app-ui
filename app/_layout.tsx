@@ -18,7 +18,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { onlineManager } from '@tanstack/react-query';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Subscription } from '@supabase/supabase-js';
+import { Session, Subscription } from '@supabase/supabase-js';
 
 
 // Catch any errors thrown by the Layout component.
@@ -72,6 +72,7 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
   const setSession = useCometaStore(state => state.setSession);
+  const session = useCometaStore(state => state.session);
   const isSessionLoaded = useCometaStore(state => state.isLoaded);
   const setSessionIsLoaded = useCometaStore(state => state.setIsLoaded);
 
@@ -82,12 +83,12 @@ export default function RootLayout() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setSession(session);
-        console.log({ session });
         setSessionIsLoaded(true);
       }
       // 2. if not, subscribe to auth changes
       const { data: { subscription: subs } } = supabase.auth.onAuthStateChange((_event, session) => {
         if (!isSessionLoaded) {
+          // console.log({ session });
           setSessionIsLoaded(true);
         }
         setSession(session);
@@ -114,12 +115,16 @@ export default function RootLayout() {
   if (!isSessionLoaded) {
     return null;
   }
-  return <Root />;
+  return <Root session={session} />;
 }
 
+interface IProps {
+  session: Session | null
+}
 
-function Root(): ReactNode {
+function Root({ session }: IProps): ReactNode {
   const { theme } = useStyles();
+  const role = session?.user?.user_metadata?.role;
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
@@ -128,7 +133,7 @@ function Root(): ReactNode {
             <BottomSheetModalProvider>
               <NotifierWrapper duration={5_000}>
                 <Stack
-                  initialRouteName='(userTabs)'
+                  initialRouteName={role === 'company' ? '(companyTabs)' : '(userTabs)'}
                   screenOptions={{
                     headerShown: false,
                     headerTitle: '',

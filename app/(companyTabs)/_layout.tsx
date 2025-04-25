@@ -10,13 +10,16 @@ export default function CompanyTabLayout() {
   const { theme } = useStyles();
   const session = useCometaStore(state => state.session);
 
+  if (session?.user?.user_metadata.role !== 'company') {
+    return <Redirect href="/(userTabs)/" />;
+  }
   if (!session?.user) {
     return <Redirect href="/welcome" />;
   }
   return (
     <Tabs
       screenOptions={{
-        headerShown: false
+        headerShown: true
       }}
       tabBar={(props) => <TabBar {...props} />}
     >
@@ -24,7 +27,7 @@ export default function CompanyTabLayout() {
         options={{
           tabBarLabel: 'Dashboard',
           headerTitle: () => (
-            <GradientHeading styles={[{ fontSize: theme.text.size.s9 }]}>
+            <GradientHeading styles={[{ fontSize: theme.text.size.s7 }]}>
               Dashboard
             </GradientHeading>
           ),
@@ -38,7 +41,7 @@ export default function CompanyTabLayout() {
         options={{
           tabBarLabel: 'Posts',
           headerTitle: () => (
-            <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
+            <GradientHeading styles={[{ fontSize: theme.text.size.s7 }]}>
               Events
             </GradientHeading>
           ),
@@ -51,11 +54,11 @@ export default function CompanyTabLayout() {
       <Tabs.Screen
         options={{
           tabBarLabel: 'Profile',
-          headerTitle: () => (
-            <GradientHeading styles={[{ fontSize: theme.text.size.s8 }]}>
-              Company Profile
-            </GradientHeading>
-          ),
+          // headerTitle: () => (
+          //   <GradientHeading styles={[{ fontSize: theme.text.size.s7 }]}>
+          //     Company Profile
+          //   </GradientHeading>
+          // ),
           tabBarIcon: ({ color }) => (
             <FontAwesome name="building-o" size={24} color={color} />
           )

@@ -17,7 +17,7 @@ import {
   validationSchema,
   errorMessages
 } from '@/components/onboarding/user/steps/aboutYourSelf';
-import { IPhotoPlaceholder } from '@/components/onboarding/user/photosGrid/photoGrid';
+import { IPhotoPlaceholder } from '@/components/onboarding/photosGrid/photoGrid';
 import { IPhoto } from '@/models/Photo';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -28,7 +28,7 @@ import { useSelectLanguages } from '@/components/modal/selectLanguages/hook';
 import { FieldText } from '@/components/input/textField';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { Button } from '@/components/button/button';
-import { PhotosGrid } from '@/components/onboarding/user/photosGrid/photoGrid';
+import { PhotosGrid } from '@/components/onboarding/photosGrid/photoGrid';
 import { Notifier } from 'react-native-notifier';
 import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
 import { QueryKeys } from '@/queries/queryKeys';

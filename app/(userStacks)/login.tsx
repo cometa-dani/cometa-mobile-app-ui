@@ -53,7 +53,7 @@ export default function LoginScreen() {
       Component: InfoToast,
     });
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error, data } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password
       });
@@ -64,7 +64,11 @@ export default function LoginScreen() {
         description: 'you are logged in',
         Component: SucessToast
       });
-      router.canDismiss() && router.dismissTo('/(userTabs)/');
+      if (data.user?.user_metadata.role === 'company') {
+        router.canDismiss() && router.dismissTo('/(companyTabs)/');
+      } else {
+        router.canDismiss() && router.dismissTo('/(userTabs)/');
+      }
     }
     catch (error) {
       let errorMessage = 'try again';

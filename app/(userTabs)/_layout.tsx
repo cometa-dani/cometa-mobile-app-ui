@@ -16,14 +16,17 @@ import { useStyles } from 'react-native-unistyles';
 
 
 export default function UserTabLayout(): ReactNode {
+  const session = useCometaStore(state => state.session);
   const { theme } = useStyles();
   const router = useRouter();
   const { data: notifications, isSuccess } = useNotifications();
-  const session = useCometaStore(state => state.session);
   const newMessages = useCometaStore(state => state.newMessages);
   usePrefetchBucketList();
   usePrefetchUserProfile(); // don't remove
 
+  if (session?.user?.user_metadata.role === 'company') {
+    return <Redirect href="/(companyTabs)/" />;
+  }
   if (!session?.user) {
     return <Redirect href="/welcome" />;
   }

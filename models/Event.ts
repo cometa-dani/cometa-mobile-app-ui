@@ -53,7 +53,6 @@ export interface ILikeableEvent {
   organizationId?: number;
   organization?: IOrganization;
   location?: ILocation;
-
   photos: Array<IPhoto>; // 1 or 3
   likes?: EventLike[]
   _count: ICount;

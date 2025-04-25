@@ -1,13 +1,13 @@
 import { SystemBars } from 'react-native-edge-to-edge';
-import { AboutYourSelfForm } from '@/components/onboarding/user/steps/aboutYourSelf';
-import { HeaderProgressBar } from '@/components/onboarding/user/steps/components/headerProgressBar';
-import { CreateYourProfileForm } from '@/components/onboarding/user/steps/createYourProfile';
-import { UploadYouPhotosForm } from '@/components/onboarding/user/steps/uploadYourPhotos';
+// import { AboutYourSelfForm } from '@/components/onboarding/company/steps/aboutYourSelf';
+import { HeaderProgressBar } from '@/components/onboarding/company/steps/components/headerProgressBar';
+import { CreateProfileForm } from '@/components/onboarding/company/steps/createYourProfile';
+// import { UploadYouPhotosForm } from '@/components/onboarding/company/steps/uploadYourPhotos';
 import PagerView, { usePagerView } from 'react-native-pager-view';
 import { Stack } from 'expo-router';
 
 
-const title = ['Create Your Profile', 'About Yourself', 'Upload Your Photos', 'Done'];
+const title = ['Create Your Company', 'About Yourself', 'Upload Your Photos', 'Done'];
 
 export default function OnboardCompanyScreen() {
   const { ref, setPage, setProgress, progress } = usePagerView();
@@ -42,18 +42,18 @@ export default function OnboardCompanyScreen() {
           });
         }}
       >
-        <CreateYourProfileForm
+        <CreateProfileForm
           key={0}
           onNext={() => setPage(1)}
         />
-        <UploadYouPhotosForm
+        {/* <UploadYouPhotosForm
           key={1}
           onNext={() => setPage(2)}
         />
         <AboutYourSelfForm
           key={2}
           onNext={() => setPage(3)}
-        />
+        /> */}
       </PagerView>
     </>
   );
