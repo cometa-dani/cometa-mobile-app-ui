@@ -83,7 +83,6 @@ export default function RootLayout() {
       if (session) {
         setSession(session);
         setSessionIsLoaded(true);
-        return;
       }
       // 2. if not, subscribe to auth changes
       const { data: { subscription: subs } } = supabase.auth.onAuthStateChange((_event, session) => {
