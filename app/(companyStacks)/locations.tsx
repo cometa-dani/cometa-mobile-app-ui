@@ -7,11 +7,19 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { HStack } from '@/components/utils/stacks';
+import { ExpandableText } from '@/components/text/expandableText';
+import * as WebBrowser from 'expo-web-browser';
+import { ILocation } from '@/models/Localization';
 
 
 export default function LocationsScreen() {
   const { styles, theme } = useStyles(stylesheet);
   const { data } = useQueryGetLocations();
+
+  const openLocationInBrowser = async (location: ILocation) => {
+    if (!location?.mapUrl) return;
+    await WebBrowser.openBrowserAsync(location?.mapUrl ?? '');
+  };
 
   return (
     <>
@@ -52,13 +60,19 @@ export default function LocationsScreen() {
               <View style={styles.locationInfo}>
                 <HStack $x='space-between' $y='center'>
                   <TextView style={styles.locationName}>{item.name}</TextView>
-                  <FontAwesome5
-                    name="map-marker-alt"
-                    size={18}
-                    color={theme.colors.red100}
-                  />
+                  <TouchableOpacity
+                    onPress={() => openLocationInBrowser(item)}
+                  >
+                    <FontAwesome5
+                      name="map-marker-alt"
+                      size={18}
+                      color={theme.colors.red100}
+                    />
+                  </TouchableOpacity>
                 </HStack>
-                <TextView style={styles.locationUrl} numberOfLines={1}>{item.mapUrl}</TextView>
+                <ExpandableText>
+                  {item.mapUrl}
+                </ExpandableText>
               </View>
             </View>
           );
@@ -72,7 +86,7 @@ const stylesheet = createStyleSheet((theme, rt) => ({
   locationCard: {
     backgroundColor: theme.colors.white100,
     borderRadius: theme.spacing.sp4,
-    padding: theme.spacing.sp4,
+    padding: theme.spacing.sp6,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
