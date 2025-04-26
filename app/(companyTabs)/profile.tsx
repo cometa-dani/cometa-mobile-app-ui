@@ -1,14 +1,18 @@
 import { GradientHeading } from '@/components/text/gradientText';
-// import { Condition } from '@/components/utils/ifElse';
+import { TextView } from '@/components/text/text';
+import { UserNameSkeleton } from '@/components/userProfile/components/headerUser';
+import { Condition } from '@/components/utils/ifElse';
+import { useQueryGetCompanyProfile } from '@/queries/organization/organizationHooks';
 import { Feather, Octicons } from '@expo/vector-icons';
 import { router, Tabs } from 'expo-router';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
 export default function ProfileScreen() {
   const { styles, theme } = useStyles(stylesheet);
+  const { data: companyProfile, isSuccess } = useQueryGetCompanyProfile();
   return (
     <>
       <SystemBars style='dark' />
@@ -27,7 +31,6 @@ export default function ProfileScreen() {
           headerRight() {
             return (
               <TouchableOpacity
-                // onPress={() => router.push('/(userStacks)/editUserProfile')}
                 style={{ marginRight: theme.spacing.sp6 }}
               >
                 <Feather size={theme.spacing.sp10} name='edit' color={theme.colors.gray400} />
@@ -35,21 +38,20 @@ export default function ProfileScreen() {
             );
           },
           headerTitle: () => (
-            <GradientHeading styles={[{ fontSize: theme.text.size.s7 }]}>
-              {/* {userProfile?.username} */}
-              Company Name
-            </GradientHeading>
-            // <Condition
-            //   if={!isUserProfileSuccess}
-            //   then={<UserNameSkeleton />}
-            //   else={
-            //   }
-            // />
+            <Condition
+              if={!isSuccess}
+              then={<UserNameSkeleton />}
+              else={
+                <GradientHeading styles={[{ fontSize: theme.text.size.s7 }]}>
+                  {companyProfile?.name}
+                </GradientHeading>
+              }
+            />
           ),
         }}
       />
       <View style={styles.container}>
-        <Text>Company profile</Text>
+        <TextView>Company profile</TextView>
       </View>
     </>
   );

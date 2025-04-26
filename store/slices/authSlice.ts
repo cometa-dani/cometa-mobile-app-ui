@@ -4,6 +4,7 @@ import { RestApiService } from '../../services/restService';
 import { Session } from '@supabase/supabase-js';
 import { IGetDetailedUserProfile } from '@/models/User';
 import { INotification } from '@/models/Notification';
+import { ICompany } from '@/models/company/Company';
 
 
 export type AuthSlice = {
@@ -17,8 +18,8 @@ export type AuthSlice = {
   userProfile?: IGetDetailedUserProfile,
   newMessages: number,
   setNewMessages: (newMessages: number) => void,
-  // newNotifications: INotification[],
-  // setNewNotifications: (notifications: INotification[]) => void,
+  companyProfile?: ICompany, // TODO: add company inf
+  setCompanyProfile: (company: ICompany) => void,
 }
 
 
@@ -28,10 +29,6 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
   setNewMessages: (newMessages: number) => {
     set({ newMessages });
   },
-  // newNotifications: [],
-  // setNewNotifications: (newNotifications: INotification[]) => {
-  //   set({ newNotifications });
-  // },
   setIsLoaded: (isLoading: boolean) => {
     set({ isLoaded: isLoading });
   },
@@ -50,5 +47,10 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
   setUserProfile: (user: IGetDetailedUserProfile) => {
     set({ userProfile: user });
   },
-  userProfile: undefined
+  userProfile: undefined,
+
+  companyProfile: undefined,
+  setCompanyProfile: (company: ICompany) => {
+    set({ companyProfile: company });
+  },
 });

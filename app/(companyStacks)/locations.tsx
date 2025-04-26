@@ -1,14 +1,22 @@
 import { TextView } from '@/components/text/text';
+import { Stack } from 'expo-router';
 import { View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
 
-export default function HomeScreen() {
+export default function LocationsScreen() {
   const { styles } = useStyles(stylesheet);
   return (
     <>
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: 'Locations',
+          headerTitleAlign: 'center'
+        }}
+      />
       <View style={styles.container}>
-        <TextView>Dashboard</TextView>
+        <TextView>Locations</TextView>
       </View>
     </>
   );

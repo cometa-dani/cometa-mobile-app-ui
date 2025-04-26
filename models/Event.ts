@@ -71,3 +71,11 @@ export interface ILikedEvent {
   event: IEvent;
   isLiked: boolean;
 }
+
+export interface ICreateEvent extends
+  Pick<IEvent, (
+    'date' |
+    'name' |
+    'locationId' |
+    'categories'
+  )> { }

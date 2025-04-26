@@ -17,27 +17,8 @@ import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { useInfiniteQueryGetEventsHomeScreen } from '@/queries/currentUser/eventHooks';
 import { Notifier } from 'react-native-notifier';
 import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
+import { categoriesOptions } from '@/constants/categories';
 
-
-const filterOptions = [
-  EventCategory.EDUCATIONAL,
-  EventCategory.CULTURAL,
-  EventCategory.SPORTS,
-  EventCategory.PARTY,
-  EventCategory.CINEMA,
-  EventCategory.SHOWS,
-  EventCategory.GALLERY,
-  EventCategory.PARK,
-  EventCategory.EXHIBITION,
-  EventCategory.MUSEUM,
-  EventCategory.THEATRE,
-  EventCategory.FESTIVAL,
-  EventCategory.CAFE,
-  EventCategory.CLUB,
-  EventCategory.RESTAURANT,
-  EventCategory.CONCERT,
-  EventCategory.BRUNCH,
-];
 
 type IFormValues = {
   date?: string;
@@ -109,7 +90,7 @@ export default function FilterScreen(): ReactNode {
       }}>
         <FormProvider  {...formProps}>
           <View style={{ flex: 1, flexWrap: 'wrap', flexDirection: 'row' }}>
-            {filterOptions.map((item, index) => (
+            {categoriesOptions.map((item, index) => (
               <Item
                 key={index}
                 title={item}

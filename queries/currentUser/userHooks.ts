@@ -77,6 +77,7 @@ export const usePrefetchUserProfile = () => {
   useEffect(() => {
     if (!session?.user.id) return;
     if (isAuthenticated) return;
+    if (session.user.user_metadata.role === 'company') return;
     queryClient.prefetchQuery({
       queryKey: [QueryKeys.GET_CURRENT_USER_PROFILE],
       queryFn: async (): Promise<IGetDetailedUserProfile> => {

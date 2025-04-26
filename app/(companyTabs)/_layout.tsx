@@ -1,8 +1,9 @@
 import { TabBar } from '@/components/tabBar/tabBar';
 import { GradientHeading } from '@/components/text/gradientText';
 import { useCometaStore } from '@/store/cometaStore';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { Redirect, Tabs } from 'expo-router';
+import { Feather, FontAwesome, Ionicons } from '@expo/vector-icons';
+import { Redirect, router, Tabs } from 'expo-router';
+import { TouchableOpacity } from 'react-native';
 import { useStyles } from 'react-native-unistyles';
 
 
@@ -19,6 +20,7 @@ export default function CompanyTabLayout() {
   return (
     <Tabs
       screenOptions={{
+        animation: 'shift',
         headerShown: true
       }}
       tabBar={(props) => <TabBar {...props} />}
@@ -42,12 +44,26 @@ export default function CompanyTabLayout() {
           tabBarLabel: 'Posts',
           headerTitle: () => (
             <GradientHeading styles={[{ fontSize: theme.text.size.s7 }]}>
-              Events
+              Posts
             </GradientHeading>
           ),
           tabBarIcon: ({ color }) => (
             <Ionicons name="calendar-outline" size={24} color={color} />
-          )
+          ),
+          headerRight() {
+            return (
+              <TouchableOpacity
+                onPress={() => router.push('/(companyStacks)/locations')}
+                style={{ marginRight: theme.spacing.sp6 }}
+              >
+                <Feather
+                  size={theme.spacing.sp10}
+                  name='plus-circle'
+                  color={theme.colors.gray400}
+                />
+              </TouchableOpacity >
+            );
+          },
         }}
         name="posts"
       />
