@@ -10,3 +10,8 @@ export interface ILocation {
   mapUrl?: string;
   mediaUrls: string[];
 }
+
+export interface ICreateLocation extends Pick<ILocation, (
+  'name' |
+  'mapUrl'
+)> { }

@@ -18,7 +18,6 @@ export default function HomeScreen() {
 
 const stylesheet = createStyleSheet((theme, rt) => ({
   container: {
-    backgroundColor: theme.colors.white100,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'

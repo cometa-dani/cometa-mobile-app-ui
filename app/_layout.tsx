@@ -172,6 +172,23 @@ function Root({ session }: IProps): ReactNode {
                   />
                   <Stack.Screen name='(userTabs)' options={{ animation: 'fade' }} />
                   <Stack.Screen name='(companyTabs)' options={{ animation: 'fade' }} />
+                  <Stack.Screen
+                    name='(companyStacks)/create-locations'
+                    options={{
+                      headerTitle: 'Add a new location',
+                      headerShown: true,
+                      presentation: 'formSheet',
+                      headerLargeTitle: false,
+                      sheetAllowedDetents: [0.7, 1],
+                      sheetElevation: 10,
+                      sheetExpandsWhenScrolledToEdge: true,
+                      sheetCornerRadius: 20,
+                      sheetGrabberVisible: true,
+                      contentStyle: {
+                        backgroundColor: theme.colors.white100
+                      }
+                    }}
+                  />
                 </Stack>
               </NotifierWrapper>
             </BottomSheetModalProvider>

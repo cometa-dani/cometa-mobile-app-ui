@@ -66,7 +66,7 @@ export default function EditUserProfileScreen(): ReactNode {
       occupation: values.occupation
     };
     Notifier.showNotification({
-      duration: 0,
+      duration: 200,
       title: 'Saving...',
       description: 'your profile is being saved',
       Component: InfoToast,

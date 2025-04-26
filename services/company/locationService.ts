@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { RestApiService } from '../restService';
-import { ILocation } from '@/models/Localization';
+import { ICreateLocation, ILocation } from '@/models/Localization';
 
 
 class LocationService {
@@ -10,8 +10,12 @@ class LocationService {
     this.http = RestApiService.getInstance().http;
   }
 
-  public create(payload: ILocation) {
-    return this.http.post<ILocation>('/organizations/events/locations', payload);
+  public getAll(organizationId: number) {
+    return this.http.get<ILocation[]>(`/organizations/${organizationId}/locations`);
+  }
+
+  public create(organizationId: number, payload: ICreateLocation) {
+    return this.http.post<ILocation>(`/organizations/${organizationId}/locations`, payload);
   }
 
   /**
@@ -21,11 +25,7 @@ class LocationService {
    * @returns
    */
   public getById(id: number) {
-    return this.http.get<ILocation>(`/organizations/events/locations/${id}`);
-  }
-
-  public getAll() {
-    return this.http.get<ILocation[]>('/organizations/events/locations');
+    return this.http.get<ILocation>(`/organizations/locations/${id}`);
   }
 }
 

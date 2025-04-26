@@ -1,11 +1,12 @@
 import { TextView } from '@/components/text/text';
 import { useQueryGetLocations } from '@/queries/organization/locationHooks';
 import { FlashList } from '@shopify/flash-list';
-import { Stack } from 'expo-router';
-import { View } from 'react-native';
+import { router, Stack } from 'expo-router';
+import { TouchableOpacity, View } from 'react-native';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
+import { HStack } from '@/components/utils/stacks';
 
 
 export default function LocationsScreen() {
@@ -18,7 +19,24 @@ export default function LocationsScreen() {
         options={{
           headerShown: true,
           headerTitle: 'Locations',
-          headerTitleAlign: 'center'
+          headerTitleAlign: 'center',
+          headerRight() {
+            return (
+              <TouchableOpacity
+                onPress={() => router.push('/(companyStacks)/create-locations')}
+                style={{ flexDirection: 'row', gap: theme.spacing.sp1, alignItems: 'center' }}
+              >
+                <TextView>
+                  Create
+                </TextView>
+                <Feather
+                  size={theme.spacing.sp10}
+                  name='plus-circle'
+                  color={theme.colors.gray400}
+                />
+              </TouchableOpacity >
+            );
+          },
         }}
       />
       {/* <TextView>Locations</TextView> */}
@@ -32,14 +50,16 @@ export default function LocationsScreen() {
           return (
             <View style={styles.locationCard}>
               <View style={styles.locationInfo}>
-                <TextView style={styles.locationName}>{item.name}</TextView>
+                <HStack $x='space-between' $y='center'>
+                  <TextView style={styles.locationName}>{item.name}</TextView>
+                  <FontAwesome5
+                    name="map-marker-alt"
+                    size={18}
+                    color={theme.colors.red100}
+                  />
+                </HStack>
                 <TextView style={styles.locationUrl} numberOfLines={1}>{item.mapUrl}</TextView>
               </View>
-              <FontAwesome5
-                name="map-marker-alt"
-                size={24}
-                color={theme.colors.red100}
-              />
             </View>
           );
         }}
@@ -63,7 +83,7 @@ const stylesheet = createStyleSheet((theme, rt) => ({
     marginRight: theme.spacing.sp4,
   },
   locationName: {
-    fontSize: theme.text.size.s4,
+    fontSize: theme.text.size.s5,
     fontFamily: theme.text.fontSemibold,
     color: theme.colors.gray900,
     marginBottom: theme.spacing.sp1,
