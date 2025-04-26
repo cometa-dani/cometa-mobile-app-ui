@@ -43,7 +43,7 @@ class EventService {
     return this.http.post<IEvent>('/organizations/events', { ...payload, categories });
   }
 
-  public async uploadPhotos(organizationId: number, pickedAssets: IPhotoPlaceholder[]) {
+  public async uploadPhotos(eventId: number, pickedAssets: IPhotoPlaceholder[]) {
     const formData = new FormData();
     pickedAssets.forEach((pickedImgFile) => {
       const uri = pickedImgFile.fromFileSystem?.uri ?? '';
@@ -57,7 +57,7 @@ class EventService {
       });
     });
     return (
-      this.http.post<IOrganization>(`/organizations/${organizationId}/photos`, formData, {
+      this.http.post<IOrganization>(`/organizations/events/${eventId}/photos`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

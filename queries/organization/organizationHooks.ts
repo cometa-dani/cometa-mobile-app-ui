@@ -1,5 +1,5 @@
 import { ICompany, ICompanyCreate } from '@/models/company/Company';
-import { companyService } from '@/services/company/company';
+import { companyService } from '@/services/company/companyService';
 import { useCometaStore } from '@/store/cometaStore';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { QueryKeys } from '../queryKeys';
