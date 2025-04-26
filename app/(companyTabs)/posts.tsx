@@ -14,10 +14,11 @@ import { Feather } from '@expo/vector-icons';
 import Checkbox from 'expo-checkbox';
 import { router } from 'expo-router';
 import { FC } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
+import { Controller } from 'react-hook-form';
 
 
 interface IFormValues {
@@ -121,14 +122,21 @@ export default function PostsScreen() {
               />
             </TouchableOpacity >
           </HStack>
-          <SelectField
-            initialValue='eng'
-            options={
-              locations?.map((location) => ({
-                label: location.name,
-                value: location.id
-              })) || []
-            }
+          <Controller
+            name="locationId"
+            control={formProps.control}
+            render={({ field: { onChange, value } }) => (
+              <SelectField
+                initialValue={value}
+                onValueChange={onChange}
+                options={
+                  locations?.map((location) => ({
+                    label: location.name,
+                    value: location.id
+                  })) || []
+                }
+              />
+            )}
           />
         </VStack>
 
@@ -165,20 +173,30 @@ export default function PostsScreen() {
 
 interface ItemProps {
   title: EventCategory;
-  isChecked?: boolean;
-  onSelectOption?: (category: EventCategory) => void;
 }
 
-const Item: FC<ItemProps> = ({ title, isChecked, onSelectOption }) => {
+const Item: FC<ItemProps> = ({ title }) => {
   const { styles, theme } = useStyles(styleSheet);
+  const { setValue, watch } = useFormContext();
+  const categories = watch('categories') as string[];
+  const isChecked = categories.includes(title);
+
+  const handleToggle = () => {
+    const newCategories = isChecked
+      ? categories.filter(cat => cat !== title)
+      : [...categories, title];
+    setValue('categories', newCategories, { shouldValidate: true });
+  };
+
   return (
     <TouchableOpacity
-      // onPress={() => onSelectOption(title)}
+      onPress={handleToggle}
       style={styles.option}
     >
       <Checkbox
         style={styles.checkbox}
         value={isChecked}
+        onValueChange={handleToggle}
         color={isChecked ? theme.colors.red100 : undefined}
       />
       <View style={styles.titleContainer}>

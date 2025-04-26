@@ -8,7 +8,7 @@ import { useStyles } from 'react-native-unistyles';
 interface IProps {
   options: { label: string, value: string | number }[];
   onValueChange?: (value: string) => void;
-  initialValue: string;
+  initialValue: string | number;
   disabled?: boolean
 }
 export const SelectField: FC<IProps> = ({ initialValue, options, disabled, onValueChange }) => {
