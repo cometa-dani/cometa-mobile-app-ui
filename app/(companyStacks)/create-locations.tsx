@@ -6,6 +6,7 @@ import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotificati
 import { VStack } from '@/components/utils/stacks';
 import { useMutationCreateLocation } from '@/queries/organization/locationHooks';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Notifier } from 'react-native-notifier';
@@ -20,6 +21,7 @@ interface IFormValues {
 export default function CreateLocations() {
   const { theme } = useStyles();
   const createLocation = useMutationCreateLocation();
+  const [isMutating, setIsMutating] = useState(false);
   const formProps = useForm({
     defaultValues: {
       name: '',
@@ -29,6 +31,7 @@ export default function CreateLocations() {
 
   const handleCreateLocation = async (values: IFormValues) => {
     try {
+      setIsMutating(true);
       Notifier.showNotification({
         title: 'Saving...',
         description: 'your location is being saved',
@@ -51,6 +54,9 @@ export default function CreateLocations() {
         description: 'something went wrong, try again',
         Component: ErrorToast,
       });
+    }
+    finally {
+      setIsMutating(false);
     }
   };
 
@@ -94,6 +100,7 @@ export default function CreateLocations() {
         </VStack>
 
         <Button
+          showLoading={isMutating}
           variant='primary'
           onPress={formProps.handleSubmit(handleCreateLocation)}
         >

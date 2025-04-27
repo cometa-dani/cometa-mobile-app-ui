@@ -30,20 +30,20 @@ class EventService {
     );
   };
 
-  public getAllEvents() {
-    return this.http.get<IEvent[]>('/organizations/events');
+  public getAllEvents(organizationId: number) {
+    return this.http.get<IEvent[]>(`/organizations/${organizationId}/events`);
   }
 
   public getEventByID(eventID: number) {
     return this.http.get<IEvent>(`/organizations/events/${eventID}`);
   }
 
-  public create(payload: ICreateEvent) {
+  public create(organizationId: number, payload: ICreateEvent) {
     const categories = this._parseCategories(payload.categories);
-    return this.http.post<IEvent>('/organizations/events', { ...payload, categories });
+    return this.http.post<IEvent>(`/organizations/${organizationId}/events`, { ...payload, categories });
   }
 
-  public async uploadPhotos(eventId: number, pickedAssets: IPhotoPlaceholder[]) {
+  public async uploadPhotos(organizationId: number, eventId: number, pickedAssets: IPhotoPlaceholder[]) {
     const formData = new FormData();
     pickedAssets.forEach((pickedImgFile) => {
       const uri = pickedImgFile.fromFileSystem?.uri ?? '';
@@ -57,7 +57,7 @@ class EventService {
       });
     });
     return (
-      this.http.post<IOrganization>(`/organizations/events/${eventId}/photos`, formData, {
+      this.http.post<IOrganization>(`/organizations/${organizationId}/events/${eventId}/photos`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

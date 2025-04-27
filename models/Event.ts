@@ -77,5 +77,7 @@ export interface ICreateEvent extends
     'date' |
     'name' |
     'locationId' |
-    'categories'
+    'organizationId' |
+    'categories' |
+    'description'
   )> { }

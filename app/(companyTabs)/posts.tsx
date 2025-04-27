@@ -2,7 +2,7 @@ import { Button } from '@/components/button/button';
 import { SelectField } from '@/components/input/selectField';
 import { FieldText } from '@/components/input/textField';
 import { IPhotoPlaceholder } from '@/components/onboarding/photosGrid/photoGrid';
-import { PhotosGrid2 } from '@/components/onboarding/photosGrid/photoGrid2';
+import { isFromFileSystem, PhotosGrid2 } from '@/components/onboarding/photosGrid/photoGrid2';
 import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { Heading } from '@/components/text/heading';
 import { TextView } from '@/components/text/text';
@@ -13,41 +13,117 @@ import { useQueryGetLocations } from '@/queries/organization/locationHooks';
 import { Feather } from '@expo/vector-icons';
 import Checkbox from 'expo-checkbox';
 import { router } from 'expo-router';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import { Controller } from 'react-hook-form';
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutateCreateEvent, useMutationUploadEventsPhotos } from '@/queries/organization/eventHooks';
+import { Notifier } from 'react-native-notifier';
+import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
 
 
-interface IFormValues {
+interface ICreateEventForm {
   name: string;
   date: string;
   locationId: number;
   categories: string[];
+  description: string;
 }
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string()
+    .required('Event name is required')
+    .min(3, 'Event name must be at least 3 characters')
+    .max(100, 'Event name must not exceed 100 characters'),
+
+  date: Yup.string()
+    .required('Event date is required'),
+
+  locationId: Yup.number()
+    .required('Location is required')
+    .min(1, 'Please select a valid location')
+    .typeError('Please select a location'),
+
+  categories: Yup.array()
+    .of(Yup.string())
+    .min(1, 'Please select at least one category')
+    .required('At least one category is required'),
+
+  description: Yup.string()
+    .required('Description is required')
+    .min(3, 'Description must be at least 3 characters')
+    .max(1000, 'Description must not exceed 1000 characters'),
+}) as Yup.ObjectSchema<ICreateEventForm>;
+
 
 export default function PostsScreen() {
   const { theme } = useStyles();
   const { data: locations } = useQueryGetLocations();
+  const createEvent = useMutateCreateEvent();
+  const uploadPhotos = useMutationUploadEventsPhotos();
+  const [pickedPhotos, setPickedPhotos] = useState<IPhotoPlaceholder[]>([]);
+  const [isMutating, setIsMutating] = useState(false);
   const formProps = useForm({
     defaultValues: {
       name: '',
       date: '',
       locationId: -1,
       categories: [],
+      description: '',
     },
-    // resolver: yupResolver<IFormValues>(validationSchema),
+    resolver: yupResolver(validationSchema),
   });
 
-  const handlePhotosPickUp = (photos: IPhotoPlaceholder[]) => {
-    console.log(photos);
-    // const filteredPhotos = photos.filter(isFromFileSystem);
-  };
-
-  const handleCreateEvent = (values: IFormValues) => {
-    console.log({ values });
+  const handleCreateEvent = async (values: ICreateEventForm) => {
+    try {
+      setIsMutating(true);
+      Notifier.showNotification({
+        title: 'Saving...',
+        description: 'your event is being saved',
+        Component: InfoToast,
+      });
+      const createdEvent = await createEvent.mutateAsync({
+        name: values.name,
+        date: values.date,
+        locationId: values.locationId,
+        categories: values.categories as EventCategory[],
+        description: values.description,
+      });
+      if (createdEvent?.id) {
+        try {
+          await uploadPhotos.mutateAsync({
+            eventId: createdEvent.id,
+            pickedImgFiles: pickedPhotos.filter(isFromFileSystem),
+          });
+          Notifier.hideNotification();
+          Notifier.showNotification({
+            title: 'Done',
+            description: 'your event was saved successfully',
+            Component: SucessToast,
+          });
+        } catch (uploadError) {
+          Notifier.showNotification({
+            title: 'Warning',
+            description: 'Event created but photos failed to upload. Please try adding photos later.',
+            Component: ErrorToast,
+          });
+        }
+      }
+    } catch (error) {
+      Notifier.hideNotification();
+      Notifier.showNotification({
+        title: 'Error',
+        description: 'something went wrong, try again',
+        Component: ErrorToast,
+      });
+    }
+    finally {
+      setIsMutating(false);
+    }
   };
 
   return (
@@ -69,7 +145,7 @@ export default function PostsScreen() {
           </Heading>
           <PhotosGrid2
             mode='create'
-            onSelect={handlePhotosPickUp}
+            onSelect={setPickedPhotos}
             maxPhotos={3}
             isHorizontal={true}
           />
@@ -81,11 +157,11 @@ export default function PostsScreen() {
           </Heading>
           <FieldText
             isDateTimePicker={true}
+            editable={false}
             label='Date'
             name='date'
             placeholder='Enter event date'
             iconName='calendar-o'
-            editable={false}
             defaultErrMessage={'Please enter a valid date'}
           />
         </VStack>
@@ -100,6 +176,20 @@ export default function PostsScreen() {
             placeholder='Enter event name'
             iconName='pencil'
             defaultErrMessage={'Please enter a valid name'}
+          />
+        </VStack>
+
+        <VStack gap={theme.spacing.sp2}>
+          <Heading size='s5' style={{ fontFamily: theme.text.fontSemibold }}>
+            Description
+          </Heading>
+          <FieldText
+            label='Description'
+            multiline={true}
+            name='description'
+            placeholder='Enter your description'
+            iconName='text-height'
+            defaultErrMessage={'Please enter a valid description'}
           />
         </VStack>
 
@@ -160,6 +250,7 @@ export default function PostsScreen() {
         </VStack>
 
         <Button
+          showLoading={isMutating}
           variant='primary'
           onPress={formProps.handleSubmit(handleCreateEvent)}
         >
