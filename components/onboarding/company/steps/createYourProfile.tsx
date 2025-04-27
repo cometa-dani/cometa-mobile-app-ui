@@ -4,14 +4,11 @@ import { FieldText } from '@/components/input/textField';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { useCometaStore } from '@/store/cometaStore';
-import { IUserOnboarding } from '@/models/User';
 import { testIds } from './components/testIds';
 import { KeyboardAwareScrollView, } from 'react-native-keyboard-controller';
 import { FooterButton } from './components/footerButton';
 import { IProps } from './components/interface';
 import { supabase } from '@/supabase/config';
-import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
 import { ICompanyOnboarding } from '@/models/company/Company';
 import { Notifier } from 'react-native-notifier';
 import { AxiosError } from 'axios';
@@ -200,6 +197,7 @@ export const CreateProfileForm: FC<IProps> = ({ onNext }) => {
       </KeyboardAwareScrollView>
 
       <FooterButton
+        isLoading={isLoading}
         text='Next'
         onNext={formProps.handleSubmit(handleUserState)}
       />

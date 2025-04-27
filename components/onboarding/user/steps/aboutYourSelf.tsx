@@ -95,7 +95,15 @@ export const AboutYourSelfForm: FC<IProps> = ({ onNext }) => {
       Component: InfoToast,
     });
     try {
-      const { data, error } = await supabase.auth.signUp({ email: onboardingUser.email, password: onboardingUser.password });
+      const { data, error } = await supabase.auth.signUp({
+        email: onboardingUser.email,
+        password: onboardingUser.password,
+        options: {
+          data: {
+            role: 'user',
+          },
+        },
+      });
       if (error) throw error;
       const createUserPayload: ICreateUser = {
         email: onboardingUser.email,
