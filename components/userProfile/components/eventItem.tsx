@@ -1,5 +1,5 @@
 import { Badge } from '@/components/button/badge';
-import { imageTransition } from '@/constants/vars';
+import { defaultImgPlaceholder, imageTransition } from '@/constants/vars';
 import { Image } from 'expo-image';
 import { FC, ReactNode } from 'react';
 import { TouchableOpacity, View } from 'react-native';
@@ -21,7 +21,7 @@ interface IProps {
   item: IBucketListItem
 }
 export const EventItem: FC<IProps> = ({ item }) => {
-  const { styles } = useStyles(stylesheet);
+  const { styles, theme } = useStyles(stylesheet);
 
   const openLocationInBrowser = async () => {
     await WebBrowser.openBrowserAsync(item.location?.mapUrl ?? '');
@@ -32,8 +32,8 @@ export const EventItem: FC<IProps> = ({ item }) => {
       <Image
         placeholder={{ thumbhash: item?.placeholder }}
         recyclingKey={item?.img}
-        source={{ uri: item?.img }}
-        style={styles.eventImage}
+        source={{ uri: item?.img || defaultImgPlaceholder }}
+        style={[styles.eventImage, { backgroundColor: theme.colors.gray100 }]}
         contentFit='cover'
         transition={imageTransition}
       />

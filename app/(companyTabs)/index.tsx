@@ -1,7 +1,5 @@
 import { tabBarHeight } from '@/components/tabBar/tabBar';
-// import { TextView } from '@/components/text/text';
-import { EventItem } from '@/components/userProfile/components/eventItem';
-import { IEvent } from '@/models/Event';
+import { EventItem, IBucketListItem } from '@/components/userProfile/components/eventItem';
 import { useQueryGetEventsPaginated } from '@/queries/organization/eventHooks';
 import { useQueryGetCompanyProfile } from '@/queries/organization/organizationHooks';
 import { FlashList } from '@shopify/flash-list';
@@ -15,25 +13,32 @@ export default function HomeScreen() {
   useQueryGetCompanyProfile();
   const { data: events } = useQueryGetEventsPaginated();
 
-  const renderBucketItem = useCallback(({ item }: { item: IEvent }) => (
+  const renderBucketItem = useCallback(({ item }: { item: IBucketListItem }) => (
     <EventItem item={item} />
   ), []);
 
+  const eventsList: IBucketListItem[] = (
+    events?.map((event) => ({
+      id: event.id,
+      location: event.location,
+      img: event.photos.at(0)?.url,
+      placeholder:
+        event.photos.at(0)?.placeholder
+    })) ?? []
+  );
+
   return (
     <FlashList
-      // data={isListLoading ? dummyBucketListItems : bucketListEvents}
-      data={events}
+      data={eventsList}
       showsVerticalScrollIndicator={false}
       estimatedItemSize={UnistylesRuntime.screen.height * 0.2}
-      // contentContainerStyle={{
-      //   paddingVertical: theme.spacing.sp7,
-      //   paddingHorizontal: theme.spacing.sp6
-      // }}
+      contentContainerStyle={{
+        paddingVertical: theme.spacing.sp6,
+        paddingHorizontal: theme.spacing.sp4
+      }}
       ListFooterComponentStyle={{ height: tabBarHeight * 2 }}
       ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sp6 }} />}
-      // ListHeaderComponent={renderHeader}
-      onEndReachedThreshold={0.4}
-      // onEndReached={onBucketListEndReached}
+      // onEndReachedThreshold={0.4}
       renderItem={renderBucketItem}
     />
   );
