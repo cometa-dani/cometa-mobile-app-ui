@@ -6,7 +6,6 @@ import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Controller, useFormContext } from 'react-hook-form';
 import DatePicker from 'react-native-date-picker';
-import { nodeEnv } from '@/constants/vars';
 import { Condition } from '../utils/ifElse';
 
 
@@ -93,7 +92,8 @@ export const FieldText: FC<IFieldTextProps> = ({
                 editable={editable}
                 multiline={multiline}
                 numberOfLines={multiline ? 4 : 1}
-                secureTextEntry={nodeEnv === 'development' ? false : secureTextEntry}
+                // secureTextEntry={nodeEnv === 'development' ? false : secureTextEntry}
+                secureTextEntry={secureTextEntry}
                 style={[styles.field, { pointerEvents }]}
                 placeholder={placeholder}
                 keyboardType={keyboardType}

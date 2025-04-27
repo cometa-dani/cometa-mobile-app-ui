@@ -19,6 +19,7 @@ import { onlineManager } from '@tanstack/react-query';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Session, Subscription } from '@supabase/supabase-js';
+import { Platform } from 'react-native';
 
 
 // Catch any errors thrown by the Layout component.
@@ -177,7 +178,7 @@ function Root({ session }: IProps): ReactNode {
                     options={{
                       headerTitle: 'Add a new location',
                       headerShown: true,
-                      presentation: 'formSheet',
+                      presentation: Platform.OS === 'ios' ? 'formSheet' : 'modal',
                       headerLargeTitle: false,
                       sheetAllowedDetents: [0.7, 1],
                       sheetElevation: 10,

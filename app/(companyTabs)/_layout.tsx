@@ -26,6 +26,7 @@ export default function CompanyTabLayout() {
     >
       <Tabs.Screen
         options={{
+          headerTitleAlign: 'center',
           tabBarLabel: 'Dashboard',
           headerTitle: () => (
             <GradientHeading styles={[{ fontSize: theme.text.size.s7 }]}>
@@ -40,6 +41,7 @@ export default function CompanyTabLayout() {
       />
       <Tabs.Screen
         options={{
+          headerTitleAlign: 'center',
           tabBarLabel: 'Posts',
           headerTitle: () => (
             <GradientHeading styles={[{ fontSize: theme.text.size.s7 }]}>
@@ -54,12 +56,8 @@ export default function CompanyTabLayout() {
       />
       <Tabs.Screen
         options={{
+          headerTitleAlign: 'center',
           tabBarLabel: 'Profile',
-          // headerTitle: () => (
-          //   <GradientHeading styles={[{ fontSize: theme.text.size.s7 }]}>
-          //     Company Profile
-          //   </GradientHeading>
-          // ),
           tabBarIcon: ({ color }) => (
             <FontAwesome name="building-o" size={24} color={color} />
           )
