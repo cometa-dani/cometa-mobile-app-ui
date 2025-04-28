@@ -1,7 +1,7 @@
 import { ReactNode, useReducer, useState } from 'react';
 import { Modal, Pressable, Switch, View } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { IGetBasicUserProfile, IUserOnboarding } from '../../models/User';
+import { IUserOnboarding } from '../../models/User';
 import { TextView } from '@/components/text/text';
 import { HStack, VStack } from '@/components/utils/stacks';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
@@ -18,10 +18,10 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { Button } from '@/components/button/button';
 import { SelectField } from '@/components/input/selectField';
 import { supabase } from '@/supabase/config';
-import { useMutationDeleteUser } from '@/queries/currentUser/userHooks';
-import { QueryKeys } from '@/queries/queryKeys';
+// import { useMutationDeleteUser } from '@/queries/currentUser/userHooks';
+// import { QueryKeys } from '@/queries/queryKeys';
 import { Notifier } from 'react-native-notifier';
-import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
+import { ErrorToast, InfoToast } from '@/components/toastNotification/toastNotification';
 import { useCometaStore } from '@/store/cometaStore';
 import { AuthError } from '@supabase/supabase-js';
 
@@ -49,12 +49,12 @@ export default function SettingsScreen(): ReactNode {
   const router = useRouter();
   const queryClient = useQueryClient();
   const setIsAuthenticated = useCometaStore(state => state.setIsAuthenticated);
-  const deleteUser = useMutationDeleteUser();
+  // const deleteUser = useMutationDeleteUser();
   const formProps = useForm({
     defaultValues,
     resolver: yupResolver<IFormValues>(validationSchema),
   });
-  const [isDeleteUserLoading, setIsDeleteUserLoading] = useState(false);
+  const [isDeleteUserLoading] = useState(false);
   const [isLogOutLoading, setIsLogOutLoading] = useState(false);
   const [toggleNotification, setToggleNotification] = useState(true);
   const [toggleDeleteModal, setToggleDeleteModal] = useReducer(prev => !prev, false);
@@ -93,38 +93,38 @@ export default function SettingsScreen(): ReactNode {
     }
   };
 
-  const handleDeleteUserProfile = async () => {
-    setIsDeleteUserLoading(true);
-    queryClient.clear();
-    const userProfile = queryClient.getQueryData<IGetBasicUserProfile>([QueryKeys.GET_CURRENT_USER_PROFILE]);
-    if (!userProfile?.id) return;
-    Notifier.showNotification({
-      duration: 0,
-      title: 'Deleting...',
-      description: 'your profile is being deleted',
-      Component: InfoToast,
-    });
-    try {
-      await deleteUser.mutateAsync(userProfile.id);
-      setIsAuthenticated(false);
-      Notifier.hideNotification();
-      Notifier.showNotification({
-        title: 'Done',
-        description: 'your profile was deleted successfully',
-        Component: SucessToast,
-      });
-      router.replace('/welcome');
-    } catch (error) {
-      Notifier.hideNotification();
-      Notifier.showNotification({
-        title: 'Error',
-        description: 'there was an error deleting your profile',
-        Component: ErrorToast,
-      });
-    } finally {
-      setIsDeleteUserLoading(false);
-    }
-  };
+  // const handleDeleteUserProfile = async () => {
+  //   setIsDeleteUserLoading(true);
+  //   queryClient.clear();
+  //   const userProfile = queryClient.getQueryData<IGetBasicUserProfile>([QueryKeys.GET_CURRENT_USER_PROFILE]);
+  //   if (!userProfile?.id) return;
+  //   Notifier.showNotification({
+  //     duration: 0,
+  //     title: 'Deleting...',
+  //     description: 'your profile is being deleted',
+  //     Component: InfoToast,
+  //   });
+  //   try {
+  //     await deleteUser.mutateAsync(userProfile.id);
+  //     setIsAuthenticated(false);
+  //     Notifier.hideNotification();
+  //     Notifier.showNotification({
+  //       title: 'Done',
+  //       description: 'your profile was deleted successfully',
+  //       Component: SucessToast,
+  //     });
+  //     router.replace('/welcome');
+  //   } catch (error) {
+  //     Notifier.hideNotification();
+  //     Notifier.showNotification({
+  //       title: 'Error',
+  //       description: 'there was an error deleting your profile',
+  //       Component: ErrorToast,
+  //     });
+  //   } finally {
+  //     setIsDeleteUserLoading(false);
+  //   }
+  // };
 
   return (
     <>
@@ -305,7 +305,9 @@ export default function SettingsScreen(): ReactNode {
               <TextView>
                 Once deleted, your account and personal data cannot be recovered.
               </TextView>
-              <Button variant='primary' onPress={handleDeleteUserProfile}>
+              <Button variant='primary'
+                onPress={() => null}
+              >
                 Delete
               </Button>
               <Button variant='secondary-alt' onPress={setToggleDeleteModal}>
