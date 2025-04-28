@@ -37,7 +37,7 @@ export const EventItem: FC<IProps> = ({ item }) => {
         top: theme.spacing.sp6,
         left: theme.spacing.sp6,
       }}>
-        {item.name && (
+        {item?.name && (
           <TextView style={{
             color: theme.colors.white100,
             shadowColor: theme.colors.gray900,
