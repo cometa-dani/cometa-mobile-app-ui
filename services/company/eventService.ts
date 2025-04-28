@@ -43,6 +43,10 @@ class EventService {
     return this.http.post<IEvent>(`/organizations/${organizationId}/events`, { ...payload, categories });
   }
 
+  public deleteEvent(organizationId: number, eventId: number) {
+    return this.http.delete<void>(`/organizations/${organizationId}/events/${eventId}`);
+  }
+
   public async uploadPhotos(organizationId: number, eventId: number, pickedAssets: IPhotoPlaceholder[]) {
     const formData = new FormData();
     pickedAssets.forEach((pickedImgFile) => {

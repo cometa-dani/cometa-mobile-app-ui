@@ -9,21 +9,53 @@ import { IOrganization } from '@/models/Organization';
 
 export const useMutateCreateEvent = () => {
   const company = useCometaStore(state => state.companyProfile);
-  return useMutation({
-    mutationFn: async (payload: ICreateEvent) => {
-      try {
-        const res = await eventService.create(
-          company?.id as number,
-          { ...payload, organizationId: company?.id as number }
-        );
-        if (res.status === 201) {
-          return res.data;
+  return (
+    useMutation({
+      mutationFn: async (payload: ICreateEvent) => {
+        try {
+          const res = await eventService.create(
+            company?.id as number,
+            { ...payload, organizationId: company?.id as number }
+          );
+          if (res.status === 201) {
+            return res.data;
+          }
+        } catch (error) {
+          throw new Error('failed to create event');
         }
-      } catch (error) {
-        throw new Error('failed to create event');
+      },
+    })
+  );
+};
+
+
+export const useMutateDeleteEvent = () => {
+  const queryClient = useQueryClient();
+  const company = useCometaStore(state => state.companyProfile);
+  return (
+    useMutation({
+      mutationFn: async (eventId: number) => {
+        try {
+          const res = await eventService.deleteEvent(
+            company?.id as number,
+            eventId
+          );
+          if (res.status === 204) {
+            return res.data;
+          }
+        } catch (error) {
+          throw new Error('failed to create event');
+        }
+      },
+      onSuccess: async () => {
+        try {
+          await queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ORGANIZATION_EVENTS] });
+        } catch (error) {
+          return null;
+        }
       }
-    },
-  });
+    })
+  );
 };
 
 

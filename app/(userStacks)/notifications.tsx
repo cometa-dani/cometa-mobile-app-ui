@@ -26,20 +26,6 @@ export default function NotificationsScreen(): ReactNode {
   const queryClient = useQueryClient();
   const notifications = queryClient.getQueryData<INotification[]>([QueryKeys.GET_NOTIFICATIONS, currentUser?.id]);
   const deleteNotification = useMutationDeleteNotificationById();
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const lastNotification = notifications?.at(0);
-  //     if (lastNotification?.read) return;
-  //     if (currentUser?.id && lastNotification?.id) {
-  //       // notificationService
-  //       // .setNotificationAsSeenByUser(currentUser?.id, lastNotification?.id)
-  //       // .then(() => setNewNotifications(false))
-  //       // .catch();
-  //     }
-  //   }, [notifications?.length]),
-  // );
-
   return (
     <>
       <Stack.Screen

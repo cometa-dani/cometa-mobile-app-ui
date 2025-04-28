@@ -2,12 +2,15 @@ import { tabBarHeight } from '@/components/tabBar/tabBar';
 import { EventItem, IBucketListItem } from '@/components/userProfile/components/eventItem';
 import { Condition } from '@/components/utils/ifElse';
 import { Center } from '@/components/utils/stacks';
-import { useQueryGetEventsPaginated } from '@/queries/organization/eventHooks';
+import { useMutateDeleteEvent, useQueryGetEventsPaginated } from '@/queries/organization/eventHooks';
 import { useQueryGetCompanyProfile } from '@/queries/organization/organizationHooks';
+import { FontAwesome } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import { useCallback } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
+import { RectButton } from 'react-native-gesture-handler';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 
 
@@ -15,13 +18,41 @@ export default function HomeScreen() {
   const { theme } = useStyles(stylesheet);
   useQueryGetCompanyProfile();
   const { data: events, isSuccess } = useQueryGetEventsPaginated();
+  const deleteEvent = useMutateDeleteEvent();
 
   const renderBucketItem = useCallback(({ item }: { item: IBucketListItem }) => (
-    <EventItem item={item} />
-  ), []);
+    <Swipeable
+      renderRightActions={(_a, _b, swipeable) => (
+        <RectButton
+          onPress={() => {
+            swipeable?.close();
+            setTimeout(() => {
+              if (!item.id) return;
+              deleteEvent.mutate(item.id);
+            }, 500);
+          }}
+          style={{
+            borderRadius: 18,
+            justifyContent: 'center',
+            marginRight: 20,
+            padding: 20,
+          }}
+        >
+          <FontAwesome
+            name='trash-o'
+            size={32}
+            color={theme.colors.red100}
+          />
+        </RectButton>
+      )}
+    >
+      <EventItem item={item} />
+    </Swipeable>
+  ), [deleteEvent, theme]);
 
   const eventsList: IBucketListItem[] = (
     events?.map((event) => ({
+      name: event.name,
       id: event.id,
       location: event.location,
       img: event.photos.at(0)?.url,

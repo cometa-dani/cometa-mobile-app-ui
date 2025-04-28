@@ -7,6 +7,7 @@ import { createStyleSheet, useStyles } from 'react-native-unistyles';
 import * as WebBrowser from 'expo-web-browser';
 import Skeleton, { SkeletonLoading } from 'expo-skeleton-loading';
 import { ILocation } from '@/models/Localization';
+import { TextView } from '@/components/text/text';
 const MySkeleton = Skeleton as FC<SkeletonLoading & { children: ReactNode }>;
 
 
@@ -15,6 +16,7 @@ export type IBucketListItem = {
   img?: string;
   placeholder?: string;
   location?: ILocation;
+  name?: string;
 }
 
 interface IProps {
@@ -29,6 +31,27 @@ export const EventItem: FC<IProps> = ({ item }) => {
 
   return (
     <View style={{ position: 'relative' }}>
+      <View style={{
+        zIndex: 200,
+        position: 'absolute',
+        top: theme.spacing.sp6,
+        left: theme.spacing.sp6,
+      }}>
+        {item.name && (
+          <TextView style={{
+            color: theme.colors.white100,
+            shadowColor: theme.colors.gray900,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 4,
+            elevation: 3,
+            fontWeight: 'semibold',
+            fontSize: theme.spacing.sp6,
+          }}>
+            {item.name}
+          </TextView>
+        )}
+      </View>
       <Image
         placeholder={{ thumbhash: item?.placeholder }}
         recyclingKey={item?.img}
