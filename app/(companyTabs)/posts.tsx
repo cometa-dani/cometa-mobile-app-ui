@@ -40,8 +40,7 @@ const validationSchema = Yup.object().shape({
     .min(3, 'Event name must be at least 3 characters')
     .max(100, 'Event name must not exceed 100 characters'),
 
-  date: Yup.string()
-    .required('Event date is required'),
+  date: Yup.string().optional(),
 
   locationId: Yup.number()
     .required('Location is required')
@@ -86,6 +85,14 @@ export default function PostsScreen() {
         description: 'your event is being saved',
         Component: InfoToast,
       });
+      if (pickedPhotos.length === 0) {
+        Notifier.showNotification({
+          title: 'Error',
+          description: 'Please add at least one photo',
+          Component: ErrorToast,
+        });
+        return;
+      }
       const createdEvent = await createEvent.mutateAsync({
         name: values.name,
         date: values.date,
@@ -93,6 +100,7 @@ export default function PostsScreen() {
         categories: values.categories as EventCategory[],
         description: values.description,
       });
+      formProps.reset();
       if (createdEvent?.id) {
         try {
           await uploadPhotos.mutateAsync({
@@ -105,6 +113,7 @@ export default function PostsScreen() {
             description: 'your event was saved successfully',
             Component: SucessToast,
           });
+          setPickedPhotos([]);
         } catch (uploadError) {
           Notifier.showNotification({
             title: 'Warning',
