@@ -1,4 +1,5 @@
 import { tabBarHeight } from '@/components/tabBar/tabBar';
+import { ErrorToast, InfoToast, SucessToast } from '@/components/toastNotification/toastNotification';
 import { EventItem, IBucketListItem } from '@/components/userProfile/components/eventItem';
 import { Condition } from '@/components/utils/ifElse';
 import { Center } from '@/components/utils/stacks';
@@ -11,6 +12,7 @@ import { ActivityIndicator, View } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { RectButton } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { Notifier } from 'react-native-notifier';
 import { createStyleSheet, UnistylesRuntime, useStyles } from 'react-native-unistyles';
 
 
@@ -24,12 +26,29 @@ export default function HomeScreen() {
     <Swipeable
       renderRightActions={(_a, _b, swipeable) => (
         <RectButton
-          onPress={() => {
-            swipeable?.close();
-            setTimeout(() => {
-              if (!item.id) return;
-              deleteEvent.mutate(item.id);
-            }, 500);
+          onPress={async () => {
+            if (!item.id) return;
+            try {
+              swipeable?.close();
+              Notifier.showNotification({
+                title: 'Deleting...',
+                description: 'your event is being deleted',
+                Component: InfoToast,
+              });
+              await deleteEvent.mutateAsync(item.id);
+              Notifier.hideNotification();
+              Notifier.showNotification({
+                title: 'Done',
+                description: 'your event was deleted successfully',
+                Component: SucessToast,
+              });
+            } catch (error) {
+              Notifier.showNotification({
+                title: 'Error',
+                description: 'something went wrong, try again',
+                Component: ErrorToast,
+              });
+            }
           }}
           style={{
             borderRadius: 18,
