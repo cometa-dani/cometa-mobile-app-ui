@@ -122,7 +122,6 @@ export default function RootLayout() {
 interface IProps {
   session: Session | null
 }
-
 function Root({ session }: IProps): ReactNode {
   const { theme } = useStyles();
   const role = session?.user?.user_metadata?.role;

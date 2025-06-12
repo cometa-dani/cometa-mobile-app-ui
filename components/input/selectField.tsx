@@ -66,12 +66,13 @@ export const SelectField: FC<IProps> = ({ initialValue, options, disabled, onVal
           borderRadius: theme.radius.sm,
         }
       }}
-      Icon={() =>
+      Icon={() => (
         <Ionicons
           name="chevron-down"
           size={theme.spacing.sp10}
           color={theme.colors.gray400}
-        />}
+        />
+      )}
       placeholder={{}}
       value={value}
       onValueChange={(value) => {
